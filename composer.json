@@ -1,0 +1,17 @@
+{
+    "name": "dika5/sigap-pnj",
+    "autoload": {
+        "psr-4": {
+            "Dika5\\SigapPnj\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "DikaPutra1205",
+            "email": "duia.putra12@gmail.com"
+        }
+    ],
+    "require": {
+        "robmorgan/phinx": "^0.16.10"
+    }
+}
