@@ -91,3 +91,21 @@ Kapan? Saat Anda bingung migrasi mana yang sudah atau belum dijalankan di komput
 Perintah:
 
 vendor/bin/phinx status -c phinx.php
+
+KODE RUN TERMINAL PENTING!!
+
+(Clear Log Migration)
+php clean-phinxlog.php
+
+(Migrate Semua Migration)
+vendor/bin/phinx migrate -c phinx.php
+
+(Rollback (Drop) Semua Migration)
+vendor/bin/phinx migrate -c phinx.php
+
+(Cek Status Migration)
+vendor/bin/phinx status -c phinx.php
+
+(Migrate Fresh)
+vendor/bin/phinx rollback -t 0 -c phinx.php
+vendor/bin/phinx migrate -c phinx.php
