@@ -1,0 +1,84 @@
+<?php
+
+namespace App\Core;
+
+class Response
+{
+    //  Send success response
+    public static function success($data = null, string $message = 'Success', int $code = 200): void
+    {
+        http_response_code($code);
+        header('Content-Type: application/json');
+        
+        echo json_encode([
+            'success' => true,
+            'message' => $message,
+            'data' => $data
+        ], JSON_PRETTY_PRINT);
+        
+        exit;
+    }
+
+    // Send error response
+    public static function error(string $message = 'Error', int $code = 400, ?array $errors = null): void
+    {
+        http_response_code($code);
+        header('Content-Type: application/json');
+        
+        $response = [
+            'success' => false,
+            'message' => $message
+        ];
+
+        if ($errors !== null) {
+            $response['errors'] = $errors;
+        }
+        
+        echo json_encode($response, JSON_PRETTY_PRINT);
+        
+        exit;
+    }
+
+    //  Send 401 Unauthorized response
+    public static function unauthorized(string $message = 'Unauthorized. Token tidak valid atau sudah expired.'): void
+    {
+        self::error($message, 401);
+    }
+
+    //  Send 403 Forbidden response
+    public static function forbidden(string $message = 'Forbidden. Anda tidak memiliki akses ke resource ini.'): void
+    {
+        self::error($message, 403);
+    }
+
+    //  Send 404 Not Found response
+    public static function notFound(string $message = 'Resource tidak ditemukan.'): void
+    {
+        self::error($message, 404);
+    }
+
+    //  Send 422 Unprocessable Entity response (Validation Error)
+    public static function validationError(array $errors, string $message = 'Validasi gagal.'): void
+    {
+        self::error($message, 422, $errors);
+    }
+
+    //  Send 500 Internal Server Error response
+    public static function serverError(string $message = 'Terjadi kesalahan pada server.'): void
+    {
+        self::error($message, 500);
+    }
+
+    // Send 201 Created response
+    public static function created($data = null, string $message = 'Data berhasil dibuat.'): void
+    {
+        self::success($data, $message, 201);
+    }
+
+    // Send 204 No Content response
+    public static function noContent(): void
+    {
+        http_response_code(204);
+        exit;
+    }
+}
