@@ -6,7 +6,19 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 // 1. Handle static files from frontend/public
 $publicPath = __DIR__ . '/frontend/public' . $path;
 if (file_exists($publicPath) && !is_dir($publicPath)) {
-    return false; // Serve the requested file as-is.
+    // Determine content type
+    $ext = pathinfo($publicPath, PATHINFO_EXTENSION);
+    $mimeTypes = [
+        'css' => 'text/css',
+        'js'  => 'application/javascript',
+        'jpg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'svg' => 'image/svg+xml',
+    ];
+    header('Content-Type: ' . ($mimeTypes[$ext] ?? mime_content_type($publicPath)));
+    readfile($publicPath);
+    return true; // Stop processing
 }
 
 // 2. Handle JS source files from frontend/src for module loading
