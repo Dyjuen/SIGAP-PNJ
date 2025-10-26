@@ -1,11 +1,8 @@
-# public/.htaccess
-
-# Aktifkan Modul Rewrite
+Options -Multiviews
 RewriteEngine On
 
-# Kondisi untuk memastikan request bukan file atau direktori yang ada
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-# Arahkan semua request ke index.php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
