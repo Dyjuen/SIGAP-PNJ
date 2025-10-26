@@ -1,8 +1,15 @@
 // frontend/src/index.js
-import { renderLoginPage } from './pages/auth/LoginPage.js';
+import { router } from './router.js';
 
-// This is the main entry point of your frontend application.
-// It will decide which page to render based on the current URL or application state.
+// Listen for URL changes
+window.addEventListener('popstate', router);
+window.addEventListener('DOMContentLoaded', router);
 
-// For now, we will just render the LoginPage directly.
-renderLoginPage();
+// Handle navigation for links
+document.body.addEventListener('click', e => {
+    if (e.target.matches('[data-link]')) {
+        e.preventDefault();
+        history.pushState(null, null, e.target.href);
+        router();
+    }
+});

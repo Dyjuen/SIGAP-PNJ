@@ -44,12 +44,16 @@ export function renderLoginPage() {
             .custom-checkbox:hover {
                 border-color: #33C8DA;
             }
+            .custom-checkbox:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(51, 200, 218, 0.2);
+            }
         </style>
         
         <div style="background-image: url('/assets/img/backgrounds/Auth.png'); background-size: cover; background-position: center; min-height: 100vh;" class="flex items-center justify-center">
-            <div class="w-full max-w-md px-4">
+            <div class="w-full max-w-lg px-4">
                 <!-- Container putih dengan padding dan shadow -->
-                <div class="bg-white/60 rounded-2xl shadow-lg px-10 py-8">
+                <div class="bg-white/60 rounded-2xl shadow-lg px-12 py-10">
                     <!-- Logo di bagian atas -->
                     <div class="flex justify-center mb-6">
                         <div class="w-16 h-16 rounded-xl flex items-center justify-center">
@@ -124,6 +128,9 @@ export function renderLoginPage() {
                         >
                             Login
                         </button>
+                        <div class="text-center mt-4">
+                            <a href="/dashboard" data-link class="text-sm text-cyan-600 hover:underline">Go to Dashboard (Demo)</a>
+                        </div>
                     </form>
                 </div>
             </div>
