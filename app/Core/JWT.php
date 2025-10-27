@@ -10,10 +10,11 @@ class JWT
 {
     private static $secret;
     private static $algorithm = 'HS256';
-    private static $expiry = 86400; // 24 jam 
+    private static $expiry = 86400; // 24 jam (dalam detik)
 
-//  Initialize JWT configuration
-
+    /**
+     * Initialize JWT configuration
+     */
     private static function init()
     {
         if (self::$secret === null) {
@@ -24,9 +25,12 @@ class JWT
         }
     }
 
-
-// Generate JWT token
-
+    /**
+     * Generate JWT token
+     * 
+     * @param array $payload User data to encode
+     * @return string JWT token
+     */
     public static function encode(array $payload): string
     {
         self::init();
@@ -43,9 +47,12 @@ class JWT
         return FirebaseJWT::encode($token, self::$secret, self::$algorithm);
     }
 
-
-    // Decode JWT token
-
+    /**
+     * Decode JWT token
+     * 
+     * @param string $token JWT token to decode
+     * @return object|null Decoded data or null if invalid
+     */
     public static function decode(string $token): ?object
     {
         self::init();
@@ -58,13 +65,23 @@ class JWT
         }
     }
 
-    // Validate JWT token
+    /**
+     * Validate JWT token
+     * 
+     * @param string $token JWT token to validate
+     * @return bool True if valid, false otherwise
+     */
     public static function validate(string $token): bool
     {
         return self::decode($token) !== null;
     }
 
-    //  Extract token from Authorization header
+    /**
+     * Extract token from Authorization header
+     * 
+     * @param string|null $authHeader Authorization header value
+     * @return string|null Extracted token or null
+     */
     public static function extractFromHeader(?string $authHeader): ?string
     {
         if (!$authHeader) {
@@ -79,8 +96,12 @@ class JWT
         return null;
     }
 
-    // Get remaining time before token expires
-
+    /**
+     * Get remaining time before token expires
+     * 
+     * @param string $token JWT token
+     * @return int|null Remaining seconds or null if invalid
+     */
     public static function getTimeToExpire(string $token): ?int
     {
         self::init();
@@ -94,5 +115,46 @@ class JWT
         } catch (Exception $e) {
             return null;
         }
+    }
+
+    /**
+     * Get token expiry time in seconds
+     * 
+     * @return int Expiry time in seconds (default 86400 = 24 hours)
+     */
+    public static function getExpiryTime(): int
+    {
+        self::init();
+        return self::$expiry;
+    }
+
+    /**
+     * Get token expiry time in human readable format
+     * 
+     * @return string Human readable expiry time
+     */
+    public static function getExpiryTimeHuman(): string
+    {
+        self::init();
+        $hours = self::$expiry / 3600;
+        
+        if ($hours >= 24) {
+            $days = $hours / 24;
+            return round($days) . ' hari';
+        }
+        
+        return round($hours) . ' jam';
+    }
+
+    /**
+     * Check if token is about to expire (less than 1 hour remaining)
+     * 
+     * @param string $token JWT token
+     * @return bool True if expiring soon
+     */
+    public static function isExpiringSoon(string $token): bool
+    {
+        $timeToExpire = self::getTimeToExpire($token);
+        return $timeToExpire !== null && $timeToExpire < 3600; // Less than 1 hour
     }
 }
