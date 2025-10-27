@@ -2,8 +2,11 @@
     "name": "dika5/sigap-pnj",
     "autoload": {
         "psr-4": {
-            "Dika5\\SigapPnj\\": "src/"
-        }
+            "App\\": "app/"
+        },
+        "files": [
+            "app/helpers.php"
+        ]
     },
     "authors": [
         {
