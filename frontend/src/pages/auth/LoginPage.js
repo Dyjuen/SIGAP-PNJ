@@ -70,7 +70,7 @@ export function renderLoginPage() {
                     </p>
                     
                     <!-- Form -->
-                    <form>
+                    <form id="login-form">
                         <!-- Email Field -->
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-medium mb-2" for="email">
@@ -139,6 +139,23 @@ export function renderLoginPage() {
     `;
 
   rootElement.innerHTML = loginFormHTML;
+
+  // --- START: LOGIN LOGIC ---
+  const form = document.getElementById("login-form");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault(); // Prevent page from reloading
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (email === "rafif@gmail.com" && password === "rafifrafif") {
+      alert("Login berhasil!");
+      window.location.href = "/dashboard"; // Redirect to dashboard
+    } else {
+      alert("Email atau password salah!");
+    }
+  });
+  // --- END: LOGIN LOGIC ---
 
   // Add event listener for the password toggle button
   const passwordInput = document.getElementById("password");
