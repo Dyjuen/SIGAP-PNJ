@@ -1,20 +1,44 @@
 <?php
-// File: app/Models/User.php
-// Model ini bertugas mengambil data dari tabel m_users
 
-class User {
+namespace App\Models;
+
+use App\Core\Database;
+
+class User
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         // Menggunakan instance Database Singleton dari Core
         $this->db = Database::getInstance();
     }
 
     /**
-     * Cari user berdasarkan username dan join dengan role mereka.
-     * Sesuai dengan skema sigap_pnj.sql (m_users, m_user_roles, m_roles)
+     * Find user by ID
      */
-    public function findByUsername($username) {
+    public function findById($userId)
+    {
+        $this->db->query("
+            SELECT 
+                user_id, 
+                username, 
+                nama_lengkap, 
+                email, 
+                unit_kerja_id,
+                created_at
+            FROM m_users 
+            WHERE user_id = :user_id
+        ");
+        $this->db->bind(':user_id', $userId);
+        return $this->db->single();
+    }
+
+    /**
+     * Find user by username (dengan roles)
+     */
+    public function findByUsername($username)
+    {
         $this->db->query("
             SELECT 
                 u.user_id, 
@@ -23,6 +47,7 @@ class User {
                 u.nama_lengkap, 
                 u.email,
                 u.unit_kerja_id,
+                u.created_at,
                 GROUP_CONCAT(r.nama_role) as roles
             FROM 
                 m_users u
@@ -40,19 +65,250 @@ class User {
     }
 
     /**
-     * Verifikasi password
+     * Find user by email
      */
-    public function verifyPassword($password, $hash) {
-        // Memverifikasi password yang dikirim user dengan hash di database
+    public function findByEmail($email)
+    {
+        $this->db->query("
+            SELECT 
+                u.user_id, 
+                u.username, 
+                u.password_hash, 
+                u.nama_lengkap, 
+                u.email,
+                u.unit_kerja_id,
+                u.created_at,
+                GROUP_CONCAT(r.nama_role) as roles
+            FROM 
+                m_users u
+            LEFT JOIN 
+                m_user_roles ur ON u.user_id = ur.user_id
+            LEFT JOIN 
+                m_roles r ON ur.role_id = r.role_id
+            WHERE 
+                u.email = :email
+            GROUP BY
+                u.user_id
+        ");
+        $this->db->bind(':email', $email);
+        return $this->db->single();
+    }
+
+    /**
+     * Get user with roles (untuk response API)
+     */
+    public function getUserWithRoles($userId)
+    {
+        $this->db->query("
+            SELECT 
+                u.user_id, 
+                u.username, 
+                u.nama_lengkap, 
+                u.email,
+                u.unit_kerja_id,
+                uk.nama_unit_kerja,
+                uk.kode_unit,
+                u.created_at,
+                GROUP_CONCAT(r.nama_role) as roles
+            FROM 
+                m_users u
+            LEFT JOIN 
+                m_user_roles ur ON u.user_id = ur.user_id
+            LEFT JOIN 
+                m_roles r ON ur.role_id = r.role_id
+            LEFT JOIN
+                m_unit_kerja uk ON u.unit_kerja_id = uk.unit_kerja_id
+            WHERE 
+                u.user_id = :user_id
+            GROUP BY
+                u.user_id
+        ");
+        $this->db->bind(':user_id', $userId);
+        $user = $this->db->single();
+        
+        // Convert roles dari string ke array
+        if ($user && $user['roles']) {
+            $user['roles'] = explode(',', $user['roles']);
+        } else if ($user) {
+            $user['roles'] = [];
+        }
+        
+        return $user;
+    }
+
+    /**
+     * Verify password
+     */
+    public function verifyPassword($password, $hash)
+    {
         return password_verify($password, $hash);
     }
 
     /**
-     * (Contoh) Ambil data user berdasarkan ID
+     * Create new user dengan hashed password
      */
-    public function findById($id) {
-        $this->db->query("SELECT user_id, username, nama_lengkap, email FROM m_users WHERE user_id = :id");
-        $this->db->bind(':id', $id);
-        return $this->db->single();
+    public function createUser($data)
+    {
+        // Hash password
+        $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
+        
+        $this->db->query("
+            INSERT INTO m_users 
+            (username, password_hash, nama_lengkap, email, unit_kerja_id, created_at) 
+            VALUES 
+            (:username, :password_hash, :nama_lengkap, :email, :unit_kerja_id, NOW())
+        ");
+        
+        $this->db->bind(':username', $data['username']);
+        $this->db->bind(':password_hash', $hashedPassword);
+        $this->db->bind(':nama_lengkap', $data['nama_lengkap']);
+        $this->db->bind(':email', $data['email']);
+        $this->db->bind(':unit_kerja_id', $data['unit_kerja_id']);
+        
+        $this->db->execute();
+        
+        return $this->db->lastInsertId();
+    }
+
+    /**
+     * Update user profile (tanpa password)
+     */
+    public function updateProfile($userId, $data)
+    {
+        $this->db->query("
+            UPDATE m_users 
+            SET 
+                nama_lengkap = :nama_lengkap,
+                email = :email,
+                unit_kerja_id = :unit_kerja_id
+            WHERE user_id = :user_id
+        ");
+        
+        $this->db->bind(':nama_lengkap', $data['nama_lengkap']);
+        $this->db->bind(':email', $data['email']);
+        $this->db->bind(':unit_kerja_id', $data['unit_kerja_id']);
+        $this->db->bind(':user_id', $userId);
+        
+        return $this->db->execute();
+    }
+
+    /**
+     * Update password user
+     */
+    public function updatePassword($userId, $newPassword)
+    {
+        $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+        
+        $this->db->query("
+            UPDATE m_users 
+            SET password_hash = :password_hash 
+            WHERE user_id = :user_id
+        ");
+        
+        $this->db->bind(':password_hash', $hashedPassword);
+        $this->db->bind(':user_id', $userId);
+        
+        return $this->db->execute();
+    }
+
+    /**
+     * Check if username exists (untuk validasi)
+     */
+    public function usernameExists($username, $excludeUserId = null)
+    {
+        if ($excludeUserId) {
+            $this->db->query("
+                SELECT COUNT(*) as total 
+                FROM m_users 
+                WHERE username = :username AND user_id != :user_id
+            ");
+            $this->db->bind(':username', $username);
+            $this->db->bind(':user_id', $excludeUserId);
+        } else {
+            $this->db->query("
+                SELECT COUNT(*) as total 
+                FROM m_users 
+                WHERE username = :username
+            ");
+            $this->db->bind(':username', $username);
+        }
+        
+        $result = $this->db->single();
+        return $result['total'] > 0;
+    }
+
+    /**
+     * Check if email exists (untuk validasi)
+     */
+    public function emailExists($email, $excludeUserId = null)
+    {
+        if ($excludeUserId) {
+            $this->db->query("
+                SELECT COUNT(*) as total 
+                FROM m_users 
+                WHERE email = :email AND user_id != :user_id
+            ");
+            $this->db->bind(':email', $email);
+            $this->db->bind(':user_id', $excludeUserId);
+        } else {
+            $this->db->query("
+                SELECT COUNT(*) as total 
+                FROM m_users 
+                WHERE email = :email
+            ");
+            $this->db->bind(':email', $email);
+        }
+        
+        $result = $this->db->single();
+        return $result['total'] > 0;
+    }
+
+    /**
+     * Get all users with their roles
+     */
+    public function getAllUsersWithRoles()
+    {
+        $this->db->query("
+            SELECT 
+                u.user_id,
+                u.username,
+                u.nama_lengkap,
+                u.email,
+                uk.nama_unit_kerja,
+                uk.kode_unit,
+                u.created_at,
+                GROUP_CONCAT(r.nama_role) as roles
+            FROM 
+                m_users u
+            LEFT JOIN 
+                m_user_roles ur ON u.user_id = ur.user_id
+            LEFT JOIN 
+                m_roles r ON ur.role_id = r.role_id
+            LEFT JOIN
+                m_unit_kerja uk ON u.unit_kerja_id = uk.unit_kerja_id
+            GROUP BY
+                u.user_id
+            ORDER BY
+                u.created_at DESC
+        ");
+        
+        $users = $this->db->resultSet();
+        
+        // Convert roles dari string ke array untuk setiap user
+        foreach ($users as &$user) {
+            $user['roles'] = $user['roles'] ? explode(',', $user['roles']) : [];
+        }
+        
+        return $users;
+    }
+
+    /**
+     * Delete user
+     */
+    public function deleteUser($userId)
+    {
+        $this->db->query("DELETE FROM m_users WHERE user_id = :user_id");
+        $this->db->bind(':user_id', $userId);
+        return $this->db->execute();
     }
 }
