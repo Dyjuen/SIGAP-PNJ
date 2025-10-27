@@ -1,5 +1,7 @@
 // frontend/src/pages/auth/LoginPage.js
 
+import { dummyUsers } from "../../auth/dummyUsers.js";
+
 export function renderLoginPage() {
   const rootElement = document.getElementById("root");
 
@@ -96,11 +98,12 @@ export function renderLoginPage() {
                                     id="password" 
                                     type="password" 
                                     placeholder="password"
+                                    value=""
                                 >
                                 <button 
                                     type="button" 
                                     class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                    onclick="togglePassword()"
+                                    id="togglePassword"
                                 >
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -128,38 +131,47 @@ export function renderLoginPage() {
                         >
                             Login
                         </button>
-                        <div class="text-center mt-4">
-                            <a href="/dashboard" data-link class="text-sm text-cyan-600 hover:underline">Go to Dashboard (Demo)</a>
-                        </div>
                     </form>
                 </div>
             </div>
         </div>
-        
     `;
 
   rootElement.innerHTML = loginFormHTML;
 
-  // --- START: LOGIN LOGIC ---
   const form = document.getElementById("login-form");
   form.addEventListener("submit", (event) => {
-    event.preventDefault(); // Prevent page from reloading
+    event.preventDefault();
 
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    if (email === "rafif@gmail.com" && password === "rafifrafif") {
-      alert("Login berhasil!");
-      window.location.href = "/user-management"; // Redirect to user management
+    const user = dummyUsers.find(
+      (u) => u.email === email && u.password === password
+    );
+
+    if (user) {
+      // Store role in localStorage
+      localStorage.setItem("userRole", user.role);
+      localStorage.setItem("userName", user.name);
+
+      alert(`Login berhasil! Selamat datang ${user.name}. Role: ${user.role}`);
+
+      // Redirect based on role
+      if (user.role === "admin") {
+        window.location.pathname = "/user-management";
+      } else {
+        window.location.pathname = "/dashboard";
+      }
     } else {
       alert("Email atau password salah!");
     }
   });
-  // --- END: LOGIN LOGIC ---
+  // --- END: DUMMY LOGIN LOGIC ---
 
   // Add event listener for the password toggle button
   const passwordInput = document.getElementById("password");
-  const togglePasswordButton = passwordInput?.nextElementSibling;
+  const togglePasswordButton = document.getElementById("togglePassword");
 
   if (passwordInput && togglePasswordButton) {
     togglePasswordButton.addEventListener("click", () => {
@@ -167,18 +179,6 @@ export function renderLoginPage() {
       const type =
         passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
-
-      // Toggle the icon
-      const icon = togglePasswordButton.querySelector("i");
-      if (icon) {
-        if (type === "password") {
-          icon.classList.remove("tabler-eye");
-          icon.classList.add("tabler-eye-off");
-        } else {
-          icon.classList.remove("tabler-eye-off");
-          icon.classList.add("tabler-eye");
-        }
-      }
     });
   }
 }

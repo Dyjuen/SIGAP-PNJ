@@ -1,55 +1,7 @@
 // frontend/src/layouts/DashboardLayout.js
 
-// Sidebar Component
-export const sidebar = `
-  <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-    <div class="app-brand demo">
-      <a href="index.html" class="app-brand-link">
-        <span class="app-brand-logo demo">
-          <img src="/assets/img/logo/logo.svg" alt="SIGAP PNJ" width="32">
-        </span>
-        <span class="app-brand-text demo menu-text fw-bold">SIGAP PNJ</span>
-      </a>
-
-      <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-        <i class="ti menu-toggle-icon d-none d-xl-block align-middle"></i>
-        <i class="ti ti-x d-block d-xl-none ti-md align-middle"></i>
-      </a>
-    </div>
-
-    <div class="menu-inner-shadow"></div>
-
-    <ul class="menu-inner py-1">
-      <!-- Dashboard -->
-      <li class="menu-item active">
-        <a href="/dashboard" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-smart-home"></i>
-          <div data-i18n="Dashboard">Dashboard</div>
-        </a>
-      </li>
-
-      <!-- Menu Section -->
-      <li class="menu-header small text-uppercase">
-        <span class="menu-header-text">Pages</span>
-      </li>
-
-      <!-- Example Menu Items -->
-      <li class="menu-item">
-        <a href="/users" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-users"></i>
-          <div data-i18n="Users">Users</div>
-        </a>
-      </li>
-
-      <li class="menu-item">
-        <a href="/settings" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-settings"></i>
-          <div data-i18n="Settings">Settings</div>
-        </a>
-      </li>
-    </ul>
-  </aside>
-`;
+import { adminSidebar } from './sidebars/adminSidebar.js';
+import { pengusulSidebar } from './sidebars/pengusulSidebar.js';
 
 // Header Component
 export const header = `
@@ -147,15 +99,63 @@ export const footer = `
 `;
 
 // Main Layout Render Function
-export function renderDashboardLayout(content) {
-  console.log("renderDashboardLayout is running!");
+export function renderDashboardLayout(content, userRole) {
+  console.log("renderDashboardLayout is running with role:", userRole);
   const rootElement = document.getElementById("root");
+
+  let dynamicSidebar = '';
+  switch (userRole) {
+    case 'admin':
+      dynamicSidebar = adminSidebar;
+      break;
+    case 'pengusul':
+      dynamicSidebar = pengusulSidebar;
+      break;
+    // Add more cases for other roles here
+    default:
+      // Fallback sidebar or an empty sidebar if role is not recognized
+      dynamicSidebar = `
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <img src="/assets/img/logo/logo.svg" alt="SIGAP PNJ" width="32">
+              </span>
+              <span class="app-brand-text demo menu-text fw-bold">SIGAP PNJ</span>
+            </a>
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+              <i class="ti menu-toggle-icon d-none d-xl-block align-middle"></i>
+              <i class="ti ti-x d-block d-xl-none ti-md align-middle"></i>
+            </a>
+          </div>
+          <div class="menu-inner-shadow"></div>
+          <ul class="menu-inner py-1">
+            <li class="menu-item active">
+              <a href="/dashboard" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-smart-home"></i>
+                <div data-i18n="Dashboard">Dashboard</div>
+              </a>
+            </li>
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">General</span>
+            </li>
+            <li class="menu-item">
+              <a href="/profile" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-user"></i>
+                <div data-i18n="Profile">Profile</div>
+              </a>
+            </li>
+          </ul>
+        </aside>
+      `;
+      break;
+  }
 
   const layoutHTML = `
     <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container">
         <!-- Sidebar -->
-        ${sidebar}
+        ${dynamicSidebar}
         
         <!-- Mobile Menu Toggle -->
         <div class="menu-mobile-toggler d-xl-none rounded-1">
