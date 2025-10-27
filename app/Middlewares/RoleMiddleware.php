@@ -4,7 +4,6 @@ namespace App\Middlewares;
 
 use App\Core\Middleware;
 use App\Core\Response;
-use App\Models\UserRole;
 
 class RoleMiddleware implements Middleware
 {
@@ -13,7 +12,7 @@ class RoleMiddleware implements Middleware
     /**
      * Constructor
      * 
-     * @param array $allowedRoles Array of role names yang diizinkan
+     * @param array $allowedRoles Array of role names that are allowed
      */
     public function __construct(array $allowedRoles = [])
     {
@@ -21,15 +20,17 @@ class RoleMiddleware implements Middleware
     }
 
     /**
-     * Handle role authorization check
+     * Handle role-based access control
+     * 
+     * Checks if authenticated user has one of the allowed roles
      */
     public function handle(): void
     {
-        // Get authenticated user
+        // Get authenticated user from AuthMiddleware
         $authUser = AuthMiddleware::getAuthUser();
 
         if (!$authUser) {
-            Response::unauthorized('User tidak terautentikasi.');
+            Response::unauthorized('User tidak terautentikasi');
         }
 
         // If no specific roles required, just check if authenticated
@@ -37,28 +38,26 @@ class RoleMiddleware implements Middleware
             return;
         }
 
-        // Get user roles from database (fresh data)
-        $userRoleModel = new UserRole();
-        $userRoles = $userRoleModel->getRoleNamesByUserId($authUser['user_id']);
+        // Get user roles from JWT token (already set by AuthMiddleware)
+        $userRoles = $authUser['roles'] ?? [];
 
-        // Check if user has any of the allowed roles
-        $hasRole = false;
+        // Check if user has at least one of the allowed roles
+        $hasAccess = false;
         foreach ($this->allowedRoles as $allowedRole) {
             if (in_array($allowedRole, $userRoles)) {
-                $hasRole = true;
+                $hasAccess = true;
                 break;
             }
         }
 
-        if (!$hasRole) {
+        if (!$hasAccess) {
             $allowedRolesStr = implode(', ', $this->allowedRoles);
             Response::forbidden(
-                "Akses ditolak. Endpoint ini hanya dapat diakses oleh: {$allowedRolesStr}."
+                "Akses ditolak. Endpoint ini hanya dapat diakses oleh: {$allowedRolesStr}"
             );
         }
 
-        // Update auth user with fresh roles
-        $GLOBALS['auth_user']['roles'] = $userRoles;
+        // User has access, continue to next middleware/controller
     }
 
     /**
@@ -75,7 +74,8 @@ class RoleMiddleware implements Middleware
             return false;
         }
 
-        return in_array($roleName, $authUser['roles'] ?? []);
+        $userRoles = $authUser['roles'] ?? [];
+        return in_array($roleName, $userRoles);
     }
 
     /**
@@ -92,12 +92,14 @@ class RoleMiddleware implements Middleware
             return false;
         }
 
+        $userRoles = $authUser['roles'] ?? [];
+        
         foreach ($roleNames as $roleName) {
-            if (in_array($roleName, $authUser['roles'] ?? [])) {
+            if (in_array($roleName, $userRoles)) {
                 return true;
             }
         }
-
+        
         return false;
     }
 
@@ -115,12 +117,14 @@ class RoleMiddleware implements Middleware
             return false;
         }
 
+        $userRoles = $authUser['roles'] ?? [];
+        
         foreach ($roleNames as $roleName) {
-            if (!in_array($roleName, $authUser['roles'] ?? [])) {
+            if (!in_array($roleName, $userRoles)) {
                 return false;
             }
         }
-
+        
         return true;
     }
 
@@ -132,7 +136,7 @@ class RoleMiddleware implements Middleware
     public static function requireRole(string $roleName): void
     {
         if (!self::hasRole($roleName)) {
-            Response::forbidden("Akses ditolak. Endpoint ini hanya dapat diakses oleh: {$roleName}.");
+            Response::forbidden("Akses ditolak. Endpoint ini hanya dapat diakses oleh: {$roleName}");
         }
     }
 
@@ -145,7 +149,43 @@ class RoleMiddleware implements Middleware
     {
         if (!self::hasAnyRole($roleNames)) {
             $rolesStr = implode(', ', $roleNames);
-            Response::forbidden("Akses ditolak. Endpoint ini hanya dapat diakses oleh: {$rolesStr}.");
+            Response::forbidden("Akses ditolak. Endpoint ini hanya dapat diakses oleh: {$rolesStr}");
         }
+    }
+
+    /**
+     * Get all roles of authenticated user
+     * 
+     * @return array Array of role names
+     */
+    public static function getUserRoles(): array
+    {
+        $authUser = AuthMiddleware::getAuthUser();
+        
+        if (!$authUser) {
+            return [];
+        }
+
+        return $authUser['roles'] ?? [];
+    }
+
+    /**
+     * Check if user is Admin
+     * 
+     * @return bool
+     */
+    public static function isAdmin(): bool
+    {
+        return self::hasRole('Admin');
+    }
+
+    /**
+     * Check if user is Reviewer
+     * 
+     * @return bool
+     */
+    public static function isReviewer(): bool
+    {
+        return self::hasRole('Reviewer');
     }
 }
