@@ -19,7 +19,7 @@ return
             'host' => defined('DB_HOST') ? DB_HOST : 'localhost',
             'name' => defined('DB_NAME') ? DB_NAME : 'sigap_pnj',
             'user' => defined('DB_USER') ? DB_USER : 'root',
-            'pass' => defined('DB_PASS') ? DB_PASS : '',
+            'pass' => defined('DB_PASS') ? DB_PASS : 'rafifdwiarka180706.',
             'port' => 3306, // Ganti jika port MySQL Anda berbeda
             'charset' => 'utf8mb4',
         ]
