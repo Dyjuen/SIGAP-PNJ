@@ -150,7 +150,7 @@ export function renderLoginPage() {
 
     if (email === "rafif@gmail.com" && password === "rafifrafif") {
       alert("Login berhasil!");
-      window.location.href = "/dashboard"; // Redirect to dashboard
+      window.location.href = "/user-management"; // Redirect to user management
     } else {
       alert("Email atau password salah!");
     }
