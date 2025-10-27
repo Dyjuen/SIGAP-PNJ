@@ -6,4 +6,4 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'sigap_pnj');
 
-define('JWT_SECRET', '9V/iF}*xu:VZ#_&edSYa3$)_/');
+define('JWT_SECRET', getenv('JWT_SECRET') ?: 'default_secret');
