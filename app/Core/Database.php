@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Core;
+
 class Database {
     
     // Ambil konstanta dari config/database.php
@@ -22,16 +25,16 @@ class Database {
         $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=utf8mb4';
         
         $options = [
-            PDO::ATTR_PERSISTENT => true, // Koneksi persistent
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Mode error
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Mode fetch default
-            PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_PERSISTENT => true, // Koneksi persistent
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, // Mode error
+            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC, // Mode fetch default
+            \PDO::ATTR_EMULATE_PREPARES => false,
         ];
 
         // Buat instance PDO
         try {
-            $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
-        } catch (PDOException $e) {
+            $this->dbh = new \PDO($dsn, $this->user, $this->pass, $options);
+        } catch (\PDOException $e) {
             $this->error = $e->getMessage();
             // Di production, ganti 'echo' dengan logging error
             die('Koneksi Database Gagal: ' . $this->error);
@@ -64,16 +67,16 @@ class Database {
         if (is_null($type)) {
             switch (true) {
                 case is_int($value):
-                    $type = PDO::PARAM_INT;
+                    $type = \PDO::PARAM_INT;
                     break;
                 case is_bool($value):
-                    $type = PDO::PARAM_BOOL;
+                    $type = \PDO::PARAM_BOOL;
                     break;
                 case is_null($value):
-                    $type = PDO::PARAM_NULL;
+                    $type = \PDO::PARAM_NULL;
                     break;
                 default:
-                    $type = PDO::PARAM_STR;
+                    $type = \PDO::PARAM_STR;
             }
         }
         $this->stmt->bindValue($param, $value, $type);
