@@ -16,6 +16,7 @@
     ],
     "require": {
         "robmorgan/phinx": "^0.16.10",
-        "firebase/php-jwt": "^6.11"
+        "firebase/php-jwt": "^6.11",
+        "vlucas/phpdotenv": "^5.6"
     }
 }

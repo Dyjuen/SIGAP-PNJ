@@ -1,6 +1,8 @@
 <?php
 // File: app/Core/Controller.php
 
+namespace App\Core;
+
 class Controller
 {
     /**
@@ -22,15 +24,22 @@ class Controller
      */
     public function model($model)
     {
-        // Pastikan file model ada sebelum di-require
-        $modelPath = ROOT . '/app/Models/' . $model . '.php';
-        if (file_exists($modelPath)) {
-            require_once $modelPath;
-            return new $model();
-        } else {
-            die('Model tidak ditemukan di: ' . $modelPath);
+        $modelClass = 'App\\Models\\' . $model;
+
+        if (!class_exists($modelClass)) {
+            $modelPath = ROOT . '/app/Models/' . $model . '.php';
+            if (file_exists($modelPath)) {
+                require_once $modelPath;
+            }
         }
+
+        if (!class_exists($modelClass)) {
+            throw new \Exception("Model {$modelClass} not found");
+        }
+
+        return new $modelClass();
     }
+
 
     // --- FUNGSI BARU UNTUK API ---
 
