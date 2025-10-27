@@ -10,15 +10,21 @@ class AuthController extends Controller {
      * URL: POST /api/auth/login
      * Body: { "username": "...", "password": "..." }
      */
-    public function login($requestData, $userData = null) {
+    
+    // PERBAIKAN: Fungsi login tidak menerima argumen dari URL
+    public function login() {
         
+        // Ambil data JSON mentah dari 'body' request
+        $data = json_decode(file_get_contents('php://input'), true);
+
         // 1. Validasi input
-        if (!isset($requestData->username) || !isset($requestData->password)) {
+        // Kita cek array $data, bukan $requestData
+        if (!isset($data['username']) || !isset($data['password'])) {
             $this->jsonError(400, 'Bad Request: Username dan password harus diisi.');
         }
 
-        $username = $requestData->username;
-        $password = $requestData->password;
+        $username = $data['username'];
+        $password = $data['password'];
 
         // 2. Cari user di database
         $userModel = $this->model('User');
@@ -64,3 +70,4 @@ class AuthController extends Controller {
         ]);
     }
 }
+
