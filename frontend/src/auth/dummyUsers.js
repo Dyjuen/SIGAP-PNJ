@@ -19,4 +19,28 @@ export const dummyUsers = [
     role: "reviewer",
     name: "Reviewer Ahli",
   },
+  {
+    email: "verifikator@sigap.com",
+    password: "verifikator123",
+    role: "verifikator",
+    name: "Verifikator Keuangan",
+  },
+  {
+    email: "wadir@sigap.com",
+    password: "wadir123 ",
+    role: "wadir",
+    name: "Wakil Direktur",
+  },
+  {
+    email: "ppk@sigap.com",
+    password: "ppk123",
+    role: "ppk",
+    name: "Pejabat Pembuat Komitmen",
+  },
+  {
+    email: "bendahara@sigap.com",
+    password: "bendahara123",
+    role: "bendahara",
+    name: "Bendahara Pengeluaran",
+  },
 ];

@@ -2,6 +2,10 @@
 import { renderLoginPage } from "./pages/auth/LoginPage.js";
 import { renderPengusulDashboardPage } from './pages/Pengusul/DashboardPage.js';
 import { renderUserManagementPage } from './pages/Admin/UserManagementPage.js';
+import { renderVerifikatorDashboardPage } from './pages/Verifikator/Dashboard.js';
+import { renderWadirDashboardPage } from './pages/Wadir/Dashboard.js';
+import { renderPpkDashboardPage } from './pages/Ppk/Dashboard.js';
+import { renderBendaharaDashboardPage } from './pages/Bendahara/Dashboard.js';
 import { renderNotFoundPage } from "./pages/NotFoundPage.js";
 
 // Placeholder function to get the current user's role.
@@ -15,6 +19,10 @@ const routes = {
   "/": renderLoginPage,
   "/login": renderLoginPage,
   '/dashboard': renderPengusulDashboardPage,
+  '/verifikator/dashboard': renderVerifikatorDashboardPage,
+  '/wadir/dashboard': renderWadirDashboardPage,
+  '/ppk/dashboard': renderPpkDashboardPage,
+  '/bendahara/dashboard': renderBendaharaDashboardPage,
   '/user-management': renderUserManagementPage
 };
 

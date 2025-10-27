@@ -2,6 +2,10 @@
 
 import { adminSidebar } from './sidebars/adminSidebar.js';
 import { pengusulSidebar } from './sidebars/pengusulSidebar.js';
+import { verifikatorSidebar } from './sidebars/VerifikatorSidebar.js';
+import { wadirSidebar } from './sidebars/WadirSidebar.js';
+import { ppkSidebar } from './sidebars/PpkSidebar.js';
+import { bendaharaSidebar } from './sidebars/BendaharaSidebar.js';
 
 // Header Component
 export const header = `
@@ -103,13 +107,25 @@ export function renderDashboardLayout(content, userRole) {
   console.log("renderDashboardLayout is running with role:", userRole);
   const rootElement = document.getElementById("root");
 
-  let dynamicSidebar = '';
+  let dynamicSidebar = "";
   switch (userRole) {
-    case 'admin':
+    case "admin":
       dynamicSidebar = adminSidebar;
       break;
     case 'pengusul':
       dynamicSidebar = pengusulSidebar;
+      break;
+    case 'verifikator':
+      dynamicSidebar = verifikatorSidebar;
+      break;
+    case 'wadir':
+      dynamicSidebar = wadirSidebar;
+      break;
+    case 'ppk':
+      dynamicSidebar = ppkSidebar;
+      break;
+    case 'bendahara':
+      dynamicSidebar = bendaharaSidebar;
       break;
     // Add more cases for other roles here
     default:
@@ -195,11 +211,21 @@ export function renderDashboardLayout(content, userRole) {
 
   rootElement.innerHTML = layoutHTML;
 
-  // Initialize menu toggle functionality
+  // Re-initialize the theme's menu logic to handle dropdowns
+  const menuElement = document.getElementById("layout-menu");
+  if (menuElement && typeof Menu !== "undefined") {
+    // This re-instantiates the menu object from menu.js, attaching all necessary event listeners.
+    new Menu(menuElement, {
+      orientation: "vertical",
+      closeChildren: false,
+    });
+  }
+
+  // Fallback for the main mobile toggle if the full script isn't available
   initializeMenuToggle();
 }
 
-// Initialize menu toggle functionality
+// Initialize menu toggle functionality (basic fallback)
 function initializeMenuToggle() {
   const menuToggle = document.querySelector(".layout-menu-toggle");
   const layoutMenu = document.getElementById("layout-menu");

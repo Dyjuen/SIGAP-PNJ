@@ -158,10 +158,18 @@ export function renderLoginPage() {
       alert(`Login berhasil! Selamat datang ${user.name}. Role: ${user.role}`);
 
       // Redirect based on role
-      if (user.role === "admin") {
-        window.location.pathname = "/user-management";
+      if (user.role === 'admin') {
+        window.location.pathname = '/user-management';
+      } else if (user.role === 'verifikator') {
+        window.location.pathname = '/verifikator/dashboard';
+      } else if (user.role === 'wadir') {
+        window.location.pathname = '/wadir/dashboard';
+      } else if (user.role === 'ppk') {
+        window.location.pathname = '/ppk/dashboard';
+      } else if (user.role === 'bendahara') {
+        window.location.pathname = '/bendahara/dashboard';
       } else {
-        window.location.pathname = "/dashboard";
+        window.location.pathname = '/dashboard';
       }
     } else {
       alert("Email atau password salah!");
