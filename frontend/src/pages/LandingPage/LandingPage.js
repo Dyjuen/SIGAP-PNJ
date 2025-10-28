@@ -5,7 +5,8 @@ import { createNavbar } from "./Navbar.js";
 
 export function renderLandingPage(userRole) {
   const mainContent = `
-    <div class="min-h-screen bg-gray-100">
+    <div class="min-h-screen bg-gray-100 max-w-full">
+      <!-- Navbar -->
       ${createNavbar()}
 
       <!-- Hero section -->
