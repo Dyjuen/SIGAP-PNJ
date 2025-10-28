@@ -1,5 +1,6 @@
 // frontend/src/router.js
 import { renderLoginPage } from "./pages/auth/LoginPage.js";
+import { renderLandingPage } from "./pages/LandingPage/LandingPage.js";
 import { renderPengusulDashboardPage } from './pages/Pengusul/DashboardPage.js';
 import { renderUserManagementPage } from './pages/Admin/UserManagementPage.js';
 import { renderVerifikatorDashboardPage } from './pages/Verifikator/Dashboard.js';
@@ -16,7 +17,7 @@ function getCurrentUserRole() {
 }
 
 const routes = {
-  "/": renderLoginPage,
+  "/": renderLandingPage,
   "/login": renderLoginPage,
   '/dashboard': renderPengusulDashboardPage,
   '/verifikator/dashboard': renderVerifikatorDashboardPage,
