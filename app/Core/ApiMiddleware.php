@@ -1,25 +1,25 @@
 <?php
-// File: app/Core/ApiMiddleware.php
-// Ini adalah "Penjaga Keamanan" untuk rute API
 
+namespace App\Core;
+
+use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\BeforeValidException;
 
-// Kita perlu Controller untuk mengakses jsonError
-require_once ROOT . '/app/Core/Controller.php';
-
-class ApiMiddleware extends Controller {
+class ApiMiddleware extends Controller
+{
 
     /**
      * Memeriksa header otorisasi dan memvalidasi token JWT.
      * Akan mengembalikan data user jika valid, atau 'die' dengan error JSON jika tidak.
      */
-    public function checkAuth() {
+    public function checkAuth()
+    {
         $headers = getallheaders();
-        
+
         // Cek apakah header 'Authorization' ada (case-insensitive)
         $authHeader = null;
         if (isset($headers['Authorization'])) {
@@ -43,11 +43,14 @@ class ApiMiddleware extends Controller {
 
         try {
             // Coba decode token menggunakan Kunci Rahasia kita
-            $decoded = JWT::decode($token, new Key(JWT_SECRET, 'HS256'));
-            
+            $jwtSecret = $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET');
+            if (!$jwtSecret) {
+                $jwtSecret = 'PNJANJAYMABARPROFESIONALSLEBEW'; // fallback manual
+            }
+            $decoded = JWT::decode($token, new Key($jwtSecret, 'HS256'));
+
             // Token valid, kembalikan data user (dari payload 'data')
             return $decoded->data;
-
         } catch (ExpiredException $e) {
             // Error jika token kedaluwarsa
             $this->jsonError(401, 'Unauthorized: Token telah kedaluwarsa.');
@@ -56,7 +59,7 @@ class ApiMiddleware extends Controller {
             $this->jsonError(401, 'Unauthorized: Token tidak valid (signature).');
         } catch (BeforeValidException $e) {
             // Error jika token dipakai sebelum waktunya (nbf)
-             $this->jsonError(401, 'Unauthorized: Token belum aktif.');
+            $this->jsonError(401, 'Unauthorized: Token belum aktif.');
         } catch (Exception $e) {
             // Tangkap error umum lainnya
             $this->jsonError(401, 'Unauthorized: Token tidak valid.', ['detail' => $e->getMessage()]);

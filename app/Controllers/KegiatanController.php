@@ -1,8 +1,10 @@
 <?php
-// File: app/Controllers/Api/KegiatanController.php
+// File: app/Controllers/KegiatanController.php
 
-// Pastikan kita memuat middleware
-require_once ROOT . '/app/Core/ApiMiddleware.php';
+namespace App\Controllers;
+
+use App\Core\Controller;
+use App\Core\ApiMiddleware;
 
 class KegiatanController extends Controller {
 
