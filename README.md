@@ -109,3 +109,6 @@ vendor/bin/phinx status -c phinx.php
 (Migrate Fresh)
 vendor/bin/phinx rollback -t 0 -c phinx.php
 vendor/bin/phinx migrate -c phinx.php
+
+(Run Seed)
+vendor/bin/phinx seed:run -s nama seeder -c phinx.php
