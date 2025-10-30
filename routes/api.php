@@ -111,6 +111,59 @@ if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
 }
 
 // ====================================
+// KEGIATAN & ANGGARAN & LAMPIRAN ROUTES
+// ====================================
+
+// Router berbasis objek tambahan (tidak mengubah route lama)
+use App\Core\Router;
+
+// Inisialisasi router baru
+$router = new Router();
+
+// ============================================
+// KEGIATAN CRUD ROUTES
+// ============================================
+
+// List & Detail
+$router->get('/api/kegiatan', 'Api\KegiatanController@index');
+$router->get('/api/kegiatan/{id}', 'Api\KegiatanController@show');
+
+// Create, Update, Delete
+$router->post('/api/kegiatan', 'Api\KegiatanController@create');
+$router->put('/api/kegiatan/{id}', 'Api\KegiatanController@update');
+$router->delete('/api/kegiatan/{id}', 'Api\KegiatanController@delete');
+
+// Status Workflow
+$router->post('/api/kegiatan/{id}/submit', 'Api\KegiatanController@submit');
+$router->post('/api/kegiatan/{id}/revise', 'Api\KegiatanController@revise');
+$router->get('/api/kegiatan/{id}/logs', 'Api\KegiatanController@logs');
+
+// Fitur Tambahan
+$router->post('/api/kegiatan/{id}/duplicate', 'Api\KegiatanController@duplicate');
+$router->get('/api/kegiatan/export/excel', 'Api\KegiatanController@exportExcel');
+$router->get('/api/kegiatan/statistics/dashboard', 'Api\KegiatanController@statistics');
+
+// ============================================
+// ANGGARAN MANAGEMENT ROUTES
+// ============================================
+
+$router->get('/api/kegiatan/{id}/anggaran', 'Api\AnggaranController@index');
+$router->post('/api/kegiatan/{id}/anggaran', 'Api\AnggaranController@create');
+$router->put('/api/kegiatan/{id}/anggaran/{item_id}', 'Api\AnggaranController@update');
+$router->delete('/api/kegiatan/{id}/anggaran/{item_id}', 'Api\AnggaranController@delete');
+
+// ============================================
+// LAMPIRAN MANAGEMENT ROUTES
+// ============================================
+
+$router->get('/api/kegiatan/{id}/lampiran', 'Api\LampiranController@index');
+$router->post('/api/kegiatan/{id}/lampiran', 'Api\LampiranController@upload');
+$router->get('/api/kegiatan/{id}/lampiran/{file_id}', 'Api\LampiranController@download');
+$router->delete('/api/kegiatan/{id}/lampiran/{file_id}', 'Api\LampiranController@delete');
+
+$router->run();
+
+// ====================================
 // 404 - Route not found
 // ====================================
 
@@ -119,4 +172,3 @@ echo json_encode([
     'success' => false,
     'message' => 'Endpoint tidak ditemukan.'
 ]);
-exit;
