@@ -1,5 +1,4 @@
 <?php
-// File: app/Core/Controller.php
 
 namespace App\Core;
 
