@@ -51,7 +51,7 @@ class AuthMiddleware implements Middleware
         $GLOBALS['auth_user'] = [
             'user_id' => $decoded->user_id,
             'username' => $decoded->username,
-            'email' => $decoded->email,
+            'nama_lengkap' => $decoded->nama_lengkap,  // ✅ Ganti email jadi nama_lengkap
             'roles' => $decoded->roles ?? [],
             'unit_kerja_id' => $decoded->unit_kerja_id ?? null
         ];

@@ -4,7 +4,7 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use Firebase\JWT\JWT;
+use App\Core\JWT;
 
 class AuthController extends Controller
 {
@@ -51,24 +51,24 @@ class AuthController extends Controller
         $exp = $iat + (60 * 60 * 8); // expired at (token berlaku 8 jam)
 
         $payload = [
-            'iss' => 'SIGAP-PNJ', // issuer (siapa yang membuat token)
-            'aud' => 'SIGAP-PNJ-Frontend', // audience (untuk siapa token ini)
             'iat' => $iat,
-            'nbf' => $iat, // not before (token berlaku mulai kapan)
             'exp' => $exp,
-            'data' => [ // Data user yang ingin kita simpan di token
+            'data' => [
                 'user_id' => (int)$user['user_id'],
                 'username' => $user['username'],
                 'nama_lengkap' => $user['nama_lengkap'],
                 'unit_kerja_id' => (int)$user['unit_kerja_id'],
-                'roles' => $user['roles'] ? explode(',', $user['roles']) : [] // Ubah string 'admin,user' menjadi array
+                'roles' => $user['roles'] ? explode(',', $user['roles']) : []
             ]
         ];
 
         // Buat token menggunakan library JWT
-        $jwtSecret = $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET');
-        $token = JWT::encode($payload, $jwtSecret, 'HS256');
+        $token = JWT::encode($payload['data']);
 
+        $this->jsonResponse(200, [
+            'status' => 'success',
+            'token' => $token,
+        ]);
 
         // 5. Kirim token ke user
         $this->jsonResponse(200, [

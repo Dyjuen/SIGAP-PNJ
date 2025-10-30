@@ -57,6 +57,7 @@ class JWT
     {
         self::init();
 
+
         try {
             $decoded = FirebaseJWT::decode($token, new Key(self::$secret, self::$algorithm));
             return $decoded->data;
@@ -110,7 +111,7 @@ class JWT
             $decoded = FirebaseJWT::decode($token, new Key(self::$secret, self::$algorithm));
             $now = time();
             $exp = $decoded->exp;
-            
+
             return max(0, $exp - $now);
         } catch (Exception $e) {
             return null;
@@ -137,12 +138,12 @@ class JWT
     {
         self::init();
         $hours = self::$expiry / 3600;
-        
+
         if ($hours >= 24) {
             $days = $hours / 24;
             return round($days) . ' hari';
         }
-        
+
         return round($hours) . ' jam';
     }
 

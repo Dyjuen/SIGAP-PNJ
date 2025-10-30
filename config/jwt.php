@@ -1,4 +1,5 @@
 <?php
+/** config/jwt.php */
 
 /**
  * JWT Configuration
@@ -14,7 +15,7 @@ return [
      * Generate dengan: base64_encode(random_bytes(32))
      * Atau simpan di .env file untuk keamanan lebih baik
      */
-    'secret' => getenv('JWT_SECRET') ?: 'SIGAP-PNJ-SECRET-KEY-CHANGE-THIS-IN-PRODUCTION',
+    'secret' => getenv('JWT_SECRET') ?: '9V/iF}*xu:VZ#&edSYa3$)/',
 
     /**
      * Algorithm yang digunakan untuk JWT
