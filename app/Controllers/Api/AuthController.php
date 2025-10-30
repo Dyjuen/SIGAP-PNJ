@@ -139,7 +139,7 @@ class AuthController
             $token = JWT::encode([
                 'user_id' => $user['user_id'],
                 'username' => $user['username'],
-                'email' => $user['email'],
+                'nama_lengkap' => $user['nama_lengkap'],
                 'roles' => $roles,
                 'unit_kerja_id' => $user['unit_kerja_id']
             ]);
@@ -406,7 +406,7 @@ class AuthController
             $token = JWT::encode([
                 'user_id' => $user['user_id'],
                 'username' => $user['username'],
-                'email' => $user['email'],
+                'nama_lengkap' => $user['nama_lengkap'],
                 'roles' => $user['roles'],
                 'unit_kerja_id' => $user['unit_kerja_id']
             ]);
