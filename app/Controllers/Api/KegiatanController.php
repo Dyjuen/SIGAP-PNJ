@@ -1,93 +1,520 @@
 <?php
-// File: app/Controllers/KegiatanController.php
 
-namespace App\Controllers;
+namespace App\Controllers\Api;
 
-use App\Core\Controller;
-use App\Core\ApiMiddleware;
+use App\Core\Response;
+use App\Models\Kegiatan;
+use App\Models\KegiatanAnggaran;
+use App\Models\KegiatanLampiran;
+use App\Models\KegiatanLogStatus;
+use App\Validators\KegiatanValidator;
+use App\Validators\AnggaranValidator;
+use App\Core\FileUpload;
+use App\Middlewares\AuthMiddleware;
 
-class KegiatanController extends Controller {
+class KegiatanController
+{
+    private $kegiatanModel;
+    private $anggaranModel;
+    private $lampiranModel;
+    private $logStatusModel;
+    private $userData;
 
-    private $userData; // Properti untuk menyimpan data user yang login
-
-    /**
-     * Constructor ini akan berjalan SEBELUM method lain.
-     * Kita akan memvalidasi token di sini.
-     */
-    public function __construct() {
-        // 1. Panggil Middleware untuk melindungi SEMUA method di controller ini
-        $middleware = new ApiMiddleware();
+    public function __construct()
+    {
+        $this->kegiatanModel = new Kegiatan();
+        $this->anggaranModel = new KegiatanAnggaran();
+        $this->lampiranModel = new KegiatanLampiran();
+        $this->logStatusModel = new KegiatanLogStatus();
         
-        // 2. checkAuth() akan memvalidasi token. 
-        //    Jika token salah, ia akan 'die' (mengirim error 401).
-        //    Jika token benar, ia akan mengembalikan data user.
-        $this->userData = $middleware->checkAuth();
+        // Get authenticated user data
+        $this->userData = AuthMiddleware::getAuthUser();
     }
 
     /**
-     * Contoh endpoint yang terlindungi
-     * URL: GET /api/kegiatan/all
-     * Headers: Authorization: Bearer {token}
+     * Get all kegiatan with filters
+     * 
+     * GET /api/kegiatan?status=1&unit_kerja=1&search=workshop&page=1&per_page=10
      */
-    // PERBAIKAN: Method 'all' tidak lagi mengharapkan argumen
-    public function all() {
-        
-        // Jika kode sampai di sini, berarti token sudah valid
-        // dan $this->userData berisi data dari token.
-        $userData = $this->userData;
+    public function index()
+    {
+        try {
+            // Get query parameters
+            $status = $_GET['status'] ?? null;
+            $unitKerja = $_GET['unit_kerja'] ?? null;
+            $search = $_GET['search'] ?? null;
+            $tanggalMulai = $_GET['tanggal_mulai'] ?? null;
+            $tanggalSelesai = $_GET['tanggal_selesai'] ?? null;
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
-        // (Untuk method GET, $requestData biasanya tidak ada atau dari query URL)
-        
-        // Anda bisa mengambil data dari database, misalnya:
-        // $kegiatanModel = $this->model('Kegiatan');
-        
-        // Contoh: filter data berdasarkan user yang sedang login
-        // $daftarKegiatan = $kegiatanModel->getKegiatanByUserId($userData->user_id);
-        
-        $this->jsonResponse(200, [
-            'status' => 'success',
-            'message' => 'Data kegiatan berhasil diambil',
-            'user_yang_login' => $userData,
-            'contoh_data_kegiatan' => [
-                ['id' => 1, 'nama' => 'Kegiatan A'],
-                ['id' => 2, 'nama' => 'Kegiatan B']
-            ]
-        ]);
+            // Authorization: Pengusul hanya bisa lihat kegiatan sendiri
+            $userId = null;
+            if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
+                $userId = $this->userData['user_id'];
+            }
+
+            // Get kegiatan with filters
+            $kegiatan = $this->kegiatanModel->getAllWithFilters([
+                'status_id' => $status,
+                'unit_kerja_id' => $unitKerja,
+                'search' => $search,
+                'tanggal_mulai' => $tanggalMulai,
+                'tanggal_selesai' => $tanggalSelesai,
+                'user_id' => $userId,
+                'page' => $page,
+                'per_page' => $perPage
+            ]);
+
+            Response::success($kegiatan, 'Data kegiatan berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil data kegiatan: ' . $e->getMessage(), 500);
+        }
     }
 
     /**
-     * Contoh lain:
-     * URL: POST /api/kegiatan/create
-     * Headers: Authorization: Bearer {token}
-     * Body: { "nama_kegiatan": "..." }
+     * Get kegiatan detail
+     * 
+     * GET /api/kegiatan/{id}
      */
-    // PERBAIKAN: Method 'create' tidak lagi mengharapkan argumen
-    public function create() {
-        
-        // 1. Ambil data user yang sudah divalidasi dari constructor
-        $userData = $this->userData;
+    public function show()
+    {
+        try {
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
 
-        // 2. Ambil data 'body' JSON secara manual
-        $requestData = json_decode(file_get_contents('php://input'));
-        
-        if (!isset($requestData->nama_kegiatan)) {
-             $this->jsonError(400, 'Bad Request: nama_kegiatan harus diisi.');
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Get kegiatan detail
+            $kegiatan = $this->kegiatanModel->getKegiatanForPDF($kegiatanId);
+
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // Authorization: Pengusul hanya bisa lihat kegiatan sendiri
+            if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
+                if ($kegiatan['pengusul_user_id'] != $this->userData['user_id']) {
+                    Response::forbidden('Anda tidak memiliki akses ke kegiatan ini.');
+                }
+            }
+
+            Response::success($kegiatan, 'Detail kegiatan berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil detail kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Create new kegiatan
+     * 
+     * POST /api/kegiatan
+     */
+    public function create()
+    {
+        try {
+            // Get JSON input
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            // Validate input
+            $validator = new KegiatanValidator();
+            if (!$validator->validateCreate($data)) {
+                Response::validationError($validator->getErrors(), 'Validasi gagal.');
+            }
+
+            // Set pengusul user ID
+            $data['pengusul_user_id'] = $this->userData['user_id'];
+            $data['status_id'] = 1; // Draft
+
+            // Create kegiatan
+            $kegiatanId = $this->kegiatanModel->create($data);
+
+            // Log status
+            $this->logStatusModel->create([
+                'kegiatan_id' => $kegiatanId,
+                'status_id_lama' => null,
+                'status_id_baru' => 1,
+                'actor_user_id' => $this->userData['user_id'],
+                'catatan' => 'Kegiatan dibuat'
+            ]);
+
+            // Get created kegiatan
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+
+            Response::created($kegiatan, 'Kegiatan berhasil dibuat.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal membuat kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Update kegiatan
+     * 
+     * PUT /api/kegiatan/{id}
+     */
+    public function update()
+    {
+        try {
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Check if kegiatan exists
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // Authorization: Only owner can edit
+            if ($kegiatan['pengusul_user_id'] != $this->userData['user_id'] && !$this->hasRole('Admin')) {
+                Response::forbidden('Anda tidak memiliki akses untuk mengedit kegiatan ini.');
+            }
+
+            // Cannot edit if not Draft or Revisi
+            if (!in_array($kegiatan['status_id'], [1, 5])) { // 1=Draft, 5=Revisi
+                Response::error('Kegiatan hanya bisa diedit jika berstatus Draft atau Revisi.', 400);
+            }
+
+            // Get JSON input
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            // Validate input
+            $validator = new KegiatanValidator();
+            if (!$validator->validateUpdate($data)) {
+                Response::validationError($validator->getErrors(), 'Validasi gagal.');
+            }
+
+            // Update kegiatan
+            $this->kegiatanModel->update($kegiatanId, $data);
+
+            // Get updated kegiatan
+            $updatedKegiatan = $this->kegiatanModel->findById($kegiatanId);
+
+            Response::success($updatedKegiatan, 'Kegiatan berhasil diupdate.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal update kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Delete kegiatan (Draft only)
+     * 
+     * DELETE /api/kegiatan/{id}
+     */
+    public function delete()
+    {
+        try {
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Check if kegiatan exists
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // Authorization: Only owner can delete
+            if ($kegiatan['pengusul_user_id'] != $this->userData['user_id'] && !$this->hasRole('Admin')) {
+                Response::forbidden('Anda tidak memiliki akses untuk menghapus kegiatan ini.');
+            }
+
+            // Only Draft can be deleted
+            if ($kegiatan['status_id'] != 1) {
+                Response::error('Hanya kegiatan berstatus Draft yang bisa dihapus.', 400);
+            }
+
+            // Delete kegiatan (cascade akan hapus anggaran & lampiran)
+            $this->kegiatanModel->delete($kegiatanId);
+
+            Response::success(null, 'Kegiatan berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal menghapus kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Submit kegiatan for review
+     * 
+     * POST /api/kegiatan/{id}/submit
+     */
+    public function submit()
+    {
+        try {
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/submit$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Check if kegiatan exists
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // Authorization
+            if ($kegiatan['pengusul_user_id'] != $this->userData['user_id'] && !$this->hasRole('Admin')) {
+                Response::forbidden('Anda tidak memiliki akses untuk submit kegiatan ini.');
+            }
+
+            // Check if status is Draft or Revisi
+            if (!in_array($kegiatan['status_id'], [1, 5])) {
+                Response::error('Hanya kegiatan berstatus Draft atau Revisi yang bisa disubmit.', 400);
+            }
+
+            // Check if has anggaran items
+            $anggaran = $this->anggaranModel->getByKegiatanId($kegiatanId);
+            if (empty($anggaran)) {
+                Response::error('Kegiatan harus memiliki minimal 1 item anggaran sebelum disubmit.', 400);
+            }
+
+            // Update status to Dalam Review
+            $oldStatus = $kegiatan['status_id'];
+            $this->kegiatanModel->updateStatus($kegiatanId, 2); // 2 = Dalam Review
+
+            // Log status change
+            $this->logStatusModel->create([
+                'kegiatan_id' => $kegiatanId,
+                'status_id_lama' => $oldStatus,
+                'status_id_baru' => 2,
+                'actor_user_id' => $this->userData['user_id'],
+                'catatan' => 'Kegiatan disubmit untuk review'
+            ]);
+
+            Response::success(null, 'Kegiatan berhasil disubmit untuk review.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal submit kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Duplicate kegiatan
+     * 
+     * POST /api/kegiatan/{id}/duplicate
+     */
+    public function duplicate()
+    {
+        try {
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/duplicate$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Get original kegiatan
+            $original = $this->kegiatanModel->getKegiatanForPDF($kegiatanId);
+            if (!$original) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // Create new kegiatan
+            $newData = [
+                'nama_kegiatan' => $original['nama_kegiatan'] . ' (Copy)',
+                'deskripsi_kegiatan' => $original['deskripsi_kegiatan'],
+                'iku_id' => $original['iku_id'],
+                'tanggal_mulai' => $original['tanggal_mulai'],
+                'tanggal_selesai' => $original['tanggal_selesai'],
+                'lokasi' => $original['lokasi'],
+                'total_anggaran_diusulkan' => $original['total_anggaran_diusulkan'],
+                'pengusul_user_id' => $this->userData['user_id'],
+                'unit_kerja_id' => $original['unit_kerja_id'],
+                'mata_anggaran_id' => $original['mata_anggaran_id'],
+                'status_id' => 1 // Draft
+            ];
+
+            $newKegiatanId = $this->kegiatanModel->create($newData);
+
+            // Copy anggaran items
+            foreach ($original['anggaran_items'] as $item) {
+                $this->anggaranModel->create([
+                    'kegiatan_id' => $newKegiatanId,
+                    'uraian' => $item['uraian'],
+                    'volume' => $item['volume'],
+                    'satuan_id' => $item['satuan_id'],
+                    'harga_satuan' => $item['harga_satuan'],
+                    'jumlah_diusulkan' => $item['jumlah_diusulkan'],
+                    'catatan' => $item['catatan']
+                ]);
+            }
+
+            // Get duplicated kegiatan
+            $newKegiatan = $this->kegiatanModel->findById($newKegiatanId);
+
+            Response::created($newKegiatan, 'Kegiatan berhasil diduplikasi.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal duplikasi kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Get status history
+     * 
+     * GET /api/kegiatan/{id}/logs
+     */
+    public function logs()
+    {
+        try {
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/logs$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Get logs
+            $logs = $this->logStatusModel->getByKegiatanId($kegiatanId);
+
+            Response::success($logs, 'Log status berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil log status: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Get statistics
+     * 
+     * GET /api/kegiatan/statistics
+     */
+    public function statistics()
+    {
+        try {
+            // Authorization: Admin, Verifikator, PPK, Bendahara
+            if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
+                $userId = $this->userData['user_id'];
+            } else {
+                $userId = null;
+            }
+
+            $stats = $this->kegiatanModel->getStatistics($userId);
+
+            Response::success($stats, 'Statistik berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil statistik: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Export to Excel
+     * 
+     * GET /api/kegiatan/export?status=1&unit_kerja=1
+     */
+    public function export()
+    {
+        try {
+            // Get filters
+            $status = $_GET['status'] ?? null;
+            $unitKerja = $_GET['unit_kerja'] ?? null;
+
+            // Authorization: Pengusul hanya export kegiatan sendiri
+            $userId = null;
+            if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
+                $userId = $this->userData['user_id'];
+            }
+
+            // Get kegiatan
+            $kegiatan = $this->kegiatanModel->getAllForExport([
+                'status_id' => $status,
+                'unit_kerja_id' => $unitKerja,
+                'user_id' => $userId
+            ]);
+
+            // Generate Excel
+            $this->generateExcel($kegiatan);
+
+        } catch (\Exception $e) {
+            Response::error('Gagal export data: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Helper: Check if user has role
+     */
+    private function hasRole($roleName)
+    {
+        return in_array($roleName, $this->userData['roles'] ?? []);
+    }
+
+    /**
+     * Helper: Generate Excel file
+     */
+    private function generateExcel($data)
+    {
+        // Set headers for Excel download
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="Kegiatan_' . date('YmdHis') . '.xls"');
+        header('Cache-Control: max-age=0');
+
+        // Start output
+        echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+        echo '<head><meta charset="UTF-8"></head><body>';
+        echo '<table border="1">';
+        echo '<thead>';
+        echo '<tr>';
+        echo '<th>No</th>';
+        echo '<th>Nama Kegiatan</th>';
+        echo '<th>Tanggal Mulai</th>';
+        echo '<th>Tanggal Selesai</th>';
+        echo '<th>Lokasi</th>';
+        echo '<th>Unit Kerja</th>';
+        echo '<th>Pengusul</th>';
+        echo '<th>Status</th>';
+        echo '<th>Total Anggaran Diusulkan</th>';
+        echo '<th>Total Anggaran Disetujui</th>';
+        echo '</tr>';
+        echo '</thead>';
+        echo '<tbody>';
+
+        $no = 1;
+        foreach ($data as $row) {
+            echo '<tr>';
+            echo '<td>' . $no++ . '</td>';
+            echo '<td>' . htmlspecialchars($row['nama_kegiatan']) . '</td>';
+            echo '<td>' . $row['tanggal_mulai'] . '</td>';
+            echo '<td>' . $row['tanggal_selesai'] . '</td>';
+            echo '<td>' . htmlspecialchars($row['lokasi']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['nama_unit_kerja']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['pengusul_nama']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['nama_status']) . '</td>';
+            echo '<td>' . number_format($row['total_anggaran_diusulkan'], 0, ',', '.') . '</td>';
+            echo '<td>' . ($row['total_anggaran_disetujui'] ? number_format($row['total_anggaran_disetujui'], 0, ',', '.') : '-') . '</td>';
+            echo '</tr>';
         }
 
-        // 3. Simpan data ke database
-        // $kegiatanModel = $this->model('Kegiatan');
-        // $newId = $kegiatanModel->createBaru(
-        //     $requestData->nama_kegiatan,
-        //     $userData->user_id // Simpan siapa yang membuat
-        // );
-
-        $this->jsonResponse(201, [ // 201 Created
-            'status' => 'success',
-            'message' => 'Kegiatan baru berhasil dibuat (contoh)',
-            'id_baru' => 123, // $newId
-            'data_input' => $requestData,
-            'dibuat_oleh' => $userData->username
-        ]);
+        echo '</tbody>';
+        echo '</table>';
+        echo '</body></html>';
+        exit;
     }
 }
-
