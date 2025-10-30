@@ -211,19 +211,67 @@ export function renderDashboardLayout(content, userRole) {
 
   rootElement.innerHTML = layoutHTML;
 
-  // Re-initialize the theme's menu logic to handle dropdowns
-  const menuElement = document.getElementById("layout-menu");
-  if (menuElement && typeof Menu !== "undefined") {
-    // This re-instantiates the menu object from menu.js, attaching all necessary event listeners.
-    new Menu(menuElement, {
-      orientation: "vertical",
-      closeChildren: false,
-    });
-  }
+  // Initialize sidebar logic
+  initializeSidebar();
 
   // Fallback for the main mobile toggle if the full script isn't available
   initializeMenuToggle();
 }
+
+function initializeSidebar() {
+  const menu = document.getElementById('layout-menu');
+  if (!menu) return;
+
+  const currentPath = window.location.pathname;
+
+  // Set active state and open parent submenus
+  const menuLinks = menu.querySelectorAll('.menu-link');
+  menuLinks.forEach(link => {
+    if (link.getAttribute('href') === currentPath) {
+      const menuItem = link.closest('.menu-item');
+      if (menuItem) {
+        menuItem.classList.add('active');
+        const parentSubmenu = menuItem.closest('.menu-submenu');
+        if (parentSubmenu) {
+          const parentMenuItem = parentSubmenu.closest('.menu-item');
+          if (parentMenuItem) {
+            parentMenuItem.classList.add('open');
+          }
+        }
+      }
+    }
+  });
+
+  // Hide all submenus by default, unless they should be open
+  const submenus = menu.querySelectorAll('.menu-submenu');
+  submenus.forEach(submenu => {
+    const parentMenuItem = submenu.closest('.menu-item');
+    if (parentMenuItem && !parentMenuItem.classList.contains('open')) {
+      submenu.style.display = 'none';
+    }
+  });
+
+  // Add click listeners to toggle submenus
+  const menuToggles = menu.querySelectorAll('.menu-link.menu-toggle');
+  menuToggles.forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      const menuItem = toggle.closest('.menu-item');
+      const submenu = menuItem.querySelector('.menu-submenu');
+
+      if (submenu) {
+        if (submenu.style.display === 'block') {
+          submenu.style.display = 'none';
+          menuItem.classList.remove('open');
+        } else {
+          submenu.style.display = 'block';
+          menuItem.classList.add('open');
+        }
+      }
+    });
+  });
+}
+
 
 // Initialize menu toggle functionality (basic fallback)
 function initializeMenuToggle() {
