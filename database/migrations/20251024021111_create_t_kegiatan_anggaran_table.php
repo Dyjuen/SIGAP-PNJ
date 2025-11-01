@@ -19,6 +19,7 @@ final class CreateTKegiatanAnggaranTable extends AbstractMigration
               ->addColumn('jumlah_diusulkan', 'decimal', ['precision' => 15, 'scale' => 2])
               ->addColumn('jumlah_disetujui', 'decimal', ['precision' => 15, 'scale' => 2, 'null' => true])
               ->addColumn('catatan', 'string', ['limit' => 255, 'null' => true])
+              ->addColumn('catatan_verifikator', 'text', ['null' => true]) // NEW
               ->addForeignKey('kegiatan_id', 't_kegiatan', 'kegiatan_id', [
                   'delete' => 'CASCADE',
                   'update' => 'CASCADE'

@@ -16,3 +16,4 @@ final class CreateMSatuanTable extends AbstractMigration
               ->create();
     }
 }
+
