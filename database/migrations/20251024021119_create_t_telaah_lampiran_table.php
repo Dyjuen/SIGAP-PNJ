@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class CreateTKegiatanLampiranTable extends AbstractMigration
+final class CreateTTelaahLampiranTable extends AbstractMigration
 {
     public function change()
     {
-        $table = $this->table('t_kegiatan_lampiran', ['id' => false, 'primary_key' => ['lampiran_id']]);
+        $table = $this->table('t_telaah_lampiran', ['id' => false, 'primary_key' => ['lampiran_id']]);
         
         $table->addColumn('lampiran_id', 'integer', ['identity' => true])
-              ->addColumn('kegiatan_id', 'integer')
+              ->addColumn('anggaran_id', 'integer') // DIUBAH: dari telaah_id
               ->addColumn('nama_file_asli', 'string', ['limit' => 255])
               ->addColumn('path_file_disimpan', 'string', ['limit' => 255])
               ->addColumn('tipe_file', 'string', ['limit' => 50])
               ->addColumn('uploader_user_id', 'integer')
               ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
-              ->addForeignKey('kegiatan_id', 't_kegiatan', 'kegiatan_id', [
+              ->addForeignKey('anggaran_id', 't_telaah_anggaran', 'anggaran_id', [ // DIUBAH: referensi ke t_telaah_anggaran
                   'delete' => 'CASCADE',
                   'update' => 'CASCADE'
               ])

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class CreateTKegiatanAnggaranTable extends AbstractMigration
+final class CreateTTelaahAnggaranTable extends AbstractMigration
 {
     public function change()
     {
-        $table = $this->table('t_kegiatan_anggaran', ['id' => false, 'primary_key' => ['anggaran_id']]);
+        $table = $this->table('t_telaah_anggaran', ['id' => false, 'primary_key' => ['anggaran_id']]);
         
         $table->addColumn('anggaran_id', 'integer', ['identity' => true])
-              ->addColumn('kegiatan_id', 'integer')
+              ->addColumn('telaah_id', 'integer')
               ->addColumn('uraian', 'string', ['limit' => 255])
               ->addColumn('volume', 'integer')
               ->addColumn('satuan_id', 'integer')
@@ -20,7 +20,7 @@ final class CreateTKegiatanAnggaranTable extends AbstractMigration
               ->addColumn('jumlah_disetujui', 'decimal', ['precision' => 15, 'scale' => 2, 'null' => true])
               ->addColumn('catatan', 'string', ['limit' => 255, 'null' => true])
               ->addColumn('catatan_verifikator', 'text', ['null' => true]) // NEW
-              ->addForeignKey('kegiatan_id', 't_kegiatan', 'kegiatan_id', [
+              ->addForeignKey('telaah_id', 't_telaah', 'telaah_id', [
                   'delete' => 'CASCADE',
                   'update' => 'CASCADE'
               ])
