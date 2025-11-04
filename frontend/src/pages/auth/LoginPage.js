@@ -1,6 +1,6 @@
 // frontend/src/pages/auth/LoginPage.js
 
-import { dummyUsers } from "../../auth/dummyUsers.js";
+import { authService } from "../../api/authService.js";
 
 export function renderLoginPage() {
   const rootElement = document.getElementById("root");
@@ -50,6 +50,34 @@ export function renderLoginPage() {
                 outline: none;
                 box-shadow: 0 0 0 3px rgba(51, 200, 218, 0.2);
             }
+
+            /* Error Alert */
+            .error-alert {
+                background-color: #FEE2E2;
+                border: 1px solid #FCA5A5;
+                color: #991B1B;
+                padding: 12px;
+                border-radius: 8px;
+                margin-bottom: 16px;
+                display: none;
+            }
+
+            /* Loading Spinner */
+            .spinner {
+                border: 2px solid #f3f3f3;
+                border-top: 2px solid #33C8DA;
+                border-radius: 50%;
+                width: 16px;
+                height: 16px;
+                animation: spin 1s linear infinite;
+                display: inline-block;
+                margin-right: 8px;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
         </style>
         
         <div style="background-image: url('/assets/img/backgrounds/Auth.png'); background-size: cover; background-position: center; min-height: 100vh;" class="flex items-center justify-center">
@@ -68,21 +96,25 @@ export function renderLoginPage() {
                         Welcome to SIGAP PNJ! 
                     </h2>
                     <p class="text-center text-gray-500 text-sm mb-6">
-                        Silahkan input email dan password kamu
+                        Silahkan input username dan password kamu
                     </p>
+
+                    <!-- Error Alert -->
+                    <div id="error-alert" class="error-alert"></div>
                     
                     <!-- Form -->
                     <form id="login-form">
-                        <!-- Email Field -->
+                        <!-- Username Field -->
                         <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-semibold mb-2" for="email">
-                                Email
+                            <label class="block text-gray-700 text-sm font-semibold mb-2" for="username">
+                                Username
                             </label>
                             <input 
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent input-transparent" 
-                                id="email" 
-                                type="email" 
+                                id="username" 
+                                type="text" 
                                 value=""
+                                required
                             >
                         </div>
                         
@@ -97,6 +129,7 @@ export function renderLoginPage() {
                                     id="password" 
                                     type="password" 
                                     value=""
+                                    required
                                 >
                                 <button 
                                     type="button" 
@@ -114,7 +147,7 @@ export function renderLoginPage() {
                         <!-- Remember Me & Forgot Password -->
                         <div class="flex items-center justify-between mb-6">
                             <label class="flex items-center cursor-pointer">
-                                <input type="checkbox" class="custom-checkbox" checked>
+                                <input type="checkbox" id="remember-me" class="custom-checkbox" checked>
                                 <span class="ml-2 text-sm text-gray-700">Ingat Saya</span>
                             </label>
                             <a href="#" class="text-sm text-[#33C8DA] hover:text-cyan-500 font-medium">
@@ -125,6 +158,7 @@ export function renderLoginPage() {
                         <!-- Login Button -->
                         <button 
                             type="submit" 
+                            id="login-button"
                             class="w-full bg-[#33C8DA] hover:bg-cyan-500 text-white font-medium py-2.5 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2"
                         >
                             Login
@@ -137,54 +171,117 @@ export function renderLoginPage() {
 
   rootElement.innerHTML = loginFormHTML;
 
+  // Get form elements
   const form = document.getElementById("login-form");
-  form.addEventListener("submit", (event) => {
+  const usernameInput = document.getElementById("username");
+  const passwordInput = document.getElementById("password");
+  const rememberMeCheckbox = document.getElementById("remember-me");
+  const loginButton = document.getElementById("login-button");
+  const errorAlert = document.getElementById("error-alert");
+
+  // Show error message
+  function showError(message) {
+    errorAlert.textContent = message;
+    errorAlert.style.display = "block";
+    setTimeout(() => {
+      errorAlert.style.display = "none";
+    }, 5000);
+  }
+
+  // Set loading state
+  function setLoading(isLoading) {
+    if (isLoading) {
+      loginButton.disabled = true;
+      loginButton.innerHTML = '<span class="spinner"></span>Loading...';
+      usernameInput.disabled = true;
+      passwordInput.disabled = true;
+    } else {
+      loginButton.disabled = false;
+      loginButton.textContent = "Login";
+      usernameInput.disabled = false;
+      passwordInput.disabled = false;
+    }
+  }
+
+  // Handle form submission
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+    const rememberMe = rememberMeCheckbox.checked;
 
-    const user = dummyUsers.find(
-      (u) => u.email === email && u.password === password
-    );
+    // Validate input
+    if (!username || !password) {
+      showError("Username dan password harus diisi!");
+      return;
+    }
 
-    if (user) {
-      // Store role in localStorage
-      localStorage.setItem("userRole", user.role);
-      localStorage.setItem("userName", user.name);
+    setLoading(true);
 
-      alert(`Login berhasil! Selamat datang ${user.name}. Role: ${user.role}`);
+    try {
+      // Call login API
+      const response = await authService.login({
+        username,
+        password,
+        remember_me: rememberMe,
+      });
 
-      // Redirect based on role
-      if (user.role === 'admin') {
-        window.location.pathname = '/user-management';
-      } else if (user.role === 'verifikator') {
-        window.location.pathname = '/verifikator/dashboard';
-      } else if (user.role === 'wadir') {
-        window.location.pathname = '/wadir/dashboard';
-      } else if (user.role === 'ppk') {
-        window.location.pathname = '/ppk/dashboard';
-      } else if (user.role === 'bendahara') {
-        window.location.pathname = '/bendahara/dashboard';
-      } else {
-        window.location.pathname = '/dashboard';
+      // Login successful
+      if (response.success) {
+        const user = response.data.user;
+        const roles = user.roles || [];
+
+        // Determine redirect path based on role
+        let redirectPath = "/dashboard";
+
+        if (roles.includes("Admin")) {
+          redirectPath = "/user-management";
+        } else if (roles.includes("Verifikator")) {
+          redirectPath = "/verifikator/dashboard";
+        } else if (roles.includes("Wadir")) {
+          redirectPath = "/wadir/dashboard";
+        } else if (roles.includes("PPK")) {
+          redirectPath = "/ppk/dashboard";
+        } else if (roles.includes("Bendahara")) {
+          redirectPath = "/bendahara/dashboard";
+        }
+
+        // Redirect to appropriate page
+        window.location.pathname = redirectPath;
       }
-    } else {
-      alert("Email atau password salah!");
+    } catch (error) {
+      // Handle error
+      const errorMessage =
+        error.message || "Login gagal! Silakan cek username dan password Anda.";
+      showError(errorMessage);
+      setLoading(false);
     }
   });
-  // --- END: DUMMY LOGIN LOGIC ---
 
-  // Add event listener for the password toggle button
-  const passwordInput = document.getElementById("password");
+  // Password toggle functionality
   const togglePasswordButton = document.getElementById("togglePassword");
-
   if (passwordInput && togglePasswordButton) {
     togglePasswordButton.addEventListener("click", () => {
-      // Toggle the type attribute
       const type =
         passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
+
+      // Update icon
+      if (type === "text") {
+        togglePasswordButton.innerHTML = `
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+          </svg>
+        `;
+      } else {
+        togglePasswordButton.innerHTML = `
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+        `;
+      }
     });
   }
 }
