@@ -5,9 +5,8 @@ export const verifikatorSidebar = `
     <div class="app-brand demo">
       <a href="/dashboard" data-link class="app-brand-link">
         <span class="app-brand-logo demo">
-          <img src="/assets/img/logo/logo.svg" alt="SIGAP PNJ" width="32">
+          <img src="/assets/img/logo/logo2.svg" alt="Logo" style="width: 160px; height: 160px;">
         </span>
-        <span class="app-brand-text demo menu-text fw-bold">SIGAP PNJ</span>
       </a>
       <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
         <i class="ti menu-toggle-icon d-none d-xl-block align-middle"></i>

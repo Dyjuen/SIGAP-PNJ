@@ -23,7 +23,7 @@ export function renderLandingPage(userRole) {
         <div class="container mx-auto relative z-10">
           <div class="text-center max-w-4xl mx-auto mb-16">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
-              <span class="text-[#33C8DA]">Satu Sistem Terpadu untuk Pengajuan dan Persetujuan KAK & LPJ</span> 
+              <span class="text-[#33C8DA]"> Sistem Terpadu untuk Pengajuan dan Persetujuan KAK & LPJ</span> 
             </h1>
             <p class="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
               SIGAP PNJ memudahkan seluruh proses administrasi kegiatan<br class="hidden md:block">
@@ -39,12 +39,6 @@ export function renderLandingPage(userRole) {
 
           <!-- Dashboard Preview with Arrow Indicator -->
           <div class="relative bg=[white] max-w-5xl mx-auto" id="heroDashboard">
-            <div class="absolute -top-12 left-20 flex items-center gap-2 text-gray-600 font-medium animate-bounce">
-              <span>Masuk ke SIGAP</span>
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-              </svg>
-            </div>
             
             <div id="heroAnimationImg" class="relative hero-dashboard-img rounded-2xl shadow-2xl border border-gray-100" style="perspective: 1200px;">
               <img 

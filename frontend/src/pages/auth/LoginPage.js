@@ -64,8 +64,8 @@ export function renderLoginPage() {
                     </div>
                     
                     <!-- Welcome Text -->
-                    <h2 class="text-center text-2xl font-semibold text-gray-800 mb-2">
-                        Welcome to SIGAP PNJ! 👋
+                    <h2 class="text-center text-2xl font-bold text-gray-800 mb-2">
+                        Welcome to SIGAP PNJ! 
                     </h2>
                     <p class="text-center text-gray-500 text-sm mb-6">
                         Silahkan input email dan password kamu
@@ -75,21 +75,20 @@ export function renderLoginPage() {
                     <form id="login-form">
                         <!-- Email Field -->
                         <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-medium mb-2" for="email">
+                            <label class="block text-gray-700 text-sm font-semibold mb-2" for="email">
                                 Email
                             </label>
                             <input 
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent input-transparent" 
                                 id="email" 
                                 type="email" 
-                                placeholder="email"
                                 value=""
                             >
                         </div>
                         
                         <!-- Password Field -->
                         <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-medium mb-2" for="password">
+                            <label class="block text-gray-700 text-sm font-semibold mb-2" for="password">
                                 Password
                             </label>
                             <div class="relative">
@@ -97,7 +96,6 @@ export function renderLoginPage() {
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent input-transparent" 
                                     id="password" 
                                     type="password" 
-                                    placeholder="password"
                                     value=""
                                 >
                                 <button 

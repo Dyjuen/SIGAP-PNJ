@@ -87,18 +87,6 @@ export const header = `
 // Footer Component
 export const footer = `
   <footer class="content-footer footer bg-footer-theme">
-    <div class="container-xxl">
-      <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
-        <div class="text-body">
-          © ${new Date().getFullYear()}, made with ❤️ by 
-          <a href="javascript:void(0)" target="_blank" class="footer-link">SIGAP PNJ Team</a>
-        </div>
-        <div class="d-none d-lg-inline-block">
-          <a href="/documentation" class="footer-link me-4">Documentation</a>
-          <a href="/support" class="footer-link">Support</a>
-        </div>
-      </div>
-    </div>
   </footer>
 `;
 
