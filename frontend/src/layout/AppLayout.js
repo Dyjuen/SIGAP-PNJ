@@ -1,55 +1,11 @@
 // frontend/src/layouts/DashboardLayout.js
 
-// Sidebar Component
-export const sidebar = `
-  <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-    <div class="app-brand demo">
-      <a href="index.html" class="app-brand-link">
-        <span class="app-brand-logo demo">
-          <img src="/assets/img/logo/logo.svg" alt="SIGAP PNJ" width="32">
-        </span>
-        <span class="app-brand-text demo menu-text fw-bold">SIGAP PNJ</span>
-      </a>
-
-      <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-        <i class="ti menu-toggle-icon d-none d-xl-block align-middle"></i>
-        <i class="ti ti-x d-block d-xl-none ti-md align-middle"></i>
-      </a>
-    </div>
-
-    <div class="menu-inner-shadow"></div>
-
-    <ul class="menu-inner py-1">
-      <!-- Dashboard -->
-      <li class="menu-item active">
-        <a href="/dashboard" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-smart-home"></i>
-          <div data-i18n="Dashboard">Dashboard</div>
-        </a>
-      </li>
-
-      <!-- Menu Section -->
-      <li class="menu-header small text-uppercase">
-        <span class="menu-header-text">Pages</span>
-      </li>
-
-      <!-- Example Menu Items -->
-      <li class="menu-item">
-        <a href="/users" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-users"></i>
-          <div data-i18n="Users">Users</div>
-        </a>
-      </li>
-
-      <li class="menu-item">
-        <a href="/settings" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-settings"></i>
-          <div data-i18n="Settings">Settings</div>
-        </a>
-      </li>
-    </ul>
-  </aside>
-`;
+import { adminSidebar } from './sidebars/adminSidebar.js';
+import { pengusulSidebar } from './sidebars/pengusulSidebar.js';
+import { verifikatorSidebar } from './sidebars/VerifikatorSidebar.js';
+import { wadirSidebar } from './sidebars/WadirSidebar.js';
+import { ppkSidebar } from './sidebars/PpkSidebar.js';
+import { bendaharaSidebar } from './sidebars/BendaharaSidebar.js';
 
 // Header Component
 export const header = `
@@ -131,31 +87,79 @@ export const header = `
 // Footer Component
 export const footer = `
   <footer class="content-footer footer bg-footer-theme">
-    <div class="container-xxl">
-      <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
-        <div class="text-body">
-          © ${new Date().getFullYear()}, made with ❤️ by 
-          <a href="javascript:void(0)" target="_blank" class="footer-link">SIGAP PNJ Team</a>
-        </div>
-        <div class="d-none d-lg-inline-block">
-          <a href="/documentation" class="footer-link me-4">Documentation</a>
-          <a href="/support" class="footer-link">Support</a>
-        </div>
-      </div>
-    </div>
   </footer>
 `;
 
 // Main Layout Render Function
-export function renderDashboardLayout(content) {
-  console.log("renderDashboardLayout is running!");
+export function renderDashboardLayout(content, userRole) {
+  console.log("renderDashboardLayout is running with role:", userRole);
   const rootElement = document.getElementById("root");
+
+  let dynamicSidebar = "";
+  switch (userRole) {
+    case "admin":
+      dynamicSidebar = adminSidebar;
+      break;
+    case 'pengusul':
+      dynamicSidebar = pengusulSidebar;
+      break;
+    case 'verifikator':
+      dynamicSidebar = verifikatorSidebar;
+      break;
+    case 'wadir':
+      dynamicSidebar = wadirSidebar;
+      break;
+    case 'ppk':
+      dynamicSidebar = ppkSidebar;
+      break;
+    case 'bendahara':
+      dynamicSidebar = bendaharaSidebar;
+      break;
+    // Add more cases for other roles here
+    default:
+      // Fallback sidebar or an empty sidebar if role is not recognized
+      dynamicSidebar = `
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <img src="/assets/img/logo/logo.svg" alt="SIGAP PNJ" width="32">
+              </span>
+              <span class="app-brand-text demo menu-text fw-bold">SIGAP PNJ</span>
+            </a>
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+              <i class="ti menu-toggle-icon d-none d-xl-block align-middle"></i>
+              <i class="ti ti-x d-block d-xl-none ti-md align-middle"></i>
+            </a>
+          </div>
+          <div class="menu-inner-shadow"></div>
+          <ul class="menu-inner py-1">
+            <li class="menu-item active">
+              <a href="/dashboard" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-smart-home"></i>
+                <div data-i18n="Dashboard">Dashboard</div>
+              </a>
+            </li>
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">General</span>
+            </li>
+            <li class="menu-item">
+              <a href="/profile" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-user"></i>
+                <div data-i18n="Profile">Profile</div>
+              </a>
+            </li>
+          </ul>
+        </aside>
+      `;
+      break;
+  }
 
   const layoutHTML = `
     <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container">
         <!-- Sidebar -->
-        ${sidebar}
+        ${dynamicSidebar}
         
         <!-- Mobile Menu Toggle -->
         <div class="menu-mobile-toggler d-xl-none rounded-1">
@@ -195,11 +199,69 @@ export function renderDashboardLayout(content) {
 
   rootElement.innerHTML = layoutHTML;
 
-  // Initialize menu toggle functionality
+  // Initialize sidebar logic
+  initializeSidebar();
+
+  // Fallback for the main mobile toggle if the full script isn't available
   initializeMenuToggle();
 }
 
-// Initialize menu toggle functionality
+function initializeSidebar() {
+  const menu = document.getElementById('layout-menu');
+  if (!menu) return;
+
+  const currentPath = window.location.pathname;
+
+  // Set active state and open parent submenus
+  const menuLinks = menu.querySelectorAll('.menu-link');
+  menuLinks.forEach(link => {
+    if (link.getAttribute('href') === currentPath) {
+      const menuItem = link.closest('.menu-item');
+      if (menuItem) {
+        menuItem.classList.add('active');
+        const parentSubmenu = menuItem.closest('.menu-submenu');
+        if (parentSubmenu) {
+          const parentMenuItem = parentSubmenu.closest('.menu-item');
+          if (parentMenuItem) {
+            parentMenuItem.classList.add('open');
+          }
+        }
+      }
+    }
+  });
+
+  // Hide all submenus by default, unless they should be open
+  const submenus = menu.querySelectorAll('.menu-submenu');
+  submenus.forEach(submenu => {
+    const parentMenuItem = submenu.closest('.menu-item');
+    if (parentMenuItem && !parentMenuItem.classList.contains('open')) {
+      submenu.style.display = 'none';
+    }
+  });
+
+  // Add click listeners to toggle submenus
+  const menuToggles = menu.querySelectorAll('.menu-link.menu-toggle');
+  menuToggles.forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      const menuItem = toggle.closest('.menu-item');
+      const submenu = menuItem.querySelector('.menu-submenu');
+
+      if (submenu) {
+        if (submenu.style.display === 'block') {
+          submenu.style.display = 'none';
+          menuItem.classList.remove('open');
+        } else {
+          submenu.style.display = 'block';
+          menuItem.classList.add('open');
+        }
+      }
+    });
+  });
+}
+
+
+// Initialize menu toggle functionality (basic fallback)
 function initializeMenuToggle() {
   const menuToggle = document.querySelector(".layout-menu-toggle");
   const layoutMenu = document.getElementById("layout-menu");

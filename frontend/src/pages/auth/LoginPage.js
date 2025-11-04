@@ -1,5 +1,7 @@
 // frontend/src/pages/auth/LoginPage.js
 
+import { dummyUsers } from "../../auth/dummyUsers.js";
+
 export function renderLoginPage() {
   const rootElement = document.getElementById("root");
 
@@ -62,8 +64,8 @@ export function renderLoginPage() {
                     </div>
                     
                     <!-- Welcome Text -->
-                    <h2 class="text-center text-2xl font-semibold text-gray-800 mb-2">
-                        Welcome to SIGAP PNJ! 👋
+                    <h2 class="text-center text-2xl font-bold text-gray-800 mb-2">
+                        Welcome to SIGAP PNJ! 
                     </h2>
                     <p class="text-center text-gray-500 text-sm mb-6">
                         Silahkan input email dan password kamu
@@ -73,21 +75,20 @@ export function renderLoginPage() {
                     <form id="login-form">
                         <!-- Email Field -->
                         <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-medium mb-2" for="email">
+                            <label class="block text-gray-700 text-sm font-semibold mb-2" for="email">
                                 Email
                             </label>
                             <input 
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent input-transparent" 
                                 id="email" 
                                 type="email" 
-                                placeholder="email"
                                 value=""
                             >
                         </div>
                         
                         <!-- Password Field -->
                         <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-medium mb-2" for="password">
+                            <label class="block text-gray-700 text-sm font-semibold mb-2" for="password">
                                 Password
                             </label>
                             <div class="relative">
@@ -95,12 +96,12 @@ export function renderLoginPage() {
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent input-transparent" 
                                     id="password" 
                                     type="password" 
-                                    placeholder="password"
+                                    value=""
                                 >
                                 <button 
                                     type="button" 
                                     class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                    onclick="togglePassword()"
+                                    id="togglePassword"
                                 >
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -128,38 +129,55 @@ export function renderLoginPage() {
                         >
                             Login
                         </button>
-                        <div class="text-center mt-4">
-                            <a href="/dashboard" data-link class="text-sm text-cyan-600 hover:underline">Go to Dashboard (Demo)</a>
-                        </div>
                     </form>
                 </div>
             </div>
         </div>
-        
     `;
 
   rootElement.innerHTML = loginFormHTML;
 
-  // --- START: LOGIN LOGIC ---
   const form = document.getElementById("login-form");
   form.addEventListener("submit", (event) => {
-    event.preventDefault(); // Prevent page from reloading
+    event.preventDefault();
 
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    if (email === "rafif@gmail.com" && password === "rafifrafif") {
-      alert("Login berhasil!");
-      window.location.href = "/user-management"; // Redirect to user management
+    const user = dummyUsers.find(
+      (u) => u.email === email && u.password === password
+    );
+
+    if (user) {
+      // Store role in localStorage
+      localStorage.setItem("userRole", user.role);
+      localStorage.setItem("userName", user.name);
+
+      alert(`Login berhasil! Selamat datang ${user.name}. Role: ${user.role}`);
+
+      // Redirect based on role
+      if (user.role === 'admin') {
+        window.location.pathname = '/user-management';
+      } else if (user.role === 'verifikator') {
+        window.location.pathname = '/verifikator/dashboard';
+      } else if (user.role === 'wadir') {
+        window.location.pathname = '/wadir/dashboard';
+      } else if (user.role === 'ppk') {
+        window.location.pathname = '/ppk/dashboard';
+      } else if (user.role === 'bendahara') {
+        window.location.pathname = '/bendahara/dashboard';
+      } else {
+        window.location.pathname = '/dashboard';
+      }
     } else {
       alert("Email atau password salah!");
     }
   });
-  // --- END: LOGIN LOGIC ---
+  // --- END: DUMMY LOGIN LOGIC ---
 
   // Add event listener for the password toggle button
   const passwordInput = document.getElementById("password");
-  const togglePasswordButton = passwordInput?.nextElementSibling;
+  const togglePasswordButton = document.getElementById("togglePassword");
 
   if (passwordInput && togglePasswordButton) {
     togglePasswordButton.addEventListener("click", () => {
@@ -167,18 +185,6 @@ export function renderLoginPage() {
       const type =
         passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
-
-      // Toggle the icon
-      const icon = togglePasswordButton.querySelector("i");
-      if (icon) {
-        if (type === "password") {
-          icon.classList.remove("tabler-eye");
-          icon.classList.add("tabler-eye-off");
-        } else {
-          icon.classList.remove("tabler-eye-off");
-          icon.classList.add("tabler-eye");
-        }
-      }
     });
   }
 }

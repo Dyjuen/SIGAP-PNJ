@@ -1,9 +1,10 @@
 // frontend/src/pages/admin/UserManagementPage.js
 
-export function renderUserManagementPage() {
-  const rootElement = document.getElementById("root");
+import { renderDashboardLayout } from '../../layout/AppLayout.js';
 
-  const userManagementHTML = `
+export function renderUserManagementPage(userRole) {
+
+  const pageContent = `
     <style>
       /* --- Custom CSS for Figma Design --- */
       
@@ -237,159 +238,68 @@ export function renderUserManagementPage() {
       }
     </style>
 
-    <div class="layout-wrapper layout-content-navbar user-management-page" style="background-image: url('/assets/img/backgrounds/BG.png'); background-size: cover; background-position: center;">
-      <div class="layout-container">
-        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-          <div class="app-brand demo">
-            <a href="/dashboard" data-link class="app-brand-link">
-              <span class="app-brand-logo demo">
-                <img src="/assets/img/logo/logo2.svg" alt="Logo" style="width: 160px; height: 160px;">
-              </span>
-            </a>
-            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
-              <i class="ti ti-x"></i>
-            </a>
-          </div>
-
-          <div class="menu-inner-shadow"></div>
-
-          <ul class="menu-inner py-1 ps ps--active-y">
-            <li class="menu-item active">
-              <a href="/user-management" data-link class="menu-link">
-                <i class="menu-icon tf-icons ti">&#xeb4d;</i>
-                <div data-i18n="User Management">User Management</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a href="/template" data-link class="menu-link">
-                <i class="menu-icon tf-icons ti">&#xeb39;</i>
-                <div data-i18n="Daftar Template">Daftar Template</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a href="/settings" data-link class="menu-link">
-                <i class="menu-icon tf-icons ti">&#xeb20;</i>
-                <div data-i18n="Pengaturan">Pengaturan</div>
-              </a>
-            </li>
-          </ul>
-        </aside>
-        <div class="layout-page">
-          <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
-            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-              <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                <i class="ti ti-menu-2 ti-sm"></i>
-              </a>
-            </div>
-
-            <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-              <div class="navbar-nav align-items-center">
-                <div class="nav-item navbar-search-wrapper mb-0">
-                  <div class="input-group input-group-merge">
-                    <span class="input-group-text" id="basic-addon-search31"><i class="ti">&#xeb1c;</i></span>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Cari"
-                      aria-label="Cari"
-                      id="searchInput"
-                    />
-                  </div>
-                </div>
-              </div>
-              <ul class="navbar-nav flex-row align-items-center ms-auto">
-                <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
-                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                    <i class="ti">&#xea35;</i>
-                    <span class="badge bg-danger rounded-pill badge-notifications">3</span>
-                  </a>
-                </li>
-                <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <div class="avatar avatar-online">
-                      <img src="https://i.pravatar.cc/150?img=12" alt class="h-auto rounded-circle" />
-                    </div>
-                  </a>
-                </li>
-                </ul>
-            </div>
-          </nav>
-          <div class="content-wrapper">
-            <div class="container-xxl flex-grow-1 container-p-y">
-              
-              <div class="row g-4 mb-4">
-                <div class="col-sm-6 col-xl-6">
-                  <div class="card stat-card-active">
-                    <div class="card-body">
-                      <div class="d-flex align-items-start justify-content-between">
-                        <div class="content-left">
-                          <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Akun</span>
-                          <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total User Aktif</h4>
-                          <div class="d-flex align-items-end mt-2">
-                            <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="activeUserCount">0</h1>
-                            <small style="font-size: 15px; font-weight: 500; opacity: 0.9;">Users</small>
-                          </div>
+    <div class="user-management-page">
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-6">
+                <div class="card stat-card-active">
+                <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Akun</span>
+                        <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total User Aktif</h4>
+                        <div class="d-flex align-items-end mt-2">
+                        <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="activeUserCount">0</h1>
+                        <small style="font-size: 15px; font-weight: 500; opacity: 0.9;">Users</small>
                         </div>
-                      </div>
                     </div>
-                  </div>
+                    </div>
                 </div>
-                <div class="col-sm-6 col-xl-6">
-                  <div class="card stat-card-inactive">
-                    <div class="card-body">
-                      <div class="d-flex align-items-start justify-content-between">
-                        <div class="content-left">
-                          <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Akun</span>
-                          <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total Non-Aktif</h4>
-                          <div class="d-flex align-items-end mt-2">
-                            <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="inactiveUserCount">0</h1>
-                            <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">Users</small>
-                          </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-6">
+                <div class="card stat-card-inactive">
+                <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Akun</span>
+                        <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total Non-Aktif</h4>
+                        <div class="d-flex align-items-end mt-2">
+                        <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="inactiveUserCount">0</h1>
+                        <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">Users</small>
                         </div>
-                      </div>
                     </div>
-                  </div>
+                    </div>
                 </div>
-              </div>
-              <div class="d-flex justify-content-end mb-4">
-                <button class="btn btn-primary btn-tambah-akun" id="btnTambahAkun">
-                  <i class="ti me-1">&#xeb4b;</i> Tambah Akun
-                </button>
-              </div>
-
-              <div class="card card-datatable table-responsive p-0">
-                <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
-                  <thead>
-                    <tr>
-                      <th style="width: 50px; text-align: center;">
-                        <input type="checkbox" class="form-check-input" id="selectAll">
-                      </th>
-                      <th style="width: 80px;">No.</th>
-                      <th>Nama Pengusul</th>
-                      <th>Username</th>
-                      <th>Password</th>
-                      <th style="text-align: center;">Status</th>
-                      <th style="text-align: center;">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody id="userTableBody">
-                    </tbody>
-                </table>
-              </div>
-              </div>
-            <footer class="content-footer footer bg-footer-theme">
-              <div class="container-xxl">
-              </div>
-            </footer>
-            <div class="content-backdrop fade"></div>
-          </div>
-          </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary btn-tambah-akun" id="btnTambahAkun">
+                <i class="ti me-1">&#xeb4b;</i> Tambah Akun
+            </button>
         </div>
 
-      <div class="layout-overlay layout-menu-toggle"></div>
-
-      <div class="drag-target"></div>
+        <div class="card card-datatable table-responsive p-0">
+            <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
+                <thead>
+                <tr>
+                    <th style="width: 50px; text-align: center;">
+                    <input type="checkbox" class="form-check-input" id="selectAll">
+                    </th>
+                    <th style="width: 80px;">No.</th>
+                    <th>Nama Pengusul</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th style="text-align: center;">Status</th>
+                    <th style="text-align: center;">Aksi</th>
+                </tr>
+                </thead>
+                <tbody id="userTableBody">
+                </tbody>
+            </table>
+        </div>
     </div>
+
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -478,7 +388,10 @@ export function renderUserManagementPage() {
     </div>
   `;
 
-  rootElement.innerHTML = userManagementHTML;
+  // Render the main layout with the page-specific content
+  renderDashboardLayout(pageContent, userRole);
+
+  // --- All the page-specific JavaScript logic goes here ---
 
   // Sample user data
   const users = [
