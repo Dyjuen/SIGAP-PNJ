@@ -21,11 +21,19 @@
     />
 
     <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/assets/img/logo/logo.svg">
+
     <link
-      rel="icon"
-      type="image/x-icon"
-      href="/assets/img/favicon/favicon.ico"
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
     />
+
+    <!-- FIX: Override Tailwind CSS conflict for Tabler Icons -->
+    <style>
+      .ti::before {
+        content: unset;
+      }
+    </style>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -36,20 +44,14 @@
     />
 
     <!-- Icons -->
-    <link
-      rel="stylesheet"
-      href="/assets/vendor/fonts/iconify-icons.css"
-    />
+    <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />
 
     <!-- Core CSS -->
     <link
       rel="stylesheet"
       href="/assets/vendor/libs/node-waves/node-waves.css"
     />
-    <link
-      rel="stylesheet"
-      href="/assets/vendor/libs/pickr/pickr-themes.css"
-    />
+    <link rel="stylesheet" href="/assets/vendor/libs/pickr/pickr-themes.css" />
     <link
       rel="stylesheet"
       href="/assets/vendor/css/core.css"
@@ -83,19 +85,13 @@
     <link rel="stylesheet" href="/assets/vendor/fonts/flag-icons.css" />
 
     <!-- Page CSS -->
-    <link
-      rel="stylesheet"
-      href="/assets/vendor/css/pages/cards-advance.css"
-    />
+    <link rel="stylesheet" href="/assets/vendor/css/pages/cards-advance.css" />
 
     <!-- Tailwind CSS for Login Page -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Helpers -->
     <script src="/assets/vendor/js/helpers.js"></script>
-
-    <!-- Template customizer -->
-    <script src="/assets/vendor/js/template-customizer.js"></script>
 
     <!-- Config -->
     <script src="/assets/js/config.js"></script>

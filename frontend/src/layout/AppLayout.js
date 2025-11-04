@@ -54,18 +54,13 @@ export const sidebar = `
 // Header Component
 export const header = `
   <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
-    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-      <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-        <i class="ti ti-menu-2 ti-md"></i>
-      </a>
-    </div>
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
       <!-- Search -->
       <div class="navbar-nav align-items-center">
         <div class="nav-item navbar-search-wrapper mb-0">
           <a class="nav-item nav-link search-toggler d-flex align-items-center px-0" href="javascript:void(0);">
-            <i class="ti ti-search ti-md me-2 me-lg-4 ti-lg"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-search mr-4"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
             <span class="d-none d-md-inline-block text-muted fw-normal">Search (Ctrl+/)</span>
           </a>
         </div>
@@ -73,73 +68,7 @@ export const header = `
       <!-- /Search -->
 
       <ul class="navbar-nav flex-row align-items-center ms-auto">
-        <!-- Language -->
-        <li class="nav-item dropdown-language dropdown">
-          <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-            <i class="ti ti-language rounded-circle ti-md"></i>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-              <a class="dropdown-item" href="javascript:void(0);" data-language="en" data-text-direction="ltr">
-                <span class="align-middle">English</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="javascript:void(0);" data-language="id" data-text-direction="ltr">
-                <span class="align-middle">Indonesia</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <!--/ Language -->
 
-        <!-- Notification -->
-        <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-2">
-          <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-            <span class="position-relative">
-              <i class="ti ti-bell ti-md"></i>
-              <span class="badge rounded-pill bg-danger badge-dot badge-notifications border"></span>
-            </span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end p-0">
-            <li class="dropdown-menu-header border-bottom">
-              <div class="dropdown-header d-flex align-items-center py-3">
-                <h6 class="mb-0 me-auto">Notification</h6>
-                <div class="d-flex align-items-center">
-                  <span class="badge rounded-pill bg-label-primary fs-xsmall me-2">8 New</span>
-                </div>
-              </div>
-            </li>
-            <li class="dropdown-notifications-list scrollable-container">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                  <div class="d-flex">
-                    <div class="flex-shrink-0 me-3">
-                      <div class="avatar">
-                        <span class="avatar-initial rounded-circle bg-label-success">
-                          <i class="ti ti-check"></i>
-                        </span>
-                      </div>
-                    </div>
-                    <div class="flex-grow-1">
-                      <h6 class="small mb-1">New notification</h6>
-                      <small class="mb-1 d-block text-body">Sample notification message</small>
-                      <small class="text-muted">1h ago</small>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </li>
-            <li class="border-top">
-              <div class="d-grid p-4">
-                <a class="btn btn-primary btn-sm d-flex" href="javascript:void(0);">
-                  <small class="align-middle">View all notifications</small>
-                </a>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <!--/ Notification -->
 
         <!-- User -->
         <li class="nav-item navbar-dropdown dropdown-user dropdown">
@@ -219,6 +148,7 @@ export const footer = `
 
 // Main Layout Render Function
 export function renderDashboardLayout(content) {
+  console.log("renderDashboardLayout is running!");
   const rootElement = document.getElementById("root");
 
   const layoutHTML = `
