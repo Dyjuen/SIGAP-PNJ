@@ -3,6 +3,14 @@
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
+// Handle captcha image request
+if ($path === '/api/captcha') {
+    ob_clean(); 
+    flush();
+    require_once __DIR__ . '/frontend/src/auth/Captcha.php';
+    return true;
+}
+
 // 1. Handle static files from frontend/public
 $publicPath = __DIR__ . '/frontend/public' . $path;
 if (file_exists($publicPath) && !is_dir($publicPath)) {
@@ -20,6 +28,7 @@ if (file_exists($publicPath) && !is_dir($publicPath)) {
     readfile($publicPath);
     return true; // Stop processing
 }
+
 
 // 2. Handle JS source files from frontend/src for module loading
 $srcPath = __DIR__ . '/frontend' . $path;

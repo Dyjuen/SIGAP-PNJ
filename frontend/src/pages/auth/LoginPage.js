@@ -143,6 +143,26 @@ export function renderLoginPage() {
                                 </button>
                             </div>
                         </div>
+
+                        <!-- Captcha Field -->
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-semibold mb-2" for="captcha">
+                                Captcha
+                            </label>
+                            <div class="flex items-center">
+                                <img src="/api/captcha" alt="Captcha" id="captcha-image" class="rounded-lg">
+                                <button type="button" id="reload-captcha" class="ml-4 p-2 rounded-lg bg-gray-200 hover:bg-gray-300">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5M4 4l16 16"></path></svg>
+                                </button>
+                            </div>
+                            <input 
+                                class="w-full mt-2 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent input-transparent" 
+                                id="captcha" 
+                                type="text" 
+                                placeholder="Enter captcha"
+                                required
+                            >
+                        </div>
                         
                         <!-- Remember Me & Forgot Password -->
                         <div class="flex items-center justify-between mb-6">
@@ -175,6 +195,7 @@ export function renderLoginPage() {
   const form = document.getElementById("login-form");
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
+  const captchaInput = document.getElementById("captcha");
   const rememberMeCheckbox = document.getElementById("remember-me");
   const loginButton = document.getElementById("login-button");
   const errorAlert = document.getElementById("error-alert");
@@ -195,11 +216,13 @@ export function renderLoginPage() {
       loginButton.innerHTML = '<span class="spinner"></span>Loading...';
       usernameInput.disabled = true;
       passwordInput.disabled = true;
+      captchaInput.disabled = true;
     } else {
       loginButton.disabled = false;
       loginButton.textContent = "Login";
       usernameInput.disabled = false;
       passwordInput.disabled = false;
+      captchaInput.disabled = false;
     }
   }
 
@@ -209,11 +232,12 @@ export function renderLoginPage() {
 
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
+    const captcha = captchaInput.value.trim();
     const rememberMe = rememberMeCheckbox.checked;
 
     // Validate input
-    if (!username || !password) {
-      showError("Username dan password harus diisi!");
+    if (!username || !password || !captcha) {
+      showError("Username, password, dan captcha harus diisi!");
       return;
     }
 
@@ -224,6 +248,7 @@ export function renderLoginPage() {
       const response = await authService.login({
         username,
         password,
+        captcha,
         remember_me: rememberMe,
       });
 
@@ -249,12 +274,21 @@ export function renderLoginPage() {
 
         // Redirect to appropriate page
         window.location.pathname = redirectPath;
+      } else {
+        // Reload captcha on failed login from server
+        document.getElementById("captcha-image").src =
+          "/api/captcha?" + new Date().getTime();
+        showError(response.message || "Login gagal!");
+        setLoading(false);
       }
     } catch (error) {
       // Handle error
       const errorMessage =
         error.message || "Login gagal! Silakan cek username dan password Anda.";
       showError(errorMessage);
+      // Reload captcha on error
+      document.getElementById("captcha-image").src =
+        "/api/captcha?" + new Date().getTime();
       setLoading(false);
     }
   });
@@ -282,6 +316,16 @@ export function renderLoginPage() {
           </svg>
         `;
       }
+    });
+  }
+
+  // Add event listener for the captcha reload button
+  const reloadCaptchaButton = document.getElementById("reload-captcha");
+  if (reloadCaptchaButton) {
+    reloadCaptchaButton.addEventListener("click", () => {
+      // Append a timestamp to the src to prevent caching
+      document.getElementById("captcha-image").src =
+        "/api/captcha?" + new Date().getTime();
     });
   }
 }

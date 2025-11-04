@@ -22,6 +22,7 @@ $uri = preg_replace('#^/api#', '', $uri);
 // PUBLIC ROUTES (No authentication required)
 // ====================================
 
+
 // POST /api/auth/login
 if ($method === 'POST' && $uri === '/auth/login') {
     $controller = new AuthController();

@@ -324,11 +324,201 @@ export function renderUsulanKakPage(userRole) {
         </div>
       </div>
 
-      <!-- Main Step 3: Rincian Anggaran Biaya (Placeholder) -->
+      <!-- Main Step 3: Rincian Anggaran Biaya -->
       <div class="main-step-content" id="main-step-3">
         <div class="bg-white rounded-xl shadow-lg p-8">
-          <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Rincian Anggaran Biaya</h4>
-          <p class="text-gray-600">Section ini akan dikembangkan selanjutnya...</p>
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rincian Anggaran Biaya</h4>
+          
+          <!-- Belanja Barang Section -->
+          <div class="mb-10">
+            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
+            <div id="belanjaBarangContainer">
+              <div class="belanja-barang-item mb-8 p-6 rounded-lg">
+                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+                    <div class="relative">
+                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Input</option>
+                      <option value="unit">Unit</option>
+                      <option value="pcs">Pcs</option>
+                      <option value="box">Box</option>
+                      <option value="set">Set</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+                    <div class="relative">
+                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Input</option>
+                      <option value="hari">Hari</option>
+                      <option value="bulan">Bulan</option>
+                      <option value="tahun">Tahun</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+                  </div>
+                  <div class="flex items-end pb-3">
+                    <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaBarangContainer')">
+                      <span class="text-xl font-bold">−</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaBarang()">Tambah Item Barang</button>
+          </div>
+
+          <!-- Belanja Jasa Section -->
+          <div class="mb-10">
+            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
+            <div id="belanjaJasaContainer">
+              <div class="belanja-jasa-item mb-8 p-6 rounded-lg">
+                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+                    <div class="relative">
+                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Input</option>
+                      <option value="orang">Orang</option>
+                      <option value="jam">Jam</option>
+                      <option value="hari">Hari</option>
+                      <option value="bulan">Bulan</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+                    <div class="relative">
+                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Input</option>
+                      <option value="hari">Hari</option>
+                      <option value="bulan">Bulan</option>
+                      <option value="tahun">Tahun</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+                  </div>
+                  <div class="flex items-end pb-3">
+                    <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaJasaContainer')">
+                      <span class="text-xl font-bold">−</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaJasa()">Tambah Item Barang</button>
+          </div>
+
+          <!-- Belanja Perjalanan Section -->
+          <div class="mb-10">
+            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
+            <div id="belanjaPerjalananContainer">
+              <div class="belanja-perjalanan-item mb-8 p-6 rounded-lg">
+                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+                    <div class="relative">
+                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Input</option>
+                      <option value="orang">Orang</option>
+                      <option value="perjalanan">Perjalanan</option>
+                      <option value="kali">Kali</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+                    <div class="relative">
+                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Input</option>
+                      <option value="hari">Hari</option>
+                      <option value="bulan">Bulan</option>
+                      <option value="tahun">Tahun</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+                  </div>
+                  <div class="flex items-end pb-3">
+                    <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaPerjalananContainer')">
+                      <span class="text-xl font-bold">−</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaPerjalanan()">Tambah Item Barang</button>
+          </div>
           
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">

@@ -115,6 +115,14 @@ class AuthController
             // Get request body
             $data = json_decode(file_get_contents('php://input'), true);
 
+            // Validate captcha
+            if (!isset($data['captcha']) || !isset($_SESSION['code']) || strcasecmp($_SESSION['code'], $data['captcha']) !== 0) {
+                unset($_SESSION['code']);
+                Response::error('Kode captcha yang Anda masukkan salah.', 400);
+                return;
+            }
+            unset($_SESSION['code']);
+
             // Validate required fields
             if (empty($data['username']) || empty($data['password'])) {
                 Response::error('Username dan password wajib diisi', 400);
