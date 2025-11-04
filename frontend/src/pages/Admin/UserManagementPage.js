@@ -1,6 +1,7 @@
 // frontend/src/pages/admin/UserManagementPage.js
 
 import { renderDashboardLayout } from '../../layout/AppLayout.js';
+import { adminSidebar } from '../../layout/sidebars/adminSidebar.js';
 
 export function renderUserManagementPage(userRole) {
 
@@ -8,17 +9,15 @@ export function renderUserManagementPage(userRole) {
     <style>
       /* --- Custom CSS for Figma Design --- */
       
-      /* 1. Main Background (Sesuai permintaan Anda) */
+      /* 1. Main Background */
       .layout-wrapper {
-        /* AN JAY */
         background-image: url('/assets/img/backgrounds/BG.png') !important;
         background-size: cover !important;
         background-position: center !important;
       }
       .content-wrapper {
-        background: transparent !important; /* Wajib transparan */
+        background: transparent !important;
       }
-      /* Navbar, Footer, Menu tetap solid */
       .layout-navbar, .content-footer, .layout-menu {
         background: #FFFFFF !important;
       }
@@ -30,7 +29,7 @@ export function renderUserManagementPage(userRole) {
         font-weight: 700 !important;
       }
       .menu-inner .menu-item.active > .menu-link {
-        background: #00BCD4 !important; /* Figma Active Color */
+        background: #00BCD4 !important;
         color: #ffffff !important;
         border-radius: 8px;
         margin: 0 0.5rem;
@@ -41,7 +40,7 @@ export function renderUserManagementPage(userRole) {
         color: #ffffff !important;
       }
       
-      /* 3. Stat Cards (Efek Kaca/Glassmorphism) */
+      /* 3. Stat Cards */
       .stat-card-active {
         transition: all 0.4s ease;
         background: linear-gradient(135deg, #4dd0e1 0%, #00bcd4 100%) !important;
@@ -52,7 +51,6 @@ export function renderUserManagementPage(userRole) {
       .stat-card-active h1, .stat-card-active h4, .stat-card-active span, .stat-card-active small {
         color: #FFFFFF !important;
       }
-      
       .stat-card-active:hover {
         transition: all 0.4s ease;
         transform: translateY(-5px);
@@ -60,37 +58,36 @@ export function renderUserManagementPage(userRole) {
       
       .stat-card-inactive {
         transition: all 0.4s ease;
-        background: rgba(255, 255, 255, 0.6) !important; /* Transparan 60% */
-        backdrop-filter: blur(10px); /* Efek Kaca */
+        background: rgba(255, 255, 255, 0.6) !important;
+        backdrop-filter: blur(10px);
         border: 2px solid rgba(224, 247, 250, 0.6) !important;
         color: #00bcd4 !important;
       }
       .stat-card-inactive h1, .stat-card-inactive h4, .stat-card-inactive span, .stat-card-inactive small {
         color: #00bcd4 !important;
       }
-
       .stat-card-inactive:hover {
         transition: all 0.4s ease;
         transform: translateY(-5px);
       }
 
-      /* 4. Table Styling (Card Rows + Efek Kaca) */
+      /* 4. Table Styling */
       .card-datatable {
-        background: rgba(255, 255, 255, 0.6) !important; /* Transparan 60% */
-        backdrop-filter: blur(10px); /* Efek Kaca */
-        border-radius: 0.875rem !important; /* 14px */
+        background: rgba(255, 255, 255, 0.6) !important;
+        backdrop-filter: blur(10px);
+        border-radius: 0.875rem !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
         padding: 1.5rem;
       }
       .table {
         border-collapse: separate !important;
-        border-spacing: 0 1rem !important; /* 16px spacing */
+        border-spacing: 0 1rem !important;
       }
       .table thead {
         background: transparent !important; 
       }
       .table thead th {
-        color: #6B7280 !important; /* Gray text for header */
+        color: #6B7280 !important;
         font-weight: 500 !important;
         background: transparent !important;
         border: none !important;
@@ -100,7 +97,7 @@ export function renderUserManagementPage(userRole) {
         padding-bottom: 0.5rem !important;
       }
       .table tbody tr {
-        background: #FFFFFF !important; /* Baris tabel tetap putih solid */
+        background: #FFFFFF !important;
         border-radius: 12px !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
         transition: all 0.2s ease;
@@ -110,8 +107,8 @@ export function renderUserManagementPage(userRole) {
         box-shadow: 0 6px 16px rgba(0,0,0,0.08) !important;
       }
       .table tbody td {
-        border: none !important; /* Remove all borders */
-        padding: 1.25rem 1rem !important; /* 20px 16px */
+        border: none !important;
+        padding: 1.25rem 1rem !important;
         vertical-align: middle;
       }
       .table tbody td:first-child {
@@ -143,7 +140,7 @@ export function renderUserManagementPage(userRole) {
         color: #be123c !important;
       }
       
-      /* 7. Aksi Buttons */
+      /* 7. Buttons */
       .btn-edit-profile {
         background: linear-gradient(135deg, #743bfaff 0%, #7c3aed 100%) !important; 
         color: white !important;
@@ -172,13 +169,13 @@ export function renderUserManagementPage(userRole) {
         box-shadow: none !important;
       }
 
-      /* 9. Tombol Tambah Akun (Sesuai Figma, tanpa border ungu) */
+      /* 9. Tombol Tambah Akun */
       .btn-tambah-akun {
         background: #00BCD4 !important;
         color: white !important;
         box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3) !important;
-        border: none !important; /* 🔥 Hapus border */
-        outline: none !important; /* 🔥 Pastikan gak muncul fokus border */
+        border: none !important;
+        outline: none !important;
       }
       .btn-tambah-akun:hover {
         background: #00AABF !important;
@@ -187,6 +184,11 @@ export function renderUserManagementPage(userRole) {
       .btn-tambah-akun:focus {
         box-shadow: 0 0 0 0 !important;
       }
+      .btn-tambah-akun:disabled {
+        background: #B0BEC5 !important;
+        cursor: not-allowed !important;
+        opacity: 0.6;
+      }
 
       i.ti {
         background: none !important;
@@ -194,38 +196,28 @@ export function renderUserManagementPage(userRole) {
         color: inherit !important;
         font-style: normal !important;
         font-size: 24px !important;
+      }
 
       .menu-icon i,
       .navbar-nav i.ti {
-        font-size: 35px !important; /* default-nya biasanya 16px */
+        font-size: 35px !important;
         vertical-align: middle !important;
       }
 
-      /*  🔹 Tambah sedikit jarak biar gak nempel teks */
       .menu-link i {
         margin-right: 10px !important;
       }
       
-      /* Kurangi margin kanan-kiri halaman utama */
       .container-xxl {
-        max-width: 96% !important; /* sebelumnya sekitar 1320px default */
+        max-width: 96% !important;
       }
 
-      /* Supaya tombol tambah akun gak terlalu nempel ke kanan */
       .btn-tambah-akun {
         margin-right: 8px !important;
       }
 
       .nav-item i.ti {
         font-size: 24px !important;
-      }
-
-      .btn-save-akun-baru {
-        background: #00BCD4 !important;
-      }
-
-      .btn-save-akun-baru:hover {
-        background: #0097A7 !important;
       }
 
       .btn-primary {
@@ -235,6 +227,25 @@ export function renderUserManagementPage(userRole) {
 
       .btn-primary:hover {
         background: #0097A7 !important;
+      }
+      
+      .btn-primary:disabled {
+        background: #B0BEC5 !important;
+        cursor: not-allowed !important;
+        opacity: 0.6;
+      }
+
+      /* Loading spinner */
+      .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.15em;
+      }
+
+      /* Error message styling */
+      .alert {
+        border-radius: 8px;
+        margin-bottom: 1rem;
       }
     </style>
 
@@ -308,6 +319,7 @@ export function renderUserManagementPage(userRole) {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <div id="editProfileError" class="alert alert-danger" style="display: none;"></div>
             <form id="editProfileForm">
               <input type="hidden" id="editUserId">
               
@@ -339,7 +351,10 @@ export function renderUserManagementPage(userRole) {
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="button" class="btn btn-primary" id="btnSaveProfile">Selesai</button>
+            <button type="button" class="btn btn-primary" id="btnSaveProfile">
+              <span class="button-text">Selesai</span>
+              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            </button>
           </div>
         </div>
       </div>
@@ -353,6 +368,7 @@ export function renderUserManagementPage(userRole) {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <div id="tambahAkunError" class="alert alert-danger" style="display: none;"></div>
             <form id="tambahAkunForm">
               <div class="mb-3">
                 <label for="addNama" class="form-label">Nama Pengusul</label>
@@ -371,6 +387,14 @@ export function renderUserManagementPage(userRole) {
                 <input type="password" id="addPassword" class="form-control" placeholder="Masukkan password" required>
               </div>
               <div class="mb-3">
+                <label for="addRole" class="form-label">Role</label>
+                <select id="addRole" class="form-select" required>
+                  <option value="">Pilih Role</option>
+                  <option value="Admin">Admin</option>
+                  <option value="User" selected>User</option>
+                </select>
+              </div>
+              <div class="mb-3">
                 <label for="addStatus" class="form-label">Status</label>
                 <select id="addStatus" class="form-select" required>
                   <option value="Aktif" selected>Aktif</option>
@@ -381,7 +405,10 @@ export function renderUserManagementPage(userRole) {
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="button" class="btn btn-primary" id="btnSaveAkunBaru">Simpan Akun</button>
+            <button type="button" class="btn btn-primary" id="btnSaveAkunBaru">
+              <span class="button-text">Simpan Akun</span>
+              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            </button>
           </div>
         </div>
       </div>
@@ -391,25 +418,136 @@ export function renderUserManagementPage(userRole) {
   // Render the main layout with the page-specific content
   renderDashboardLayout(pageContent, userRole);
 
-  // --- All the page-specific JavaScript logic goes here ---
+  // ==============================================
+  // API CONFIGURATION
+  // ==============================================
+  const API_CONFIG = {
+    baseURL: 'http://localhost:8000/api',
+    endpoints: {
+      createUser: '/users'
+    },
+    getAuthToken() {
+      return localStorage.getItem('authToken') || 
+             localStorage.getItem('token') ||
+             sessionStorage.getItem('authToken') ||
+             sessionStorage.getItem('token');
+    }
+  };
 
-  // Sample user data
+  // ==============================================
+  // DATA & STATE
+  // ==============================================
   const users = [
-    { id: 1, nama: 'Ahmad Santoso', username: 'ahmad.s', email: 'ahmad.santoso@pnj.ac.id', password: 'P@ssw0rd123', status: 'Aktif' },
-    { id: 2, nama: 'Dewi Lestari', username: 'dewi.l', email: 'dewi.lestari@pnj.ac.id', password: 'Secure789!', status: 'Aktif' },
-    { id: 3, nama: 'Budi Prakoso', username: 'budi.p', email: 'budi.prakoso@pnj.ac.id', password: 'BudiPro2025', status: 'Non-Aktif' },
-    { id: 4, nama: 'Siti Rahayu', username: 'siti.r', email: 'siti.rahayu@pnj.ac.id', password: 'SitiRhy#456', status: 'Aktif' },
-    { id: 5, nama: 'Rudi Hermawan', username: 'rudi.h', email: 'rudi.hermawan@pnj.ac.id', password: 'RH_secure2025', status: 'Aktif' },
-    { id: 6, nama: 'Nina Wati', username: 'nina.w', email: 'nina.wati@pnj.ac.id', password: 'NinaW@ti789', status: 'Non-Aktif' },
-    { id: 7, nama: 'Eko Prasetyo', username: 'eko.p', email: 'eko.prasetyo@pnj.ac.id', password: 'EkoPras#123', status: 'Aktif' },
-    { id: 8, nama: 'Maya Indah', username: 'maya.i', email: 'maya.indah@pnj.ac.id', password: 'May@Ind4h', status: 'Non-Aktif' },
+    { id: 1, nama: 'Ahmad Santoso', username: 'ahmad.s', email: 'ahmad.santoso@pnj.ac.id', password: '********', status: 'Aktif', role: 'User' },
+    { id: 2, nama: 'Dewi Lestari', username: 'dewi.l', email: 'dewi.lestari@pnj.ac.id', password: '********', status: 'Aktif', role: 'User' },
+    { id: 3, nama: 'Budi Prakoso', username: 'budi.p', email: 'budi.prakoso@pnj.ac.id', password: '********', status: 'Non-Aktif', role: 'User' },
+    { id: 4, nama: 'Siti Rahayu', username: 'siti.r', email: 'siti.rahayu@pnj.ac.id', password: '********', status: 'Aktif', role: 'Admin' },
+    { id: 5, nama: 'Rudi Hermawan', username: 'rudi.h', email: 'rudi.hermawan@pnj.ac.id', password: '********', status: 'Aktif', role: 'User' },
+    { id: 6, nama: 'Nina Wati', username: 'nina.w', email: 'nina.wati@pnj.ac.id', password: '********', status: 'Non-Aktif', role: 'User' },
+    { id: 7, nama: 'Eko Prasetyo', username: 'eko.p', email: 'eko.prasetyo@pnj.ac.id', password: '********', status: 'Aktif', role: 'User' },
+    { id: 8, nama: 'Maya Indah', username: 'maya.i', email: 'maya.indah@pnj.ac.id', password: '********', status: 'Non-Aktif', role: 'Admin' },
   ];
 
   let currentEditIndex = null;
   let editProfileModalInstance = null;
-  let tambahAkunModalInstance = null; // Instance untuk modal baru
+  let tambahAkunModalInstance = null;
 
-  // Render table rows
+  // ==============================================
+  // API HELPER FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token = API_CONFIG.getAuthToken();
+
+    const defaultHeaders = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      defaultHeaders['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const config = {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...options.headers,
+      },
+    };
+    
+    try {
+      const response = await fetch(`${API_CONFIG.baseURL}${endpoint}`, config);
+      
+      const contentType = response.headers.get('content-type');
+      let data;
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+      }
+      
+      if (!response.ok) {
+        throw {
+          status: response.status,
+          message: data.message || data.error || 'Terjadi kesalahan pada server',
+          data: data
+        };
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('API Request Error:', error);
+      throw error;
+    }
+  }
+
+  async function createUserAPI(userData) {
+    return await apiRequest(API_CONFIG.endpoints.createUser, {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  // ==============================================
+  // UI FUNCTIONS
+  // ==============================================
+  function showModalError(message, modalId = 'tambahAkunModal') {
+    const errorDiv = document.getElementById(`${modalId === 'tambahAkunModal' ? 'tambahAkunError' : 'editProfileError'}`);
+    if (errorDiv) {
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+  }
+
+  function hideModalError(modalId = 'tambahAkunModal') {
+    const errorDiv = document.getElementById(`${modalId === 'tambahAkunModal' ? 'tambahAkunError' : 'editProfileError'}`);
+    if (errorDiv) {
+      errorDiv.style.display = 'none';
+    }
+  }
+
+  function setButtonLoading(buttonId, isLoading) {
+    const button = document.getElementById(buttonId);
+    if (!button) return;
+    
+    const textSpan = button.querySelector('.button-text');
+    const spinner = button.querySelector('.spinner-border');
+    
+    if (isLoading) {
+      button.disabled = true;
+      if (spinner) spinner.classList.remove('d-none');
+      if (textSpan) textSpan.style.opacity = '0';
+    } else {
+      button.disabled = false;
+      if (spinner) spinner.classList.add('d-none');
+      if (textSpan) textSpan.style.opacity = '1';
+    }
+  }
+
   function renderTableRows(data) {
     const tbody = document.getElementById('userTableBody');
     if (!tbody) return;
@@ -436,19 +574,19 @@ export function renderUserManagementPage(userRole) {
         <td style="text-align: center;">
           <button 
             class="btn btn-sm me-2 btn-edit-profile" 
-            style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);"
             data-index="${index}" 
             data-email="${user.email}"
             data-username="${user.username}"
             data-name="${user.nama}"
           >
-            <i class="ti me-1">&#xeb04;</i> Edit Profil </button>
+            <i class="ti me-1">&#xeb04;</i> Edit Profil
+          </button>
           <button 
             class="btn btn-sm btn-danger btn-delete" 
-            style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);"
             data-index="${index}"
           >
-            <i class="ti">&#xeb55;</i> </button>
+            <i class="ti">&#xeb55;</i>
+          </button>
         </td>
       `;
       tbody.appendChild(row);
@@ -457,39 +595,33 @@ export function renderUserManagementPage(userRole) {
     attachEventListeners();
   }
 
-  // Attach event listeners
   function attachEventListeners() {
-    // Row checkboxes
     document.querySelectorAll('.row-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', updateSelectAll);
     });
 
-    // Edit Profile buttons
     document.querySelectorAll('.btn-edit-profile').forEach(btn => {
       btn.addEventListener('click', handleEditProfile);
     });
 
-    // Delete buttons
     document.querySelectorAll('.btn-delete').forEach(btn => {
       btn.addEventListener('click', handleDelete);
     });
 
-    // Search input
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredUsers = users.filter(user => 
-                user.nama.toLowerCase().includes(searchTerm) ||
-                user.username.toLowerCase().includes(searchTerm) ||
-                user.status.toLowerCase().includes(searchTerm)
-            );
-            renderTableRows(filteredUsers);
-        });
+      searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredUsers = users.filter(user => 
+          user.nama.toLowerCase().includes(searchTerm) ||
+          user.username.toLowerCase().includes(searchTerm) ||
+          user.status.toLowerCase().includes(searchTerm)
+        );
+        renderTableRows(filteredUsers);
+      });
     }
   }
 
-  // Select all functionality
   const selectAllCheckbox = document.getElementById('selectAll');
   if (selectAllCheckbox) {
     selectAllCheckbox.addEventListener('change', function() {
@@ -498,7 +630,6 @@ export function renderUserManagementPage(userRole) {
     });
   }
 
-  // Update select all state
   function updateSelectAll() {
     const allCheckboxes = document.querySelectorAll('.row-checkbox');
     const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
@@ -508,7 +639,6 @@ export function renderUserManagementPage(userRole) {
     }
   }
 
-  // --- LOGIKA MODAL EDIT PROFIL ---
   function handleEditProfile(e) {
     const btn = e.currentTarget;
     const index = parseInt(btn.getAttribute('data-index'));
@@ -518,7 +648,6 @@ export function renderUserManagementPage(userRole) {
     
     currentEditIndex = index;
     
-    // Populate modal (now includes nama & username)
     const editNamaEl = document.getElementById('editNama');
     const editUsernameEl = document.getElementById('editUsername');
     const editEmailEl = document.getElementById('editEmail');
@@ -527,21 +656,19 @@ export function renderUserManagementPage(userRole) {
     if (editNamaEl) editNamaEl.value = name || '';
     if (editUsernameEl) editUsernameEl.value = username || '';
     if (editEmailEl) editEmailEl.value = email || '';
-    if (editPasswordEl) editPasswordEl.value = ''; // Kosongkan password
+    if (editPasswordEl) editPasswordEl.value = '';
     
-    // Show modal using Bootstrap 5
     if (!editProfileModalInstance) {
-        if (typeof bootstrap !== 'undefined') {
-            editProfileModalInstance = new bootstrap.Modal(document.getElementById('editProfileModal'));
-        } else {
-            console.error('Bootstrap 5 JS not found. Modals will not work.');
-            return;
-        }
+      if (typeof bootstrap !== 'undefined') {
+        editProfileModalInstance = new bootstrap.Modal(document.getElementById('editProfileModal'));
+      } else {
+        console.error('Bootstrap 5 JS not found. Modals will not work.');
+        return;
+      }
     }
     editProfileModalInstance.show();
   }
 
-  // Handle save profile
   const btnSaveProfile = document.getElementById('btnSaveProfile');
   if (btnSaveProfile) {
     btnSaveProfile.addEventListener('click', () => {
@@ -560,12 +687,12 @@ export function renderUserManagementPage(userRole) {
         users[currentEditIndex].username = newUsername;
         users[currentEditIndex].email = newEmail;
         if (newPassword) {
-            users[currentEditIndex].password = newPassword;
+          users[currentEditIndex].password = newPassword;
         }
         renderTableRows(users);
         
         if (editProfileModalInstance) {
-            editProfileModalInstance.hide();
+          editProfileModalInstance.hide();
         }
         
         currentEditIndex = null;
@@ -575,63 +702,6 @@ export function renderUserManagementPage(userRole) {
     });
   }
 
-  // --- LOGIKA MODAL TAMBAH AKUN (BARU) ---
-  const btnTambahAkun = document.getElementById('btnTambahAkun');
-  if (btnTambahAkun) {
-    btnTambahAkun.addEventListener('click', () => {
-        document.getElementById('tambahAkunForm').reset(); // Kosongkan form
-        if (!tambahAkunModalInstance) {
-            if (typeof bootstrap !== 'undefined') {
-                tambahAkunModalInstance = new bootstrap.Modal(document.getElementById('tambahAkunModal'));
-            } else {
-                console.error('Bootstrap 5 JS not found. Modals will not work.');
-                return;
-            }
-        }
-        tambahAkunModalInstance.show();
-    });
-  }
-
-  // Handle save akun baru
-  const btnSaveAkunBaru = document.getElementById('btnSaveAkunBaru');
-  if (btnSaveAkunBaru) {
-    btnSaveAkunBaru.addEventListener('click', () => {
-        const nama = document.getElementById('addNama').value.trim();
-        const username = document.getElementById('addUsername').value.trim();
-        const email = document.getElementById('addEmail').value.trim();
-        const password = document.getElementById('addPassword').value.trim();
-        const status = document.getElementById('addStatus').value;
-
-        if (!nama || !username || !email || !password) {
-            alert('Semua field harus diisi!');
-            return;
-        }
-
-        // Buat objek user baru
-        const newUser = {
-            id: users.length + 1, // ID sementara
-            nama: nama,
-            username: username,
-            email: email,
-            password: password,
-            status: status
-        };
-
-        // Tambahkan ke data (di awal array agar muncul di atas)
-        users.unshift(newUser); 
-        
-        renderTableRows(users);
-        updateStats();
-        
-        if (tambahAkunModalInstance) {
-            tambahAkunModalInstance.hide();
-        }
-        
-        alert('Akun baru berhasil ditambahkan!');
-    });
-  }
-
-  // --- LOGIKA DELETE (SAMA) ---
   function handleDelete(e) {
     const btn = e.currentTarget;
     const index = parseInt(btn.getAttribute('data-index'));
@@ -650,7 +720,6 @@ export function renderUserManagementPage(userRole) {
     }
   }
 
-  // --- LOGIKA UPDATE STATS (SAMA) ---
   function updateStats() {
     const activeCount = users.filter(u => u.status === 'Aktif').length;
     const inactiveCount = users.filter(u => u.status === 'Non-Aktif').length;
@@ -662,11 +731,144 @@ export function renderUserManagementPage(userRole) {
     if (inactiveEl) inactiveEl.textContent = inactiveCount;
   }
 
-  // Initial render
+  // ==============================================
+  // TAMBAH AKUN WITH API INTEGRATION
+  // ==============================================
+  const btnTambahAkun = document.getElementById('btnTambahAkun');
+  if (btnTambahAkun) {
+    btnTambahAkun.addEventListener('click', () => {
+      document.getElementById('tambahAkunForm').reset();
+      hideModalError('tambahAkunModal');
+      
+      if (!tambahAkunModalInstance) {
+        if (typeof bootstrap !== 'undefined') {
+          tambahAkunModalInstance = new bootstrap.Modal(document.getElementById('tambahAkunModal'));
+        } else {
+          console.error('Bootstrap 5 JS not found. Modals will not work.');
+          return;
+        }
+      }
+      tambahAkunModalInstance.show();
+    });
+  }
+
+  const btnSaveAkunBaru = document.getElementById('btnSaveAkunBaru');
+  if (btnSaveAkunBaru) {
+    btnSaveAkunBaru.addEventListener('click', async () => {
+      const nama = document.getElementById('addNama').value.trim();
+      const username = document.getElementById('addUsername').value.trim();
+      const email = document.getElementById('addEmail').value.trim();
+      const password = document.getElementById('addPassword').value.trim();
+      const role = document.getElementById('addRole').value;
+      const status = document.getElementById('addStatus').value;
+
+      // Validasi form
+      if (!nama || !username || !email || !password || !role) {
+        showModalError('Semua field harus diisi!', 'tambahAkunModal');
+        return;
+      }
+
+      // Validasi email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showModalError('Format email tidak valid!', 'tambahAkunModal');
+        return;
+      }
+
+      // Validasi password (minimal 6 karakter)
+      if (password.length < 6) {
+        showModalError('Password minimal 6 karakter!', 'tambahAkunModal');
+        return;
+      }
+
+      // Prepare data untuk API
+      const userData = {
+        username: username,
+        password: password,
+        nama_lengkap: nama,
+        email: email,
+        unit_kerja_id: 1,
+        role: role
+      };
+
+      try {
+        // Show loading state
+        setButtonLoading('btnSaveAkunBaru', true);
+        hideModalError('tambahAkunModal');
+
+        // Call API
+        const response = await createUserAPI(userData);
+
+        console.log('User created successfully:', response);
+
+        // Tambahkan user baru ke array lokal
+        const newUser = {
+          id: response.user_id || response.data?.user_id || response.id || users.length + 1,
+          nama: response.nama_lengkap || userData.nama_lengkap,
+          username: response.username || userData.username,
+          email: response.email || userData.email,
+          password: '********',
+          role: role,
+          status: status
+        };
+
+        users.unshift(newUser);
+        
+        // Update UI
+        renderTableRows(users);
+        updateStats();
+        
+        // Close modal
+        if (tambahAkunModalInstance) {
+          tambahAkunModalInstance.hide();
+        }
+        
+        // Reset form
+        document.getElementById('tambahAkunForm').reset();
+        
+        // Show success message
+        alert('Akun baru berhasil ditambahkan!');
+
+      } catch (error) {
+        console.error('Error creating user:', error);
+        
+        // Handle different error types
+        let errorMessage = 'Gagal menambahkan akun. ';
+        
+        if (error.status === 0) {
+          errorMessage = 'Tidak dapat terhubung ke server. Pastikan backend berjalan di ' + API_CONFIG.baseURL;
+        } else if (error.status === 400) {
+          errorMessage += error.message || 'Data tidak valid.';
+        } else if (error.status === 401) {
+          errorMessage += 'Sesi Anda telah berakhir. Silakan login kembali.';
+        } else if (error.status === 403) {
+          errorMessage += 'Anda tidak memiliki akses untuk menambahkan user.';
+        } else if (error.status === 409) {
+          errorMessage += 'Username atau email sudah terdaftar.';
+        } else if (error.status === 500) {
+          errorMessage += 'Terjadi kesalahan pada server.';
+        } else if (error.message) {
+          errorMessage += error.message;
+        } else {
+          errorMessage += 'Silakan coba lagi.';
+        }
+        
+        showModalError(errorMessage, 'tambahAkunModal');
+        
+      } finally {
+        // Hide loading state
+        setButtonLoading('btnSaveAkunBaru', false);
+      }
+    });
+  }
+
+  // ==============================================
+  // INITIALIZATION
+  // ==============================================
   renderTableRows(users);
   updateStats();
 
-  // Initialize Vuexy menu (jika diperlukan)
+  // Initialize Vuexy menu
   if (window.Helpers) {
     window.Helpers.init();
   }
