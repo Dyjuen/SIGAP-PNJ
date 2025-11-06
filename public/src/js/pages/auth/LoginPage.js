@@ -1,4 +1,3 @@
-// frontend/src/pages/auth/LoginPage.js
 
 import { authService } from "../../api/authService.js";
 

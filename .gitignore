@@ -1,25 +1,35 @@
-# Environment file
+﻿# Environment
 .env
+.env.local
 
-# Vendor directory
-/vendor/
+# Composer
+/api/vendor/
 
-# IDE files
+# Cache & Logs
+/api/cache/*
+!/api/cache/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+# Uploads
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+
+# Node
+node_modules/
+
+# IDE
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
-# Log files
-*.log
+# Backup
+backup_*/
 
-# Cache
-/cache/
-/temp/
+# Phinx
+/database/.phinxlog
 
-# Uploaded files (jika ada)
-/public/uploads/
+/vendor

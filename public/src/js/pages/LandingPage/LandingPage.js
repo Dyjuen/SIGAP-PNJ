@@ -13,7 +13,7 @@ export function renderLandingPage(userRole) {
       <section id="landingHero" class="relative pt-32 pb-20 px-4 overflow-hidden" style="perspective: 1px;">
                 <div class="absolute top-0 left-0 w-full h-[90vh] object-cover opacity-85 rounded-b-[80px]" style="overflow: hidden; transform-style: preserve-3d;">
           <img 
-            id="hero-bg-img" src="/assets/img/backgrounds/bg-100.png" 
+            id="hero-bg-img" src="assets/img/backgrounds/bg-100.png" 
             alt="Hero Background" 
             class="absolute top-0 left-0 w-full h-[82vh] object-cover opacity-40"
             style="transform: translateZ(-1px) scale(1.3); will-change: transform;"
@@ -43,13 +43,13 @@ export function renderLandingPage(userRole) {
             <div id="heroAnimationImg" class="relative hero-dashboard-img rounded-2xl shadow-2xl border border-gray-100" style="perspective: 1200px;">
               <img 
                 id="dashboard-bg"
-                src="/assets/img/previews/dashboard-preview.png" 
+                src="assets/img/previews/dashboard-preview.png" 
                 alt="SIGAP Dashboard Background" 
                 class="w-full h-auto rounded-2xl transition-all duration-300 ease-out"
               >
               <img 
                 id="dashboard-elements"
-                src="/assets/img/previews/dashboard-elements.png" 
+                src="assets/img/previews/dashboard-elements.png" 
                 alt="SIGAP Dashboard Elements" 
                 class="absolute top-0 left-0 w-full h-auto transition-all duration-300 ease-out"
               >
@@ -73,7 +73,7 @@ export function renderLandingPage(userRole) {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <div class="text-center p-4">
               <div class="w-16 h-16 mx-auto flex items-center justify-center mb-6">
-                <img src="/assets/svg/features/pengajuan-digital.svg" alt="Pengajuan Digital Icon" class="w-28 h-28">
+                <img src="assets/svg/features/pengajuan-digital.svg" alt="Pengajuan Digital Icon" class="w-28 h-28">
               </div>
               <h3 class="text-xl font-bold text-gray-900 mb-3">Pengajuan Digital</h3>
               <p class="text-gray-600 leading-relaxed px-4 text-sm">
@@ -83,7 +83,7 @@ export function renderLandingPage(userRole) {
 
             <div class="text-center p-4">
               <div class="w-16 h-16 mx-auto flex items-center justify-center mb-6">
-                <img src="/assets/svg/features/revisi-terstruktur.svg" alt="Revisi Terstruktur Icon" class="w-28 h-28">
+                <img src="assets/svg/features/revisi-terstruktur.svg" alt="Revisi Terstruktur Icon" class="w-28 h-28">
               </div>
               <h3 class="text-xl font-bold text-gray-900 mb-3">Revisi Terstruktur</h3>
               <p class="text-gray-600 leading-relaxed px-4 text-sm">
@@ -93,7 +93,7 @@ export function renderLandingPage(userRole) {
 
             <div class="text-center p-4">
               <div class="w-16 h-16 mx-auto flex items-center justify-center mb-6">
-                <img src="/assets/svg/features/pelacakan-real-time.svg" alt="Pelacakan Real-Time Icon" class="w-28 h-28">
+                <img src="assets/svg/features/pelacakan-real-time.svg" alt="Pelacakan Real-Time Icon" class="w-28 h-28">
               </div>
               <h3 class="text-xl font-bold text-gray-900 mb-3">Pelacakan Real-Time</h3>
               <p class="text-gray-600 leading-relaxed px-4 text-sm">
@@ -105,7 +105,7 @@ export function renderLandingPage(userRole) {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto mt-0 md:mt-8">
             <div class="text-center p-4">
               <div class="w-16 h-16 mx-auto flex items-center justify-center mb-6">
-                <img src="/assets/svg/features/dokumen-otomatis.svg" alt="Dokumen Otomatis Icon" class="w-28 h-28">
+                <img src="assets/svg/features/dokumen-otomatis.svg" alt="Dokumen Otomatis Icon" class="w-28 h-28">
               </div>
               <h3 class="text-xl font-bold text-gray-900 mb-3">Dokumen Otomatis</h3>
               <p class="text-gray-600 leading-relaxed px-4 text-sm">
@@ -115,7 +115,7 @@ export function renderLandingPage(userRole) {
 
             <div class="text-center p-4">
               <div class="w-16 h-16 mx-auto flex items-center justify-center mb-6">
-                 <img src="/assets/svg/features/notifikasi-instan.svg" alt="Notifikasi Instan Icon" class="w-28 h-28">
+                 <img src="assets/svg/features/notifikasi-instan.svg" alt="Notifikasi Instan Icon" class="w-28 h-28">
               </div>
               <h3 class="text-xl font-bold text-gray-900 mb-3">Notifikasi Instan</h3>
               <p class="text-gray-600 leading-relaxed px-4 text-sm">
@@ -211,7 +211,7 @@ export function renderLandingPage(userRole) {
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto items-center">
             <!-- Left Side: Image -->
             <div class="order-2 lg:order-1">
-              <img src="/assets/img/front-pages/landing-page/faq-boy-with-logos.png" alt="FAQ Illustration" class="w-full max-w-md mx-auto">
+              <img src="assets/img/front-pages/landing-page/faq-boy-with-logos.png" alt="FAQ Illustration" class="w-full max-w-md mx-auto">
             </div>
 
             <!-- Right Side: FAQ Items -->
@@ -354,7 +354,7 @@ export function renderLandingPage(userRole) {
             <!-- Left Side: Contact Image -->
             <div class="relative">
               <div class="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl p-8 border-2 border-[#33C8DA]/20">
-                <img src="/assets/img/front-pages/landing-page/contact-customer-service.png" alt="Customer Service" class="w-full rounded-xl mb-6">
+                <img src="assets/img/front-pages/landing-page/contact-customer-service.png" alt="Customer Service" class="w-full rounded-xl mb-6">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <!-- Email -->

@@ -1,15 +1,20 @@
 <?php
 
-use App\Controllers\Api\AuthController;
-use App\Controllers\Api\AccountController;
-use App\Controllers\Api\KAKController;
+use App\Controllers\AuthController;
+use App\Controllers\AccountController;
+use App\Controllers\KAKController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
 use App\Middlewares\CorsMiddleware;
 
-// Apply CORS to all requests
-$corsMiddleware = new CorsMiddleware();
-$corsMiddleware->handle();
+// Start session for captcha
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// // Apply CORS to all requests
+// $corsMiddleware = new CorsMiddleware();
+// $corsMiddleware->handle();
 
 // Get request method and URI
 $method = $_SERVER['REQUEST_METHOD'];
@@ -22,6 +27,12 @@ $uri = preg_replace('#^/api#', '', $uri);
 // PUBLIC ROUTES (No authentication required)
 // ====================================
 
+// GET /api/captcha - Generate captcha image
+if ($method === 'GET' && $uri === '/captcha') {
+    $controller = new AuthController();
+    $controller->generateCaptcha();
+    exit;
+}
 
 // POST /api/auth/login
 if ($method === 'POST' && $uri === '/auth/login') {

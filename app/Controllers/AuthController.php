@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Api;
+namespace App\Controllers;
 
 use App\Core\Response;
 use App\Core\JWT;
@@ -17,6 +17,106 @@ class AuthController
     {
         $this->userModel = new User();
         $this->userRoleModel = new UserRole();
+    }
+
+    /**
+     * Generate Captcha Image
+     * 
+     * GET /api/captcha
+     */
+    public function generateCaptcha()
+    {
+        // Start session if not already started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Check if GD library is available
+        if (!extension_loaded('gd') || !function_exists('imagecreatetruecolor')) {
+            $this->createErrorCaptcha("GD Library not installed");
+            exit;
+        }
+
+        // Generate random captcha code
+        $code = $this->generateCaptchaCode();
+        $_SESSION["code"] = $code;
+
+        // Create captcha image
+        $width = 173;
+        $height = 50;
+        $image = imagecreatetruecolor($width, $height);
+        
+        // Colors
+        $bgColor = imagecolorallocate($image, 22, 86, 165);  // Blue background
+        $textColor = imagecolorallocate($image, 223, 230, 233); // Light gray text
+        
+        // Fill background
+        imagefill($image, 0, 0, $bgColor);
+        
+        // Add some noise lines for security
+        $lineColor = imagecolorallocate($image, 40, 100, 180);
+        for ($i = 0; $i < 3; $i++) {
+            imageline($image, 0, rand(0, $height), $width, rand(0, $height), $lineColor);
+        }
+        
+        // Add captcha text with slight random positioning
+        $x = 50 + rand(-5, 5);
+        $y = 15 + rand(-3, 3);
+        imagestring($image, 5, $x, $y, $code, $textColor);
+        
+        // Output image with proper headers
+        header('Content-Type: image/jpeg');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        
+        imagejpeg($image, null, 90);
+        imagedestroy($image);
+        exit;
+    }
+
+    /**
+     * Generate random captcha code
+     */
+    private function generateCaptchaCode($length = 5)
+    {
+        $alphabet = "abcdefghijklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
+        $code = '';
+        $alphaLength = strlen($alphabet) - 1;
+        
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $alphabet[rand(0, $alphaLength)];
+        }
+        
+        return $code;
+    }
+
+    /**
+     * Create error captcha image
+     */
+    private function createErrorCaptcha($message)
+    {
+        $width = 173;
+        $height = 50;
+        $image = imagecreatetruecolor($width, $height);
+        $bgColor = imagecolorallocate($image, 255, 255, 255);
+        $textColor = imagecolorallocate($image, 211, 47, 47);
+        
+        imagefill($image, 0, 0, $bgColor);
+        
+        $lines = explode(' ', $message);
+        $y = 15;
+        foreach ($lines as $line) {
+            if (empty(trim($line))) continue;
+            $x = ($width - (imagefontwidth(3) * strlen($line))) / 2;
+            imagestring($image, 3, $x, $y, $line, $textColor);
+            $y += 15;
+        }
+        
+        header('Content-Type: image/jpeg');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        imagejpeg($image);
+        imagedestroy($image);
     }
 
     /**
@@ -107,26 +207,42 @@ class AuthController
      * Login user
      * 
      * POST /api/auth/login
-     * Body: {username, password}
+     * Body: {username, password, captcha}
      */
     public function login()
     {
         try {
+            // Start session if not already started
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
             // Get request body
             $data = json_decode(file_get_contents('php://input'), true);
-
-            // Validate captcha
-            if (!isset($data['captcha']) || !isset($_SESSION['code']) || strcasecmp($_SESSION['code'], $data['captcha']) !== 0) {
-                unset($_SESSION['code']);
-                Response::error('Kode captcha yang Anda masukkan salah.', 400);
-                return;
-            }
-            unset($_SESSION['code']);
 
             // Validate required fields
             if (empty($data['username']) || empty($data['password'])) {
                 Response::error('Username dan password wajib diisi', 400);
             }
+
+            if (empty($data['captcha'])) {
+                Response::error('Captcha wajib diisi', 400);
+            }
+
+            // Validate captcha
+            if (!isset($_SESSION['code'])) {
+                Response::error('Captcha sudah expired. Silakan refresh captcha.', 400);
+            }
+
+            // Case-insensitive comparison
+            if (strcasecmp($_SESSION['code'], $data['captcha']) !== 0) {
+                // Clear captcha on failed attempt
+                unset($_SESSION['code']);
+                Response::error('Kode captcha yang Anda masukkan salah.', 400);
+            }
+
+            // Clear captcha after successful validation
+            unset($_SESSION['code']);
 
             // Find user by username
             $user = $this->userModel->findByUsername($data['username']);
