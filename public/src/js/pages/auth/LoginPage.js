@@ -1,4 +1,3 @@
-
 import { authService } from "../../api/authService.js";
 
 export function renderLoginPage() {
@@ -218,7 +217,7 @@ export function renderLoginPage() {
       captchaInput.disabled = true;
     } else {
       loginButton.disabled = false;
-      loginButton.textContent = "Login";
+      loginButton.innerHTML = "Login";
       usernameInput.disabled = false;
       passwordInput.disabled = false;
       captchaInput.disabled = false;
@@ -256,23 +255,14 @@ export function renderLoginPage() {
         const user = response.data.user;
         const roles = user.roles || [];
 
-        // Determine redirect path based on role
-        let redirectPath = "/dashboard";
-
-        if (roles.includes("Admin")) {
-          redirectPath = "/user-management";
-        } else if (roles.includes("Verifikator")) {
-          redirectPath = "/verifikator/dashboard";
-        } else if (roles.includes("Wadir")) {
-          redirectPath = "/wadir/dashboard";
-        } else if (roles.includes("PPK")) {
-          redirectPath = "/ppk/dashboard";
-        } else if (roles.includes("Bendahara")) {
-          redirectPath = "/bendahara/dashboard";
+        // Store the user's primary role in localStorage
+        if (roles.length > 0) {
+          localStorage.setItem("userRole", roles[0]); // Assuming the first role is the primary one
         }
 
-        // Redirect to appropriate page
-        window.location.pathname = redirectPath;
+        setLoading(false);
+        // Redirect to the main dashboard
+        window.location.pathname = "/dashboard";
       } else {
         // Reload captcha on failed login from server
         document.getElementById("captcha-image").src =
@@ -327,4 +317,25 @@ export function renderLoginPage() {
         "/api/captcha?" + new Date().getTime();
     });
   }
-}
+
+    // Add a pageshow event listener to reset the loading state
+
+    window.addEventListener("pageshow", function(event) {
+
+      // The event.persisted property is true if the page is from the cache
+
+      if (event.persisted) {
+
+        setLoading(false);
+
+      }
+
+    });
+
+  
+
+    // Ensure the loading state is reset when the page is rendered
+
+    setLoading(false);
+
+  }

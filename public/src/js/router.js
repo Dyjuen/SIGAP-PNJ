@@ -21,19 +21,48 @@ function getCurrentUserRole() {
 const routes = {
   "/": renderLandingPage,
   "/login": renderLoginPage,
-  "/dashboard": renderPengusulDashboardPage,
   "/usulan-kak": renderUsulanKakPage,
   "/verifikator/dashboard": renderDashboardVerifikator,
   "/wadir/dashboard": renderWadirDashboardPage,
   "/ppk/dashboard": renderPpkDashboardPage,
   "/bendahara/dashboard": renderBendaharaDashboardPage,
-  "/user-management": renderUserManagementPage,
+
   "/preview-kak": renderPreviewKakPage,
 };
 
 export function router() {
   const path = window.location.pathname;
-  const render = routes[path] || renderNotFoundPage;
   const userRole = getCurrentUserRole(); // Get the user's role
-  render(userRole); // Pass the userRole to the rendering function
+
+  let renderFunction = renderNotFoundPage;
+
+  if (path === "/dashboard") {
+    switch (userRole) {
+      case "Pengusul":
+        renderFunction = renderPengusulDashboardPage;
+        break;
+      case "WD2":
+        renderFunction = renderWadirDashboardPage;
+        break;
+      case "Verifikator":
+        renderFunction = renderDashboardVerifikator;
+        break;
+      case "PPK":
+        renderFunction = renderPpkDashboardPage;
+        break;
+      case "Bendahara":
+        renderFunction = renderBendaharaDashboardPage;
+        break;
+      case "Admin": // Assuming Admin also has a dashboard, or redirects to user management
+        renderFunction = renderUserManagementPage; // Or a specific admin dashboard
+        break;
+      default:
+        renderFunction = renderLoginPage; // Redirect unauthenticated users to login
+        break;
+    }
+  } else if (routes[path]) {
+    renderFunction = routes[path];
+  }
+
+  renderFunction(userRole); // Pass the userRole to the rendering function
 }

@@ -97,22 +97,22 @@ export function renderDashboardLayout(content, userRole) {
 
   let dynamicSidebar = "";
   switch (userRole) {
-    case "admin":
+    case "Admin":
       dynamicSidebar = adminSidebar;
       break;
-    case 'pengusul':
+    case 'Pengusul':
       dynamicSidebar = pengusulSidebar;
       break;
-    case 'verifikator':
+    case 'Verifikator':
       dynamicSidebar = verifikatorSidebar;
       break;
-    case 'wadir':
+    case 'WD2':
       dynamicSidebar = wadirSidebar;
       break;
-    case 'ppk':
+    case 'PPK':
       dynamicSidebar = ppkSidebar;
       break;
-    case 'bendahara':
+    case 'Bendahara':
       dynamicSidebar = bendaharaSidebar;
       break;
     // Add more cases for other roles here
