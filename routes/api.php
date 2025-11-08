@@ -2,6 +2,7 @@
 
 use App\Controllers\Api\AuthController;
 use App\Controllers\Api\KAKController;
+use App\Controllers\Api\LpjController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
 use App\Middlewares\CorsMiddleware;
@@ -111,6 +112,45 @@ if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
 }
 
 // ====================================
+// LPJ (LAPORAN PERTANGGUNGJAWABAN) ROUTES
+// ====================================
+
+// GET /api/lpj/status/{kegiatan_id} - Get status LPJ untuk kegiatan
+if ($method === 'GET' && preg_match('/^\/lpj\/status\/(\d+)$/', $uri, $matches)) {
+    $controller = new LpjController();
+    $controller->getStatus();
+    exit;
+}
+
+// POST /api/lpj/upload/{kegiatan_id} - Upload lampiran LPJ
+if ($method === 'POST' && preg_match('/^\/lpj\/upload\/(\d+)$/', $uri, $matches)) {
+    $controller = new LpjController();
+    $controller->uploadLampiran();
+    exit;
+}
+
+// POST /api/lpj/submit/{kegiatan_id} - Submit LPJ (final)
+if ($method === 'POST' && preg_match('/^\/lpj\/submit\/(\d+)$/', $uri, $matches)) {
+    $controller = new LpjController();
+    $controller->submitLpj();
+    exit;
+}
+
+// DELETE /api/lpj/lampiran/{lampiran_id} - Delete lampiran
+if ($method === 'DELETE' && preg_match('/^\/lpj\/lampiran\/(\d+)$/', $uri, $matches)) {
+    $controller = new LpjController();
+    $controller->deleteLampiran();
+    exit;
+}
+
+// POST /api/lpj/check-reminders - Manual trigger check reminders
+if ($method === 'POST' && $uri === '/lpj/check-reminders') {
+    $controller = new LpjController();
+    $controller->checkReminders();
+    exit;
+}
+
+// ====================================
 // KEGIATAN & ANGGARAN & LAMPIRAN ROUTES
 // ====================================
 
@@ -160,6 +200,25 @@ $router->get('/api/kegiatan/{id}/lampiran', 'Api\LampiranController@index');
 $router->post('/api/kegiatan/{id}/lampiran', 'Api\LampiranController@upload');
 $router->get('/api/kegiatan/{id}/lampiran/{file_id}', 'Api\LampiranController@download');
 $router->delete('/api/kegiatan/{id}/lampiran/{file_id}', 'Api\LampiranController@delete');
+
+// ============================================
+// PENCAIRAN DANA ROUTES
+// ============================================
+
+// GET /api/pencairan/kegiatan/{kegiatan_id} - List pencairan per kegiatan
+$router->get('/api/pencairan/kegiatan/{kegiatan_id}', 'Api\PencairanController@index');
+
+// GET /api/pencairan/sisa-dana/{kegiatan_id} - Cek sisa dana
+$router->get('/api/pencairan/sisa-dana/{kegiatan_id}', 'Api\PencairanController@getSisaDana');
+
+// POST /api/pencairan - Pengusul ajukan pencairan
+$router->post('/api/pencairan', 'Api\PencairanController@create');
+
+// PUT /api/pencairan/{id}/approve - Bendahara setujui pencairan
+$router->put('/api/pencairan/{id}/approve', 'Api\PencairanController@approve');
+
+// PUT /api/pencairan/{id}/reject - Bendahara tolak pencairan
+$router->put('/api/pencairan/{id}/reject', 'Api\PencairanController@reject');
 
 $router->run();
 

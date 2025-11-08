@@ -33,6 +33,14 @@ class KegiatanLampiran
     }
 
     /**
+     * Get semua lampiran untuk kegiatan tertentu (Alias untuk compatibility)
+     */
+    public function getLampiranByKegiatan($kegiatanId)
+    {
+        return $this->getByKegiatanId($kegiatanId);
+    }
+
+    /**
      * Find lampiran by ID
      */
     public function findById($lampiranId)
@@ -90,6 +98,25 @@ class KegiatanLampiran
     }
 
     /**
+     * Upload lampiran LPJ untuk kegiatan
+     * (Wrapper untuk compatibility dengan LPJ controller)
+     */
+    public function uploadLampiran($kegiatanId, $fileData)
+    {
+        $data = [
+            'kegiatan_id' => $kegiatanId,
+            'nama_file' => $fileData['nama_file'] ?? $fileData['file_name'] ?? '',
+            'file_path' => $fileData['path_file'] ?? $fileData['file_path'] ?? '',
+            'file_size' => $fileData['ukuran_file'] ?? $fileData['file_size'] ?? 0,
+            'mime_type' => $fileData['tipe_file'] ?? $fileData['mime_type'] ?? '',
+            'keterangan' => $fileData['keterangan'] ?? null,
+            'uploader_user_id' => $fileData['uploader_user_id'] ?? null
+        ];
+
+        return $this->create($data);
+    }
+
+    /**
      * Update lampiran keterangan
      */
     public function updateKeterangan($lampiranId, $keterangan)
@@ -112,6 +139,14 @@ class KegiatanLampiran
         $this->db->query("DELETE FROM t_kegiatan_lampiran WHERE lampiran_id = :lampiran_id");
         $this->db->bind(':lampiran_id', $lampiranId);
         return $this->db->execute();
+    }
+
+    /**
+     * Hapus lampiran (Alias untuk compatibility)
+     */
+    public function deleteLampiran($lampiranId)
+    {
+        return $this->delete($lampiranId);
     }
 
     /**
@@ -140,6 +175,14 @@ class KegiatanLampiran
     }
 
     /**
+     * Check apakah kegiatan sudah memiliki lampiran LPJ
+     */
+    public function hasLampiran($kegiatanId)
+    {
+        return $this->countByKegiatanId($kegiatanId) > 0;
+    }
+
+    /**
      * Check if lampiran exists
      */
     public function exists($lampiranId)
@@ -152,6 +195,21 @@ class KegiatanLampiran
         $this->db->bind(':lampiran_id', $lampiranId);
         $result = $this->db->single();
         return $result['total'] > 0;
+    }
+
+    /**
+     * Get path file lampiran
+     */
+    public function getFilePath($lampiranId)
+    {
+        $this->db->query("
+            SELECT file_path 
+            FROM t_kegiatan_lampiran 
+            WHERE lampiran_id = :lampiran_id
+        ");
+        $this->db->bind(':lampiran_id', $lampiranId);
+        $result = $this->db->single();
+        return $result['file_path'] ?? null;
     }
 
     /**
