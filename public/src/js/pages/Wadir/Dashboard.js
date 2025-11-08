@@ -4,15 +4,51 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderWadirDashboardPage(userRole) {
   const dashboardContent = `
     <div class="wadir-dashboard-page">
+      <!-- Stats Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-xl-6">
+          <div class="card stat-card-active">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between">
+                <div class="content-left">
+                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Kegiatan</span>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total Menunggu</h4>
+                  <div class="d-flex align-items-end mt-2">
+                    <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="waitingCount">0</h1>
+                    <small style="font-size: 15px; font-weight: 500; opacity: 0.9;">Usulan</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-6">
+          <div class="card stat-card-inactive">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between">
+                <div class="content-left">
+                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Kegiatan</span>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total Diterima</h4>
+                  <div class="d-flex align-items-end mt-2">
+                    <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="acceptedCount">0</h1>
+                    <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">Usulan</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Main Table Card -->
       <div class="card card-datatable table-responsive p-0">
-        <table class="table">
+        <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
           <thead>
             <tr>
               <th style="width: 50px; text-align: center;">
                 <input type="checkbox" class="form-check-input" id="selectAll">
               </th>
-              <th>No.</th>
+              <th style="width: 80px;">No.</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Pengusul</th>
               <th>Tanggal Diajukan</th>
@@ -166,7 +202,10 @@ export function renderWadirDashboardPage(userRole) {
     tbody.innerHTML = "";
 
     activities.forEach((activity, index) => {
-      const statusClass = activity.status === "Menunggu" ? "bg-label-warning" : "bg-label-success";
+      const statusClass =
+        activity.status === "Menunggu"
+          ? "bg-label-warning"
+          : "bg-label-success";
 
       const row = document.createElement("tr");
 
@@ -189,14 +228,15 @@ export function renderWadirDashboardPage(userRole) {
           <div class="date-text">${activity.date}</div>
         </td>
         <td style="text-align: center;">
-          <span class="badge ${statusClass}">${activity.status}</span>
+          <span class="badge ${statusClass}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${activity.status}</span>
         </td>
         <td style="text-align: center;">
-          <button class="btn btn-sm btn-primary me-2" data-id="${activity.id}">
-            <i class="ti me-1">&#xeb8b;</i> Lanjutkan
+          <button class="btn btn-sm btn-primary me-2 gap-2" data-id="${activity.id}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
+            Lanjutkan
           </button>
           <button class="btn btn-sm btn-delete" data-id="${activity.id}">
-            <i class="ti">&#xeb55;</i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>          
           </button>
         </td>
       `;
@@ -247,6 +287,7 @@ export function renderWadirDashboardPage(userRole) {
             activities.splice(index, 1);
             renderTableRows();
             updatePagination();
+            updateStats();
           }
         }
       });
@@ -345,11 +386,25 @@ export function renderWadirDashboardPage(userRole) {
     if (totalEntriesEl) totalEntriesEl.textContent = 50;
   }
 
-  // ==============================================
+  function updateStats() {
+    const waitingCount = activities.filter(
+      (a) => a.status === "Menunggu"
+    ).length;
+    const acceptedCount = activities.filter(
+      (a) => a.status === "Diterima"
+    ).length;
+
+    const waitingEl = document.getElementById("waitingCount");
+    const acceptedEl = document.getElementById("acceptedCount");
+
+    if (waitingEl) waitingEl.textContent = waitingCount;
+    if (acceptedEl) acceptedEl.textContent = acceptedCount;
+  }
+
   // INITIALIZATION
-  // ==============================================
   renderTableRows();
   updatePagination();
+  updateStats();
 
   // Initialize Vuexy menu if available
   if (window.Helpers) {

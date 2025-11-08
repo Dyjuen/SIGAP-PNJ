@@ -8,8 +8,9 @@ import { renderWadirDashboardPage } from "./pages/Wadir/Dashboard.js";
 import { renderPpkDashboardPage } from "./pages/Ppk/Dashboard.js";
 import { renderBendaharaDashboardPage } from "./pages/Bendahara/Dashboard.js";
 import { renderNotFoundPage } from "./pages/NotFoundPage.js";
-import { renderUsulanKakPage } from "./pages/Pengusul/UsulanKak.js";
+import { renderUsulanKakPage } from "./pages/Pengusul/StepUsulanKak.js";
 import { renderPreviewKakPage } from "./pages/Pengusul/PreviewKak.js";
+import { renderFullUsulanKakPage } from "./pages/Pengusul/FullUsulanKak.js";
 
 // Placeholder function to get the current user's role.
 // In a real application, this would fetch the role from an API, local storage, or a global variable set by the backend.
@@ -26,7 +27,7 @@ const routes = {
   "/wadir/dashboard": renderWadirDashboardPage,
   "/ppk/dashboard": renderPpkDashboardPage,
   "/bendahara/dashboard": renderBendaharaDashboardPage,
-
+  "/form-kak": renderFullUsulanKakPage,
   "/preview-kak": renderPreviewKakPage,
 };
 
