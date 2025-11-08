@@ -1,15 +1,21 @@
 <?php
 
-use App\Controllers\Api\AuthController;
-use App\Controllers\Api\KAKController;
+use App\Controllers\AuthController;
+use App\Controllers\AccountController;
+use App\Controllers\KAKController;
 use App\Controllers\Api\LpjController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
 use App\Middlewares\CorsMiddleware;
 
-// Apply CORS to all requests
-$corsMiddleware = new CorsMiddleware();
-$corsMiddleware->handle();
+// Start session for captcha
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// // Apply CORS to all requests
+// $corsMiddleware = new CorsMiddleware();
+// $corsMiddleware->handle();
 
 // Get request method and URI
 $method = $_SERVER['REQUEST_METHOD'];
@@ -21,6 +27,13 @@ $uri = preg_replace('#^/api#', '', $uri);
 // ====================================
 // PUBLIC ROUTES (No authentication required)
 // ====================================
+
+// GET /api/captcha - Generate captcha image
+if ($method === 'GET' && $uri === '/captcha') {
+    $controller = new AuthController();
+    $controller->generateCaptcha();
+    exit;
+}
 
 // POST /api/auth/login
 if ($method === 'POST' && $uri === '/auth/login') {
@@ -44,31 +57,57 @@ if ($method === 'POST' && $uri === '/auth/logout') {
     exit;
 }
 
+// POST /api/auth/refresh
+if ($method === 'POST' && $uri === '/auth/refresh') {
+    $controller = new AuthController();
+    $controller->refresh();
+    exit;
+}
+
+// ====================================
+// ACCOUNT ROUTES (Profile Management)
+// ====================================
+
+// GET /api/account/profile
+if ($method === 'GET' && $uri === '/account/profile') {
+    $controller = new AccountController();
+    $controller->getProfile();
+    exit;
+}
+
+// PUT /api/account/profile
+if ($method === 'PUT' && $uri === '/account/profile') {
+    $controller = new AccountController();
+    $controller->updateProfile();
+    exit;
+}
+
+// PUT /api/account/change-password
+if ($method === 'PUT' && $uri === '/account/change-password') {
+    $controller = new AccountController();
+    $controller->changePassword();
+    exit;
+}
+
+// Backward compatibility - Keep old routes
 // GET /api/auth/profile
 if ($method === 'GET' && $uri === '/auth/profile') {
-    $controller = new AuthController();
+    $controller = new AccountController();
     $controller->getProfile();
     exit;
 }
 
 // PUT /api/auth/profile
 if ($method === 'PUT' && $uri === '/auth/profile') {
-    $controller = new AuthController();
+    $controller = new AccountController();
     $controller->updateProfile();
     exit;
 }
 
 // PUT /api/auth/change-password
 if ($method === 'PUT' && $uri === '/auth/change-password') {
-    $controller = new AuthController();
+    $controller = new AccountController();
     $controller->changePassword();
-    exit;
-}
-
-// POST /api/auth/refresh
-if ($method === 'POST' && $uri === '/auth/refresh') {
-    $controller = new AuthController();
-    $controller->refresh();
     exit;
 }
 
@@ -154,7 +193,7 @@ if ($method === 'POST' && $uri === '/lpj/check-reminders') {
 // KEGIATAN & ANGGARAN & LAMPIRAN ROUTES
 // ====================================
 
-// Router berbasis objek tambahan (tidak mengubah route lama)
+// Router berbasis objek tambahan
 use App\Core\Router;
 
 // Inisialisasi router baru

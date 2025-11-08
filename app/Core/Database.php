@@ -5,10 +5,10 @@ namespace App\Core;
 class Database {
     
     // Ambil konstanta dari config/database.php
-    private $host = DB_HOST;
-    private $user = DB_USER;
-    private $pass = DB_PASS;
-    private $dbname = DB_NAME;
+    private $host = \DB_HOST;
+    private $user = \DB_USER;
+    private $pass = \DB_PASS;
+    private $dbname = \DB_NAME;
 
     private $dbh; // Database Handler (koneksi PDO)
     private $stmt; // Statement (query)
