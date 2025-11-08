@@ -91,24 +91,24 @@ export function renderFullUsulanKakPage(userRole) {
           <div class="mb-8">
             <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja</label>
             <div id="indikatorKinerjaContainer">
-              <div class="mb-4 p-4 border rounded-lg">
-                <div class="grid grid-cols-3 gap-4 mb-6">
-                  <div>
+              <div class="mb-4 p-4">
+                <div class="flex items-end gap-4 mb-6">
+                  <div class='w-full'>
                     <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
                   </div>
-                  <div>
+                  <div class='w-full'>
                     <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
                   </div>
-                  <div>
+                  <div class='w-full'>
                     <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
                   </div>
+                  <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
+                    <span class="text-xl font-bold">−</span>
+                  </button>
                 </div>
-                <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-                  <span class="text-xl font-bold">−</span>
-                </button>
               </div>
             </div>
             <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addIndikatorKinerja()">Tambah</button>
@@ -163,8 +163,8 @@ export function renderFullUsulanKakPage(userRole) {
           <!-- Belanja Barang Section -->
           <div class="mb-10">
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
-            <div id="belanjaBarangContainer">
-              <div class="belanja-barang-item mb-8 p-6 rounded-lg border-2">
+            <div id="belanjaBarangContainer" class="p-6 rounded-lg border-2">
+              <div class="belanja-barang-item mb-6">
                 <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
@@ -221,14 +221,14 @@ export function renderFullUsulanKakPage(userRole) {
                 </div>
               </div>
             </div>
-            <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaBarang()">Tambah Item Barang</button>
+            <button type="button" class="border-0 mt-6 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaBarang()">Tambah Item Barang</button>
           </div>
 
           <!-- Belanja Jasa Section -->
           <div class="mb-10">
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
-            <div id="belanjaJasaContainer">
-              <div class="belanja-jasa-item mb-8 p-6 rounded-lg border-2">
+            <div id="belanjaJasaContainer" class="p-6 rounded-lg border-2">
+              <div class="belanja-jasa-item mb-6">
                 <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
@@ -266,7 +266,7 @@ export function renderFullUsulanKakPage(userRole) {
                   </div>
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 44px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
                       <option value="">Input</option>
                       <option value="hari">Hari</option>
                       <option value="bulan">Bulan</option>
@@ -285,14 +285,14 @@ export function renderFullUsulanKakPage(userRole) {
                 </div>
               </div>
             </div>
-            <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaJasa()">Tambah Item Jasa</button>
+            <button type="button" class="border-0 mt-6 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaJasa()">Tambah Item Jasa</button>
           </div>
 
           <!-- Belanja Perjalanan Section -->
           <div class="mb-10">
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
-            <div id="belanjaPerjalananContainer">
-              <div class="belanja-perjalanan-item mb-8 p-6 rounded-lg border-2">
+            <div id="belanjaPerjalananContainer" class="p-6 rounded-lg border-2">
+              <div class="belanja-perjalanan-item mb-6">
                 <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
@@ -348,14 +348,14 @@ export function renderFullUsulanKakPage(userRole) {
                 </div>
               </div>
             </div>
-            <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaPerjalanan()">Tambah Item Perjalanan</button>
+            <button type="button" class="border-0 mt-6 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaPerjalanan()">Tambah Item Perjalanan</button>
           </div>
 
         </div>
 
         <div class="flex justify-between pt-8 border-t-2">
           <button class="px-8 py-3 rounded-lg bg-gray-100 text-cyan-500" onclick="window.history.back()">← Back</button>
-          <button class="px-8 py-3 rounded-lg bg-cyan-500 text-white" onclick="alert('Form berhasil disubmit!')">✓ Submit</button>
+          <button class="px-8 py-3 rounded-lg bg-cyan-500 text-white" >✓ Submit</button>
         </div>
       </div>
     </div>
@@ -418,25 +418,25 @@ export function renderFullUsulanKakPage(userRole) {
   window.addIndikatorKinerja = function () {
     const container = document.getElementById("indikatorKinerjaContainer");
     const newItem = document.createElement("div");
-    newItem.className = "mb-4 p-4 border rounded-lg";
+    newItem.className = "p-4";
     newItem.innerHTML = `
-      <div class="grid grid-cols-3 gap-4 mb-6">
-        <div>
-          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        <div class="flex items-end gap-4 mb-6">
+          <div class='w-full'>
+            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
+            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+          </div>
+          <div class='w-full'>
+            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
+            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+          </div>
+          <div class='w-full'>
+            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
+            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+          </div>
+          <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
+            <span class="text-xl font-bold">−</span>
+          </button>
         </div>
-        <div>
-          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-      </div>
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-        <span class="text-xl font-bold">−</span>
-      </button>
     `;
     container.appendChild(newItem);
   };
@@ -455,7 +455,8 @@ export function renderFullUsulanKakPage(userRole) {
   window.addIkuField = function () {
     const container = document.getElementById("ikuRenstraContainer");
     const newItem = document.createElement("div");
-    newItem.className = "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
+    newItem.className =
+      "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
     newItem.innerHTML = `
       <div>
         <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
@@ -478,21 +479,21 @@ export function renderFullUsulanKakPage(userRole) {
   };
 
   // RAB Functions
-  window.incrementValue = function(btn, amount) {
-    const input = btn.closest('.relative').querySelector('input[type=number]');
+  window.incrementValue = function (btn, amount) {
+    const input = btn.closest(".relative").querySelector("input[type=number]");
     input.value = parseInt(input.value) + amount;
   };
 
-  window.decrementValue = function(btn, amount) {
-    const input = btn.closest('.relative').querySelector('input[type=number]');
+  window.decrementValue = function (btn, amount) {
+    const input = btn.closest(".relative").querySelector("input[type=number]");
     const currentValue = parseInt(input.value);
     if (currentValue > 1) {
       input.value = currentValue - amount;
     }
   };
 
-  window.removeBelanjaItem = function(btn, containerId) {
-    const item = btn.closest('.mb-8');
+  window.removeBelanjaItem = function (btn, containerId) {
+    const item = btn.closest(".mb-8");
     const container = document.getElementById(containerId);
     if (container.children.length > 1) {
       item.remove();
@@ -501,30 +502,35 @@ export function renderFullUsulanKakPage(userRole) {
     }
   };
 
-  window.addBelanjaBarang = function() {
-    const container = document.getElementById('belanjaBarangContainer');
-    const template = container.querySelector('.belanja-barang-item');
+  window.addBelanjaBarang = function () {
+    const container = document.getElementById("belanjaBarangContainer");
+    const template = container.querySelector(".belanja-barang-item");
     const newItem = template.cloneNode(true);
-    newItem.querySelectorAll('input').forEach(input => input.value = (input.type === 'number' ? '1' : ''));
+    newItem
+      .querySelectorAll("input")
+      .forEach((input) => (input.value = input.type === "number" ? "1" : ""));
     container.appendChild(newItem);
   };
 
-  window.addBelanjaJasa = function() {
-    const container = document.getElementById('belanjaJasaContainer');
-    const template = container.querySelector('.belanja-jasa-item');
+  window.addBelanjaJasa = function () {
+    const container = document.getElementById("belanjaJasaContainer");
+    const template = container.querySelector(".belanja-jasa-item");
     const newItem = template.cloneNode(true);
-    newItem.querySelectorAll('input').forEach(input => input.value = (input.type === 'number' ? '1' : ''));
+    newItem
+      .querySelectorAll("input")
+      .forEach((input) => (input.value = input.type === "number" ? "1" : ""));
     container.appendChild(newItem);
   };
 
-  window.addBelanjaPerjalanan = function() {
-    const container = document.getElementById('belanjaPerjalananContainer');
-    const template = container.querySelector('.belanja-perjalanan-item');
+  window.addBelanjaPerjalanan = function () {
+    const container = document.getElementById("belanjaPerjalananContainer");
+    const template = container.querySelector(".belanja-perjalanan-item");
     const newItem = template.cloneNode(true);
-    newItem.querySelectorAll('input').forEach(input => input.value = (input.type === 'number' ? '1' : ''));
+    newItem
+      .querySelectorAll("input")
+      .forEach((input) => (input.value = input.type === "number" ? "1" : ""));
     container.appendChild(newItem);
   };
-
 
   // Initialize Vuexy menu if available
   if (window.Helpers) {
