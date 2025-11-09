@@ -8,7 +8,7 @@ import { renderWadirDashboardPage } from "./pages/Wadir/Dashboard.js";
 import { renderPpkDashboardPage } from "./pages/Ppk/Dashboard.js";
 import { renderBendaharaDashboardPage } from "./pages/Bendahara/Dashboard.js";
 import { renderNotFoundPage } from "./pages/NotFoundPage.js";
-import { renderUsulanKakPage } from "./pages/Pengusul/UsulanKak.js";
+import { renderUsulanKakPage } from "./pages/Pengusul/StepUsulanKak.js";
 import { renderPreviewKakPage } from "./pages/Pengusul/PreviewKak.js";
 import { renderMengajukanKegiatanPage } from "./pages/Admin/MengajukanKegiatanPage.js";
 import { renderPencairanDanaPage } from "./pages/Bendahara/PencairanDanaPage.js";
@@ -24,6 +24,7 @@ const routes = {
   "/": renderLandingPage,
   "/login": renderLoginPage,
   "/usulan-kak": renderUsulanKakPage,
+  "/monitoring-usulan": renderMonitoringUsulanPage,
   "/verifikator/dashboard": renderDashboardVerifikator,
   "/wadir/dashboard": renderWadirDashboardPage,
   "/ppk/dashboard": renderPpkDashboardPage,

@@ -3,7 +3,7 @@
 export const adminSidebar = `
   <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-      <a href="/user-management" data-link class="app-brand-link">
+      <a href="/dashboard" data-link class="app-brand-link">
         <span class="app-brand-logo demo">
           <img src="/assets/img/logo/logo2.svg" alt="Logo" style="width: 160px; height: 160px;">
         </span>

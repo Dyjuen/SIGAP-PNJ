@@ -1,11 +1,11 @@
 // frontend/src/layouts/DashboardLayout.js
 
-import { adminSidebar } from './sidebars/adminSidebar.js';
-import { pengusulSidebar } from './sidebars/pengusulSidebar.js';
-import { verifikatorSidebar } from './sidebars/VerifikatorSidebar.js';
-import { wadirSidebar } from './sidebars/WadirSidebar.js';
-import { ppkSidebar } from './sidebars/PpkSidebar.js';
-import { bendaharaSidebar } from './sidebars/BendaharaSidebar.js';
+import { adminSidebar } from "./sidebars/adminSidebar.js";
+import { pengusulSidebar } from "./sidebars/pengusulSidebar.js";
+import { verifikatorSidebar } from "./sidebars/VerifikatorSidebar.js";
+import { wadirSidebar } from "./sidebars/WadirSidebar.js";
+import { ppkSidebar } from "./sidebars/PpkSidebar.js";
+import { bendaharaSidebar } from "./sidebars/BendaharaSidebar.js";
 
 // Header Component
 export const header = `
@@ -100,19 +100,19 @@ export function renderDashboardLayout(content, userRole) {
     case "Admin":
       dynamicSidebar = adminSidebar;
       break;
-    case 'Pengusul':
+    case "Pengusul":
       dynamicSidebar = pengusulSidebar;
       break;
-    case 'Verifikator':
+    case "Verifikator":
       dynamicSidebar = verifikatorSidebar;
       break;
-    case 'WD2':
+    case "WD2":
       dynamicSidebar = wadirSidebar;
       break;
-    case 'PPK':
+    case "PPK":
       dynamicSidebar = ppkSidebar;
       break;
-    case 'Bendahara':
+    case "Bendahara":
       dynamicSidebar = bendaharaSidebar;
       break;
     // Add more cases for other roles here
@@ -207,23 +207,23 @@ export function renderDashboardLayout(content, userRole) {
 }
 
 function initializeSidebar() {
-  const menu = document.getElementById('layout-menu');
+  const menu = document.getElementById("layout-menu");
   if (!menu) return;
 
   const currentPath = window.location.pathname;
 
   // Set active state and open parent submenus
-  const menuLinks = menu.querySelectorAll('.menu-link');
-  menuLinks.forEach(link => {
-    if (link.getAttribute('href') === currentPath) {
-      const menuItem = link.closest('.menu-item');
+  const menuLinks = menu.querySelectorAll(".menu-link");
+  menuLinks.forEach((link) => {
+    if (link.getAttribute("href") === currentPath) {
+      const menuItem = link.closest(".menu-item");
       if (menuItem) {
-        menuItem.classList.add('active');
-        const parentSubmenu = menuItem.closest('.menu-submenu');
+        menuItem.classList.add("active");
+        const parentSubmenu = menuItem.closest(".menu-submenu");
         if (parentSubmenu) {
-          const parentMenuItem = parentSubmenu.closest('.menu-item');
+          const parentMenuItem = parentSubmenu.closest(".menu-item");
           if (parentMenuItem) {
-            parentMenuItem.classList.add('open');
+            parentMenuItem.classList.add("open");
           }
         }
       }
@@ -231,35 +231,34 @@ function initializeSidebar() {
   });
 
   // Hide all submenus by default, unless they should be open
-  const submenus = menu.querySelectorAll('.menu-submenu');
-  submenus.forEach(submenu => {
-    const parentMenuItem = submenu.closest('.menu-item');
-    if (parentMenuItem && !parentMenuItem.classList.contains('open')) {
-      submenu.style.display = 'none';
+  const submenus = menu.querySelectorAll(".menu-submenu");
+  submenus.forEach((submenu) => {
+    const parentMenuItem = submenu.closest(".menu-item");
+    if (parentMenuItem && !parentMenuItem.classList.contains("open")) {
+      submenu.style.display = "none";
     }
   });
 
   // Add click listeners to toggle submenus
-  const menuToggles = menu.querySelectorAll('.menu-link.menu-toggle');
-  menuToggles.forEach(toggle => {
-    toggle.addEventListener('click', (e) => {
+  const menuToggles = menu.querySelectorAll(".menu-link.menu-toggle");
+  menuToggles.forEach((toggle) => {
+    toggle.addEventListener("click", (e) => {
       e.preventDefault();
-      const menuItem = toggle.closest('.menu-item');
-      const submenu = menuItem.querySelector('.menu-submenu');
+      const menuItem = toggle.closest(".menu-item");
+      const submenu = menuItem.querySelector(".menu-submenu");
 
       if (submenu) {
-        if (submenu.style.display === 'block') {
-          submenu.style.display = 'none';
-          menuItem.classList.remove('open');
+        if (submenu.style.display === "block") {
+          submenu.style.display = "none";
+          menuItem.classList.remove("open");
         } else {
-          submenu.style.display = 'block';
-          menuItem.classList.add('open');
+          submenu.style.display = "block";
+          menuItem.classList.add("open");
         }
       }
     });
   });
 }
-
 
 // Initialize menu toggle functionality (basic fallback)
 function initializeMenuToggle() {
