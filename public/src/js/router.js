@@ -11,6 +11,7 @@ import { renderNotFoundPage } from "./pages/NotFoundPage.js";
 import { renderUsulanKakPage } from "./pages/Pengusul/StepUsulanKak.js";
 import { renderPreviewKakPage } from "./pages/Pengusul/PreviewKak.js";
 import { renderFullUsulanKakPage } from "./pages/Pengusul/FullUsulanKak.js";
+import { renderMonitoringUsulanPage } from "./pages/Pengusul/MonitoringUsulan.js";
 
 // Placeholder function to get the current user's role.
 // In a real application, this would fetch the role from an API, local storage, or a global variable set by the backend.
@@ -23,6 +24,7 @@ const routes = {
   "/": renderLandingPage,
   "/login": renderLoginPage,
   "/usulan-kak": renderUsulanKakPage,
+  "/monitoring-usulan": renderMonitoringUsulanPage,
   "/verifikator/dashboard": renderDashboardVerifikator,
   "/wadir/dashboard": renderWadirDashboardPage,
   "/ppk/dashboard": renderPpkDashboardPage,
