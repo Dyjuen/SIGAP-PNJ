@@ -15,14 +15,9 @@ final class CreateMUsersTable extends AbstractMigration
               ->addColumn('password_hash', 'string', ['limit' => 255])
               ->addColumn('nama_lengkap', 'string', ['limit' => 100])
               ->addColumn('email', 'string', ['limit' => 100])
-              ->addColumn('unit_kerja_id', 'integer')
               ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
               ->addIndex(['username'], ['unique' => true])
               ->addIndex(['email'], ['unique' => true])
-              ->addForeignKey('unit_kerja_id', 'm_unit_kerja', 'unit_kerja_id', [
-                  'delete' => 'RESTRICT',
-                  'update' => 'CASCADE'
-              ])
               ->create();
     }
 }

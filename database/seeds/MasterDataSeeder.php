@@ -52,49 +52,6 @@ class MasterDataSeeder extends AbstractSeed
         $this->table('m_satuan')->insert($satuan)->save();
 
         // ============================================
-        // 4. UNIT KERJA
-        // ============================================
-        $unitKerja = [
-            [
-                'unit_kerja_id' => 1,
-                'nama_unit_kerja' => 'Jurusan Teknik Informatika dan Komputer',
-                'kode_unit' => 'TIK',
-                'parent_unit_id' => null
-            ],
-            [
-                'unit_kerja_id' => 2,
-                'nama_unit_kerja' => 'Jurusan Teknik Elektro',
-                'kode_unit' => 'TE',
-                'parent_unit_id' => null
-            ],
-            [
-                'unit_kerja_id' => 3,
-                'nama_unit_kerja' => 'Jurusan Teknik Mesin',
-                'kode_unit' => 'TM',
-                'parent_unit_id' => null
-            ],
-            [
-                'unit_kerja_id' => 4,
-                'nama_unit_kerja' => 'Jurusan Teknik Sipil',
-                'kode_unit' => 'TS',
-                'parent_unit_id' => null
-            ],
-            [
-                'unit_kerja_id' => 5,
-                'nama_unit_kerja' => 'Program Studi Teknik Informatika',
-                'kode_unit' => 'TI',
-                'parent_unit_id' => 1
-            ],
-            [
-                'unit_kerja_id' => 6,
-                'nama_unit_kerja' => 'Program Studi Teknik Komputer',
-                'kode_unit' => 'TK',
-                'parent_unit_id' => 1
-            ]
-        ];
-        $this->table('m_unit_kerja')->insert($unitKerja)->save();
-
-        // ============================================
         // 5. MATA ANGGARAN
         // ============================================
         $mataAnggaran = [
@@ -187,7 +144,6 @@ class MasterDataSeeder extends AbstractSeed
                 'password_hash' => password_hash('admin123', PASSWORD_BCRYPT),
                 'nama_lengkap' => 'Administrator',
                 'email' => 'admin@pnj.ac.id',
-                'unit_kerja_id' => 1,
                 'created_at' => date('Y-m-d H:i:s')
             ],
             [
@@ -196,7 +152,6 @@ class MasterDataSeeder extends AbstractSeed
                 'password_hash' => password_hash('verif123', PASSWORD_BCRYPT),
                 'nama_lengkap' => 'Verifikator User',
                 'email' => 'verifikator@pnj.ac.id',
-                'unit_kerja_id' => 1,
                 'created_at' => date('Y-m-d H:i:s')
             ],
             [
@@ -205,7 +160,6 @@ class MasterDataSeeder extends AbstractSeed
                 'password_hash' => password_hash('pengusul123', PASSWORD_BCRYPT),
                 'nama_lengkap' => 'Pengusul User',
                 'email' => 'pengusul@pnj.ac.id',
-                'unit_kerja_id' => 1,
                 'created_at' => date('Y-m-d H:i:s')
             ],
             [
@@ -214,7 +168,6 @@ class MasterDataSeeder extends AbstractSeed
                 'password_hash' => password_hash('ppk123', PASSWORD_BCRYPT),
                 'nama_lengkap' => 'PPK User',
                 'email' => 'ppk@pnj.ac.id',
-                'unit_kerja_id' => 1,
                 'created_at' => date('Y-m-d H:i:s')
             ],
             [
@@ -223,7 +176,6 @@ class MasterDataSeeder extends AbstractSeed
                 'password_hash' => password_hash('wd2123', PASSWORD_BCRYPT),
                 'nama_lengkap' => 'WD2 User',
                 'email' => 'wd2@pnj.ac.id',
-                'unit_kerja_id' => 1,
                 'created_at' => date('Y-m-d H:i:s')
             ],
             [
@@ -232,10 +184,10 @@ class MasterDataSeeder extends AbstractSeed
                 'password_hash' => password_hash('bendahara123', PASSWORD_BCRYPT),
                 'nama_lengkap' => 'Bendahara User',
                 'email' => 'bendahara@pnj.ac.id',
-                'unit_kerja_id' => 1,
                 'created_at' => date('Y-m-d H:i:s')
             ]
         ];
+
         $this->table('m_users')->insert($users)->save();
 
         // ============================================

@@ -115,4 +115,25 @@ class Response
         http_response_code(204);
         exit;
     }
+
+    public static function json($data, $code = 200) {
+        // Setel kode status
+        self::statusCode($code);
+        
+        // Setel header content type ke JSON
+        header('Content-Type: application/json');
+        
+        // Tampilkan data sebagai JSON dan hentikan eksekusi
+        echo json_encode($data);
+        exit;
+    }
+
+    public static function statusCode($code) {
+        http_response_code($code);
+    }
+
+    // File Anda mungkin sudah punya ini
+    public static function redirect($url) {
+        header("Location: $url");
+    }
 }

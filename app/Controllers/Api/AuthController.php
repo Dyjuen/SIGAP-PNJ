@@ -33,7 +33,7 @@ class AuthController
             $data = json_decode(file_get_contents('php://input'), true);
 
             // Validate required fields
-            $required = ['username', 'password', 'nama_lengkap', 'email', 'unit_kerja_id'];
+            $required = ['username', 'password', 'nama_lengkap', 'email'];
             foreach ($required as $field) {
                 if (empty($data[$field])) {
                     Response::error("Field '$field' wajib diisi", 400);
@@ -71,7 +71,6 @@ class AuthController
                 'password' => $data['password'],
                 'nama_lengkap' => $data['nama_lengkap'],
                 'email' => $data['email'],
-                'unit_kerja_id' => $data['unit_kerja_id']
             ]);
 
             // Assign roles (if provided)
@@ -88,11 +87,6 @@ class AuthController
                     'username' => $user['username'],
                     'nama_lengkap' => $user['nama_lengkap'],
                     'email' => $user['email'],
-                    'unit_kerja' => [
-                        'unit_kerja_id' => $user['unit_kerja_id'],
-                        'nama_unit_kerja' => $user['nama_unit_kerja'],
-                        'kode_unit' => $user['kode_unit']
-                    ],
                     'roles' => $user['roles'],
                     'created_at' => $user['created_at']
                 ]
@@ -140,8 +134,7 @@ class AuthController
                 'user_id' => $user['user_id'],
                 'username' => $user['username'],
                 'nama_lengkap' => $user['nama_lengkap'],
-                'roles' => $roles,
-                'unit_kerja_id' => $user['unit_kerja_id']
+                'roles' => $roles
             ]);
 
             // Get full user data with unit kerja
@@ -156,11 +149,6 @@ class AuthController
                     'username' => $userData['username'],
                     'nama_lengkap' => $userData['nama_lengkap'],
                     'email' => $userData['email'],
-                    'unit_kerja' => [
-                        'unit_kerja_id' => $userData['unit_kerja_id'],
-                        'nama_unit_kerja' => $userData['nama_unit_kerja'] ?? null,
-                        'kode_unit' => $userData['kode_unit'] ?? null
-                    ],
                     'roles' => $userData['roles']
                 ]
             ], 'Login berhasil');
@@ -220,11 +208,6 @@ class AuthController
                     'username' => $user['username'],
                     'nama_lengkap' => $user['nama_lengkap'],
                     'email' => $user['email'],
-                    'unit_kerja' => [
-                        'unit_kerja_id' => $user['unit_kerja_id'],
-                        'nama_unit_kerja' => $user['nama_unit_kerja'] ?? null,
-                        'kode_unit' => $user['kode_unit'] ?? null
-                    ],
                     'roles' => $user['roles'],
                     'created_at' => $user['created_at']
                 ]
@@ -257,7 +240,7 @@ class AuthController
             $data = json_decode(file_get_contents('php://input'), true);
 
             // Validate required fields
-            $required = ['nama_lengkap', 'email', 'unit_kerja_id'];
+            $required = ['nama_lengkap', 'email'];
             foreach ($required as $field) {
                 if (empty($data[$field])) {
                     Response::error("Field '$field' wajib diisi", 400);
@@ -278,7 +261,6 @@ class AuthController
             $success = $this->userModel->updateProfile($authUser['user_id'], [
                 'nama_lengkap' => $data['nama_lengkap'],
                 'email' => $data['email'],
-                'unit_kerja_id' => $data['unit_kerja_id']
             ]);
 
             if (!$success) {
@@ -294,11 +276,6 @@ class AuthController
                     'username' => $user['username'],
                     'nama_lengkap' => $user['nama_lengkap'],
                     'email' => $user['email'],
-                    'unit_kerja' => [
-                        'unit_kerja_id' => $user['unit_kerja_id'],
-                        'nama_unit_kerja' => $user['nama_unit_kerja'] ?? null,
-                        'kode_unit' => $user['kode_unit'] ?? null
-                    ],
                     'roles' => $user['roles']
                 ]
             ], 'Profile berhasil diupdate');
@@ -408,7 +385,6 @@ class AuthController
                 'username' => $user['username'],
                 'nama_lengkap' => $user['nama_lengkap'],
                 'roles' => $user['roles'],
-                'unit_kerja_id' => $user['unit_kerja_id']
             ]);
 
             Response::success([

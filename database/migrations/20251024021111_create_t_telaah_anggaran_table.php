@@ -13,21 +13,32 @@ final class CreateTTelaahAnggaranTable extends AbstractMigration
         $table->addColumn('anggaran_id', 'integer', ['identity' => true])
               ->addColumn('telaah_id', 'integer')
               ->addColumn('uraian', 'string', ['limit' => 255])
-              ->addColumn('volume', 'integer')
-              ->addColumn('satuan_id', 'integer')
+
+              // ✅ volume1 wajib, volume2 opsional
+              ->addColumn('volume1', 'decimal', ['precision' => 10, 'scale' => 2])
+              ->addColumn('volume2', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => true])
+
+              ->addColumn('satuan_id', 'integer', ['null' => true])
               ->addColumn('harga_satuan', 'decimal', ['precision' => 15, 'scale' => 2])
-              ->addColumn('jumlah_diusulkan', 'decimal', ['precision' => 15, 'scale' => 2])
-              ->addColumn('jumlah_disetujui', 'decimal', ['precision' => 15, 'scale' => 2, 'null' => true])
-              ->addColumn('catatan', 'string', ['limit' => 255, 'null' => true])
-              ->addColumn('catatan_verifikator', 'text', ['null' => true]) // NEW
+
+              // ✅ Jumlah otomatis dihitung dari volume1 * (volume2 jika ada) * harga_satuan
+              ->addColumn('jumlah_diusulkan', 'decimal', [
+                  'precision' => 15,
+                  'scale' => 2,
+                  'null' => true
+              ])
+
+              ->addColumn('catatan_verifikator', 'text', ['null' => true])
+
               ->addForeignKey('telaah_id', 't_telaah', 'telaah_id', [
                   'delete' => 'CASCADE',
                   'update' => 'CASCADE'
               ])
               ->addForeignKey('satuan_id', 'm_satuan', 'satuan_id', [
-                  'delete' => 'RESTRICT',
+                  'delete' => 'SET NULL',
                   'update' => 'CASCADE'
               ])
+
               ->create();
     }
 }

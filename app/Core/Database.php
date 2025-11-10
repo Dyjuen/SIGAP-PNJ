@@ -118,4 +118,45 @@ class Database {
     public function lastInsertId() {
         return $this->dbh->lastInsertId();
     }
+
+    public function getConnection()
+    {
+        return $this->dbh;
+    }
+
+    // ============================================
+    // ✅ TAMBAHKAN METHOD TRANSACTION DI SINI
+    // ============================================
+    
+    /**
+     * Memulai transaction
+     */
+    public function beginTransaction()
+    {
+        return $this->dbh->beginTransaction();
+    }
+
+    /**
+     * Commit transaction (simpan semua perubahan)
+     */
+    public function commit()
+    {
+        return $this->dbh->commit();
+    }
+
+    /**
+     * Rollback transaction (batalkan semua perubahan)
+     */
+    public function rollBack()
+    {
+        return $this->dbh->rollBack();
+    }
+
+    /**
+     * Cek apakah sedang dalam transaction
+     */
+    public function inTransaction()
+    {
+        return $this->dbh->inTransaction();
+    }
 }

@@ -50,13 +50,14 @@ class Router
     {
         $requestMethod = $_SERVER['REQUEST_METHOD'];
         $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        error_log("REQUEST URI RAW: " . $requestUri);
 
         $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
 
         if ($scriptPath !== '/' && strpos($requestUri, $scriptPath) === 0) {
             $requestUri = substr($requestUri, strlen($scriptPath));
         }
-        
+
         if (empty($requestUri) || $requestUri[0] !== '/') {
             $requestUri = '/' . $requestUri;
         }
@@ -71,14 +72,14 @@ class Router
             }
 
             $pattern = $this->convertToRegex($route['path']);
-            
+
             if (preg_match($pattern, $requestUri, $matches)) {
                 array_shift($matches);
-                
+
                 foreach ($route['middlewares'] as $middleware) {
                     $middleware->handle();
                 }
-                
+
                 $this->executeHandler($route['handler'], $matches);
                 return;
             }
@@ -100,35 +101,40 @@ class Router
 
     private function convertToRegex($path)
     {
-        $pattern = preg_replace('/:([\w]+)/', '(?P<$1>[\w-]+)', $path);
+        // Ubah {id} menjadi (?P<id>[\w-]+)
+        $pattern = preg_replace('/\{([\w]+)\}/', '(?P<$1>[\w-]+)', $path);
+
+        // Escape slash
         $pattern = str_replace('/', '\/', $pattern);
+
         return '/^' . $pattern . '$/';
     }
 
-    private function executeHandler($handler, $params = [])
-{
-    if (is_callable($handler)) {
-        call_user_func_array($handler, $params);
-    } elseif (is_string($handler)) {
-        list($controller, $method) = explode('@', $handler);
-        
-        // ✅ Perbaikan di sini
-        $controllerClass = 'App\\Controllers\\' . $controller;
-        
-        if (!class_exists($controllerClass)) {
-            throw new \Exception("Controller {$controllerClass} not found");
-        }
-        
-        $controllerInstance = new $controllerClass();
-        
-        if (!method_exists($controllerInstance, $method)) {
-            throw new \Exception("Method {$method} not found in {$controllerClass}");
-        }
-        
-        call_user_func_array([$controllerInstance, $method], $params);
-    } else {
-        throw new \Exception("Invalid route handler");
-    }
-}
 
+    private function executeHandler($handler, $params = [])
+    {
+        if (is_callable($handler)) {
+            call_user_func_array($handler, $params);
+        } elseif (is_string($handler)) {
+            list($controller, $method) = explode('@', $handler);
+
+            // ✅ Perbaikan di sini
+            $controllerClass = 'App\\Controllers\\' . $controller;
+
+            if (!class_exists($controllerClass)) {
+                throw new \Exception("Controller {$controllerClass} not found");
+            }
+
+            $controllerInstance = new $controllerClass();
+
+            if (!method_exists($controllerInstance, $method)) {
+                throw new \Exception("Method {$method} not found in {$controllerClass}");
+            }
+
+            $params = array_values($params);
+            call_user_func_array([$controllerInstance, $method], $params);
+        } else {
+            throw new \Exception("Invalid route handler");
+        }
+    }
 }

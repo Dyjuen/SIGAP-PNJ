@@ -129,4 +129,8 @@ abstract class Model
         $stmt->execute($params);
         return $stmt;
     }
+
+    public function getDB() {
+        return $this->db;
+    }
 }

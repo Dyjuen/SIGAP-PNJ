@@ -1,174 +1,94 @@
 <?php
 
 use App\Controllers\Api\AuthController;
-use App\Controllers\Api\KAKController;
+use App\Controllers\Api\TelaahController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
 use App\Middlewares\CorsMiddleware;
+use App\Core\Router;
 
-// Apply CORS to all requests
-$corsMiddleware = new CorsMiddleware();
-$corsMiddleware->handle();
+// ---------------------------------------------
+// 1. Apply global CORS middleware
+// ---------------------------------------------
+$cors = new CorsMiddleware();
+$cors->handle();
 
-// Get request method and URI
+// ---------------------------------------------
+// 2. Ambil method & uri
+// ---------------------------------------------
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Remove /api prefix if exists
-$uri = preg_replace('#^/api#', '', $uri);
-
-// ====================================
-// PUBLIC ROUTES (No authentication required)
-// ====================================
-
-// POST /api/auth/login
-if ($method === 'POST' && $uri === '/auth/login') {
-    $controller = new AuthController();
-    $controller->login();
+// ---------------------------------------------
+// 3. Public Route (tidak butuh login)
+// ---------------------------------------------
+if ($method === 'POST' && $uri === '/api/auth/login') {
+    (new AuthController())->login();
     exit;
 }
 
-// ====================================
-// PROTECTED ROUTES (Authentication required)
-// ====================================
+// ---------------------------------------------
+// 4. Protected route → pakai middleware auth
+// ---------------------------------------------
+$auth = new AuthMiddleware();
+$auth->handle();
 
-// Apply authentication middleware
-$authMiddleware = new AuthMiddleware();
-$authMiddleware->handle();
-
-// POST /api/auth/logout
-if ($method === 'POST' && $uri === '/auth/logout') {
-    $controller = new AuthController();
-    $controller->logout();
+// Auth routes (sudah login)
+if ($method === 'POST' && $uri === '/api/auth/logout') {
+    (new AuthController())->logout();
     exit;
 }
 
-// GET /api/auth/profile
-if ($method === 'GET' && $uri === '/auth/profile') {
-    $controller = new AuthController();
-    $controller->getProfile();
+if ($method === 'GET' && $uri === '/api/auth/profile') {
+    (new AuthController())->getProfile();
     exit;
 }
 
-// PUT /api/auth/profile
-if ($method === 'PUT' && $uri === '/auth/profile') {
-    $controller = new AuthController();
-    $controller->updateProfile();
+if ($method === 'PUT' && $uri === '/api/auth/profile') {
+    (new AuthController())->updateProfile();
     exit;
 }
 
-// PUT /api/auth/change-password
-if ($method === 'PUT' && $uri === '/auth/change-password') {
-    $controller = new AuthController();
-    $controller->changePassword();
+if ($method === 'PUT' && $uri === '/api/auth/change-password') {
+    (new AuthController())->changePassword();
     exit;
 }
 
-// POST /api/auth/refresh
-if ($method === 'POST' && $uri === '/auth/refresh') {
-    $controller = new AuthController();
-    $controller->refresh();
+if ($method === 'POST' && $uri === '/api/auth/refresh') {
+    (new AuthController())->refresh();
     exit;
 }
 
-// ====================================
-// ADMIN ONLY ROUTES
-// ====================================
-
-// POST /api/auth/register (Admin only)
-if ($method === 'POST' && $uri === '/auth/register') {
-    $roleMiddleware = new RoleMiddleware(['Admin']);
-    $roleMiddleware->handle();
-    
-    $controller = new AuthController();
-    $controller->register();
+// ---------------------------------------------
+// 5. Admin only route
+// ---------------------------------------------
+if ($method === 'POST' && $uri === '/api/auth/register') {
+    (new RoleMiddleware(['Admin']))->handle();
+    (new AuthController())->register();
     exit;
 }
 
-// ====================================
-// KAK (KERANGKA ACUAN KERJA) ROUTES
-// ====================================
-
-// GET /api/kak/{kegiatan_id} - Download KAK PDF
-if ($method === 'GET' && preg_match('/^\/kak\/(\d+)$/', $uri)) {
-    $controller = new KAKController();
-    $controller->download();
-    exit;
-}
-
-// GET /api/kak/{kegiatan_id}/preview - Preview KAK HTML
-if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/preview$/', $uri)) {
-    $controller = new KAKController();
-    $controller->preview();
-    exit;
-}
-
-// GET /api/kak/{kegiatan_id}/data - Get KAK data as JSON
-if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
-    $controller = new KAKController();
-    $controller->getData();
-    exit;
-}
-
-// ====================================
-// KEGIATAN & ANGGARAN & LAMPIRAN ROUTES
-// ====================================
-
-// Router berbasis objek tambahan (tidak mengubah route lama)
-use App\Core\Router;
-
-// Inisialisasi router baru
+// ---------------------------------------------
+// 6. Gunakan Router Objek untuk endpoint Telaah
+// ---------------------------------------------
 $router = new Router();
 
-// ============================================
-// KEGIATAN CRUD ROUTES
-// ============================================
+// CRUD KAK / Telaah
+$router->get('/api/telaah', 'Api\TelaahController@index');
+$router->post('/api/telaah', 'Api\TelaahController@store');
+$router->get('/api/telaah/{id}', 'Api\TelaahController@show');
+// ❌ HAPUS INI - tidak ada method update()
+// $router->put('/api/telaah/{id}', 'Api\TelaahController@update');
 
-// List & Detail
-$router->get('/api/kegiatan', 'Api\KegiatanController@index');
-$router->get('/api/kegiatan/{id}', 'Api\KegiatanController@show');
+// Aksi Pengusul
+$router->post('/api/telaah/{id}/submit', 'Api\TelaahController@submitForVerification');
+$router->post('/api/telaah/{id}/resubmit', 'Api\TelaahController@resubmitAfterRevision');
 
-// Create, Update, Delete
-$router->post('/api/kegiatan', 'Api\KegiatanController@create');
-$router->put('/api/kegiatan/{id}', 'Api\KegiatanController@update');
-$router->delete('/api/kegiatan/{id}', 'Api\KegiatanController@delete');
+// Aksi Verifikator
+$router->post('/api/telaah/{id}/approve', 'Api\TelaahController@approve');
+$router->post('/api/telaah/{id}/reject', 'Api\TelaahController@reject');
+$router->post('/api/telaah/{id}/revise', 'Api\TelaahController@requestRevision');
 
-// Status Workflow
-$router->post('/api/kegiatan/{id}/submit', 'Api\KegiatanController@submit');
-$router->post('/api/kegiatan/{id}/revise', 'Api\KegiatanController@revise');
-$router->get('/api/kegiatan/{id}/logs', 'Api\KegiatanController@logs');
-
-// Fitur Tambahan
-$router->post('/api/kegiatan/{id}/duplicate', 'Api\KegiatanController@duplicate');
-$router->get('/api/kegiatan/export/excel', 'Api\KegiatanController@exportExcel');
-$router->get('/api/kegiatan/statistics/dashboard', 'Api\KegiatanController@statistics');
-
-// ============================================
-// ANGGARAN MANAGEMENT ROUTES
-// ============================================
-
-$router->get('/api/kegiatan/{id}/anggaran', 'Api\AnggaranController@index');
-$router->post('/api/kegiatan/{id}/anggaran', 'Api\AnggaranController@create');
-$router->put('/api/kegiatan/{id}/anggaran/{item_id}', 'Api\AnggaranController@update');
-$router->delete('/api/kegiatan/{id}/anggaran/{item_id}', 'Api\AnggaranController@delete');
-
-// ============================================
-// LAMPIRAN MANAGEMENT ROUTES
-// ============================================
-
-$router->get('/api/kegiatan/{id}/lampiran', 'Api\LampiranController@index');
-$router->post('/api/kegiatan/{id}/lampiran', 'Api\LampiranController@upload');
-$router->get('/api/kegiatan/{id}/lampiran/{file_id}', 'Api\LampiranController@download');
-$router->delete('/api/kegiatan/{id}/lampiran/{file_id}', 'Api\LampiranController@delete');
-
-$router->run();
-
-// ====================================
-// 404 - Route not found
-// ====================================
-
-http_response_code(404);
-echo json_encode([
-    'success' => false,
-    'message' => 'Endpoint tidak ditemukan.'
-]);
+// Jalankan router
+$router->dispatch();
+exit;
