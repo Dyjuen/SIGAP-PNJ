@@ -35,7 +35,7 @@ export const bendaharaSidebar = `
 
       <!-- Riwayat -->
       <li class="menu-item">
-        <a href="/riwayat" data-link class="menu-link">
+        <a href="/bendahara/riwayat" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-history"></i>
           <div data-i18n="Riwayat">Riwayat</div>
         </a>
@@ -43,7 +43,7 @@ export const bendaharaSidebar = `
 
       <!-- Pengaturan -->
       <li class="menu-item">
-        <a href="/pengaturan" data-link class="menu-link">
+        <a href="/bendahara/pengaturan" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-settings"></i>
           <div data-i18n="Pengaturan">Pengaturan</div>
         </a>

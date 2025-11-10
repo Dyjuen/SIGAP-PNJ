@@ -3,7 +3,7 @@
 export const verifikatorSidebar = `
   <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-      <a href="/dashboard" data-link class="app-brand-link">
+      <a href="/verifikator/dashboard" data-link class="app-brand-link">
         <span class="app-brand-logo demo">
           <img src="/assets/img/logo/logo2.svg" alt="Logo" style="width: 160px; height: 160px;">
         </span>
@@ -19,7 +19,7 @@ export const verifikatorSidebar = `
     <ul class="menu-inner py-1">
       <!-- Monitoring Usulan -->
       <li class="menu-item">
-        <a href="/monitoring-usulan" data-link class="menu-link">
+        <a href="/verifikator/monitoring-usulan" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-file-search"></i>
           <div data-i18n="Monitoring Usulan">Monitoring Usulan</div>
         </a>
@@ -27,7 +27,7 @@ export const verifikatorSidebar = `
 
       <!-- Riwayat -->
       <li class="menu-item">
-        <a href="/riwayat" data-link class="menu-link">
+        <a href="/verifikator/riwayat" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-history"></i>
           <div data-i18n="Riwayat">Riwayat</div>
         </a>
@@ -35,7 +35,7 @@ export const verifikatorSidebar = `
 
       <!-- Pengaturan -->
       <li class="menu-item">
-        <a href="/pengaturan" data-link class="menu-link">
+        <a href="/verifikator/pengaturan" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-settings"></i>
           <div data-i18n="Pengaturan">Pengaturan</div>
         </a>

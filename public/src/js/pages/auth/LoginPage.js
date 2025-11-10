@@ -257,12 +257,17 @@ export function renderLoginPage() {
 
         // Store the user's primary role in localStorage
         if (roles.length > 0) {
-          localStorage.setItem("userRole", roles[0]); // Assuming the first role is the primary one
-        }
+          const primaryRole = roles[0];
+          localStorage.setItem("userRole", primaryRole);
 
-        setLoading(false);
-        // Redirect to the main dashboard
-        window.location.pathname = "/dashboard";
+          // Redirect to the role-based dashboard
+          const rolePath = primaryRole.toLowerCase();
+          window.location.pathname = `/${rolePath}/dashboard`;
+        } else {
+          // Handle case where user has no roles
+          showError("Login berhasil, tetapi tidak ada peran yang ditetapkan untuk pengguna ini.");
+          setLoading(false);
+        }
       } else {
         // Reload captcha on failed login from server
         document.getElementById("captcha-image").src =

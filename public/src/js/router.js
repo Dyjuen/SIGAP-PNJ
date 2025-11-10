@@ -13,61 +13,107 @@ import { renderPreviewKakPage } from "./pages/Pengusul/PreviewKak.js";
 import { renderMengajukanKegiatanPage } from "./pages/Admin/MengajukanKegiatanPage.js";
 import { renderPencairanDanaPage } from "./pages/Bendahara/PencairanDanaPage.js";
 import { renderMonitoringUsulanPage } from "./pages/Pengusul/MonitoringUsulan.js";
+import { renderPengajuanLpjPage } from "./pages/Pengusul/PengajuanLpj.js";
+import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
 
-// Placeholder function to get the current user's role.
-// In a real application, this would fetch the role from an API, local storage, or a global variable set by the backend.
 function getCurrentUserRole() {
-  // Read the role from localStorage. Return 'guest' if not found.
+  // In a real app, this would be more secure, perhaps involving a token verification
   return localStorage.getItem("userRole") || "guest";
 }
 
-const routes = {
+const publicRoutes = {
   "/": renderLandingPage,
   "/login": renderLoginPage,
-  "/usulan-kak": renderUsulanKakPage,
-  "/monitoring-usulan": renderMonitoringUsulanPage,
-  "/verifikator/dashboard": renderDashboardVerifikator,
-  "/wadir/dashboard": renderWadirDashboardPage,
-  "/ppk/dashboard": renderPpkDashboardPage,
-  "/bendahara/dashboard": renderBendaharaDashboardPage,
-  "/admin/mengajukan-kegiatan": renderMengajukanKegiatanPage,
-  "/bendahara/pencairan-dana": renderPencairanDanaPage,
-  "/preview-kak": renderPreviewKakPage,
+};
+
+const roleBasedRoutes = {
+  guest: {
+    "/": renderLandingPage,
+    "/login": renderLoginPage,
+  },
+  Admin: {
+    "/dashboard": renderUserManagementPage,
+    "/user-management": renderUserManagementPage,
+    "/mengajukan-kegiatan": renderMengajukanKegiatanPage,
+    "/template": renderNotFoundPage,
+    "/settings": renderNotFoundPage,
+  },
+  Pengusul: {
+    "/dashboard": renderPengusulDashboardPage,
+    "/usulan-kak": renderUsulanKakPage,
+    "/monitoring-usulan": renderMonitoringUsulanPage,
+    "/preview-kak": renderPreviewKakPage,
+    "/mengajukan-kegiatan": renderNotFoundPage,
+    "/monitoring-kegiatan": renderNotFoundPage,
+    "/pengajuan-lpj": renderPengajuanLpjPage,
+    "/riwayat": renderNotFoundPage,
+    "/pengaturan": renderNotFoundPage,
+  },
+  Verifikator: {
+    "/dashboard": renderDashboardVerifikator,
+    "/monitoring-usulan": renderNotFoundPage,
+    "/riwayat": renderNotFoundPage,
+    "/pengaturan": renderNotFoundPage,
+  },
+  WD2: {
+    "/dashboard": renderWadirDashboardPage,
+    "/verifikasi-kegiatan": renderNotFoundPage,
+    "/monitoring-kegiatan": renderNotFoundPage,
+    "/pengaturan": renderNotFoundPage,
+  },
+  PPK: {
+    "/dashboard": renderPpkDashboardPage,
+    "/setujui-kegiatan": renderNotFoundPage,
+    "/monitoring-kegiatan": renderNotFoundPage,
+    "/riwayat": renderNotFoundPage,
+    "/pengaturan": renderNotFoundPage,
+  },
+  Bendahara: {
+    "/dashboard": renderBendaharaDashboardPage,
+    "/pencairan-dana": renderPencairanDanaPage,
+    "/daftar-lpj": renderNotFoundPage,
+    "/riwayat": renderNotFoundPage,
+    "/pengaturan": renderNotFoundPage,
+  },
 };
 
 export function router() {
   const path = window.location.pathname;
-  const userRole = getCurrentUserRole(); // Get the user's role
+  const userRole = getCurrentUserRole();
 
-  let renderFunction = renderNotFoundPage;
-
-  if (path === "/dashboard") {
-    switch (userRole) {
-      case "Pengusul":
-        renderFunction = renderPengusulDashboardPage;
-        break;
-      case "WD2":
-        renderFunction = renderWadirDashboardPage;
-        break;
-      case "Verifikator":
-        renderFunction = renderDashboardVerifikator;
-        break;
-      case "PPK":
-        renderFunction = renderPpkDashboardPage;
-        break;
-      case "Bendahara":
-        renderFunction = renderBendaharaDashboardPage;
-        break;
-      case "Admin": // Assuming Admin also has a dashboard, or redirects to user management
-        renderFunction = renderUserManagementPage; // Or a specific admin dashboard
-        break;
-      default:
-        renderFunction = renderLoginPage; // Redirect unauthenticated users to login
-        break;
-    }
-  } else if (routes[path]) {
-    renderFunction = routes[path];
+  // Handle public routes first
+  if (publicRoutes[path]) {
+    publicRoutes[path]();
+    return;
   }
 
-  renderFunction(userRole); // Pass the userRole to the rendering function
+  // Handle role-based routes
+  const pathSegments = path.split("/").filter((segment) => segment); // e.g., ['pengusul', 'dashboard']
+  
+  if (pathSegments.length > 0) {
+    const roleFromUrl = pathSegments[0].charAt(0).toUpperCase() + pathSegments[0].slice(1);
+    const pagePath = "/" + pathSegments.slice(1).join("/");
+
+    // 1. Check if the role from the URL is a valid role
+    if (!roleBasedRoutes[roleFromUrl]) {
+      renderNotFoundPage(userRole); // If the role itself doesn't exist, it's a 404
+      return;
+    }
+
+    // 2. Security Check: Does the user's role match the URL's role?
+    if (userRole === "guest" || userRole !== roleFromUrl) {
+      renderUnauthorizedPage(); // If role is valid but user is not authorized, it's a 403
+      return;
+    }
+
+    // 3. If authorized, find the specific page
+    const roleRoutes = roleBasedRoutes[userRole];
+    if (roleRoutes && roleRoutes[pagePath]) {
+      roleRoutes[pagePath](userRole);
+      return;
+    }
+  }
+
+  // If no route is matched after all checks, render the Not Found page
+  renderNotFoundPage(userRole);
 }
