@@ -202,6 +202,10 @@ class AuthController
      * 
      * POST /api/auth/login
      * Body: {username, password, captcha}
+     * 
+     * For testing/development:
+     * - Set CAPTCHA_BYPASS in .env
+     * - Use that bypass code as captcha value
      */
     public function login()
     {
@@ -219,24 +223,42 @@ class AuthController
                 Response::error('Username dan password wajib diisi', 400);
             }
 
-            if (empty($data['captcha'])) {
-                Response::error('Captcha wajib diisi', 400);
-            }
+            // ============================================
+            // CAPTCHA VALIDATION WITH BYPASS FOR TESTING
+            // ============================================
+            
+            // Get bypass code from environment
+            $bypassCode = $_ENV['CAPTCHA_BYPASS'] ?? null;
+            $captchaInput = $data['captcha'] ?? '';
+            
+            // Check if bypass code is used
+            $isBypass = !empty($bypassCode) && $captchaInput === $bypassCode;
+            
+            if ($isBypass) {
+                // Bypass mode - skip captcha validation
+                // Optional: Log for security audit
+                error_log("CAPTCHA BYPASS: User '{$data['username']}' used bypass code for testing");
+            } else {
+                // Normal captcha validation
+                if (empty($captchaInput)) {
+                    Response::error('Captcha wajib diisi', 400);
+                }
 
-            // Validate captcha
-            if (!isset($_SESSION['code'])) {
-                Response::error('Captcha sudah expired. Silakan refresh captcha.', 400);
-            }
+                // Validate captcha from session
+                if (!isset($_SESSION['code'])) {
+                    Response::error('Captcha sudah expired. Silakan refresh captcha.', 400);
+                }
 
-            // Case-insensitive comparison
-            if (strcasecmp($_SESSION['code'], $data['captcha']) !== 0) {
-                // Clear captcha on failed attempt
+                // Case-insensitive comparison
+                if (strcasecmp($_SESSION['code'], $captchaInput) !== 0) {
+                    // Clear captcha on failed attempt
+                    unset($_SESSION['code']);
+                    Response::error('Kode captcha yang Anda masukkan salah.', 400);
+                }
+
+                // Clear captcha after successful validation
                 unset($_SESSION['code']);
-                Response::error('Kode captcha yang Anda masukkan salah.', 400);
             }
-
-            // Clear captcha after successful validation
-            unset($_SESSION['code']);
 
             // Find user by username
             $user = $this->userModel->findByUsername($data['username']);
