@@ -206,70 +206,73 @@ $router = new Router();
 // TELAAH ROUTES (CRUD & Workflow)
 // ============================================
 
-$router->get('/api/telaah', 'TelaahController@index');
-$router->post('/api/telaah', 'TelaahController@store');
-$router->get('/api/telaah/{id}', 'TelaahController@show');
-// $router->put('/api/telaah/{id}', 'Api\TelaahController@update'); // Uncomment jika perlu
+$router->get('/telaah', 'TelaahController@index');
+$router->post('/telaah', 'TelaahController@store');
+$router->get('/telaah/{id}', 'TelaahController@show');
 
 // Aksi Pengusul
-$router->post('/api/telaah/{id}/submit', 'TelaahController@submitForVerification');
-$router->post('/api/telaah/{id}/resubmit', 'TelaahController@resubmitAfterRevision');
+$router->post('/telaah/{id}/submit', 'TelaahController@submitForVerification');
+$router->post('/telaah/{id}/resubmit', 'TelaahController@resubmitAfterRevision');
 
 // Aksi Verifikator
-$router->post('/api/telaah/{id}/approve', 'TelaahController@approve');
-$router->post('/api/telaah/{id}/reject', 'TelaahController@reject');
-$router->post('/api/telaah/{id}/revise', 'TelaahController@requestRevision');
+$router->post('/telaah/{id}/approve', 'TelaahController@approve');
+$router->post('/telaah/{id}/reject', 'TelaahController@reject');
+$router->post('/telaah/{id}/revise', 'TelaahController@requestRevision');
 
 // ============================================
 // KEGIATAN ROUTES (Workflow & Features)
 // ============================================
 
+$router->get('/kegiatan', 'KegiatanController@index');
+$router->post('/kegiatan', 'KegiatanController@create');
+$router->get('/kegiatan/{id}', 'KegiatanController@show');
+
 // Status Workflow
-$router->post('/api/kegiatan/{id}/submit', 'Api\KegiatanController@submit');
-$router->post('/api/kegiatan/{id}/revise', 'Api\KegiatanController@revise');
-$router->get('/api/kegiatan/{id}/logs', 'Api\KegiatanController@logs');
+$router->post('/kegiatan/{id}/submit', 'KegiatanController@submit');
+$router->post('/kegiatan/{id}/revise', 'KegiatanController@revise');
+$router->get('/kegiatan/{id}/logs', 'KegiatanController@logs');
 
 // Fitur Tambahan
-$router->post('/api/kegiatan/{id}/duplicate', 'Api\KegiatanController@duplicate');
-$router->get('/api/kegiatan/export/excel', 'Api\KegiatanController@exportExcel');
-$router->get('/api/kegiatan/statistics/dashboard', 'Api\KegiatanController@statistics');
+$router->post('/kegiatan/{id}/duplicate', 'KegiatanController@duplicate');
+$router->get('/kegiatan/export/excel', 'KegiatanController@exportExcel');
+$router->get('/kegiatan/statistics/dashboard', 'KegiatanController@statistics');
 
 // ============================================
 // ANGGARAN MANAGEMENT ROUTES
 // ============================================
 
-$router->get('/api/kegiatan/{id}/anggaran', 'Api\AnggaranController@index');
-$router->post('/api/kegiatan/{id}/anggaran', 'Api\AnggaranController@create');
-$router->put('/api/kegiatan/{id}/anggaran/{item_id}', 'Api\AnggaranController@update');
-$router->delete('/api/kegiatan/{id}/anggaran/{item_id}', 'Api\AnggaranController@delete');
+$router->get('/kegiatan/{id}/anggaran', 'AnggaranController@index');
+$router->post('/kegiatan/{id}/anggaran', 'AnggaranController@create');
+$router->put('/kegiatan/{id}/anggaran/{item_id}', 'AnggaranController@update');
+$router->delete('/kegiatan/{id}/anggaran/{item_id}', 'AnggaranController@delete');
 
 // ============================================
 // LAMPIRAN MANAGEMENT ROUTES
 // ============================================
 
-$router->get('/api/kegiatan/{id}/lampiran', 'Api\LampiranController@index');
-$router->post('/api/kegiatan/{id}/lampiran', 'Api\LampiranController@upload');
-$router->get('/api/kegiatan/{id}/lampiran/{file_id}', 'Api\LampiranController@download');
-$router->delete('/api/kegiatan/{id}/lampiran/{file_id}', 'Api\LampiranController@delete');
+$router->get('/kegiatan/{id}/lampiran', 'LampiranController@index');
+$router->post('/kegiatan/{id}/lampiran', 'LampiranController@upload');
+$router->get('/kegiatan/{id}/lampiran/{file_id}', 'LampiranController@download');
+$router->delete('/kegiatan/{id}/lampiran/{file_id}', 'LampiranController@delete');
 
 // ============================================
 // PENCAIRAN DANA ROUTES
 // ============================================
 
 // GET /api/pencairan/kegiatan/{kegiatan_id} - List pencairan per kegiatan
-$router->get('/api/pencairan/kegiatan/{kegiatan_id}', 'Api\PencairanController@index');
+$router->get('/pencairan/kegiatan/{kegiatan_id}', 'PencairanController@index');
 
 // GET /api/pencairan/sisa-dana/{kegiatan_id} - Cek sisa dana
-$router->get('/api/pencairan/sisa-dana/{kegiatan_id}', 'Api\PencairanController@getSisaDana');
+$router->get('/pencairan/sisa-dana/{kegiatan_id}', 'PencairanController@getSisaDana');
 
 // POST /api/pencairan - Pengusul ajukan pencairan
-$router->post('/api/pencairan', 'Api\PencairanController@create');
+$router->post('/pencairan', 'PencairanController@create');
 
 // PUT /api/pencairan/{id}/approve - Bendahara setujui pencairan
-$router->put('/api/pencairan/{id}/approve', 'Api\PencairanController@approve');
+$router->put('/pencairan/{id}/approve', 'PencairanController@approve');
 
 // PUT /api/pencairan/{id}/reject - Bendahara tolak pencairan
-$router->put('/api/pencairan/{id}/reject', 'Api\PencairanController@reject');
+$router->put('/pencairan/{id}/reject', 'PencairanController@reject');
 
 // =====================================================
 // 11. DISPATCH ROUTER & HANDLE 404

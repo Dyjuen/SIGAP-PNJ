@@ -39,78 +39,26 @@ class KegiatanSeeder extends AbstractSeed
             'tanggal_selesai' => '2025-12-03',
             'lokasi' => 'Gedung Direktorat PNJ, Ruang Rapat Lt. 3',
             'pengusul_user_id' => 3, // Pengusul User (Dr. Budi Santoso)
-            'mata_anggaran_id' => 1, // APBN-2025 (diasumsikan diisi oleh verifikator)
-            'status_id' => 3, // Disetujui Verifikator
+            'mata_anggaran_id' => 1, // APBN-2025
+            'status_id' => 6, // DIUBAH: Status menjadi 'Proses Pencairan' karena kegiatan sudah dibuat
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
         $this->table('t_telaah')->insert($telaahData)->saveData();
 
-        // ============================================ 
-        // 3. SEED PROPOSAL DETAILS (CHILD TABLES)
-        // ============================================ 
-
-        // 3a. Telaah IKU
-        $this->table('t_telaah_iku')->insert([
-            ['telaah_id' => 1, 'iku_id' => 4, 'persentase_target' => 100], // Praktisi Mengajar
-            ['telaah_id' => 1, 'iku_id' => 7, 'persentase_target' => 100], // Kelas Kolaboratif
-        ])->saveData();
-
-        // 3b. Telaah Anggaran
-        $this->table('t_telaah_anggaran')->insert([
-            [
-                'anggaran_id' => 1, 'telaah_id' => 1, 'uraian' => 'Honorarium Narasumber Industri (Ahli AI)',
-                'volume1' => 1, 'satuan_id' => 4, 'harga_satuan' => 5000000, // Paket
-                'jumlah_diusulkan' => 5000000,
-            ],
-            [
-                'anggaran_id' => 2, 'telaah_id' => 1, 'uraian' => 'Konsumsi Peserta (50 orang x 1 hari)',
-                'volume1' => 50, 'satuan_id' => 2, 'harga_satuan' => 50000, // Orang
-                'jumlah_diusulkan' => 2500000,
-            ]
-        ])->saveData();
-        
-        // 3c. Telaah Lampiran (e.g., a quote for a budget item)
-        $this->table('t_telaah_lampiran')->insert([
-            [
-                'lampiran_id' => 1, 'anggaran_id' => 1, // Lampiran untuk Honorarium Narasumber
-                'nama_file_asli' => 'quotation_speaker_ai.pdf',
-                'path_file_disimpan' => '/uploads/lampiran/mock_quotation_speaker_ai.pdf',
-                'tipe_file' => 'application/pdf', 'uploader_user_id' => 3
-            ]
-        ])->saveData();
-
-        // 3d. Manfaat, Tahapan, Indikator, Target
-        $this->table('t_telaah_manfaat')->insert([
-            ['telaah_id' => 1, 'manfaat' => 'Meningkatkan kompetensi dosen dalam bidang AI.', 'sasaran_utama' => 'Dosen PNJ']
-        ])->saveData();
-        $this->table('t_telaah_tahapan')->insert([
-            ['telaah_id' => 1, 'nama_tahapan' => 'Persiapan dan Koordinasi', 'urutan' => 1],
-            ['telaah_id' => 1, 'nama_tahapan' => 'Pelaksanaan Workshop', 'urutan' => 2],
-            ['telaah_id' => 1, 'nama_tahapan' => 'Evaluasi dan Pelaporan', 'urutan' => 3]
-        ])->saveData();
-        $this->table('t_telaah_indikator')->insert([
-            ['telaah_id' => 1, 'deskripsi_indikator' => 'Jumlah RPS yang diperbarui dengan materi AI.']
-        ])->saveData();
-        $this->table('t_telaah_target')->insert([
-            ['telaah_id' => 1, 'deskripsi_target' => 'Minimal 10 RPS diperbarui.', 'bulan_indikator' => 'Desember', 'persentase_target' => 100]
-        ])->saveData();
-
-        // 3e. Telaah Approval History
-        $this->table('t_telaah_approval')->insert([
-            [
-                'telaah_id' => 1, 'approver_user_id' => 2, // Verifikator Keuangan
-                'status' => 'Disetujui',
-                'catatan' => 'Proposal sudah baik dan anggaran rasional. Disetujui untuk dilanjutkan.'
-            ]
-        ])->saveData();
+        // Details (anggaran, iku, etc.)
+        $this->table('t_telaah_iku')->insert([['telaah_id' => 1, 'iku_id' => 4, 'persentase_target' => 100],['telaah_id' => 1, 'iku_id' => 7, 'persentase_target' => 100]])->saveData();
+        $this->table('t_telaah_anggaran')->insert([['anggaran_id' => 1, 'telaah_id' => 1, 'uraian' => 'Honorarium Narasumber Industri', 'volume1' => 1, 'satuan_id' => 4, 'harga_satuan' => 5000000, 'jumlah_diusulkan' => 5000000],['anggaran_id' => 2, 'telaah_id' => 1, 'uraian' => 'Konsumsi Peserta', 'volume1' => 50, 'satuan_id' => 2, 'harga_satuan' => 50000, 'jumlah_diusulkan' => 2500000]])->saveData();
+        $this->table('t_telaah_approval')->insert([['telaah_id' => 1, 'approver_user_id' => 2, 'status' => 'Disetujui', 'catatan' => 'Disetujui untuk dilanjutkan.']])->saveData();
 
         // ============================================ 
-        // 4. SEED THE IMPLEMENTATION (KEGIATAN)
+        // 4. SEED THE IMPLEMENTATION (KEGIATAN) - DIKEMBALIKAN
         // ============================================ 
         $this->table('t_kegiatan')->insert([
             [
-                'kegiatan_id' => 1, 'telaah_id' => 1,
+                'kegiatan_id' => 1, 
+                'telaah_id' => 1,
+                'surat_pengantar_path' => '/storage/uploads/documents/surat_pengantar_mock.pdf', // Path palsu
                 'penanggung_jawab_manual' => 'Jurusan Teknik Informatika dan Komputer',
                 'pelaksana_manual' => 'Panitia Workshop AI PNJ 2025',
                 'tanggal_mulai_final' => '2025-12-01',
@@ -119,35 +67,43 @@ class KegiatanSeeder extends AbstractSeed
         ])->saveData();
 
         // ============================================ 
-        // 5. SEED IMPLEMENTATION APPROVAL FLOW
+        // 5. SEED IMPLEMENTATION APPROVAL FLOW - DIKEMBALIKAN
         // ============================================ 
         $this->table('t_kegiatan_approval')->insert([
-            // Level 1: PPK (sudah disetujui)
+            // Level 1: PPK (status Aktif, tugas sekarang)
             [
-                'kegiatan_id' => 1, 'approver_user_id' => 4, // PPK User
-                'approval_level' => 'PPK', 'status' => 'Disetujui',
-                'catatan' => 'Rekomendasi diberikan untuk melanjutkan ke Wadir.'
-            ],
-            // Level 2: Wadir (sudah disetujui)
-            [
-                'kegiatan_id' => 1, 'approver_user_id' => 5, // Wadir 2 User
-                'approval_level' => 'Wadir', 'status' => 'Disetujui',
-                'catatan' => 'Disetujui untuk pencairan dana oleh Bendahara.'
-            ],
-            // Level 3: Bendahara Pencairan (status Aktif, ini adalah tugas saat ini)
-            [
-                'kegiatan_id' => 1, 'approver_user_id' => null,
-                'approval_level' => 'Bendahara-Cair', 'status' => 'Aktif',
+                'kegiatan_id' => 1,
+                'approver_user_id' => 4,
+                'approval_level' => 'PPK',
+                'status' => 'Aktif',
                 'catatan' => null
             ],
-            // Level 4: Bendahara LPJ (masih menunggu kegiatan selesai)
+            // Level 2: Wadir (masih menunggu)
             [
-                'kegiatan_id' => 1, 'approver_user_id' => null,
-                'approval_level' => 'Bendahara-LPJ', 'status' => 'Menunggu',
+                'kegiatan_id' => 1,
+                'approver_user_id' => 5,
+                'approval_level' => 'Wadir',
+                'status' => 'Menunggu',
+                'catatan' => null
+            ],
+            // Level 3: Bendahara Pencairan (masih menunggu)
+            [
+                'kegiatan_id' => 1,
+                'approver_user_id' => 6,
+                'approval_level' => 'Bendahara-Cair',
+                'status' => 'Menunggu',
+                'catatan' => null
+            ],
+            // Level 4: Bendahara LPJ (masih menunggu)
+            [
+                'kegiatan_id' => 1,
+                'approver_user_id' => 6,
+                'approval_level' => 'Bendahara-LPJ',
+                'status' => 'Menunggu',
                 'catatan' => null
             ]
         ])->saveData();
 
-        echo "✅ Kegiatan seeder (new architecture) completed successfully!\n";
+        echo "✅ Kegiatan seeder (with full flow) completed successfully!\n";
     }
 }

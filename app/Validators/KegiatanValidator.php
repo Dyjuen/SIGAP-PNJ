@@ -3,16 +3,13 @@
 namespace App\Validators;
 
 use App\Core\Validator;
-use App\Models\UnitKerja;
 use App\Models\IKU;
 
 class KegiatanValidator extends Validator
 {
-    private $unitKerjaModel;
-
     public function __construct()
     {
-        $this->unitKerjaModel = new UnitKerja();
+        // Constructor is now empty
     }
 
     /**
@@ -27,7 +24,6 @@ class KegiatanValidator extends Validator
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date',
             'lokasi' => 'required|min:5|max:200',
-            'unit_kerja_id' => 'required|integer',
             'mata_anggaran_id' => 'required|integer'
         ];
 
@@ -38,7 +34,6 @@ class KegiatanValidator extends Validator
 
         // Custom validations
         $this->validateDateRange($data['tanggal_mulai'] ?? '', $data['tanggal_selesai'] ?? '');
-        $this->validateUnitKerja($data['unit_kerja_id'] ?? null);
 
         return !$this->hasErrors();
     }
@@ -79,20 +74,6 @@ class KegiatanValidator extends Validator
         $diff = ($selesai - $mulai) / 86400; // Convert to days
         if ($diff > 365) {
             $this->addError('tanggal_selesai', 'Durasi kegiatan maksimal 365 hari (1 tahun).');
-        }
-    }
-
-    /**
-     * Validate unit kerja exists
-     */
-    private function validateUnitKerja($unitKerjaId)
-    {
-        if (empty($unitKerjaId)) {
-            return;
-        }
-
-        if (!$this->unitKerjaModel->unitKerjaExists($unitKerjaId)) {
-            $this->addError('unit_kerja_id', 'Unit kerja tidak ditemukan.');
         }
     }
 }

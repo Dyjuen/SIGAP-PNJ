@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Core\Response;
 use App\Models\User;
 use App\Validators\ProfileValidator;
-use App\Middlewares\AuthMiddleware;
 
 class AccountController
 {
@@ -24,12 +23,14 @@ class AccountController
      */
     public function getProfile()
     {
-        // Get authenticated user ID from middleware
-        $userId = AuthMiddleware::getAuthUserId();
+        // Get authenticated user from helper function
+        $authUser = auth_user();
 
-        if (!$userId) {
+        if (!$authUser) {
             Response::unauthorized('User tidak terautentikasi.');
         }
+
+        $userId = $authUser['user_id'];
 
         // Get user with roles
         $user = $this->userModel->getUserWithRoles($userId);
@@ -46,32 +47,47 @@ class AccountController
      * 
      * PUT /api/account/profile
      * Header: Authorization: Bearer <token>
-     * Body: { nama_lengkap, email, unit_kerja_id }
+     * Body: { nama_lengkap, email }
+     * 
+     * Note: unit_kerja_id is now OPTIONAL
      */
     public function updateProfile()
     {
-        // Get authenticated user ID
-        $userId = AuthMiddleware::getAuthUserId();
+        // Get authenticated user
+        $authUser = auth_user();
 
-        if (!$userId) {
+        if (!$authUser) {
             Response::unauthorized('User tidak terautentikasi.');
         }
+
+        $userId = $authUser['user_id'];
 
         // Get JSON input
         $input = json_decode(file_get_contents('php://input'), true);
 
-        // Validate input
+        // Validate required fields only
+        $rules = [
+            'nama_lengkap' => 'required|min:3|max:100',
+            'email' => 'required|email|max:100'
+        ];
+
         $validator = new ProfileValidator();
-        if (!$validator->validateUpdateProfile($input, $userId)) {
+        if (!$validator->validate($input, $rules)) {
             Response::validationError($validator->getErrors(), 'Validasi gagal.');
         }
 
+        // Check email uniqueness
+        if ($this->userModel->emailExists($input['email'], $userId)) {
+            Response::validationError([
+                'email' => ['Email sudah digunakan oleh user lain.']
+            ], 'Validasi gagal.');
+        }
+
         try {
-            // Update profile
+            // Update profile (only nama_lengkap and email)
             $updateData = [
                 'nama_lengkap' => $input['nama_lengkap'],
-                'email' => $input['email'],
-                'unit_kerja_id' => $input['unit_kerja_id']
+                'email' => $input['email']
             ];
 
             $this->userModel->updateProfile($userId, $updateData);
@@ -95,20 +111,55 @@ class AccountController
      */
     public function changePassword()
     {
-        // Get authenticated user ID
-        $userId = AuthMiddleware::getAuthUserId();
+        // Get authenticated user
+        $authUser = auth_user();
 
-        if (!$userId) {
+        if (!$authUser) {
             Response::unauthorized('User tidak terautentikasi.');
         }
+
+        $userId = $authUser['user_id'];
 
         // Get JSON input
         $input = json_decode(file_get_contents('php://input'), true);
 
-        // Validate input
+        // Validate required fields
+        $rules = [
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|max:100',
+            'new_password_confirmation' => 'required'
+        ];
+
         $validator = new ProfileValidator();
-        if (!$validator->validateChangePassword($input, $userId)) {
+        if (!$validator->validate($input, $rules)) {
             Response::validationError($validator->getErrors(), 'Validasi gagal.');
+        }
+
+        // Check if new password matches confirmation
+        if ($input['new_password'] !== $input['new_password_confirmation']) {
+            Response::validationError([
+                'new_password_confirmation' => ['Konfirmasi password tidak sama.']
+            ], 'Validasi gagal.');
+        }
+
+        // Verify current password
+        $user = $this->userModel->findById($userId);
+        
+        if (!$user) {
+            Response::notFound('User tidak ditemukan.');
+        }
+
+        if (!$this->userModel->verifyPassword($input['current_password'], $user['password_hash'])) {
+            Response::validationError([
+                'current_password' => ['Password saat ini tidak sesuai.']
+            ], 'Validasi gagal.');
+        }
+
+        // Check if new password is different from current
+        if ($input['current_password'] === $input['new_password']) {
+            Response::validationError([
+                'new_password' => ['Password baru harus berbeda dengan password saat ini.']
+            ], 'Validasi gagal.');
         }
 
         try {
