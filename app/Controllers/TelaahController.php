@@ -103,6 +103,18 @@ class TelaahController
                 $data[$key] = $this->db->resultSet();
             }
 
+            $totalDiajukan = 0;
+            if (!empty($data['anggaran'])) {
+                foreach ($data['anggaran'] as $item) {
+                    // Gunakan jumlah_diusulkan yang sudah ada di DB
+                    // Atau hitung ulang jika perlu validasi
+                    $totalDiajukan += floatval($item['jumlah_diusulkan'] ?? 0);
+                }
+            }
+
+            // Tambahkan total_diajukan ke data telaah
+            $data['telaah']['total_diajukan'] = $totalDiajukan;
+
             // Ambil log status
             $this->db->query("
                 SELECT l.*, 
@@ -477,11 +489,11 @@ class TelaahController
             $data = $db->single();
 
             if (!$data) return $this->responseError("Data tidak ditemukan", 404);
-            
+
             // Validasi: hanya pengusul yang boleh resubmit
             if ($data['pengusul_user_id'] != $user['user_id'])
                 return $this->responseError("Tidak boleh mengedit milik orang lain", 403);
-            
+
             // Validasi: hanya status Revisi (5) yang boleh resubmit
             if ($data['status_id'] != 5)
                 return $this->responseError("Tidak dalam status revisi", 400);
@@ -622,11 +634,11 @@ class TelaahController
             $data = $db->single();
 
             if (!$data) return $this->responseError("Data tidak ditemukan", 404);
-            
+
             // Validasi: hanya status "Dalam Review" (2) yang bisa diapprove
             if ($data['status_id'] != 2)
                 return $this->responseError("Tidak dalam status review", 400);
-            
+
             // Validasi: pengusul tidak boleh approve telaahnya sendiri
             if ($data['pengusul_user_id'] == $user['user_id'])
                 return $this->responseError("Pengusul tidak dapat approve", 403);
@@ -714,11 +726,11 @@ class TelaahController
             $data = $db->single();
 
             if (!$data) return $this->responseError("Data tidak ditemukan", 404);
-            
+
             // Validasi: hanya status "Dalam Review" (2) yang bisa direject
             if ($data['status_id'] != 2)
                 return $this->responseError("Tidak dalam status review", 400);
-            
+
             // Validasi: pengusul tidak boleh reject telaahnya sendiri
             if ($data['pengusul_user_id'] == $user['user_id'])
                 return $this->responseError("Pengusul tidak dapat menolak", 403);

@@ -239,15 +239,6 @@ $router->get('/kegiatan/export/excel', 'KegiatanController@exportExcel');
 $router->get('/kegiatan/statistics/dashboard', 'KegiatanController@statistics');
 
 // ============================================
-// ANGGARAN MANAGEMENT ROUTES
-// ============================================
-
-$router->get('/kegiatan/{id}/anggaran', 'AnggaranController@index');
-$router->post('/kegiatan/{id}/anggaran', 'AnggaranController@create');
-$router->put('/kegiatan/{id}/anggaran/{item_id}', 'AnggaranController@update');
-$router->delete('/kegiatan/{id}/anggaran/{item_id}', 'AnggaranController@delete');
-
-// ============================================
 // LAMPIRAN MANAGEMENT ROUTES
 // ============================================
 
