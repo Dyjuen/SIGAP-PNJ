@@ -694,7 +694,7 @@ export function renderUsulanKakPage(userRole) {
     const btnSubmitRab = document.getElementById("btnSubmitRab");
     if (btnSubmitRab) {
       btnSubmitRab.addEventListener("click", () => {
-        window.location.href = "/form-kak";
+        window.location.href = "/pengusul/form-kak";
       });
     }
   }

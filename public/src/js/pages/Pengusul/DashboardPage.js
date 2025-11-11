@@ -6,13 +6,6 @@ export function renderPengusulDashboardPage(userRole) {
   const dashboardContent = `
     <style>
       /* Additional inline CSS for dashboard */
-      .template-card {
-        border: 2px solid #E0F2FE;
-        border-radius: 12px;
-        padding: 1rem;
-        transition: all 0.3s ease;
-        background: white;
-      }
       .template-card:hover {
         border-color: #00BCD4;
         box-shadow: 0 4px 12px rgba(0, 188, 212, 0.2);
@@ -20,19 +13,12 @@ export function renderPengusulDashboardPage(userRole) {
       .btn-action-icon {
         width: 40px;
         height: 40px;
-        border-radius: 8px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid #E0F2FE;
-        background: white;
         color: #00BCD4;
         transition: all 0.2s ease;
         cursor: pointer;
-      }
-      .btn-action-icon:hover {
-        background: #E0F2FE;
-        border-color: #00BCD4;
       }
       .video-placeholder {
         background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
@@ -82,7 +68,7 @@ export function renderPengusulDashboardPage(userRole) {
 
     <div class="pengusul-dashboard-page">
       <!-- Header -->
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex justify-between items-center my-6 ">
         <h2 class="text-4xl font-bold text-gray-800">Monitoring Usulan Kegiatan</h2>
         <div class="flex gap-3">
           <button class="btn btn-tambah-akun inline-flex items-center gap-2 px-4 py-2 rounded-lg">
@@ -105,53 +91,58 @@ export function renderPengusulDashboardPage(userRole) {
       <!-- Stat Cards & template-->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <!-- Draft Card -->
-        <div class="card stat-card-active">
-          <div class="card-body p-6">
+        <div class="card stat-card-active rounded-xl">
+          <div class="card-body p-6 flex flex-col justify-between ">
             <div class="flex justify-between items-start mb-4">
               <div>
                 <span class="text-xs uppercase font-semibold tracking-wide opacity-90">Usulan</span>
-                <h4 class="text-lg font-semibold mt-1">Draft</h4>
+                <h4 class="text-4xl font-semibold mt-1">Draft</h4>
               </div>
             </div>
-            <div class="flex items-end">
-              <h1 class="text-5xl font-bold mb-0">10</h1>
+            <div class="flex justify-end items-end">
+              <h1 class="text-7xl font-bold mb-0">10</h1>
             </div>
           </div>
         </div>
 
         <!-- Diajukan Card -->
-        <div class="card stat-card-inactive">
-          <div class="card-body p-6">
+        <div class="card stat-card-inactive rounded-xl">
+          <div class="card-body p-6 flex flex-col justify-between">
             <div class="flex justify-between items-start mb-4">
               <div>
                 <span class="text-xs uppercase font-semibold tracking-wide opacity-90">Usulan</span>
-                <h4 class="text-lg font-semibold mt-1">Diajukan</h4>
+                <h4 class="text-4xl font-semibold mt-1">Diajukan</h4>
               </div>
             </div>
-            <div class="flex items-end">
-              <h1 class="text-5xl font-bold mb-0">10</h1>
+            <div class="flex justify-end items-end">
+              <h1 class="text-7xl font-bold mb-0">10</h1>
             </div>
           </div>
         </div>
 
         <!-- Revisi Card -->
-        <div class="card stat-card-inactive">
-          <div class="card-body p-6">
+        <div class="card stat-card-inactive rounded-xl">
+          <div class="card-body p-6 flex flex-col justify-between ">
             <div class="flex justify-between items-start mb-4">
               <div>
                 <span class="text-xs uppercase font-semibold tracking-wide opacity-90">Usulan</span>
-                <h4 class="text-lg font-semibold mt-1">Revisi</h4>
+                <h4 class="text-4xl font-semibold mt-1">Revisi</h4>
               </div>
             </div>
-            <div class="flex items-end">
-              <h1 class="text-5xl font-bold mb-0">10</h1>
+            <div class="flex justify-end items-end">
+              <h1 class="text-7xl font-bold mb-0">10</h1>
             </div>
           </div>
         </div>
-
-        <div class="lg:col-span-1">
-          <div class="rounded-xl p-6 shadow-sm">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">Daftar Template</h3>
+        <!-- template -->  
+        <div class="">
+          <div class="rounded-xl">
+            <div class="w-full flex justify-between items-center">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Daftar Template</h3>
+              <p class="text-sm text-gray-400 underline pr-4 mb-2">
+                Lihat Semua
+              </p>
+            </div>
             <div class="space-y-3" id="templateList">
               <!-- Will be populated by JS -->
             </div>
@@ -378,17 +369,17 @@ export function renderPengusulDashboardPage(userRole) {
       const templateCard = document.createElement("div");
       templateCard.className = "template-card";
       templateCard.innerHTML = `
-        <div class="flex justify-between items-center">
-          <span class="text-cyan-500 font-medium text-sm">${template.name}</span>
-          <div class="flex gap-2">
+        <div class="flex justify-between items-center py-1 px-4 border-2 border-cyan-400 rounded-xl">
+          <span class="text-cyan-400 font-medium text-md">${template.name}</span>
+          <div class="flex">
             <button class="btn-action-icon" title="Preview">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
               </svg>
             </button>
             <button class="btn-action-icon" title="Download">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
                 <line x1="12" y1="15" x2="12" y2="3"></line>

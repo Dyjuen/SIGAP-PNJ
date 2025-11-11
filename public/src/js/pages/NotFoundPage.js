@@ -2,62 +2,11 @@ export function renderNotFoundPage(userRole) {
   const rootElement = document.getElementById("root");
 
   const pageHTML = `
-    <style>
-      .notfound-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        background-color: #f3f4f6;
-        font-family: 'Public Sans', sans-serif;
-        text-align: center;
-        padding: 2rem;
-      }
-      .notfound-card {
-        background-color: white;
-        border-radius: 1rem;
-        padding: 3rem;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        max-width: 600px;
-        width: 100%;
-      }
-      .notfound-illustration {
-        max-width: 250px;
-        margin-bottom: 2rem;
-      }
-      .notfound-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 1rem;
-      }
-      .notfound-message {
-        color: #4b5563;
-        margin-bottom: 2rem;
-      }
-      .notfound-button {
-        display: inline-block;
-        background-color: #33C8DA;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        text-decoration: none;
-        font-weight: 600;
-        transition: background-color 0.3s;
-      }
-      .notfound-button:hover {
-        background-color: #29aebf;
-      }
-    </style>
-    <div class="notfound-container">
-      <div class="notfound-card">
-        <img src="/assets/img/illustrations/page-misc-error.png" alt="404 Not Found" class="notfound-illustration" />
-        <h1 class="notfound-title">Halaman Tidak Ditemukan :(</h1>
-        <p class="notfound-message">
-          Oops! 😖 URL yang diminta tidak ditemukan di server ini.
-        </p>
-        <a href="/login" class="notfound-button" data-link>Kembali ke Login</a>
+    <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 font-sans text-center p-8">
+      <div class="flex flex-col justify-center bg-white rounded-xl p-12 shadow-lg max-w-lg w-full gap-4">
+        <div class="text-8xl font-extrabold text-cyan-500 mb-2">404</div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Halaman Tidak dapat Ditemukan</h1>
+        <a href="/login" class="bg-cyan-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-cyan-600 transition-colors duration-300" data-link>Kembali ke Login</a>
       </div>
     </div>
   `;
