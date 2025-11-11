@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class CreateTTelaahLampiranTable extends AbstractMigration
+final class CreateTKegiatanLampiranTable extends AbstractMigration
 {
     public function change()
     {
-        $table = $this->table('t_telaah_lampiran', ['id' => false, 'primary_key' => ['lampiran_id']]);
-        
+        $table = $this->table('t_kegiatan_lampiran', ['id' => false, 'primary_key' => ['lampiran_id']]);
+
         $table->addColumn('lampiran_id', 'integer', ['identity' => true])
               ->addColumn('anggaran_id', 'integer') // DIUBAH: dari telaah_id
               ->addColumn('nama_file_asli', 'string', ['limit' => 255])

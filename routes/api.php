@@ -230,6 +230,7 @@ $router->get('/kegiatan/{id}', 'KegiatanController@show');
 // Status Workflow
 $router->post('/kegiatan/{id}/submit', 'KegiatanController@submit');
 $router->post('/kegiatan/{id}/revise', 'KegiatanController@revise');
+$router->post('/kegiatan/{id}/approve', 'KegiatanController@approve');
 $router->get('/kegiatan/{id}/logs', 'KegiatanController@logs');
 
 // Fitur Tambahan

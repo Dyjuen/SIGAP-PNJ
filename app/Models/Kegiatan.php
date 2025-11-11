@@ -108,17 +108,43 @@ class Kegiatan extends Model
 
     public function updateApproval($kegiatanId, array $data)
     {
-        // This logic might be more complex, involving t_kegiatan_approval table
-        // For now, this is a placeholder
-        $sql = "INSERT INTO t_kegiatan_approval (kegiatan_id, approver_user_id, approval_level, status, catatan) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO t_kegiatan_approval 
+                (kegiatan_id, approval_level, approver_user_id, status, catatan) 
+                VALUES (?, ?, ?, ?, ?)";
+        
         $params = [
             $kegiatanId,
-            $data['approver_user_id'],
             $data['approval_level'],
+            $data['approver_user_id'] ?? null,  // ✅ FIX: Tambahkan approver_user_id
             $data['status'],
-            $data['catatan']
+            $data['catatan'] ?? null            // ✅ FIX: Tambahkan catatan
         ];
+        
         return $this->query($sql, $params);
+    }
+
+    public function findCurrentApproval($kegiatanId)
+    {
+        $sql = "SELECT * FROM t_kegiatan_approval 
+                WHERE kegiatan_id = ? AND status = 'Aktif' 
+                ORDER BY approval_kegiatan_id ASC LIMIT 1";
+        return $this->query($sql, [$kegiatanId])->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateApprovalStatus($approvalKegiatanId, $status, $approverUserId = null, $catatan = null)
+    {
+        $sql = "UPDATE t_kegiatan_approval 
+                SET status = ?, approver_user_id = ?, catatan = ?, updated_at = NOW() 
+                WHERE approval_kegiatan_id = ?";
+        return $this->query($sql, [$status, $approverUserId, $catatan, $approvalKegiatanId]);
+    }
+
+    public function findNextApproval($kegiatanId, $currentApprovalId)
+    {
+        $sql = "SELECT * FROM t_kegiatan_approval 
+                WHERE kegiatan_id = ? AND approval_kegiatan_id > ? 
+                ORDER BY approval_kegiatan_id ASC LIMIT 1";
+        return $this->query($sql, [$kegiatanId, $currentApprovalId])->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getStatistics($userId)

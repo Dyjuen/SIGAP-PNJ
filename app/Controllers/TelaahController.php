@@ -153,6 +153,8 @@ class TelaahController
 
             $k = $input['kak'];
 
+            $this->db->beginTransaction();
+
             /* INSERT HEADER TELAAH */
             $sql = "
                 INSERT INTO t_telaah 
@@ -274,11 +276,16 @@ class TelaahController
                 }
             }
 
+            $this->db->commit();
+
             return $this->responseSuccess([
                 "message" => "Draft berhasil dibuat",
                 "telaah_id" => $id
             ]);
         } catch (PDOException $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             return $this->responseError($e->getMessage());
         }
     }
