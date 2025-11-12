@@ -4,46 +4,46 @@ namespace App\Controllers;
 
 use App\Core\Response;
 use App\Core\PDF;
-use App\Models\Kegiatan;
+use App\Models\Telaah; // Ganti dari Kegiatan ke Telaah
 use App\Middlewares\AuthMiddleware;
 
 class KAKController
 {
-    private $kegiatanModel;
+    private $telaahModel; // Ganti nama variabel
 
     public function __construct()
     {
-        $this->kegiatanModel = new Kegiatan();
+        $this->telaahModel = new Telaah(); // Ganti ke model Telaah
     }
 
     /**
      * Generate and download KAK PDF
      * 
-     * GET /api/kak/{kegiatan_id}
+     * GET /api/kak/{telaah_id}
      */
     public function download()
     {
-        // Get kegiatan_id from URL
+        // Get telaah_id from URL
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         preg_match('/\/kak\/(\d+)$/', $uri, $matches);
-        $kegiatanId = $matches[1] ?? null;
+        $telaahId = $matches[1] ?? null;
 
-        if (!$kegiatanId) {
-            Response::error('Kegiatan ID tidak valid.', 400);
+        if (!$telaahId) {
+            Response::error('Telaah ID tidak valid.', 400);
         }
 
-        // Get kegiatan data with anggaran
-        $kegiatan = $this->kegiatanModel->getKegiatanForPDF($kegiatanId);
+        // Get KAK data from Telaah model
+        $kakData = $this->telaahModel->getDataForKAK($telaahId);
 
-        if (!$kegiatan) {
-            Response::notFound('Kegiatan tidak ditemukan.');
+        if (!$kakData) {
+            Response::notFound('Data Telaah untuk KAK tidak ditemukan.');
         }
 
         // Generate HTML from template
-        $html = $this->generateKAKHTML($kegiatan);
+        $html = $this->generateKAKHTML($kakData);
 
         // Generate filename
-        $filename = $this->generateFilename($kegiatan);
+        $filename = $this->generateFilename($kakData);
 
         // Generate and download PDF
         PDF::download($html, $filename);
@@ -52,28 +52,28 @@ class KAKController
     /**
      * Preview KAK in HTML format (before download)
      * 
-     * GET /api/kak/{kegiatan_id}/preview
+     * GET /api/kak/{telaah_id}/preview
      */
     public function preview()
     {
-        // Get kegiatan_id from URL
+        // Get telaah_id from URL
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         preg_match('/\/kak\/(\d+)\/preview$/', $uri, $matches);
-        $kegiatanId = $matches[1] ?? null;
+        $telaahId = $matches[1] ?? null;
 
-        if (!$kegiatanId) {
-            Response::error('Kegiatan ID tidak valid.', 400);
+        if (!$telaahId) {
+            Response::error('Telaah ID tidak valid.', 400);
         }
 
-        // Get kegiatan data with anggaran
-        $kegiatan = $this->kegiatanModel->getKegiatanForPDF($kegiatanId);
+        // Get KAK data from Telaah model
+        $kakData = $this->telaahModel->getDataForKAK($telaahId);
 
-        if (!$kegiatan) {
-            Response::notFound('Kegiatan tidak ditemukan.');
+        if (!$kakData) {
+            Response::notFound('Data Telaah untuk KAK tidak ditemukan.');
         }
 
         // Generate HTML from template
-        $html = $this->generateKAKHTML($kegiatan);
+        $html = $this->generateKAKHTML($kakData);
 
         // Output HTML directly
         header('Content-Type: text/html; charset=utf-8');
@@ -84,10 +84,10 @@ class KAKController
     /**
      * Generate filename for PDF
      */
-    private function generateFilename($kegiatan)
+    private function generateFilename($kakData)
     {
         // Clean nama kegiatan for filename
-        $namaKegiatan = preg_replace('/[^a-zA-Z0-9\s]/', '', $kegiatan['nama_kegiatan']);
+        $namaKegiatan = preg_replace('/[^a-zA-Z0-9\s]/', '', $kakData['nama_kegiatan']);
         $namaKegiatan = substr($namaKegiatan, 0, 50); // Max 50 chars
         $namaKegiatan = str_replace(' ', '-', $namaKegiatan);
         
@@ -99,13 +99,17 @@ class KAKController
     /**
      * Generate HTML content for PDF
      */
-    private function generateKAKHTML($kegiatan)
+    private function generateKAKHTML($kakData)
     {
+        // Template `kak-template.php` mengharapkan variabel bernama `$kegiatan`.
+        // Kita assign data KAK ke variabel tersebut di sini untuk kompatibilitas.
+        $kegiatan = $kakData;
+
         // Start output buffering
         ob_start();
         
         // Include template
-        include __DIR__ . '/../../Views/pdf/kak-template.php';
+        include __DIR__ . '/../Views/pdf/kak-template.php';
         
         // Get buffer content
         $html = ob_get_clean();
@@ -116,27 +120,27 @@ class KAKController
     /**
      * Get KAK data as JSON (for frontend to build their own template)
      * 
-     * GET /api/kak/{kegiatan_id}/data
+     * GET /api/kak/{telaah_id}/data
      */
     public function getData()
     {
-        // Get kegiatan_id from URL
+        // Get telaah_id from URL
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         preg_match('/\/kak\/(\d+)\/data$/', $uri, $matches);
-        $kegiatanId = $matches[1] ?? null;
+        $telaahId = $matches[1] ?? null;
 
-        if (!$kegiatanId) {
-            Response::error('Kegiatan ID tidak valid.', 400);
+        if (!$telaahId) {
+            Response::error('Telaah ID tidak valid.', 400);
         }
 
-        // Get kegiatan data with anggaran
-        $kegiatan = $this->kegiatanModel->getKegiatanForPDF($kegiatanId);
+        // Get KAK data from Telaah model
+        $kakData = $this->telaahModel->getDataForKAK($telaahId);
 
-        if (!$kegiatan) {
-            Response::notFound('Kegiatan tidak ditemukan.');
+        if (!$kakData) {
+            Response::notFound('Data Telaah untuk KAK tidak ditemukan.');
         }
 
         // Return as JSON
-        Response::success($kegiatan, 'Data KAK berhasil diambil.');
+        Response::success($kakData, 'Data KAK berhasil diambil.');
     }
 }

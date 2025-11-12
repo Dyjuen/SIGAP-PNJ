@@ -2,241 +2,188 @@
 
 namespace App\Models;
 
-use App\Core\Database;
+use App\Core\Model;
+use PDO;
 
-class Kegiatan
+class Kegiatan extends Model
 {
-    private $db;
+    protected $table = 't_kegiatan';
+    protected $primaryKey = 'kegiatan_id';
 
-    public function __construct()
+    public function getAllWithFilters(array $filters)
     {
-        $this->db = Database::getInstance();
-    }
+        $sql = "SELECT 
+                    k.kegiatan_id,
+                    t.nama_kegiatan,
+                    t.tanggal_mulai,
+                    t.tanggal_selesai,
+                    t.lokasi,
+                    u.nama_lengkap as pengusul_nama,
+                    ks.nama_status,
+                    ks.status_id,
+                    (SELECT SUM(ta.jumlah_diusulkan) FROM t_telaah_anggaran ta WHERE ta.telaah_id = t.telaah_id) as total_anggaran_diusulkan
+                FROM t_kegiatan k
+                JOIN t_telaah t ON k.telaah_id = t.telaah_id
+                JOIN m_users u ON t.pengusul_user_id = u.user_id
+                JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
+                WHERE 1=1";
 
-    /**
-     * Find kegiatan by ID
-     */
-    public function findById($kegiatanId)
-    {
-        $this->db->query("
-            SELECT 
-                k.*,
-                uk.nama_unit_kerja,
-                uk.kode_unit,
-                ma.kode_anggaran,
-                ma.nama_sumber_dana,
-                ks.nama_status,
-                u.nama_lengkap as pengusul_nama,
-                u.email as pengusul_email,
-                iku.kode_iku,
-                iku.nama_iku
-            FROM t_kegiatan k
-            LEFT JOIN m_unit_kerja uk ON k.unit_kerja_id = uk.unit_kerja_id
-            LEFT JOIN m_mata_anggaran ma ON k.mata_anggaran_id = ma.mata_anggaran_id
-            LEFT JOIN m_kegiatan_status ks ON k.status_id = ks.status_id
-            LEFT JOIN m_users u ON k.pengusul_user_id = u.user_id
-            LEFT JOIN m_iku iku ON k.iku_id = iku.iku_id
-            WHERE k.kegiatan_id = :kegiatan_id
-        ");
-        $this->db->bind(':kegiatan_id', $kegiatanId);
-        return $this->db->single();
-    }
+        $params = [];
 
-    /**
-     * Get kegiatan lengkap dengan anggaran (untuk PDF)
-     */
-    public function getKegiatanForPDF($kegiatanId)
-    {
-        // Get kegiatan data
-        $kegiatan = $this->findById($kegiatanId);
-        
-        if (!$kegiatan) {
-            return null;
+        if (!empty($filters['status_id'])) {
+            $sql .= " AND t.status_id = ?";
+            $params[] = $filters['status_id'];
         }
 
-        // Get anggaran items
-        $this->db->query("
-            SELECT 
-                ka.*,
-                s.nama_satuan
-            FROM t_kegiatan_anggaran ka
-            LEFT JOIN m_satuan s ON ka.satuan_id = s.satuan_id
-            WHERE ka.kegiatan_id = :kegiatan_id
-            ORDER BY ka.anggaran_id
-        ");
-        $this->db->bind(':kegiatan_id', $kegiatanId);
-        $kegiatan['anggaran_items'] = $this->db->resultSet();
+        if (!empty($filters['search'])) {
+            $sql .= " AND t.nama_kegiatan LIKE ?";
+            $params[] = '%' . $filters['search'] . '%';
+        }
 
-        // Get lampiran
-        $this->db->query("
-            SELECT 
-                kl.*,
-                u.nama_lengkap as uploader_nama
-            FROM t_kegiatan_lampiran kl
-            LEFT JOIN m_users u ON kl.uploader_user_id = u.user_id
-            WHERE kl.kegiatan_id = :kegiatan_id
-            ORDER BY kl.created_at
-        ");
-        $this->db->bind(':kegiatan_id', $kegiatanId);
-        $kegiatan['lampiran'] = $this->db->resultSet();
+        if (!empty($filters['tanggal_mulai'])) {
+            $sql .= " AND t.tanggal_mulai >= ?";
+            $params[] = $filters['tanggal_mulai'];
+        }
+
+        if (!empty($filters['tanggal_selesai'])) {
+            $sql .= " AND t.tanggal_selesai <= ?";
+            $params[] = $filters['tanggal_selesai'];
+        }
+
+        if (!empty($filters['user_id'])) {
+            $sql .= " AND t.pengusul_user_id = ?";
+            $params[] = $filters['user_id'];
+        }
+
+        // Pagination
+        $page = $filters['page'] ?? 1;
+        $perPage = $filters['per_page'] ?? 10;
+        $offset = ($page - 1) * $perPage;
+
+        $sql .= " ORDER BY k.created_at DESC LIMIT ? OFFSET ?";
+        $params[] = $perPage;
+        $params[] = $offset;
+
+        return $this->query($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getKegiatanForPDF($kegiatanId)
+    {
+        // This is a complex query, for now, a simplified version.
+        // You might need to build a more detailed query based on PDF requirements.
+        $sql = "SELECT 
+                    k.*, 
+                    t.*, 
+                    u.nama_lengkap as pengusul_nama, 
+                    u.email as pengusul_email
+                FROM t_kegiatan k
+                JOIN t_telaah t ON k.telaah_id = t.telaah_id
+                JOIN m_users u ON t.pengusul_user_id = u.user_id
+                WHERE k.kegiatan_id = ?";
+        
+        $kegiatan = $this->query($sql, [$kegiatanId])->fetch(PDO::FETCH_ASSOC);
+
+        if ($kegiatan) {
+            // Fetch related items like anggaran, lampiran etc.
+            $kegiatan['anggaran_items'] = $this->query("SELECT * FROM t_telaah_anggaran WHERE telaah_id = ?", [$kegiatan['telaah_id']])->fetchAll(PDO::FETCH_ASSOC);
+        }
 
         return $kegiatan;
     }
-
-    /**
-     * Get all kegiatan
-     */
-    public function getAll()
+    
+    public function findById($id)
     {
-        $this->db->query("
-            SELECT 
-                k.*,
-                uk.nama_unit_kerja,
-                ks.nama_status,
-                u.nama_lengkap as pengusul_nama
-            FROM t_kegiatan k
-            LEFT JOIN m_unit_kerja uk ON k.unit_kerja_id = uk.unit_kerja_id
-            LEFT JOIN m_kegiatan_status ks ON k.status_id = ks.status_id
-            LEFT JOIN m_users u ON k.pengusul_user_id = u.user_id
-            ORDER BY k.created_at DESC
-        ");
-        return $this->db->resultSet();
+        $sql = "SELECT k.*, t.pengusul_user_id, t.status_id 
+                FROM {$this->table} k
+                JOIN t_telaah t ON k.telaah_id = t.telaah_id
+                WHERE k.{$this->primaryKey} = ?";
+        return $this->query($sql, [$id])->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Get kegiatan by user ID
-     */
-    public function getByUserId($userId)
-    {
-        $this->db->query("
-            SELECT 
-                k.*,
-                uk.nama_unit_kerja,
-                ks.nama_status
-            FROM t_kegiatan k
-            LEFT JOIN m_unit_kerja uk ON k.unit_kerja_id = uk.unit_kerja_id
-            LEFT JOIN m_kegiatan_status ks ON k.status_id = ks.status_id
-            WHERE k.pengusul_user_id = :user_id
-            ORDER BY k.created_at DESC
-        ");
-        $this->db->bind(':user_id', $userId);
-        return $this->db->resultSet();
-    }
-
-    /**
-     * Create kegiatan
-     */
-    public function create($data)
-    {
-        $this->db->query("
-            INSERT INTO t_kegiatan (
-                nama_kegiatan, 
-                deskripsi_kegiatan, 
-                iku_id,
-                tanggal_mulai, 
-                tanggal_selesai, 
-                lokasi,
-                total_anggaran_diusulkan,
-                pengusul_user_id,
-                unit_kerja_id,
-                mata_anggaran_id,
-                status_id,
-                created_at
-            ) VALUES (
-                :nama_kegiatan,
-                :deskripsi_kegiatan,
-                :iku_id,
-                :tanggal_mulai,
-                :tanggal_selesai,
-                :lokasi,
-                :total_anggaran_diusulkan,
-                :pengusul_user_id,
-                :unit_kerja_id,
-                :mata_anggaran_id,
-                :status_id,
-                NOW()
-            )
-        ");
-
-        $this->db->bind(':nama_kegiatan', $data['nama_kegiatan']);
-        $this->db->bind(':deskripsi_kegiatan', $data['deskripsi_kegiatan']);
-        $this->db->bind(':iku_id', $data['iku_id'] ?? null);
-        $this->db->bind(':tanggal_mulai', $data['tanggal_mulai']);
-        $this->db->bind(':tanggal_selesai', $data['tanggal_selesai']);
-        $this->db->bind(':lokasi', $data['lokasi']);
-        $this->db->bind(':total_anggaran_diusulkan', $data['total_anggaran_diusulkan']);
-        $this->db->bind(':pengusul_user_id', $data['pengusul_user_id']);
-        $this->db->bind(':unit_kerja_id', $data['unit_kerja_id']);
-        $this->db->bind(':mata_anggaran_id', $data['mata_anggaran_id']);
-        $this->db->bind(':status_id', $data['status_id']);
-
-        $this->db->execute();
-        return $this->db->lastInsertId();
-    }
-
-    /**
-     * Update kegiatan
-     */
-    public function update($kegiatanId, $data)
-    {
-        $this->db->query("
-            UPDATE t_kegiatan SET
-                nama_kegiatan = :nama_kegiatan,
-                deskripsi_kegiatan = :deskripsi_kegiatan,
-                iku_id = :iku_id,
-                tanggal_mulai = :tanggal_mulai,
-                tanggal_selesai = :tanggal_selesai,
-                lokasi = :lokasi,
-                total_anggaran_diusulkan = :total_anggaran_diusulkan,
-                updated_at = NOW()
-            WHERE kegiatan_id = :kegiatan_id
-        ");
-
-        $this->db->bind(':nama_kegiatan', $data['nama_kegiatan']);
-        $this->db->bind(':deskripsi_kegiatan', $data['deskripsi_kegiatan']);
-        $this->db->bind(':iku_id', $data['iku_id'] ?? null);
-        $this->db->bind(':tanggal_mulai', $data['tanggal_mulai']);
-        $this->db->bind(':tanggal_selesai', $data['tanggal_selesai']);
-        $this->db->bind(':lokasi', $data['lokasi']);
-        $this->db->bind(':total_anggaran_diusulkan', $data['total_anggaran_diusulkan']);
-        $this->db->bind(':kegiatan_id', $kegiatanId);
-
-        return $this->db->execute();
-    }
-
-    /**
-     * Delete kegiatan
-     */
-    public function delete($kegiatanId)
-    {
-        $this->db->query("DELETE FROM t_kegiatan WHERE kegiatan_id = :kegiatan_id");
-        $this->db->bind(':kegiatan_id', $kegiatanId);
-        return $this->db->execute();
-    }
-
-    /**
-     * Update status kegiatan
-     */
     public function updateStatus($kegiatanId, $statusId)
     {
-        $this->db->query("
-            UPDATE t_kegiatan 
-            SET status_id = :status_id, updated_at = NOW()
-            WHERE kegiatan_id = :kegiatan_id
-        ");
-        $this->db->bind(':status_id', $statusId);
-        $this->db->bind(':kegiatan_id', $kegiatanId);
-        return $this->db->execute();
+        $sql = "UPDATE t_telaah SET status_id = ? WHERE telaah_id = (SELECT telaah_id FROM t_kegiatan WHERE kegiatan_id = ?)";
+        return $this->query($sql, [$statusId, $kegiatanId]);
     }
 
-    /**
-     * Check if kegiatan exists
-     */
-    public function exists($kegiatanId)
+    public function updateApproval($kegiatanId, array $data)
     {
-        $this->db->query("SELECT COUNT(*) as total FROM t_kegiatan WHERE kegiatan_id = :kegiatan_id");
-        $this->db->bind(':kegiatan_id', $kegiatanId);
-        $result = $this->db->single();
-        return $result['total'] > 0;
+        $sql = "INSERT INTO t_kegiatan_approval 
+                (kegiatan_id, approval_level, approver_user_id, status, catatan) 
+                VALUES (?, ?, ?, ?, ?)";
+        
+        $params = [
+            $kegiatanId,
+            $data['approval_level'],
+            $data['approver_user_id'] ?? null,  // ✅ FIX: Tambahkan approver_user_id
+            $data['status'],
+            $data['catatan'] ?? null            // ✅ FIX: Tambahkan catatan
+        ];
+        
+        return $this->query($sql, $params);
+    }
+
+    public function findCurrentApproval($kegiatanId)
+    {
+        $sql = "SELECT * FROM t_kegiatan_approval 
+                WHERE kegiatan_id = ? AND status = 'Aktif' 
+                ORDER BY approval_kegiatan_id ASC LIMIT 1";
+        return $this->query($sql, [$kegiatanId])->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateApprovalStatus($approvalKegiatanId, $status, $approverUserId = null, $catatan = null)
+    {
+        $sql = "UPDATE t_kegiatan_approval 
+                SET status = ?, approver_user_id = ?, catatan = ?, updated_at = NOW() 
+                WHERE approval_kegiatan_id = ?";
+        return $this->query($sql, [$status, $approverUserId, $catatan, $approvalKegiatanId]);
+    }
+
+    public function findNextApproval($kegiatanId, $currentApprovalId)
+    {
+        $sql = "SELECT * FROM t_kegiatan_approval 
+                WHERE kegiatan_id = ? AND approval_kegiatan_id > ? 
+                ORDER BY approval_kegiatan_id ASC LIMIT 1";
+        return $this->query($sql, [$kegiatanId, $currentApprovalId])->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getStatistics($userId)
+    {
+        // Placeholder for statistics logic
+        return ['message' => 'Statistics not implemented yet.'];
+    }
+
+    public function getAllForExport(array $filters)
+    {
+        $sql = "SELECT 
+                    t.nama_kegiatan,
+                    t.tanggal_mulai,
+                    t.tanggal_selesai,
+                    t.lokasi,
+                    u.nama_lengkap as pengusul_nama,
+                    ks.nama_status,
+                    (SELECT SUM(ta.jumlah_diusulkan) FROM t_telaah_anggaran ta WHERE ta.telaah_id = t.telaah_id) as total_anggaran_diusulkan,
+                    k.dana_dicairkan as total_anggaran_disetujui
+                FROM t_kegiatan k
+                JOIN t_telaah t ON k.telaah_id = t.telaah_id
+                JOIN m_users u ON t.pengusul_user_id = u.user_id
+                JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
+                WHERE 1=1";
+
+        $params = [];
+
+        if (!empty($filters['status_id'])) {
+            $sql .= " AND t.status_id = ?";
+            $params[] = $filters['status_id'];
+        }
+
+        if (!empty($filters['user_id'])) {
+            $sql .= " AND t.pengusul_user_id = ?";
+            $params[] = $filters['user_id'];
+        }
+
+        $sql .= " ORDER BY k.created_at DESC";
+
+        return $this->query($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
 }

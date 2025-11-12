@@ -119,11 +119,6 @@
         </div>
         
         <div class="info-row">
-            <span class="label">Unit Kerja</span>
-            <span class="value">: <?= htmlspecialchars($kegiatan['nama_unit_kerja']) ?> (<?= htmlspecialchars($kegiatan['kode_unit']) ?>)</span>
-        </div>
-        
-        <div class="info-row">
             <span class="label">Pengusul</span>
             <span class="value">: <?= htmlspecialchars($kegiatan['pengusul_nama']) ?></span>
         </div>

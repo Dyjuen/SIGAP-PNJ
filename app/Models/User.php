@@ -25,7 +25,6 @@ class User
                 username, 
                 nama_lengkap, 
                 email, 
-                unit_kerja_id,
                 created_at
             FROM m_users 
             WHERE user_id = :user_id
@@ -46,7 +45,6 @@ class User
                 u.password_hash, 
                 u.nama_lengkap, 
                 u.email,
-                u.unit_kerja_id,
                 u.created_at,
                 GROUP_CONCAT(r.nama_role) as roles
             FROM 
@@ -76,7 +74,6 @@ class User
                 u.password_hash, 
                 u.nama_lengkap, 
                 u.email,
-                u.unit_kerja_id,
                 u.created_at,
                 GROUP_CONCAT(r.nama_role) as roles
             FROM 
@@ -105,9 +102,6 @@ class User
                 u.username, 
                 u.nama_lengkap, 
                 u.email,
-                u.unit_kerja_id,
-                uk.nama_unit_kerja,
-                uk.kode_unit,
                 u.created_at,
                 GROUP_CONCAT(r.nama_role) as roles
             FROM 
@@ -116,8 +110,7 @@ class User
                 m_user_roles ur ON u.user_id = ur.user_id
             LEFT JOIN 
                 m_roles r ON ur.role_id = r.role_id
-            LEFT JOIN
-                m_unit_kerja uk ON u.unit_kerja_id = uk.unit_kerja_id
+
             WHERE 
                 u.user_id = :user_id
             GROUP BY
@@ -154,16 +147,15 @@ class User
         
         $this->db->query("
             INSERT INTO m_users 
-            (username, password_hash, nama_lengkap, email, unit_kerja_id, created_at) 
+            (username, password_hash, nama_lengkap, email, created_at) 
             VALUES 
-            (:username, :password_hash, :nama_lengkap, :email, :unit_kerja_id, NOW())
+            (:username, :password_hash, :nama_lengkap, :email, NOW())
         ");
         
         $this->db->bind(':username', $data['username']);
         $this->db->bind(':password_hash', $hashedPassword);
         $this->db->bind(':nama_lengkap', $data['nama_lengkap']);
         $this->db->bind(':email', $data['email']);
-        $this->db->bind(':unit_kerja_id', $data['unit_kerja_id']);
         
         $this->db->execute();
         
@@ -180,13 +172,11 @@ class User
             SET 
                 nama_lengkap = :nama_lengkap,
                 email = :email,
-                unit_kerja_id = :unit_kerja_id
             WHERE user_id = :user_id
         ");
         
         $this->db->bind(':nama_lengkap', $data['nama_lengkap']);
         $this->db->bind(':email', $data['email']);
-        $this->db->bind(':unit_kerja_id', $data['unit_kerja_id']);
         $this->db->bind(':user_id', $userId);
         
         return $this->db->execute();
@@ -274,8 +264,6 @@ class User
                 u.username,
                 u.nama_lengkap,
                 u.email,
-                uk.nama_unit_kerja,
-                uk.kode_unit,
                 u.created_at,
                 GROUP_CONCAT(r.nama_role) as roles
             FROM 
@@ -284,8 +272,6 @@ class User
                 m_user_roles ur ON u.user_id = ur.user_id
             LEFT JOIN 
                 m_roles r ON ur.role_id = r.role_id
-            LEFT JOIN
-                m_unit_kerja uk ON u.unit_kerja_id = uk.unit_kerja_id
             GROUP BY
                 u.user_id
             ORDER BY

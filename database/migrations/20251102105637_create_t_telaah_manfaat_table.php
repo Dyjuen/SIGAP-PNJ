@@ -12,7 +12,8 @@ final class CreateTTelaahManfaatTable extends AbstractMigration
         
         $table->addColumn('manfaat_id', 'integer', ['identity' => true])
               ->addColumn('telaah_id', 'integer')
-              ->addColumn('deskripsi_manfaat', 'text')
+              ->addColumn('manfaat', 'text')
+              ->addColumn('sasaran_utama', 'text')
               ->addColumn('catatan_verifikator', 'text', ['null' => true])
               ->addForeignKey('telaah_id', 't_telaah', 'telaah_id', [
                   'delete' => 'CASCADE',

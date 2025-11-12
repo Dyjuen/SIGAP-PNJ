@@ -4,17 +4,14 @@ namespace App\Validators;
 
 use App\Core\Validator;
 use App\Models\User;
-use App\Models\UnitKerja;
 
 class RegisterValidator extends Validator
 {
     private $userModel;
-    private $unitKerjaModel;
 
     public function __construct()
     {
         $this->userModel = new User();
-        $this->unitKerjaModel = new UnitKerja();
     }
 
     /**
@@ -32,7 +29,6 @@ class RegisterValidator extends Validator
             'password_confirmation' => 'required',
             'nama_lengkap' => 'required|min:3|max:100',
             'email' => 'required|email|max:100',
-            'unit_kerja_id' => 'required|integer',
             'role_ids' => 'required|array'
         ];
 
@@ -45,7 +41,6 @@ class RegisterValidator extends Validator
         $this->validateUsername($data['username'] ?? '');
         $this->validateEmail($data['email'] ?? '');
         $this->validatePasswordConfirmation($data['password'] ?? '', $data['password_confirmation'] ?? '');
-        $this->validateUnitKerja($data['unit_kerja_id'] ?? null);
         $this->validateRoleIds($data['role_ids'] ?? []);
 
         return !$this->hasErrors();
@@ -86,20 +81,6 @@ class RegisterValidator extends Validator
     {
         if ($password !== $passwordConfirmation) {
             $this->addError('password_confirmation', 'Konfirmasi password tidak sama.');
-        }
-    }
-
-    /**
-     * Validate unit kerja exists
-     */
-    private function validateUnitKerja($unitKerjaId)
-    {
-        if (empty($unitKerjaId)) {
-            return;
-        }
-
-        if (!$this->unitKerjaModel->unitKerjaExists($unitKerjaId)) {
-            $this->addError('unit_kerja_id', 'Unit kerja tidak ditemukan.');
         }
     }
 

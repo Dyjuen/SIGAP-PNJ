@@ -7,10 +7,13 @@ use App\Models\Kegiatan;
 use App\Models\KegiatanAnggaran;
 use App\Models\KegiatanLampiran;
 use App\Models\KegiatanLogStatus;
+use App\Models\Notifikasi;
 use App\Validators\KegiatanValidator;
 use App\Validators\AnggaranValidator;
 use App\Core\FileUpload;
 use App\Middlewares\AuthMiddleware;
+use App\Models\Telaah;
+use App\Services\LpjTimerService;
 
 class KegiatanController
 {
@@ -18,6 +21,8 @@ class KegiatanController
     private $anggaranModel;
     private $lampiranModel;
     private $logStatusModel;
+    private $notifikasiModel;
+    private $telaahModel;
     private $userData;
 
     public function __construct()
@@ -26,6 +31,8 @@ class KegiatanController
         $this->anggaranModel = new KegiatanAnggaran();
         $this->lampiranModel = new KegiatanLampiran();
         $this->logStatusModel = new KegiatanLogStatus();
+        $this->notifikasiModel = new Notifikasi();
+        $this->telaahModel = new Telaah();
         
         // Get authenticated user data
         $this->userData = AuthMiddleware::getAuthUser();
@@ -34,14 +41,13 @@ class KegiatanController
     /**
      * Get all kegiatan with filters
      * 
-     * GET /api/kegiatan?status=1&unit_kerja=1&search=workshop&page=1&per_page=10
+     * GET /api/kegiatan?status=1&search=workshop&page=1&per_page=10
      */
     public function index()
     {
         try {
             // Get query parameters
             $status = $_GET['status'] ?? null;
-            $unitKerja = $_GET['unit_kerja'] ?? null;
             $search = $_GET['search'] ?? null;
             $tanggalMulai = $_GET['tanggal_mulai'] ?? null;
             $tanggalSelesai = $_GET['tanggal_selesai'] ?? null;
@@ -57,7 +63,6 @@ class KegiatanController
             // Get kegiatan with filters
             $kegiatan = $this->kegiatanModel->getAllWithFilters([
                 'status_id' => $status,
-                'unit_kerja_id' => $unitKerja,
                 'search' => $search,
                 'tanggal_mulai' => $tanggalMulai,
                 'tanggal_selesai' => $tanggalSelesai,
@@ -112,44 +117,99 @@ class KegiatanController
     }
 
     /**
-     * Create new kegiatan
+     * Create new kegiatan from an approved telaah, including surat pengantar upload.
      * 
      * POST /api/kegiatan
+     * Expects multipart/form-data with 'telaah_id' and 'surat_pengantar' file.
      */
     public function create()
     {
-        try {
-            // Get JSON input
-            $data = json_decode(file_get_contents('php://input'), true);
+        $db = $this->kegiatanModel->getDb();
+        $uploader = null;
+        $uploadResult = null;
 
-            // Validate input
-            $validator = new KegiatanValidator();
-            if (!$validator->validateCreate($data)) {
-                Response::validationError($validator->getErrors(), 'Validasi gagal.');
+        try {
+            // This endpoint now expects multipart/form-data
+            $telaahId = $_POST['telaah_id'] ?? null;
+            $suratPengantarFile = $_FILES['surat_pengantar'] ?? null;
+
+            // --- 1. Basic Validation ---
+            if (!$telaahId) {
+                Response::error('telaah_id harus diisi.', 400);
+            }
+            if (!$suratPengantarFile || $suratPengantarFile['error'] !== UPLOAD_ERR_OK) {
+                Response::error('File surat_pengantar harus diupload.', 400);
             }
 
-            // Set pengusul user ID
-            $data['pengusul_user_id'] = $this->userData['user_id'];
-            $data['status_id'] = 1; // Draft
+            // --- 2. Find and Validate Telaah ---
+            $telaah = $this->telaahModel->find($telaahId);
+            if (!$telaah) {
+                Response::notFound('Telaah tidak ditemukan.');
+            }
+            if ($telaah['status_id'] != 3) { // 3 = Disetujui Verifikator
+                Response::error('Hanya telaah yang sudah disetujui verifikator yang bisa dijadikan kegiatan.', 400);
+            }
+            
+            // --- 3. Check for Existing Kegiatan ---
+            $existingKegiatan = $this->kegiatanModel->findBy('telaah_id', $telaahId);
+            if ($existingKegiatan) {
+                Response::error('Kegiatan untuk telaah ini sudah ada.', 409); // 409 Conflict
+            }
 
-            // Create kegiatan
-            $kegiatanId = $this->kegiatanModel->create($data);
+            // --- 4. Upload Surat Pengantar ---
+            $uploader = new FileUpload(
+                '/storage/uploads/documents/', // Path to save the file
+                ['pdf', 'doc', 'docx'],      // Allowed extensions
+                5242880                       // Max size 5MB
+            );
+            $uploadResult = $uploader->upload($suratPengantarFile);
 
-            // Log status
-            $this->logStatusModel->create([
+            if (!$uploadResult['success']) {
+                Response::error('Gagal mengupload surat pengantar: ' . $uploadResult['message'], 400);
+            }
+
+            $db->beginTransaction();
+
+            // --- 5. Create New Kegiatan with Surat Pengantar Path ---
+            $kegiatanData = [
+                'telaah_id' => $telaahId,
+                'surat_pengantar_path' => $uploadResult['file_path'], // Save the file path
+                'tanggal_mulai_final' => $telaah['tanggal_mulai'],
+                'penanggung_jawab_manual' => 'Ditentukan kemudian',
+                'pelaksana_manual' => 'Ditentukan kemudian',
+                'tgl_batas_lpj' => date('Y-m-d', strtotime($telaah['tanggal_selesai'] . ' +14 days'))
+            ];
+            $kegiatanId = $this->kegiatanModel->create($kegiatanData);
+
+            // --- 6. Create Initial Approval Flow ---
+            $approvalLevels = ['PPK', 'Wadir', 'Bendahara-Cair', 'Bendahara-LPJ'];
+            foreach ($approvalLevels as $level) {
+                $this->kegiatanModel->updateApproval($kegiatanId, [
+                    'approval_level' => $level,
+                    'approver_user_id' => null,
+                    'status' => $level === 'PPK' ? 'Aktif' : 'Menunggu', // PPK is the first active step
+                    'catatan' => null
+                ]);
+            }
+            
+            // --- 7. Update Telaah Status ---
+            $this->telaahModel->update($telaahId, ['status_id' => 6]); // 6 = Proses Pencairan
+
+            $db->commit();
+
+            Response::created([
                 'kegiatan_id' => $kegiatanId,
-                'status_id_lama' => null,
-                'status_id_baru' => 1,
-                'actor_user_id' => $this->userData['user_id'],
-                'catatan' => 'Kegiatan dibuat'
-            ]);
-
-            // Get created kegiatan
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
-
-            Response::created($kegiatan, 'Kegiatan berhasil dibuat.');
+                'surat_pengantar_path' => $uploadResult['file_path']
+            ], 'Kegiatan berhasil dibuat dan alur persetujuan dimulai.');
 
         } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            // If something goes wrong after upload, delete the orphaned file
+            if (isset($uploadResult) && $uploadResult['success']) {
+                $uploader->delete($uploadResult['file_path']);
+            }
             Response::error('Gagal membuat kegiatan: ' . $e->getMessage(), 500);
         }
     }
@@ -259,7 +319,10 @@ class KegiatanController
      */
     public function submit()
     {
+        $db = $this->kegiatanModel->getDb();
         try {
+            $db->beginTransaction();
+
             // Get kegiatan_id from URL
             $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             preg_match('/\/kegiatan\/(\d+)\/submit$/', $uri, $matches);
@@ -304,10 +367,270 @@ class KegiatanController
                 'catatan' => 'Kegiatan disubmit untuk review'
             ]);
 
+            $db->commit();
             Response::success(null, 'Kegiatan berhasil disubmit untuk review.');
 
         } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
             Response::error('Gagal submit kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Revise kegiatan (by approver)
+     * 
+     * POST /api/kegiatan/{id}/revise
+     */
+    public function revise()
+    {
+        $db = $this->kegiatanModel->getDb();
+        try {
+            $db->beginTransaction();
+
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/revise$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Get JSON input
+            $data = json_decode(file_get_contents('php://input'), true);
+            $catatan = $data['catatan'] ?? null;
+
+            if (!$catatan) {
+                Response::error('Catatan revisi harus diisi.', 400);
+            }
+
+            // Check if kegiatan exists
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // Authorization: Only approvers can revise
+            if (!in_array('Verifikator', $this->userData['roles'] ?? []) && 
+                !in_array('PPK', $this->userData['roles'] ?? []) &&
+                !in_array('Admin', $this->userData['roles'] ?? [])) {
+                Response::forbidden('Anda tidak memiliki akses untuk revisi kegiatan.');
+            }
+
+            // Update status to Revisi
+            $oldStatus = $kegiatan['status_id'];
+            $this->kegiatanModel->updateStatus($kegiatanId, 5); // 5 = Revisi
+
+            // Log status change
+            $this->logStatusModel->create([
+                'kegiatan_id' => $kegiatanId,
+                'status_id_lama' => $oldStatus,
+                'status_id_baru' => 5,
+                'actor_user_id' => $this->userData['user_id'],
+                'catatan' => $catatan
+            ]);
+
+            // Send notification to pengusul
+            $this->notifikasiModel->create([
+                'penerima_user_id' => $kegiatan['pengusul_user_id'],
+                'pesan' => "Kegiatan \"{$kegiatan['nama_kegiatan']}\" perlu direvisi. Catatan: {$catatan}",
+                'link_tujuan' => '/pengusul/kegiatan/' . $kegiatanId,
+                'is_read' => false
+            ]);
+
+            $db->commit();
+            Response::success(null, 'Kegiatan berhasil dikembalikan untuk revisi.');
+
+        } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            Response::error('Gagal revisi kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Approve kegiatan
+     * INTEGRATED WITH LPJ TIMER SERVICE
+     * 
+     * POST /api/kegiatan/{id}/approve
+     */
+    public function approve()
+    {
+        // Get the database connection and start a transaction
+        $db = $this->kegiatanModel->getDb();
+        try {
+            $db->beginTransaction();
+
+            // 1. Get Input and Find Kegiatan
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/approve$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            $data = json_decode(file_get_contents('php://input'), true);
+            $status = $data['status'] ?? null; // 'Disetujui' or 'Revisi'
+            $catatan = $data['catatan'] ?? null;
+
+            if (!in_array($status, ['Disetujui', 'Revisi'])) {
+                Response::error("Status harus 'Disetujui' atau 'Revisi'.", 400);
+            }
+            if ($status === 'Revisi' && empty($catatan)) {
+                Response::error('Catatan revisi harus diisi.', 400);
+            }
+
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // 2. Find the Current Active Approval Step
+            $currentApproval = $this->kegiatanModel->findCurrentApproval($kegiatanId);
+            if (!$currentApproval) {
+                Response::error('Tidak ada alur persetujuan yang aktif untuk kegiatan ini.', 400);
+            }
+
+            // 3. Authorization Check
+            $approvalLevel = $currentApproval['approval_level'];
+            $allowedRoles = [
+                'PPK' => ['PPK', 'Admin'],
+                'Wadir' => ['Wadir', 'Admin'],
+                'Bendahara-Cair' => ['Bendahara', 'Admin'],
+                'Bendahara-LPJ' => ['Bendahara', 'Admin'],
+            ];
+
+            if (!isset($allowedRoles[$approvalLevel])) {
+                Response::error('Approval level tidak valid.', 400);
+            }
+
+            $hasPermission = false;
+            foreach ($allowedRoles[$approvalLevel] as $role) {
+                if ($this->hasRole($role)) {
+                    $hasPermission = true;
+                    break;
+                }
+            }
+
+            if (!$hasPermission) {
+                Response::forbidden("Anda tidak memiliki akses untuk persetujuan level {$approvalLevel}.");
+            }
+
+            // 4. Handle Revision
+            if ($status === 'Revisi') {
+                // Update current approval status
+                $this->kegiatanModel->updateApprovalStatus(
+                    $currentApproval['approval_kegiatan_id'],
+                    'Revisi',
+                    $this->userData['user_id'],
+                    $catatan
+                );
+
+                // Update main kegiatan status to Revisi
+                $this->kegiatanModel->updateStatus($kegiatanId, 5); // 5 = Revisi
+
+                // Log status change
+                $this->logStatusModel->create([
+                    'telaah_id' => $kegiatan['telaah_id'],
+                    'status_id_lama' => $kegiatan['status_id'],
+                    'status_id_baru' => 5,
+                    'actor_user_id' => $this->userData['user_id'],
+                    'catatan' => "Revisi dari {$approvalLevel}: {$catatan}"
+                ]);
+
+                // Notify proposer
+                $this->notifikasiModel->create([
+                    'penerima_user_id' => $kegiatan['pengusul_user_id'],
+                    'pesan' => "Kegiatan \"{$kegiatan['nama_kegiatan']}\" perlu direvisi oleh {$approvalLevel}. Catatan: {$catatan}",
+                    'link_tujuan' => '/pengusul/kegiatan/' . $kegiatanId,
+                ]);
+
+                // Commit the transaction
+                $db->commit();
+                Response::success(null, 'Kegiatan berhasil dikembalikan untuk revisi.');
+                return;
+            }
+
+            // 5. Handle Approval
+            $this->kegiatanModel->updateApprovalStatus(
+                $currentApproval['approval_kegiatan_id'],
+                'Disetujui',
+                $this->userData['user_id'],
+                $catatan
+            );
+
+            // Log this specific approval
+            $this->logStatusModel->create([
+                'telaah_id' => $kegiatan['telaah_id'],
+                'status_id_lama' => $kegiatan['status_id'],
+                'status_id_baru' => $kegiatan['status_id'], // Status utama belum berubah
+                'actor_user_id' => $this->userData['user_id'],
+                'catatan' => "Disetujui oleh {$approvalLevel}." . ($catatan ? " Catatan: {$catatan}" : "")
+            ]);
+
+            // 6. Activate Next Step or Finalize
+            $nextApproval = $this->kegiatanModel->findNextApproval($kegiatanId, $currentApproval['approval_kegiatan_id']);
+
+            if ($nextApproval) {
+                $this->kegiatanModel->updateApprovalStatus($nextApproval['approval_kegiatan_id'], 'Aktif');
+                
+                // Notify next approver
+                // (Implementation depends on how you map roles to users)
+
+                $db->commit();
+                Response::success(null, "Disetujui oleh {$approvalLevel}. Menunggu persetujuan {$nextApproval['approval_level']}.");
+            
+            } else {
+                // This was the final approval step
+                // Check which level was the last one
+                if ($approvalLevel === 'Bendahara-Cair') {
+                    // Update main kegiatan status to "Pencairan"
+                    $this->kegiatanModel->updateStatus($kegiatanId, 7); // 7 = Pencairan
+                    
+                    // START LPJ TIMER
+                    $lpjService = new LpjTimerService();
+                    $lpjService->startLpjTimer($kegiatanId);
+
+                    // Notify proposer
+                    $this->notifikasiModel->create([
+                        'penerima_user_id' => $kegiatan['pengusul_user_id'],
+                        'pesan' => "Pencairan dana untuk \"{$kegiatan['nama_kegiatan']}\" disetujui. Segera submit LPJ sebelum batas waktu.",
+                        'link_tujuan' => '/pengusul/kegiatan/' . $kegiatanId . '/lpj',
+                    ]);
+
+                    $db->commit();
+                    Response::success(['lpj_timer_started' => true], 'Persetujuan selesai. Dana siap dicairkan dan timer LPJ dimulai.');
+
+                } else if ($approvalLevel === 'Bendahara-LPJ') {
+                    // This is the final LPJ approval
+                    $this->kegiatanModel->updateStatus($kegiatanId, 9); // 9 = Selesai
+                    
+                    // Notify proposer
+                     $this->notifikasiModel->create([
+                        'penerima_user_id' => $kegiatan['pengusul_user_id'],
+                        'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah disetujui. Kegiatan selesai.",
+                        'link_tujuan' => '/pengusul/kegiatan/' . $kegiatanId,
+                    ]);
+
+                    $db->commit();
+                    Response::success(null, 'LPJ disetujui. Kegiatan telah selesai.');
+                } else {
+                     // Fallback for other potential final steps
+                    $db->commit();
+                    Response::success(null, 'Persetujuan akhir berhasil.');
+                }
+            }
+
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            Response::error('Gagal memproses persetujuan: ' . $e->getMessage(), 500);
         }
     }
 
@@ -318,7 +641,10 @@ class KegiatanController
      */
     public function duplicate()
     {
+        $db = $this->kegiatanModel->getDb();
         try {
+            $db->beginTransaction();
+
             // Get kegiatan_id from URL
             $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             preg_match('/\/kegiatan\/(\d+)\/duplicate$/', $uri, $matches);
@@ -344,7 +670,6 @@ class KegiatanController
                 'lokasi' => $original['lokasi'],
                 'total_anggaran_diusulkan' => $original['total_anggaran_diusulkan'],
                 'pengusul_user_id' => $this->userData['user_id'],
-                'unit_kerja_id' => $original['unit_kerja_id'],
                 'mata_anggaran_id' => $original['mata_anggaran_id'],
                 'status_id' => 1 // Draft
             ];
@@ -367,9 +692,13 @@ class KegiatanController
             // Get duplicated kegiatan
             $newKegiatan = $this->kegiatanModel->findById($newKegiatanId);
 
+            $db->commit();
             Response::created($newKegiatan, 'Kegiatan berhasil diduplikasi.');
 
         } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
             Response::error('Gagal duplikasi kegiatan: ' . $e->getMessage(), 500);
         }
     }
@@ -404,7 +733,7 @@ class KegiatanController
     /**
      * Get statistics
      * 
-     * GET /api/kegiatan/statistics
+     * GET /api/kegiatan/statistics/dashboard
      */
     public function statistics()
     {
@@ -428,14 +757,13 @@ class KegiatanController
     /**
      * Export to Excel
      * 
-     * GET /api/kegiatan/export?status=1&unit_kerja=1
+     * GET /api/kegiatan/export/excel
      */
-    public function export()
+    public function exportExcel()
     {
         try {
             // Get filters
             $status = $_GET['status'] ?? null;
-            $unitKerja = $_GET['unit_kerja'] ?? null;
 
             // Authorization: Pengusul hanya export kegiatan sendiri
             $userId = null;
@@ -446,7 +774,6 @@ class KegiatanController
             // Get kegiatan
             $kegiatan = $this->kegiatanModel->getAllForExport([
                 'status_id' => $status,
-                'unit_kerja_id' => $unitKerja,
                 'user_id' => $userId
             ]);
 
@@ -487,7 +814,6 @@ class KegiatanController
         echo '<th>Tanggal Mulai</th>';
         echo '<th>Tanggal Selesai</th>';
         echo '<th>Lokasi</th>';
-        echo '<th>Unit Kerja</th>';
         echo '<th>Pengusul</th>';
         echo '<th>Status</th>';
         echo '<th>Total Anggaran Diusulkan</th>';
@@ -504,7 +830,6 @@ class KegiatanController
             echo '<td>' . $row['tanggal_mulai'] . '</td>';
             echo '<td>' . $row['tanggal_selesai'] . '</td>';
             echo '<td>' . htmlspecialchars($row['lokasi']) . '</td>';
-            echo '<td>' . htmlspecialchars($row['nama_unit_kerja']) . '</td>';
             echo '<td>' . htmlspecialchars($row['pengusul_nama']) . '</td>';
             echo '<td>' . htmlspecialchars($row['nama_status']) . '</td>';
             echo '<td>' . number_format($row['total_anggaran_diusulkan'], 0, ',', '.') . '</td>';
