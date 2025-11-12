@@ -82,20 +82,6 @@ if ($method === 'GET' && $uri === '/auth/profile') {
     exit;
 }
 
-// PUT /api/auth/profile
-if ($method === 'PUT' && $uri === '/auth/profile') {
-    $controller = new AccountController();
-    $controller->updateProfile();
-    exit;
-}
-
-// PUT /api/auth/change-password
-if ($method === 'PUT' && $uri === '/auth/change-password') {
-    $controller = new AccountController();
-    $controller->changePassword();
-    exit;
-}
-
 // =====================================================
 // 7. ADMIN ONLY ROUTES
 // =====================================================
@@ -127,6 +113,16 @@ if ($method === 'PUT' && preg_match('/^\/admin\/users\/(\d+)$/', $uri, $matches)
     
     $controller = new AccountController();
     $controller->updateUser($matches[1]);
+    exit;
+}
+
+// PUT /api/admin/users/{id}/change-password (Admin only)
+if ($method === 'PUT' && preg_match('/^\/admin\/users\/(\d+)\/change-password$/', $uri, $matches)) {
+    $roleMiddleware = new RoleMiddleware(['Admin']);
+    $roleMiddleware->handle();
+    
+    $controller = new AccountController();
+    $controller->adminChangePassword($matches[1]);
     exit;
 }
 

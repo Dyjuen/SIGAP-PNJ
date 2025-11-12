@@ -171,7 +171,7 @@ class User
             UPDATE m_users 
             SET 
                 nama_lengkap = :nama_lengkap,
-                email = :email,
+                email = :email
             WHERE user_id = :user_id
         ");
         
@@ -256,9 +256,9 @@ class User
     /**
      * Get all users with their roles
      */
-    public function getAllUsersWithRoles()
+    public function getAllUsersWithRoles($excludeUserId = null)
     {
-        $this->db->query("
+        $sql = "
             SELECT 
                 u.user_id,
                 u.username,
@@ -272,11 +272,24 @@ class User
                 m_user_roles ur ON u.user_id = ur.user_id
             LEFT JOIN 
                 m_roles r ON ur.role_id = r.role_id
+        ";
+
+        if ($excludeUserId) {
+            $sql .= " WHERE u.user_id != :exclude_user_id";
+        }
+
+        $sql .= "
             GROUP BY
                 u.user_id
             ORDER BY
                 u.created_at DESC
-        ");
+        ";
+        
+        $this->db->query($sql);
+
+        if ($excludeUserId) {
+            $this->db->bind(':exclude_user_id', $excludeUserId);
+        }
         
         $users = $this->db->resultSet();
         
@@ -296,5 +309,39 @@ class User
         $this->db->query("DELETE FROM m_users WHERE user_id = :user_id");
         $this->db->bind(':user_id', $userId);
         return $this->db->execute();
+    }
+
+    /**
+     * Update user roles
+     */
+    public function updateUserRoles($userId, $roleIds)
+    {
+        // Start transaction
+        $this->db->beginTransaction();
+
+        try {
+            // Delete existing roles
+            $this->db->query("DELETE FROM m_user_roles WHERE user_id = :user_id");
+            $this->db->bind(':user_id', $userId);
+            $this->db->execute();
+
+            // Add new roles
+            foreach ($roleIds as $roleId) {
+                // Ensure the role_id is an integer
+                $roleId = (int) $roleId;
+                $this->db->query("INSERT INTO m_user_roles (user_id, role_id) VALUES (:user_id, :role_id)");
+                $this->db->bind(':user_id', $userId);
+                $this->db->bind(':role_id', $roleId);
+                $this->db->execute();
+            }
+
+            // Commit transaction
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            // Rollback transaction
+            $this->db->rollBack();
+            return false;
+        }
     }
 }
