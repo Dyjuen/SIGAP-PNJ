@@ -176,8 +176,7 @@ class KegiatanController
                 'surat_pengantar_path' => $uploadResult['file_path'], // Save the file path
                 'tanggal_mulai_final' => $telaah['tanggal_mulai'],
                 'penanggung_jawab_manual' => 'Ditentukan kemudian',
-                'pelaksana_manual' => 'Ditentukan kemudian',
-                'tgl_batas_lpj' => date('Y-m-d', strtotime($telaah['tanggal_selesai'] . ' +14 days'))
+                'pelaksana_manual' => 'Ditentukan kemudian'
             ];
             $kegiatanId = $this->kegiatanModel->create($kegiatanData);
 
