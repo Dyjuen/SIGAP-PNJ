@@ -4,48 +4,6 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderUsulanKakPage(userRole) {
   const pageContent = `
-    <style>
-      /* Only essential custom CSS that can't be done with Tailwind */
-      .layout-wrapper {
-        background-image: url('/assets/img/backgrounds/BG.png') !important;
-        background-size: cover !important;
-        background-position: center !important;
-      }
-      .content-wrapper {
-        background: transparent !important;
-      }
-      .layout-navbar, .content-footer, .layout-menu {
-        background: #FFFFFF !important;
-      }
-      .app-brand-text {
-        color: #00BCD4 !important;
-        font-size: 20px !important;
-        font-weight: 700 !important;
-      }
-      .menu-inner .menu-item.active > .menu-link {
-        background: #00BCD4 !important;
-        color: #ffffff !important;
-        border-radius: 8px;
-        margin: 0 0.5rem;
-        backdrop-filter: blur(5px);
-      }
-      .container-xxl {
-        max-width: 96% !important;
-      }
-      .main-step-content {
-        display: none;
-      }
-      .main-step-content.active {
-        display: block;
-      }
-      .step-content {
-        display: none;
-      }
-      .step-content.active {
-        display: block;
-      }
-    </style>
-
     <div class="kerangka-acuan-kerja-page">
       <!-- Progress Steps -->
       <div class="flex justify-center gap-24 mb-8 backdrop-blur-md p-6 rounded-xl shadow-lg" style="background: rgba(255, 255, 255, 0.8);">

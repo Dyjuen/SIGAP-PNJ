@@ -14,6 +14,7 @@ import { renderMengajukanKegiatanPage } from "./pages/Admin/MengajukanKegiatanPa
 import { renderPencairanDanaPage } from "./pages/Bendahara/PencairanDanaPage.js";
 import { renderMonitoringUsulanPage } from "./pages/Pengusul/MonitoringUsulan.js";
 import { renderPengajuanLpjPage } from "./pages/Pengusul/PengajuanLpj.js";
+import { renderInputLpjPage } from "./pages/Pengusul/InputLpj.js";
 import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
 
 function getCurrentUserRole() {
@@ -46,6 +47,7 @@ const roleBasedRoutes = {
     "/mengajukan-kegiatan": renderNotFoundPage,
     "/monitoring-kegiatan": renderNotFoundPage,
     "/pengajuan-lpj": renderPengajuanLpjPage,
+    "/input-lpj": renderInputLpjPage,
     "/riwayat": renderNotFoundPage,
     "/pengaturan": renderNotFoundPage,
   },

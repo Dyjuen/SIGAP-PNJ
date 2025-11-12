@@ -4,12 +4,6 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderFullUsulanKakPage(userRole) {
   const pageContent = `
-    <style>
-      .layout-wrapper { background-image: url('/assets/img/backgrounds/BG.png') !important; background-size: cover !important; }
-      .content-wrapper { background: transparent !important; }
-      html { scroll-behavior: smooth; }
-    </style>
-
     <div class="usulan-kak-page">
       <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
         <h3 class="text-2xl font-bold mb-2" style="color: #00BCD4;">Formulir Usulan KAK</h3>
