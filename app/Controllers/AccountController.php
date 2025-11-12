@@ -43,37 +43,33 @@ class AccountController
     }
 
     /**
-     * Update user profile
+     * Update user profile by ID (Admin only)
      * 
-     * PUT /api/account/profile
+     * PUT /api/admin/users/{id}
      * Header: Authorization: Bearer <token>
-     * Body: { nama_lengkap, email }
-     * 
-     * Note: unit_kerja_id is now OPTIONAL
+     * Body: { nama_lengkap, email, role_ids }
      */
-    public function updateProfile()
+    public function updateUser($userId)
     {
-        // Get authenticated user
-        $authUser = auth_user();
-
-        if (!$authUser) {
-            Response::unauthorized('User tidak terautentikasi.');
-        }
-
-        $userId = $authUser['user_id'];
-
         // Get JSON input
         $input = json_decode(file_get_contents('php://input'), true);
 
-        // Validate required fields only
+        // Validate required fields
         $rules = [
             'nama_lengkap' => 'required|min:3|max:100',
-            'email' => 'required|email|max:100'
+            'email' => 'required|email|max:100',
+            'role_ids' => 'required|array' // Expecting an array of role IDs
         ];
 
         $validator = new ProfileValidator();
         if (!$validator->validate($input, $rules)) {
             Response::validationError($validator->getErrors(), 'Validasi gagal.');
+        }
+
+        // Check if user exists
+        $user = $this->userModel->findById($userId);
+        if (!$user) {
+            Response::notFound('User tidak ditemukan.');
         }
 
         // Check email uniqueness
@@ -84,7 +80,7 @@ class AccountController
         }
 
         try {
-            // Update profile (only nama_lengkap and email)
+            // Update profile
             $updateData = [
                 'nama_lengkap' => $input['nama_lengkap'],
                 'email' => $input['email']
@@ -92,40 +88,33 @@ class AccountController
 
             $this->userModel->updateProfile($userId, $updateData);
 
-            // Get updated user
-            $user = $this->userModel->getUserWithRoles($userId);
+            // Update roles using role_ids
+            $this->userModel->updateUserRoles($userId, $input['role_ids']);
 
-            Response::success($user, 'Profile berhasil diupdate.');
+            // Get updated user
+            $updatedUser = $this->userModel->getUserWithRoles($userId);
+
+            Response::success($updatedUser, 'Profile user berhasil diupdate.');
 
         } catch (\Exception $e) {
-            Response::serverError('Gagal update profile: ' . $e->getMessage());
+            Response::serverError('Gagal update profile user: ' . $e->getMessage());
         }
     }
 
     /**
-     * Change user password
+     * Change user password by ID (Admin only)
      * 
-     * PUT /api/account/change-password
+     * PUT /api/admin/users/{id}/change-password
      * Header: Authorization: Bearer <token>
-     * Body: { current_password, new_password, new_password_confirmation }
+     * Body: { new_password, new_password_confirmation }
      */
-    public function changePassword()
+    public function adminChangePassword($userId)
     {
-        // Get authenticated user
-        $authUser = auth_user();
-
-        if (!$authUser) {
-            Response::unauthorized('User tidak terautentikasi.');
-        }
-
-        $userId = $authUser['user_id'];
-
         // Get JSON input
         $input = json_decode(file_get_contents('php://input'), true);
 
         // Validate required fields
         $rules = [
-            'current_password' => 'required',
             'new_password' => 'required|min:8|max:100',
             'new_password_confirmation' => 'required'
         ];
@@ -142,34 +131,20 @@ class AccountController
             ], 'Validasi gagal.');
         }
 
-        // Verify current password
+        // Check if user exists
         $user = $this->userModel->findById($userId);
-        
         if (!$user) {
             Response::notFound('User tidak ditemukan.');
-        }
-
-        if (!$this->userModel->verifyPassword($input['current_password'], $user['password_hash'])) {
-            Response::validationError([
-                'current_password' => ['Password saat ini tidak sesuai.']
-            ], 'Validasi gagal.');
-        }
-
-        // Check if new password is different from current
-        if ($input['current_password'] === $input['new_password']) {
-            Response::validationError([
-                'new_password' => ['Password baru harus berbeda dengan password saat ini.']
-            ], 'Validasi gagal.');
         }
 
         try {
             // Update password
             $this->userModel->updatePassword($userId, $input['new_password']);
 
-            Response::success(null, 'Password berhasil diubah.');
+            Response::success(null, 'Password user berhasil diubah.');
 
         } catch (\Exception $e) {
-            Response::serverError('Gagal ubah password: ' . $e->getMessage());
+            Response::serverError('Gagal ubah password user: ' . $e->getMessage());
         }
     }
 }

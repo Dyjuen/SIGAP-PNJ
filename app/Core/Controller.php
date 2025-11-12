@@ -2,8 +2,34 @@
 
 namespace App\Core;
 
+use App\Core\Database;
+use App\Middlewares\AuthMiddleware;
+
 class Controller
 {
+    protected $db;
+    protected $user;
+
+    /**
+     * Base controller constructor.
+     * Initializes database connection and authenticated user data.
+     */
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getConnection();
+        $this->user = AuthMiddleware::getAuthUser();
+    }
+
+    /**
+     * Get JSON input from the request body.
+     * @return array|null
+     */
+    protected function getInput()
+    {
+        $input = file_get_contents('php://input');
+        return json_decode($input, true);
+    }
+
     /**
      * Memuat file view dan mengirimkan data ke dalamnya (Untuk Rute WEB).
      */

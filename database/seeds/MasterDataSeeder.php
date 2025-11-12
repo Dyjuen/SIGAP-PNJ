@@ -46,9 +46,10 @@ class MasterDataSeeder extends AbstractSeed
             ['status_id' => 4, 'nama_status' => 'Ditolak', 'urutan' => 99],
             ['status_id' => 5, 'nama_status' => 'Revisi', 'urutan' => 98],
             ['status_id' => 6, 'nama_status' => 'Proses Pencairan', 'urutan' => 4],
-            ['status_id' => 7, 'nama_status' => 'Kegiatan Berlangsung', 'urutan' => 5],
-            ['status_id' => 8, 'nama_status' => 'Proses LPJ', 'urutan' => 6],
-            ['status_id' => 9, 'nama_status' => 'Selesai', 'urutan' => 7]
+            ['status_id' => 7, 'nama_status' => 'Uang Muka Dicairkan', 'urutan' => 5],
+            ['status_id' => 8, 'nama_status' => 'Kegiatan Berlangsung', 'urutan' => 6],
+            ['status_id' => 9, 'nama_status' => 'Proses LPJ', 'urutan' => 7],
+            ['status_id' => 10, 'nama_status' => 'Selesai', 'urutan' => 8]
         ];
         $this->table('m_kegiatan_status')->insert($status)->saveData();
 

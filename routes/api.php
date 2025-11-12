@@ -75,28 +75,6 @@ if ($method === 'POST' && $uri === '/auth/refresh') {
 // 6. ACCOUNT ROUTES (Profile Management)
 // =====================================================
 
-// GET /api/account/profile
-if ($method === 'GET' && $uri === '/account/profile') {
-    $controller = new AccountController();
-    $controller->getProfile();
-    exit;
-}
-
-// PUT /api/account/profile
-if ($method === 'PUT' && $uri === '/account/profile') {
-    $controller = new AccountController();
-    $controller->updateProfile();
-    exit;
-}
-
-// PUT /api/account/change-password
-if ($method === 'PUT' && $uri === '/account/change-password') {
-    $controller = new AccountController();
-    $controller->changePassword();
-    exit;
-}
-
-// Backward compatibility - Keep old auth routes
 // GET /api/auth/profile
 if ($method === 'GET' && $uri === '/auth/profile') {
     $controller = new AccountController();
@@ -104,31 +82,47 @@ if ($method === 'GET' && $uri === '/auth/profile') {
     exit;
 }
 
-// PUT /api/auth/profile
-if ($method === 'PUT' && $uri === '/auth/profile') {
-    $controller = new AccountController();
-    $controller->updateProfile();
-    exit;
-}
-
-// PUT /api/auth/change-password
-if ($method === 'PUT' && $uri === '/auth/change-password') {
-    $controller = new AccountController();
-    $controller->changePassword();
-    exit;
-}
-
 // =====================================================
 // 7. ADMIN ONLY ROUTES
 // =====================================================
 
-// POST /api/auth/register (Admin only)
-if ($method === 'POST' && $uri === '/auth/register') {
+// POST /api/admin/register (Admin only)
+if ($method === 'POST' && $uri === '/admin/register') {
     $roleMiddleware = new RoleMiddleware(['Admin']);
     $roleMiddleware->handle();
     
     $controller = new AuthController();
     $controller->register();
+    exit;
+}
+
+// GET /api/admin/users (Admin only)
+if ($method === 'GET' && $uri === '/admin/users') {
+    $roleMiddleware = new RoleMiddleware(['Admin']);
+    $roleMiddleware->handle();
+    
+    $controller = new AccountController();
+    $controller->getAllProfiles();
+    exit;
+}
+
+// PUT /api/admin/users/{id} (Admin only)
+if ($method === 'PUT' && preg_match('/^\/admin\/users\/(\d+)$/', $uri, $matches)) {
+    $roleMiddleware = new RoleMiddleware(['Admin']);
+    $roleMiddleware->handle();
+    
+    $controller = new AccountController();
+    $controller->updateUser($matches[1]);
+    exit;
+}
+
+// PUT /api/admin/users/{id}/change-password (Admin only)
+if ($method === 'PUT' && preg_match('/^\/admin\/users\/(\d+)\/change-password$/', $uri, $matches)) {
+    $roleMiddleware = new RoleMiddleware(['Admin']);
+    $roleMiddleware->handle();
+    
+    $controller = new AccountController();
+    $controller->adminChangePassword($matches[1]);
     exit;
 }
 
@@ -154,45 +148,6 @@ if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/preview$/', $uri)) {
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
     $controller = new KAKController();
     $controller->getData();
-    exit;
-}
-
-// =====================================================
-// 9. LPJ (LAPORAN PERTANGGUNGJAWABAN) ROUTES
-// =====================================================
-
-// GET /api/lpj/status/{kegiatan_id} - Get status LPJ untuk kegiatan
-if ($method === 'GET' && preg_match('/^\/lpj\/status\/(\d+)$/', $uri, $matches)) {
-    $controller = new LpjController();
-    $controller->getStatus();
-    exit;
-}
-
-// POST /api/lpj/upload/{kegiatan_id} - Upload lampiran LPJ
-if ($method === 'POST' && preg_match('/^\/lpj\/upload\/(\d+)$/', $uri, $matches)) {
-    $controller = new LpjController();
-    $controller->uploadLampiran();
-    exit;
-}
-
-// POST /api/lpj/submit/{kegiatan_id} - Submit LPJ (final)
-if ($method === 'POST' && preg_match('/^\/lpj\/submit\/(\d+)$/', $uri, $matches)) {
-    $controller = new LpjController();
-    $controller->submitLpj();
-    exit;
-}
-
-// DELETE /api/lpj/lampiran/{lampiran_id} - Delete lampiran
-if ($method === 'DELETE' && preg_match('/^\/lpj\/lampiran\/(\d+)$/', $uri, $matches)) {
-    $controller = new LpjController();
-    $controller->deleteLampiran();
-    exit;
-}
-
-// POST /api/lpj/check-reminders - Manual trigger check reminders
-if ($method === 'POST' && $uri === '/lpj/check-reminders') {
-    $controller = new LpjController();
-    $controller->checkReminders();
     exit;
 }
 
@@ -235,6 +190,7 @@ $router->get('/kegiatan/{id}/logs', 'KegiatanController@logs');
 
 // Fitur Tambahan
 $router->post('/kegiatan/{id}/duplicate', 'KegiatanController@duplicate');
+$router->post('/kegiatan/{id}/cairkan', 'KegiatanController@cairkanDana');
 $router->get('/kegiatan/export/excel', 'KegiatanController@exportExcel');
 $router->get('/kegiatan/statistics/dashboard', 'KegiatanController@statistics');
 
@@ -256,15 +212,6 @@ $router->get('/pencairan/kegiatan/{kegiatan_id}', 'PencairanController@index');
 
 // GET /api/pencairan/sisa-dana/{kegiatan_id} - Cek sisa dana
 $router->get('/pencairan/sisa-dana/{kegiatan_id}', 'PencairanController@getSisaDana');
-
-// POST /api/pencairan - Pengusul ajukan pencairan
-$router->post('/pencairan', 'PencairanController@create');
-
-// PUT /api/pencairan/{id}/approve - Bendahara setujui pencairan
-$router->put('/pencairan/{id}/approve', 'PencairanController@approve');
-
-// PUT /api/pencairan/{id}/reject - Bendahara tolak pencairan
-$router->put('/pencairan/{id}/reject', 'PencairanController@reject');
 
 // =====================================================
 // 11. DISPATCH ROUTER & HANDLE 404

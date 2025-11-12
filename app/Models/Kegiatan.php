@@ -93,7 +93,7 @@ class Kegiatan extends Model
     
     public function findById($id)
     {
-        $sql = "SELECT k.*, t.pengusul_user_id, t.status_id 
+        $sql = "SELECT k.*, t.pengusul_user_id, t.status_id, t.nama_kegiatan
                 FROM {$this->table} k
                 JOIN t_telaah t ON k.telaah_id = t.telaah_id
                 WHERE k.{$this->primaryKey} = ?";
