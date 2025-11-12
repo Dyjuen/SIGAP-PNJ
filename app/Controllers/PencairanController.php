@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Api;
+namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Response;
@@ -28,10 +28,10 @@ class PencairanController extends Controller
      * GET /api/pencairan/kegiatan/{kegiatan_id}
      * List semua pencairan untuk kegiatan tertentu
      */
-    public function index()
+    public function index($kegiatan_id)
     {
         try {
-            $kegiatanId = (int) $this->getParam('kegiatan_id');
+            $kegiatanId = (int) $kegiatan_id;
             
             // Cek akses user
             if (!$this->canAccessKegiatan($kegiatanId)) {
@@ -65,10 +65,10 @@ class PencairanController extends Controller
      * GET /api/pencairan/sisa-dana/{kegiatan_id}
      * Cek sisa dana yang belum dicairkan
      */
-    public function getSisaDana()
+    public function getSisaDana($kegiatan_id)
     {
         try {
-            $kegiatanId = (int) $this->getParam('kegiatan_id');
+            $kegiatanId = (int) $kegiatan_id;
             
             if (!$this->canAccessKegiatan($kegiatanId)) {
                 return Response::json([
@@ -176,10 +176,10 @@ class PencairanController extends Controller
      * PUT /api/pencairan/{id}/approve
      * Bendahara menyetujui pencairan
      */
-    public function approve()
+    public function approve($id)
     {
         try {
-            $pencairanId = (int) $this->getParam('id');
+            $pencairanId = (int) $id;
             $input = $this->getInput();
             
             // Validasi input
@@ -256,10 +256,10 @@ class PencairanController extends Controller
      * PUT /api/pencairan/{id}/reject
      * Bendahara menolak pencairan
      */
-    public function reject()
+    public function reject($id)
     {
         try {
-            $pencairanId = (int) $this->getParam('id');
+            $pencairanId = (int) $id;
             $input = $this->getInput();
             
             // Validasi input

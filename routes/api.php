@@ -213,15 +213,6 @@ $router->get('/pencairan/kegiatan/{kegiatan_id}', 'PencairanController@index');
 // GET /api/pencairan/sisa-dana/{kegiatan_id} - Cek sisa dana
 $router->get('/pencairan/sisa-dana/{kegiatan_id}', 'PencairanController@getSisaDana');
 
-// POST /api/pencairan - Pengusul ajukan pencairan
-$router->post('/pencairan', 'PencairanController@create');
-
-// PUT /api/pencairan/{id}/approve - Bendahara setujui pencairan
-$router->put('/pencairan/{id}/approve', 'PencairanController@approve');
-
-// PUT /api/pencairan/{id}/reject - Bendahara tolak pencairan
-$router->put('/pencairan/{id}/reject', 'PencairanController@reject');
-
 // =====================================================
 // 11. DISPATCH ROUTER & HANDLE 404
 // =====================================================
