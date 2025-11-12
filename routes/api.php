@@ -136,21 +136,21 @@ if ($method === 'POST' && $uri === '/auth/register') {
 // 8. KAK (KERANGKA ACUAN KERJA) ROUTES
 // =====================================================
 
-// GET /api/kak/{kegiatan_id} - Download KAK PDF
+// GET /api/kak/{telaah_id} - Download KAK PDF
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)$/', $uri)) {
     $controller = new KAKController();
     $controller->download();
     exit;
 }
 
-// GET /api/kak/{kegiatan_id}/preview - Preview KAK HTML
+// GET /api/kak/{telaah_id}/preview - Preview KAK HTML
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/preview$/', $uri)) {
     $controller = new KAKController();
     $controller->preview();
     exit;
 }
 
-// GET /api/kak/{kegiatan_id}/data - Get KAK data as JSON
+// GET /api/kak/{telaah_id}/data - Get KAK data as JSON
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
     $controller = new KAKController();
     $controller->getData();

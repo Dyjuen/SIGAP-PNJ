@@ -16,7 +16,7 @@ class KegiatanSeeder extends AbstractSeed
         $this->execute('TRUNCATE TABLE t_kegiatan');
         $this->execute('TRUNCATE TABLE t_telaah_approval');
         $this->execute('TRUNCATE TABLE t_telaah_iku');
-        $this->execute('TRUNCATE TABLE t_telaah_lampiran');
+        $this->execute('TRUNCATE TABLE t_kegiatan_lampiran');
         $this->execute('TRUNCATE TABLE t_telaah_anggaran');
         $this->execute('TRUNCATE TABLE t_telaah_manfaat');
         $this->execute('TRUNCATE TABLE t_telaah_tahapan');
