@@ -19,12 +19,14 @@ class Notifikasi extends Model
                 VALUES 
                 (:penerima_user_id, :pesan, :link_tujuan, :is_read, NOW())";
 
-        return $this->db->query($sql, [
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
             'penerima_user_id' => $data['penerima_user_id'],
             'pesan' => $data['pesan'],
             'link_tujuan' => $data['link_tujuan'] ?? null,
             'is_read' => $data['is_read'] ?? false
-        ])->rowCount() > 0;
+        ]);
+        return $stmt->rowCount() > 0;
     }
 
     /**
@@ -41,7 +43,9 @@ class Notifikasi extends Model
         
         $sql .= " ORDER BY created_at DESC LIMIT 50";
 
-        return $this->db->query($sql, ['user_id' => $userId])->fetchAll();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchAll();
     }
 
     /**
@@ -53,7 +57,9 @@ class Notifikasi extends Model
                 SET is_read = 1 
                 WHERE notifikasi_id = :id";
 
-        return $this->db->query($sql, ['id' => $notifikasiId])->rowCount() > 0;
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $notifikasiId]);
+        return $stmt->rowCount() > 0;
     }
 
     /**
@@ -65,7 +71,9 @@ class Notifikasi extends Model
                 SET is_read = 1 
                 WHERE penerima_user_id = :user_id AND is_read = 0";
 
-        return $this->db->query($sql, ['user_id' => $userId])->rowCount() > 0;
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->rowCount() > 0;
     }
 
     /**
@@ -76,7 +84,9 @@ class Notifikasi extends Model
         $sql = "SELECT COUNT(*) as total FROM {$this->table} 
                 WHERE penerima_user_id = :user_id AND is_read = 0";
 
-        $result = $this->db->query($sql, ['user_id' => $userId])->fetch();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        $result = $stmt->fetch();
 
         return (int)($result['total'] ?? 0);
     }
@@ -97,6 +107,8 @@ class Notifikasi extends Model
         $sql = "DELETE FROM {$this->table} 
                 WHERE created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)";
 
-        return $this->db->query($sql)->rowCount();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->rowCount();
     }
 }
