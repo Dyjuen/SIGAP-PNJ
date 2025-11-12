@@ -571,6 +571,34 @@ class KegiatanController
                 'catatan' => "Disetujui oleh {$approvalLevel}." . ($catatan ? " Catatan: {$catatan}" : "")
             ]);
 
+            // --- START LPJ TIMER LOGIC ON BENDAHARA-CAIR APPROVAL ---
+            $timerStarted = false;
+            if ($approvalLevel === 'Bendahara-Cair') {
+                // Prerequisite check: Ensure funds have been disbursed before approving.
+                if (empty($kegiatan['dana_dicairkan']) || (float)$kegiatan['dana_dicairkan'] <= 0) {
+                    Response::error(
+                        "Dana harus dicairkan terlebih dahulu sebelum menyetujui. Gunakan endpoint /kegiatan/{$kegiatanId}/cairkan.",
+                        422 // Unprocessable Entity
+                    );
+                }
+
+                // Update main kegiatan status to "Uang Muka Dicairkan"
+                $this->kegiatanModel->updateStatus($kegiatanId, 7);
+                
+                // START LPJ TIMER
+                $lpjService = new LpjTimerService();
+                $lpjService->startLpjTimer($kegiatanId);
+                $timerStarted = true;
+
+                // Notify proposer that funds are ready and LPJ timer has started
+                $this->notifikasiModel->create([
+                    'penerima_user_id' => $kegiatan['pengusul_user_id'],
+                    'pesan' => "Persetujuan oleh Bendahara Cair berhasil untuk kegiatan \"{$kegiatan['nama_kegiatan']}\". Segera submit LPJ sebelum batas waktu.",
+                    'link_tujuan' => '/pengusul/kegiatan/' . $kegiatanId . '/lpj',
+                ]);
+            }
+            // --- END OF LPJ TIMER LOGIC ---
+
             // 6. Activate Next Step or Finalize
             $nextApproval = $this->kegiatanModel->findNextApproval($kegiatanId, $currentApproval['approval_kegiatan_id']);
 
@@ -581,30 +609,16 @@ class KegiatanController
                 // (Implementation depends on how you map roles to users)
 
                 $db->commit();
-                Response::success(null, "Disetujui oleh {$approvalLevel}. Menunggu persetujuan {$nextApproval['approval_level']}.");
+
+                $message = "Disetujui oleh {$approvalLevel}. Menunggu persetujuan {$nextApproval['approval_level']}.";
+                if ($timerStarted) {
+                    $message = "Disetujui oleh {$approvalLevel}. Status kegiatan menjadi 'Uang Muka Dicairkan' dan timer LPJ dimulai. Menunggu persetujuan {$nextApproval['approval_level']}.";
+                }
+                Response::success(['lpj_timer_started' => $timerStarted], $message);
             
             } else {
-                // This was the final approval step
-                // Check which level was the last one
-                if ($approvalLevel === 'Bendahara-Cair') {
-                    // Update main kegiatan status to "Pencairan"
-                    $this->kegiatanModel->updateStatus($kegiatanId, 7); // 7 = Pencairan
-                    
-                    // START LPJ TIMER
-                    $lpjService = new LpjTimerService();
-                    $lpjService->startLpjTimer($kegiatanId);
-
-                    // Notify proposer
-                    $this->notifikasiModel->create([
-                        'penerima_user_id' => $kegiatan['pengusul_user_id'],
-                        'pesan' => "Pencairan dana untuk \"{$kegiatan['nama_kegiatan']}\" disetujui. Segera submit LPJ sebelum batas waktu.",
-                        'link_tujuan' => '/pengusul/kegiatan/' . $kegiatanId . '/lpj',
-                    ]);
-
-                    $db->commit();
-                    Response::success(['lpj_timer_started' => true], 'Persetujuan selesai. Dana siap dicairkan dan timer LPJ dimulai.');
-
-                } else if ($approvalLevel === 'Bendahara-LPJ') {
+                // This was the final approval step (now should only be Bendahara-LPJ)
+                if ($approvalLevel === 'Bendahara-LPJ') {
                     // This is the final LPJ approval
                     $this->kegiatanModel->updateStatus($kegiatanId, 9); // 9 = Selesai
                     
@@ -840,5 +854,74 @@ class KegiatanController
         echo '</table>';
         echo '</body></html>';
         exit;
+    }
+
+    /**
+     * Records a fund disbursement amount. Can be called multiple times.
+     * This action is separate from the approval workflow.
+     * 
+     * POST /api/kegiatan/{id}/cairkan
+     */
+    public function cairkanDana()
+    {
+        $db = $this->kegiatanModel->getDb();
+        try {
+            // Get ID from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/cairkan$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            $db->beginTransaction();
+
+            // 1. Authorization: Only Bendahara or Admin
+            if (!$this->hasRole('Bendahara') && !$this->hasRole('Admin')) {
+                Response::forbidden('Anda tidak memiliki akses untuk melakukan pencairan dana.');
+            }
+
+            // 2. Get and Validate Kegiatan
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                Response::notFound('Data kegiatan tidak ditemukan.');
+            }
+
+            // 3. Condition Check: Must be in Bendahara-Cair approval step
+            $currentApproval = $this->kegiatanModel->findCurrentApproval($kegiatanId);
+            if (!$currentApproval || $currentApproval['approval_level'] !== 'Bendahara-Cair') {
+                Response::error('Pencatatan dana hanya bisa dilakukan saat dalam tahap persetujuan Bendahara-Cair.', 400);
+            }
+
+            // 4. Get and Validate Input
+            $data = json_decode(file_get_contents("php://input"), true);
+            $nominalBaru = $data['nominal'] ?? 0;
+
+            if (!is_numeric($nominalBaru) || $nominalBaru <= 0) {
+                Response::error('Nominal pencairan harus berupa angka dan lebih dari 0.', 422);
+            }
+
+            // 5. Calculate and Update Dana
+            $totalSekarang = (float) ($kegiatan['dana_dicairkan'] ?? 0);
+            $totalBaru = $totalSekarang + $nominalBaru;
+
+            $updateSql = "UPDATE t_kegiatan SET dana_dicairkan = ? WHERE kegiatan_id = ?";
+            $stmt = $db->prepare($updateSql);
+            $stmt->execute([$totalBaru, $kegiatanId]);
+
+            $db->commit();
+
+            Response::success([
+                "message" => "Dana sebesar Rp " . number_format($nominalBaru, 0, ',', '.') . " berhasil dicatat.",
+                "total_dana_dicairkan" => $totalBaru
+            ], "Pencatatan dana berhasil.");
+
+        } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            Response::error('Gagal memproses pencatatan dana: ' . $e->getMessage(), 500);
+        }
     }
 }

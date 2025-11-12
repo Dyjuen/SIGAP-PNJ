@@ -34,15 +34,15 @@ class LpjTimerService
         $deadline->modify('+' . self::LPJ_DEADLINE_DAYS . ' days');
 
         $sql = "UPDATE t_kegiatan 
-                SET bendahara_cair_approved_at = :approved_at,
-                    lpj_deadline = :deadline
+                SET tgl_batas_lpj = :deadline
                 WHERE kegiatan_id = :kegiatan_id";
 
-        return $this->db->query($sql, [
-            'approved_at' => $now->format('Y-m-d H:i:s'),
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
             'deadline' => $deadline->format('Y-m-d H:i:s'),
             'kegiatan_id' => $kegiatanId
-        ])->rowCount() > 0;
+        ]);
+        return $stmt->rowCount() > 0;
     }
 
     /**
@@ -54,10 +54,12 @@ class LpjTimerService
                 SET lpj_submitted_at = :submitted_at
                 WHERE kegiatan_id = :kegiatan_id";
 
-        return $this->db->query($sql, [
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
             'submitted_at' => date('Y-m-d H:i:s'),
             'kegiatan_id' => $kegiatanId
-        ])->rowCount() > 0;
+        ]);
+        return $stmt->rowCount() > 0;
     }
 
     /**
@@ -77,7 +79,7 @@ class LpjTimerService
         $kegiatan = $this->getKegiatanNeedingReminders();
 
         foreach ($kegiatan as $k) {
-            $daysLeft = $this->getDaysUntilDeadline($k['lpj_deadline']);
+            $daysLeft = $this->getDaysUntilDeadline($k['tgl_batas_lpj']);
             
             // H-7
             if ($daysLeft <= 7 && $daysLeft > 6 && !$k['lpj_reminder_h7_sent']) {
@@ -116,14 +118,14 @@ class LpjTimerService
      */
     private function getKegiatanNeedingReminders(): array
     {
-        $sql = "SELECT k.kegiatan_id, k.nama_kegiatan, k.lpj_deadline,
+        $sql = "SELECT k.kegiatan_id, k.nama_kegiatan, k.tgl_batas_lpj,
                        k.lpj_reminder_h7_sent, k.lpj_reminder_h3_sent,
                        k.lpj_reminder_h1_sent, k.lpj_overdue_notified,
                        k.pengusul_user_id
                 FROM t_kegiatan k
                 WHERE k.bendahara_cair_approved_at IS NOT NULL
                   AND k.lpj_submitted_at IS NULL
-                  AND k.lpj_deadline IS NOT NULL";
+                  AND k.tgl_batas_lpj IS NOT NULL";
 
         return $this->db->query($sql)->fetchAll();
     }
@@ -160,7 +162,7 @@ class LpjTimerService
      */
     private function sendOverdueNotification(array $kegiatan): void
     {
-        $daysOverdue = abs($this->getDaysUntilDeadline($kegiatan['lpj_deadline']));
+        $daysOverdue = abs($this->getDaysUntilDeadline($kegiatan['tgl_batas_lpj']));
         $pesan = "PERINGATAN: Anda terlambat {$daysOverdue} hari submit LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\"";
         
         $this->notifikasiModel->create([
@@ -178,7 +180,8 @@ class LpjTimerService
     {
         $column = "lpj_reminder_{$type}_sent";
         $sql = "UPDATE t_kegiatan SET {$column} = 1 WHERE kegiatan_id = :id";
-        $this->db->query($sql, ['id' => $kegiatanId]);
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $kegiatanId]);
     }
 
     /**
@@ -187,7 +190,8 @@ class LpjTimerService
     private function markOverdueNotified(int $kegiatanId): void
     {
         $sql = "UPDATE t_kegiatan SET lpj_overdue_notified = 1 WHERE kegiatan_id = :id";
-        $this->db->query($sql, ['id' => $kegiatanId]);
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $kegiatanId]);
     }
 
     /**
@@ -195,14 +199,16 @@ class LpjTimerService
      */
     public function getLpjStatus(int $kegiatanId): array
     {
-        $sql = "SELECT bendahara_cair_approved_at, lpj_deadline, 
+        $sql = "SELECT bendahara_cair_approved_at, tgl_batas_lpj, 
                        lpj_submitted_at
                 FROM t_kegiatan 
                 WHERE kegiatan_id = :id";
         
-        $result = $this->db->query($sql, ['id' => $kegiatanId])->fetch();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $kegiatanId]);
+        $result = $stmt->fetch();
         
-        if (!$result || !$result['lpj_deadline']) {
+        if (!$result || !$result['tgl_batas_lpj']) {
             return [
                 'status' => 'not_started',
                 'message' => 'Timer LPJ belum dimulai'
@@ -217,13 +223,13 @@ class LpjTimerService
             ];
         }
 
-        $daysLeft = $this->getDaysUntilDeadline($result['lpj_deadline']);
+        $daysLeft = $this->getDaysUntilDeadline($result['tgl_batas_lpj']);
         
         if ($daysLeft < 0) {
             return [
                 'status' => 'overdue',
                 'message' => 'Terlambat ' . abs($daysLeft) . ' hari',
-                'deadline' => $result['lpj_deadline'],
+                'deadline' => $result['tgl_batas_lpj'],
                 'days_overdue' => abs($daysLeft)
             ];
         }
@@ -231,7 +237,7 @@ class LpjTimerService
         return [
             'status' => 'active',
             'message' => "Sisa waktu: {$daysLeft} hari",
-            'deadline' => $result['lpj_deadline'],
+            'deadline' => $result['tgl_batas_lpj'],
             'days_left' => $daysLeft
         ];
     }
