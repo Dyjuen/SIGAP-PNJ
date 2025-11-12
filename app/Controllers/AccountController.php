@@ -172,4 +172,86 @@ class AccountController
             Response::serverError('Gagal ubah password: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Get all user profiles (Admin only)
+     * 
+     * GET /api/admin/users
+     * Header: Authorization: Bearer <token>
+     */
+    public function getAllProfiles()
+    {
+        // Get authenticated user from helper function
+        $authUser = auth_user();
+
+        if (!$authUser) {
+            Response::unauthorized('User tidak terautentikasi.');
+        }
+
+        $currentUserId = $authUser['user_id'];
+
+        // Get all users with roles, excluding the current user
+        $users = $this->userModel->getAllUsersWithRoles($currentUserId);
+
+        Response::success($users, 'Data semua profile berhasil diambil.');
+    }
+
+    /**
+     * Update user profile by ID (Admin only)
+     * 
+     * PUT /api/admin/users/{id}
+     * Header: Authorization: Bearer <token>
+     * Body: { nama_lengkap, email, roles }
+     */
+    public function updateUser($userId)
+    {
+        // Get JSON input
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        // Validate required fields
+        $rules = [
+            'nama_lengkap' => 'required|min:3|max:100',
+            'email' => 'required|email|max:100',
+            'roles' => 'required|array'
+        ];
+
+        $validator = new ProfileValidator();
+        if (!$validator->validate($input, $rules)) {
+            Response::validationError($validator->getErrors(), 'Validasi gagal.');
+        }
+
+        // Check if user exists
+        $user = $this->userModel->findById($userId);
+        if (!$user) {
+            Response::notFound('User tidak ditemukan.');
+        }
+
+        // Check email uniqueness
+        if ($this->userModel->emailExists($input['email'], $userId)) {
+            Response::validationError([
+                'email' => ['Email sudah digunakan oleh user lain.']
+            ], 'Validasi gagal.');
+        }
+
+        try {
+            // Update profile
+            $updateData = [
+                'nama_lengkap' => $input['nama_lengkap'],
+                'email' => $input['email']
+            ];
+
+            $this->userModel->updateProfile($userId, $updateData);
+
+            // Update roles
+            $this->userModel->updateUserRoles($userId, $input['roles']);
+
+            // Get updated user
+            $updatedUser = $this->userModel->getUserWithRoles($userId);
+
+            Response::success($updatedUser, 'Profile user berhasil diupdate.');
+
+        } catch (\Exception $e) {
+            Response::serverError('Gagal update profile user: ' . $e->getMessage());
+        }
+    }
 }

@@ -75,28 +75,6 @@ if ($method === 'POST' && $uri === '/auth/refresh') {
 // 6. ACCOUNT ROUTES (Profile Management)
 // =====================================================
 
-// GET /api/account/profile
-if ($method === 'GET' && $uri === '/account/profile') {
-    $controller = new AccountController();
-    $controller->getProfile();
-    exit;
-}
-
-// PUT /api/account/profile
-if ($method === 'PUT' && $uri === '/account/profile') {
-    $controller = new AccountController();
-    $controller->updateProfile();
-    exit;
-}
-
-// PUT /api/account/change-password
-if ($method === 'PUT' && $uri === '/account/change-password') {
-    $controller = new AccountController();
-    $controller->changePassword();
-    exit;
-}
-
-// Backward compatibility - Keep old auth routes
 // GET /api/auth/profile
 if ($method === 'GET' && $uri === '/auth/profile') {
     $controller = new AccountController();
@@ -122,13 +100,33 @@ if ($method === 'PUT' && $uri === '/auth/change-password') {
 // 7. ADMIN ONLY ROUTES
 // =====================================================
 
-// POST /api/auth/register (Admin only)
-if ($method === 'POST' && $uri === '/auth/register') {
+// POST /api/admin/register (Admin only)
+if ($method === 'POST' && $uri === '/admin/register') {
     $roleMiddleware = new RoleMiddleware(['Admin']);
     $roleMiddleware->handle();
     
     $controller = new AuthController();
     $controller->register();
+    exit;
+}
+
+// GET /api/admin/users (Admin only)
+if ($method === 'GET' && $uri === '/admin/users') {
+    $roleMiddleware = new RoleMiddleware(['Admin']);
+    $roleMiddleware->handle();
+    
+    $controller = new AccountController();
+    $controller->getAllProfiles();
+    exit;
+}
+
+// PUT /api/admin/users/{id} (Admin only)
+if ($method === 'PUT' && preg_match('/^\/admin\/users\/(\d+)$/', $uri, $matches)) {
+    $roleMiddleware = new RoleMiddleware(['Admin']);
+    $roleMiddleware->handle();
+    
+    $controller = new AccountController();
+    $controller->updateUser($matches[1]);
     exit;
 }
 
