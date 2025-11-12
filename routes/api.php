@@ -152,45 +152,6 @@ if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
 }
 
 // =====================================================
-// 9. LPJ (LAPORAN PERTANGGUNGJAWABAN) ROUTES
-// =====================================================
-
-// GET /api/lpj/status/{kegiatan_id} - Get status LPJ untuk kegiatan
-if ($method === 'GET' && preg_match('/^\/lpj\/status\/(\d+)$/', $uri, $matches)) {
-    $controller = new LpjController();
-    $controller->getStatus();
-    exit;
-}
-
-// POST /api/lpj/upload/{kegiatan_id} - Upload lampiran LPJ
-if ($method === 'POST' && preg_match('/^\/lpj\/upload\/(\d+)$/', $uri, $matches)) {
-    $controller = new LpjController();
-    $controller->uploadLampiran();
-    exit;
-}
-
-// POST /api/lpj/submit/{kegiatan_id} - Submit LPJ (final)
-if ($method === 'POST' && preg_match('/^\/lpj\/submit\/(\d+)$/', $uri, $matches)) {
-    $controller = new LpjController();
-    $controller->submitLpj();
-    exit;
-}
-
-// DELETE /api/lpj/lampiran/{lampiran_id} - Delete lampiran
-if ($method === 'DELETE' && preg_match('/^\/lpj\/lampiran\/(\d+)$/', $uri, $matches)) {
-    $controller = new LpjController();
-    $controller->deleteLampiran();
-    exit;
-}
-
-// POST /api/lpj/check-reminders - Manual trigger check reminders
-if ($method === 'POST' && $uri === '/lpj/check-reminders') {
-    $controller = new LpjController();
-    $controller->checkReminders();
-    exit;
-}
-
-// =====================================================
 // 10. ROUTER-BASED ROUTES (Object Router)
 // =====================================================
 
@@ -229,6 +190,7 @@ $router->get('/kegiatan/{id}/logs', 'KegiatanController@logs');
 
 // Fitur Tambahan
 $router->post('/kegiatan/{id}/duplicate', 'KegiatanController@duplicate');
+$router->post('/kegiatan/{id}/cairkan', 'KegiatanController@cairkanDana');
 $router->get('/kegiatan/export/excel', 'KegiatanController@exportExcel');
 $router->get('/kegiatan/statistics/dashboard', 'KegiatanController@statistics');
 
