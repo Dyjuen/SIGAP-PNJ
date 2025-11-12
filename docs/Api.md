@@ -253,7 +253,6 @@ Endpoint untuk manajemen kegiatan yang sudah disetujui dari telaah.
   - **Content**: `multipart/form-data`
   - **Body**: `telaah_id` (number), `surat_pengantar` (file).
 - **`GET /kegiatan/{id}`**: Melihat detail kegiatan.
-- **`POST /kegiatan/{id}/submit`**: (Tidak digunakan lagi, alur via approval).
 - **`POST /kegiatan/{id}/revise`**: Approver meminta revisi.
 - **`POST /kegiatan/{id}/approve`**: Approver (PPK, Wadir, Bendahara) menyetujui tahapan.
 - **`GET /kegiatan/{id}/logs`**: Melihat riwayat status kegiatan.
@@ -276,13 +275,36 @@ Endpoint untuk mengelola file lampiran pada sebuah kegiatan.
 
 ## 8. Rute Pencairan Dana
 
-Endpoint untuk proses pengajuan dan persetujuan pencairan dana oleh Bendahara.
+Endpoint untuk melihat informasi terkait pencairan dana. Proses pencairan itu sendiri dilakukan melalui `POST /kegiatan/{id}/cairkan`.
 
-- **`GET /pencairan/kegiatan/{kegiatan_id}`**: Melihat riwayat pencairan dana per kegiatan.
-- **`GET /pencairan/sisa-dana/{kegiatan_id}`**: Cek sisa dana yang belum dicairkan.
-- **`POST /pencairan`**: Pengusul mengajukan pencairan dana.
-  - **Body**: `{ "kegiatan_id": 1, "nominal_pencairan": 500000, "keterangan": "Uang muka" }`
-- **`PUT /pencairan/{id}/approve`**: Bendahara menyetujui pencairan.
-  - **Body**: `{ "catatan_bendahara": "OK" }`
-- **`PUT /pencairan/{id}/reject`**: Bendahara menolak pencairan.
-  - **Body**: `{ "catatan_bendahara": "Perbaiki rincian" }`
+---
+
+### **Lihat Riwayat Pencairan**
+
+Melihat riwayat pencairan dana untuk satu kegiatan.
+
+- **Endpoint**: `GET /pencairan/kegiatan/{kegiatan_id}`
+- **Hak Akses**: Pengguna Terautentikasi
+- **Expected Result**:
+  - **Success (200)**: Mengembalikan array berisi daftar transaksi pencairan.
+
+---
+
+### **Cek Sisa Dana**
+
+Melihat sisa dana yang belum dicairkan dari total anggaran kegiatan.
+
+- **Endpoint**: `GET /pencairan/sisa-dana/{kegiatan_id}`
+- **Hak Akses**: Pengguna Terautentikasi
+- **Expected Result**:
+  - **Success (200)**:
+    ```json
+    {
+        "success": true,
+        "data": {
+            "total_anggaran": 10000000,
+            "total_dicairkan": 2500000,
+            "sisa_dana": 7500000
+        }
+    }
+    ```
