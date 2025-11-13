@@ -75,7 +75,7 @@ export function renderInputLpjPage(userRole) {
                   <input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;" placeholder="Input">
                 </div>
 
-                <div class="flex items-end pb-3">
+                <div class="flex items-end">
                   <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeRabSection(this)">
                     <span class="text-xl font-bold">−</span>
                   </button>
@@ -134,10 +134,10 @@ export function renderInputLpjPage(userRole) {
                   <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
                 </div>
 
-                <div class="flex items-end pb-3">
+                <div class="flex items-end">
                   <label class="cursor-pointer">
                     <input type="file" multiple class="hidden" onchange="handleFileUpload(this)">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-105 border-0" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 border-0" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
@@ -148,7 +148,8 @@ export function renderInputLpjPage(userRole) {
               </div>
 
               <!-- Uploaded Files Container -->
-              <div class="uploaded-files-container mt-4"></div>
+              <div class="uploaded-files-container mt-4">
+              </div>
             </div>
 
             <!-- Komentar Button -->
