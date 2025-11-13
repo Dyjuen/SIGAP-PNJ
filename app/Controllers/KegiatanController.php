@@ -131,11 +131,13 @@ class KegiatanController
         try {
             // This endpoint now expects multipart/form-data
             $telaahId = $_POST['telaah_id'] ?? null;
+            $penanggungJawab = $_POST['penanggung_jawab_manual'] ?? null;
+            $pelaksana = $_POST['pelaksana_manual'] ?? null;
             $suratPengantarFile = $_FILES['surat_pengantar'] ?? null;
 
             // --- 1. Basic Validation ---
-            if (!$telaahId) {
-                Response::error('telaah_id harus diisi.', 400);
+            if (!$telaahId || !$penanggungJawab || !$pelaksana) {
+                Response::error('telaah_id, penanggung_jawab_manual, and pelaksana_manual are required.', 400);
             }
             if (!$suratPengantarFile || $suratPengantarFile['error'] !== UPLOAD_ERR_OK) {
                 Response::error('File surat_pengantar harus diupload.', 400);
@@ -170,13 +172,13 @@ class KegiatanController
 
             $db->beginTransaction();
 
-            // --- 5. Create New Kegiatan with Surat Pengantar Path ---
+            // --- 5. Create New Kegiatan with dynamic data ---
             $kegiatanData = [
                 'telaah_id' => $telaahId,
-                'surat_pengantar_path' => $uploadResult['file_path'], // Save the file path
+                'surat_pengantar_path' => $uploadResult['file_path'],
                 'tanggal_mulai_final' => $telaah['tanggal_mulai'],
-                'penanggung_jawab_manual' => 'Ditentukan kemudian',
-                'pelaksana_manual' => 'Ditentukan kemudian'
+                'penanggung_jawab_manual' => $penanggungJawab,
+                'pelaksana_manual' => $pelaksana
             ];
             $kegiatanId = $this->kegiatanModel->create($kegiatanData);
 

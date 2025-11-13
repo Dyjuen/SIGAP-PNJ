@@ -1,10 +1,8 @@
 // frontend/src/pages/pengusul/MengajukanKegiatanPage.js
 
-import { renderDashboardLayout } from '../../layout/AppLayout.js';
-import { pengusulSidebar } from '../../layout/sidebars/pengusulSidebar.js';
+import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderMengajukanKegiatanPage(path, userRole) {
-
   const pageContent = `
     <style>
       /* --- Custom CSS for Figma Design --- */
@@ -124,7 +122,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       
       /* 6. Buttons */
       .btn-ajukan {
-        background: #1DF07B !important;
+        background: #00BCD4 !important;
         color: white !important;
         box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3) !important;
         border: none !important;
@@ -136,7 +134,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         gap: 0.5rem;
       }
       .btn-ajukan:hover {
-        background: #24B364 !important;
+        background: #0097A7 !important;
         color: white !important;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4) !important;
@@ -333,6 +331,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     </style>
 
     <div class="mengajukan-kegiatan-page">
+        <div id="pageAlertContainer" class="mb-3" style="display: none;"></div>
         <div class="card card-datatable table-responsive p-0">
             <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
                 <thead>
@@ -340,7 +339,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
                     <th style="width: 50px; text-align: center;">
                     <input type="checkbox" class="form-check-input" id="selectAll">
                     </th>
-                    <th style="width: 80px;">No.</th>
+                    <th>ID Telaah</th>
                     <th>Nama Usulan Kegiatan</th>
                     <th>Tanggal Diajukan</th>
                     <th>Tanggal Disetujui</th>
@@ -353,42 +352,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
             </table>
         </div>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <div class="text-muted">
-                <small>Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalEntries">50</span> entries</small>
-            </div>
-            <nav aria-label="Page navigation">
-                <ul class="pagination mb-0" id="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="First">
-                            <span aria-hidden="true">«</span>
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">‹</span>
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                    <li class="page-item"><a class="page-link" href="#">6</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">›</span>
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Last">
-                            <span aria-hidden="true">»</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        <!-- Pagination could be added here if needed -->
     </div>
 
     <!-- Modal Ajukan Kegiatan -->
@@ -402,18 +366,15 @@ export function renderMengajukanKegiatanPage(path, userRole) {
           <div class="modal-body">
             <div id="ajukanKegiatanError" class="alert alert-danger" style="display: none;"></div>
             <form id="ajukanKegiatanForm">
-              <input type="hidden" id="kegiatanId">
-              
+              <input type="hidden" id="telaahId">
               <div class="mb-3">
-                <label for="penanggungJawab" class="form-label">Penangggungjawab Kegiatan</label>
-                <input type="text" id="penanggungJawab" class="form-control" placeholder="Input" required>
+                <label for="penanggungJawab" class="form-label">Penanggung Jawab</label>
+                <input type="text" id="penanggungJawab" class="form-control" placeholder="Masukkan nama penanggung jawab" required>
               </div>
-              
               <div class="mb-3">
                 <label for="pelaksana" class="form-label">Pelaksana Kegiatan</label>
-                <input type="text" id="pelaksana" class="form-control" placeholder="Input" required>
+                <input type="text" id="pelaksana" class="form-control" placeholder="Masukkan nama pelaksana kegiatan" required>
               </div>
-              
               <div class="mb-3">
                 <label for="suratPengantar" class="form-label">Surat Pengantar</label>
                 <input type="file" id="suratPengantar" class="form-control" accept=".pdf,.doc,.docx" required>
@@ -433,126 +394,173 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     </div>
   `;
 
-  // Render the main layout with the page-specific content
   renderDashboardLayout(pageContent, userRole);
 
   // ==============================================
-  // DATA & STATE
+  // STATE & SETUP
   // ==============================================
-  const kegiatan = [
-    { 
-      id: 1, 
-      nama: 'KAK (Nama Kegiatan)', 
-      pengusul: 'Pengusul',
-      tanggalDiajukan: '29 September 2025', 
-      tanggalDisetujui: '28 Desember 2025', 
-      status: 'Diterima' 
-    },
-    { 
-      id: 2, 
-      nama: 'KAK (Nama Kegiatan)', 
-      pengusul: 'Pengusul',
-      tanggalDiajukan: '29 September 2025', 
-      tanggalDisetujui: '28 Desember 2025', 
-      status: 'Diterima' 
-    },
-    { 
-      id: 3, 
-      nama: 'KAK (Nama Kegiatan)', 
-      pengusul: 'Pengusul',
-      tanggalDiajukan: '29 September 2025', 
-      tanggalDisetujui: '28 Desember 2025', 
-      status: 'Diterima' 
-    },
-    { 
-      id: 4, 
-      nama: 'KAK (Nama Kegiatan)', 
-      pengusul: 'Pengusul',
-      tanggalDiajukan: '29 September 2025', 
-      tanggalDisetujui: '28 Desember 2025', 
-      status: 'Diterima' 
-    },
-  ];
-
-  let currentKegiatanId = null;
+  let approvedTelaah = [];
   let ajukanModalInstance = null;
+  if (typeof bootstrap !== "undefined") {
+    ajukanModalInstance = new bootstrap.Modal(
+      document.getElementById("ajukanKegiatanModal")
+    );
+  }
 
   // ==============================================
-  // UI FUNCTIONS
+  // API FUNCTIONS
   // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
+    const headers = { ...options.headers };
+    if (!(options.body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
+    headers["Authorization"] = `Bearer ${token}`;
+
+    const config = { ...options, headers };
+
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (!data.status && data.status !== "success") {
+        throw new Error(data.message || "API request failed");
+      }
+      return data;
+    } catch (error) {
+      console.error("API Request Error:", error);
+      throw error;
+    }
+  }
+
+  async function fetchApprovedTelaah() {
+    const tbody = document.getElementById("kegiatanTableBody");
+    tbody.innerHTML =
+      '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+    try {
+      const response = await apiRequest("/telaah");
+      // Client-side filtering to ensure only approved (status_id = 3) are shown
+      approvedTelaah = response.data.filter((item) => item.status_id === 3);
+      renderTableRows(approvedTelaah);
+    } catch (error) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    }
+  }
+
+  async function submitKegiatan(formData) {
+    setButtonLoading("btnSelesaiAjukan", true);
+    hideModalError();
+    try {
+      await apiRequest("/kegiatan", {
+        method: "POST",
+        body: formData,
+      });
+
+      ajukanModalInstance.hide();
+      fetchApprovedTelaah(); // Refresh the list
+      showPageAlert("Kegiatan berhasil diajukan!", "success"); // Use showPageAlert for success
+    } catch (error) {
+      showPageAlert(error.message || "Gagal mengajukan kegiatan.", "danger"); // Use showPageAlert for error
+    } finally {
+      setButtonLoading("btnSelesaiAjukan", false);
+    }
+  }
+
+  // ==============================================
+  // UI & HELPER FUNCTIONS
+  // ==============================================
+  function formatDate(dateString) {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
+  function showPageAlert(message, type = "success") {
+    const alertContainer = document.getElementById("pageAlertContainer");
+    if (alertContainer) {
+      alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+      alertContainer.style.display = "block";
+      setTimeout(() => {
+        alertContainer.style.display = "none";
+        alertContainer.innerHTML = "";
+      }, 5000); // Hide after 5 seconds
+    }
+  }
+
   function showModalError(message) {
-    const errorDiv = document.getElementById('ajukanKegiatanError');
+    const errorDiv = document.getElementById("ajukanKegiatanError");
     if (errorDiv) {
       errorDiv.textContent = message;
-      errorDiv.style.display = 'block';
-      
-      setTimeout(() => {
-        errorDiv.style.display = 'none';
-      }, 5000);
+      errorDiv.style.display = "block";
     }
   }
 
   function hideModalError() {
-    const errorDiv = document.getElementById('ajukanKegiatanError');
+    const errorDiv = document.getElementById("ajukanKegiatanError");
     if (errorDiv) {
-      errorDiv.style.display = 'none';
+      errorDiv.style.display = "none";
     }
   }
 
   function setButtonLoading(buttonId, isLoading) {
     const button = document.getElementById(buttonId);
     if (!button) return;
-    
-    const textSpan = button.querySelector('.button-text');
-    const spinner = button.querySelector('.spinner-border');
-    
-    if (isLoading) {
-      button.disabled = true;
-      if (spinner) spinner.classList.remove('d-none');
-      if (textSpan) textSpan.style.opacity = '0';
-    } else {
-      button.disabled = false;
-      if (spinner) spinner.classList.add('d-none');
-      if (textSpan) textSpan.style.opacity = '1';
-    }
+
+    const textSpan = button.querySelector(".button-text");
+    const spinner = button.querySelector(".spinner-border");
+
+    button.disabled = isLoading;
+    if (spinner) spinner.classList.toggle("d-none", !isLoading);
+    if (textSpan) textSpan.style.opacity = isLoading ? "0" : "1";
   }
 
   function renderTableRows(data) {
-    const tbody = document.getElementById('kegiatanTableBody');
+    const tbody = document.getElementById("kegiatanTableBody");
     if (!tbody) return;
-    
-    tbody.innerHTML = '';
 
-    data.forEach((item, index) => {
-      const statusClass = item.status === 'Diterima' ? 'bg-label-success' : 
-                         item.status === 'Pending' ? 'bg-label-warning' : 'bg-label-danger';
-      
-      const row = document.createElement('tr');
+    tbody.innerHTML = "";
+    if (!data || data.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" class="text-center">Tidak ada usulan KAK yang disetujui.</td></tr>';
+      return;
+    }
+
+    data.forEach((item) => {
+      const row = document.createElement("tr");
       row.innerHTML = `
         <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox">
+          <input type="checkbox" class="form-check-input row-checkbox" data-id="${item.telaah_id}">
         </td>
         <td>
-          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${item.id}</span>
+          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${item.telaah_id}</span>
         </td>
         <td>
           <div style="display: flex; flex-direction: column;">
-            <strong>${item.nama}</strong>
-            <small class="text-muted">${item.pengusul}</small>
+            <strong>${item.nama_kegiatan}</strong>
+            <small class="text-muted">${item.pengusul_nama || "Tanpa Pengusul"}</small>
           </div>
         </td>
-        <td>${item.tanggalDiajukan}</td>
-        <td>${item.tanggalDisetujui}</td>
+        <td>${formatDate(item.created_at)}</td>
+        <td>${formatDate(item.updated_at)}</td>
         <td style="text-align: center;">
-          <span class="badge ${statusClass}">${item.status}</span>
+          <span class="badge bg-label-success">Disetujui</span>
         </td>
         <td style="text-align: center;">
           <button 
             class="btn btn-sm btn-ajukan" 
-            data-id="${item.id}"
-            data-nama="${item.nama}"
+            data-id="${item.telaah_id}"
           >
-            <i class="ti">&#xea5e;</i> Ajukan
+            Ajukan Kegiatan
           </button>
         </td>
       `;
@@ -562,158 +570,63 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     attachEventListeners();
   }
 
+  // ==============================================
+  // EVENT LISTENERS
+  // ==============================================
   function attachEventListeners() {
-    document.querySelectorAll('.row-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', updateSelectAll);
+    document.querySelectorAll(".btn-ajukan").forEach((btn) => {
+      btn.addEventListener("click", handleAjukanClick);
     });
 
-    document.querySelectorAll('.btn-ajukan').forEach(btn => {
-      btn.addEventListener('click', handleAjukan);
-    });
-
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const filteredKegiatan = kegiatan.filter(item => 
-          item.nama.toLowerCase().includes(searchTerm) ||
-          item.pengusul.toLowerCase().includes(searchTerm) ||
-          item.status.toLowerCase().includes(searchTerm)
-        );
-        renderTableRows(filteredKegiatan);
+    const suratPengantarInput = document.getElementById("suratPengantar");
+    if (suratPengantarInput) {
+      suratPengantarInput.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+      suratPengantarInput.addEventListener("change", (e) => {
+        e.stopPropagation();
       });
     }
   }
 
-  const selectAllCheckbox = document.getElementById('selectAll');
-  if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener('change', function() {
-      const checkboxes = document.querySelectorAll('.row-checkbox');
-      checkboxes.forEach(cb => cb.checked = this.checked);
-    });
-  }
-
-  function updateSelectAll() {
-    const allCheckboxes = document.querySelectorAll('.row-checkbox');
-    const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-    if (selectAllCheckbox) {
-      selectAllCheckbox.checked = checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
-    }
-  }
-
-  function handleAjukan(e) {
-    const btn = e.currentTarget;
-    const id = btn.getAttribute('data-id');
-    const nama = btn.getAttribute('data-nama');
-    
-    currentKegiatanId = id;
-    
-    // Reset form
-    document.getElementById('ajukanKegiatanForm').reset();
-    document.getElementById('kegiatanId').value = id;
-    hideModalError();
-    
-    // Show modal
-    if (!ajukanModalInstance) {
-      if (typeof bootstrap !== 'undefined') {
-        ajukanModalInstance = new bootstrap.Modal(document.getElementById('ajukanKegiatanModal'));
-      } else {
-        console.error('Bootstrap 5 JS not found. Modals will not work.');
-        return;
-      }
-    }
+  function handleAjukanClick(e) {
+    const telaahId = e.currentTarget.dataset.id;
+    document.getElementById("telaahId").value = telaahId;
+    document.getElementById("ajukanKegiatanForm").reset();
+    hideModalError(); // Clear modal errors on open
     ajukanModalInstance.show();
   }
 
-  // ==============================================
-  // SUBMIT KEGIATAN (NO API - LOCAL ONLY)
-  // ==============================================
-  const btnSelesaiAjukan = document.getElementById('btnSelesaiAjukan');
+  const btnSelesaiAjukan = document.getElementById("btnSelesaiAjukan");
   if (btnSelesaiAjukan) {
-    btnSelesaiAjukan.addEventListener('click', () => {
-      const kegiatanId = document.getElementById('kegiatanId').value;
-      const penanggungJawab = document.getElementById('penanggungJawab').value.trim();
-      const pelaksana = document.getElementById('pelaksana').value.trim();
-      const suratPengantar = document.getElementById('suratPengantar').files[0];
+    btnSelesaiAjukan.addEventListener("click", () => {
+      const telaahId = document.getElementById("telaahId").value;
+      const penanggungJawab = document.getElementById("penanggungJawab").value.trim();
+      const pelaksana = document.getElementById("pelaksana").value.trim();
+      const suratPengantar = document.getElementById("suratPengantar").files[0];
 
-      // Validasi form
       if (!penanggungJawab || !pelaksana || !suratPengantar) {
-        showModalError('Semua field harus diisi!');
+        showModalError("Semua field harus diisi!"); // Use modal-specific error
         return;
       }
 
-      // Validasi ukuran file (max 5MB)
       if (suratPengantar.size > 5 * 1024 * 1024) {
-        showModalError('Ukuran file maksimal 5MB!');
+        showModalError("Ukuran file Surat Pengantar maksimal 5MB!"); // Use modal-specific error
         return;
       }
 
-      // Validasi format file
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      if (!allowedTypes.includes(suratPengantar.type)) {
-        showModalError('Format file harus PDF, DOC, atau DOCX!');
-        return;
-      }
+      const formData = new FormData();
+      formData.append("telaah_id", telaahId);
+      formData.append("penanggung_jawab_manual", penanggungJawab);
+      formData.append("pelaksana_manual", pelaksana);
+      formData.append("surat_pengantar", suratPengantar);
 
-      // Show loading state
-      setButtonLoading('btnSelesaiAjukan', true);
-      hideModalError();
-
-      // Simulate processing
-      setTimeout(() => {
-        // Update status in local data
-        const index = kegiatan.findIndex(k => k.id == kegiatanId);
-        if (index !== -1) {
-          kegiatan[index].status = 'Diajukan';
-        }
-        
-        // Update UI
-        renderTableRows(kegiatan);
-        
-        // Close modal
-        if (ajukanModalInstance) {
-          ajukanModalInstance.hide();
-        }
-        
-        // Reset form
-        document.getElementById('ajukanKegiatanForm').reset();
-        
-        // Hide loading
-        setButtonLoading('btnSelesaiAjukan', false);
-        
-        showSuccess("Kegiatan berhasil diajukan!");
-
-      }, 1000);
+      submitKegiatan(formData);
     });
   }
 
   // ==============================================
   // INITIALIZATION
   // ==============================================
-  renderTableRows(kegiatan);
-
-  // Set active menu item
-  setTimeout(() => {
-    // Find and activate the "Pengajuan Kegiatan" parent menu
-    const pengajuanMenu = document.querySelector('a[href="javascript:void(0);"] .menu-icon.ti-file-invoice')?.closest('.menu-item');
-    if (pengajuanMenu) {
-      pengajuanMenu.classList.add('open');
-    }
-    
-    // Find and activate the "Mengajukan Kegiatan" submenu
-    const mengajukanMenuItem = document.querySelector('a[href="/mengajukan-kegiatan"]')?.closest('.menu-item');
-    if (mengajukanMenuItem) {
-      mengajukanMenuItem.classList.add('active');
-      const menuLink = mengajukanMenuItem.querySelector('.menu-link');
-      if (menuLink) {
-        menuLink.classList.add('active');
-      }
-    }
-  }, 100);
-
-  // Initialize Vuexy menu
-  if (window.Helpers) {
-    window.Helpers.init();
-  }
+  fetchApprovedTelaah();
 }
