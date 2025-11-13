@@ -137,12 +137,14 @@ export function renderMonitoringUsulanPage(path, userRole) {
   // API FUNCTIONS
   // ==============================================
   async function apiRequest(endpoint, options = {}) {
-    const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
     const defaultHeaders = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     };
-    
+
     const config = {
       ...options,
       headers: {
@@ -150,16 +152,16 @@ export function renderMonitoringUsulanPage(path, userRole) {
         ...options.headers,
       },
     };
-    
+
     try {
       const response = await fetch(`/api${endpoint}`, config);
       const data = await response.json();
       if (!data.status) {
-        throw new Error(data.message || 'API request failed');
+        throw new Error(data.message || "API request failed");
       }
       return data;
     } catch (error) {
-      console.error('API Request Error:', error);
+      console.error("API Request Error:", error);
       throw error;
     }
   }
@@ -167,10 +169,11 @@ export function renderMonitoringUsulanPage(path, userRole) {
   async function fetchTelaah() {
     const tbody = document.getElementById("monitoringTableBody");
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading...</td></tr>';
+    tbody.innerHTML =
+      '<tr><td colspan="7" style="text-align: center;">Loading...</td></tr>';
 
     try {
-      const response = await apiRequest('/telaah');
+      const response = await apiRequest("/telaah");
       state.activities = response.data;
       state.totalEntries = response.data.length;
       state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
@@ -181,35 +184,72 @@ export function renderMonitoringUsulanPage(path, userRole) {
     }
   }
 
+  async function submitForVerification(id) {
+    if (
+      !confirm(
+        "Apakah Anda yakin ingin mengajukan usulan ini untuk verifikasi?"
+      )
+    ) {
+      return;
+    }
+
+    const btn = document.querySelector(`.btn-ajukan[data-id='${id}']`);
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = "Mengajukan...";
+    }
+
+    try {
+      await apiRequest(`/telaah/${id}/submit`, { method: "POST" });
+      alert("Usulan berhasil diajukan.");
+      fetchTelaah(); // Refresh the data
+    } catch (error) {
+      console.error("Submission Error:", error);
+      alert(`Gagal mengajukan usulan: ${error.message}`);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = "Ajukan";
+      }
+    }
+  }
 
   // ==============================================
   // HELPER FUNCTIONS
   // ==============================================
   function formatDate(dateString) {
     if (!dateString) return "-";
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('id-ID', options);
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("id-ID", options);
   }
 
-  function getStatusBadge(status) {
+  function getStatusBadge(statusId) {
     const statusMap = {
-      'Draft': { class: "bg-label-warning", text: "Diajukan" },
-      'Menunggu Verifikasi': { class: "bg-label-warning", text: "Diajukan" },
-      'Direvisi': { class: "bg-label-warning", text: "Diajukan" },
-      'Disetujui WD': { class: "bg-label-success", text: "Disetujui" },
-      'Disetujui PPK': { class: "bg-label-success", text: "Disetujui" },
-      'Ditolak': { class: "bg-label-danger", text: "Ditolak" },
-      'Default': { class: "bg-label-secondary", text: "Tidak Diketahui" } // Fallback
+      1: { class: "bg-label-dark", text: "Draft" },
+      2: { class: "bg-label-warning", text: "Diajukan" },
+      3: { class: "bg-label-success", text: "Disetujui" },
+      4: { class: "bg-label-danger", text: "Ditolak" },
+      5: { class: "bg-label-info", text: "Revisi" },
+      Default: { class: "bg-label-dark", text: "Tidak Diketahui" },
     };
-    return statusMap[status] || statusMap['Default'];
+    return statusMap[statusId] || statusMap["Default"];
   }
 
-  function getActionButtons(status, id) {
-    // This function will likely need more logic based on all possible statuses
-    switch (status) {
-      case 'Draft':
-      case 'Direvisi':
-      case 'Ditolak':
+  function getActionButtons(statusId, id) {
+    switch (statusId) {
+      case 1: // Draft
+      case 5: // Revisi
+        return `
+          <button class="btn btn-sm btn-primary me-2 btn-ajukan" data-id="${id}" title="Ajukan untuk Verifikasi">
+            ${statusId === 1 ? "Ajukan" : "Ajukan Ulang"}
+          </button>
+          <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" title="Edit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
+          </button>
+          <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+          </button>
+        `;
+      case 4: // Ditolak
         return `
           <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" title="Edit">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
@@ -218,12 +258,11 @@ export function renderMonitoringUsulanPage(path, userRole) {
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
           </button>
         `;
-      case 'Disetujui PPK':
-      case 'Disetujui WD':
+      case 3: // Disetujui
         return `
-          <button class="btn btn-sm btn-download" data-id="${id}" title="Download PDF">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path dM12 4l0 12" /></svg>
-            Download PDF
+          <button class="btn btn-sm btn-download" data-id="${id}" title="Download KAK">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+            Download KAK
           </button>
         `;
       default:
@@ -239,7 +278,8 @@ export function renderMonitoringUsulanPage(path, userRole) {
     if (!tbody) return;
 
     if (data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Tidak ada data usulan.</td></tr>';
+      tbody.innerHTML =
+        '<tr><td colspan="7" style="text-align: center;">Tidak ada data usulan.</td></tr>';
       return;
     }
 
@@ -251,9 +291,9 @@ export function renderMonitoringUsulanPage(path, userRole) {
     );
 
     paginatedData.forEach((activity) => {
-      const status = activity.status ? activity.status.nama_status : 'N/A';
-      const statusBadge = getStatusBadge(status);
-      const actionButtons = getActionButtons(status, activity.id);
+      const statusId = activity.status_id;
+      const statusBadge = getStatusBadge(statusId);
+      const actionButtons = getActionButtons(statusId, activity.telaah_id);
 
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -261,20 +301,26 @@ export function renderMonitoringUsulanPage(path, userRole) {
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
         <td>
-          <span class="number-badge">${activity.id}</span>
+          <span class="number-badge">${activity.telaah_id}</span>
         </td>
         <td>
-          <strong>${activity.nama_kegiatan || 'Tanpa Judul'}</strong>
-          <div class="text-muted small">${activity.pengusul?.nama_lengkap || 'Tanpa Pengusul'}</div>
+          <strong>${activity.nama_kegiatan || "Tanpa Judul"}</strong>
+          <div class="text-muted small">${
+            activity.pengusul_nama || "Tanpa Pengusul"
+          }</div>
         </td>
         <td>
           <div>${formatDate(activity.created_at)}</div>
         </td>
         <td>
-          <div>${formatDate(activity.tanggal_disetujui)}</div>
+          <div>${formatDate(activity.updated_at)}</div>
         </td>
         <td style="text-align: center;">
-          <span class="badge ${statusBadge.class}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${statusBadge.text}</span>
+          <span class="badge ${
+            statusBadge.class
+          }" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${
+        statusBadge.text
+      }</span>
         </td>
         <td style="text-align: center;">
           ${actionButtons}
@@ -304,6 +350,13 @@ export function renderMonitoringUsulanPage(path, userRole) {
       checkbox.addEventListener("change", updateSelectAll);
     });
 
+    document.querySelectorAll(".btn-ajukan").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const id = this.getAttribute("data-id");
+        submitForVerification(id);
+      });
+    });
+
     document
       .querySelectorAll(".btn-edit-profile, .btn-revisi")
       .forEach((btn) => {
@@ -322,7 +375,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
     document.querySelectorAll(".btn-download").forEach((btn) => {
       btn.addEventListener("click", function () {
-        alert(`Download PDF kegiatan ID: ${this.getAttribute("data-id")}`);
+        alert(`Download KAK ID: ${this.getAttribute("data-id")}`);
       });
     });
 
@@ -350,22 +403,31 @@ export function renderMonitoringUsulanPage(path, userRole) {
   function setupPagination() {
     const paginationContainer = document.querySelector(".pagination");
     if (!paginationContainer) return;
-    
-    paginationContainer.innerHTML = ''; // Clear existing buttons
+
+    paginationContainer.innerHTML = ""; // Clear existing buttons
 
     // Previous buttons
-    paginationContainer.innerHTML += `<li class="page-item ${state.currentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" id="btnFirstPage">«</a></li>`;
-    paginationContainer.innerHTML += `<li class="page-item ${state.currentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" id="btnPrevPage">‹</a></li>`;
+    paginationContainer.innerHTML += `<li class="page-item ${
+      state.currentPage === 1 ? "disabled" : ""
+    }"><a class="page-link" href="#" id="btnFirstPage">«</a></li>`;
+    paginationContainer.innerHTML += `<li class="page-item ${
+      state.currentPage === 1 ? "disabled" : ""
+    }"><a class="page-link" href="#" id="btnPrevPage">‹</a></li>`;
 
     // Page number buttons (simplified logic)
-    for(let i = 1; i <= state.totalPages; i++) {
-        paginationContainer.innerHTML += `<li class="page-item ${i === state.currentPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+    for (let i = 1; i <= state.totalPages; i++) {
+      paginationContainer.innerHTML += `<li class="page-item ${
+        i === state.currentPage ? "active" : ""
+      }"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
     }
 
     // Next buttons
-    paginationContainer.innerHTML += `<li class="page-item ${state.currentPage === state.totalPages ? 'disabled' : ''}"><a class="page-link" href="#" id="btnNextPage">›</a></li>`;
-    paginationContainer.innerHTML += `<li class="page-item ${state.currentPage === state.totalPages ? 'disabled' : ''}"><a class="page-link" href="#" id="btnLastPage">»</a></li>`;
-
+    paginationContainer.innerHTML += `<li class="page-item ${
+      state.currentPage === state.totalPages ? "disabled" : ""
+    }"><a class="page-link" href="#" id="btnNextPage">›</a></li>`;
+    paginationContainer.innerHTML += `<li class="page-item ${
+      state.currentPage === state.totalPages ? "disabled" : ""
+    }"><a class="page-link" href="#" id="btnLastPage">»</a></li>`;
 
     document.querySelectorAll(".pagination .page-link").forEach((link) => {
       link.addEventListener("click", function (e) {
@@ -395,7 +457,8 @@ export function renderMonitoringUsulanPage(path, userRole) {
     if (btnNextPage)
       btnNextPage.addEventListener("click", (e) => {
         e.preventDefault();
-        if (state.currentPage < state.totalPages) changePage(state.currentPage + 1);
+        if (state.currentPage < state.totalPages)
+          changePage(state.currentPage + 1);
       });
     if (btnLastPage)
       btnLastPage.addEventListener("click", (e) => {
@@ -405,7 +468,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
   }
 
   function changePage(page) {
-    if(page < 1 || page > state.totalPages) return;
+    if (page < 1 || page > state.totalPages) return;
     state.currentPage = page;
     renderTableRows(state.activities);
     updatePagination();
@@ -413,9 +476,13 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
   function updatePagination() {
     const startEntry = (state.currentPage - 1) * state.itemsPerPage + 1;
-    const endEntry = Math.min(state.currentPage * state.itemsPerPage, state.totalEntries);
+    const endEntry = Math.min(
+      state.currentPage * state.itemsPerPage,
+      state.totalEntries
+    );
 
-    document.getElementById("startEntry").textContent = state.totalEntries > 0 ? startEntry : 0;
+    document.getElementById("startEntry").textContent =
+      state.totalEntries > 0 ? startEntry : 0;
     document.getElementById("endEntry").textContent = endEntry;
     document.getElementById("totalEntries").textContent = state.totalEntries;
 

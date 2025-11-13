@@ -360,7 +360,7 @@ class TelaahController
             $db->query("
                 INSERT INTO t_telaah_approval
                 (telaah_id, approver_user_id, status, created_at)
-                VALUES (:id, NULL, 'SUBMITTED', NOW())
+                VALUES (:id, NULL, 'Menunggu', NOW())
             ");
             $db->bind(':id', $id);
             $db->execute();
@@ -457,7 +457,7 @@ class TelaahController
             $db->query("
                 INSERT INTO t_telaah_approval
                 (telaah_id, approver_user_id, status, catatan, created_at)
-                VALUES (:id, :usr, 'REVISED', NULL, NOW())
+                VALUES (:id, :usr, 'Revisi', NULL, NOW())
             ");
             $db->bind(':id', $id);
             $db->bind(':usr', $user['user_id']);
@@ -602,7 +602,7 @@ class TelaahController
             $db->query("
                 INSERT INTO t_telaah_approval
                 (telaah_id, approver_user_id, status, created_at)
-                VALUES (:id, :usr, 'RESUBMITTED', NOW())
+                VALUES (:id, NULL, 'Menunggu', NOW())
             ");
             $db->bind(':id', $id);
             $db->bind(':usr', $user['user_id']);
@@ -664,7 +664,7 @@ class TelaahController
             $db->query("
                 INSERT INTO t_telaah_approval
                 (telaah_id, approver_user_id, status, created_at)
-                VALUES (:id, :usr, 'APPROVED', NOW())
+                VALUES (:id, :usr, 'Disetujui', NOW())
             ");
             $db->bind(':id', $id);
             $db->bind(':usr', $user['user_id']);
@@ -760,7 +760,7 @@ class TelaahController
             $db->query("
                 INSERT INTO t_telaah_approval
                 (telaah_id, approver_user_id, status, catatan, created_at)
-                VALUES (:id, :usr, 'REJECTED', :ct, NOW())
+                VALUES (:id, :usr, 'Ditolak', :ct, NOW())
             ");
             $db->bind(':id', $id);
             $db->bind(':usr', $user['user_id']);
