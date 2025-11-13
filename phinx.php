@@ -1,5 +1,10 @@
 <?php
-// File: phinx.php (Simpan di root proyek Anda, C:\xampp\htdocs\SIGAP-PNJ\phinx.php)
+
+require_once 'vendor/autoload.php';
+
+// Load .env file
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
 // Muat konfigurasi database kita yang sudah ada
 require_once 'config/database.php';
@@ -16,11 +21,11 @@ return
         
         'development' => [
             'adapter' => 'mysql',
-            'host' => defined('DB_HOST') ? DB_HOST : 'localhost',
-            'name' => defined('DB_NAME') ? DB_NAME : 'sigap_pnj',
-            'user' => defined('DB_USER') ? DB_USER : 'root',
-            'pass' => defined('DB_PASS') ? DB_PASS : 'rafifdwiarka180706.',
-            'port' => 3306, // Ganti jika port MySQL Anda berbeda
+            'host' => $_ENV['DB_HOST'] ?? 'localhost',
+            'name' => $_ENV['DB_NAME'] ?? 'sigap_pnj',
+            'user' => $_ENV['DB_USER'] ?? 'root',
+            'pass' => $_ENV['DB_PASS'] ?? 'rafifdwiarka180706.',
+            'port' => $_ENV['DB_PORT'] ?? 3306,
             'charset' => 'utf8mb4',
         ]
         
