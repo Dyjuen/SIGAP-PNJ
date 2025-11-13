@@ -4,6 +4,9 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderUsulanKakPage(userRole) {
   const pageContent = `
+    <!-- Add required CSS for daterangepicker in the head section -->
+    <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
+    
     <div class="kerangka-acuan-kerja-page">
       <!-- Progress Steps -->
       <div class="flex justify-center gap-24 mb-8 backdrop-blur-md p-6 rounded-xl shadow-lg" style="background: rgba(255, 255, 255, 0.8);">
@@ -195,16 +198,10 @@ export function renderUsulanKakPage(userRole) {
                 <div class="step-content" id="kurun-waktu">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</h4>
                   
-                  <div class="grid grid-cols-2 gap-6">
-                    <div class="mb-6">
-                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Mulai</label>
-                      <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" id="tanggalMulai" value="2025-03-11">
-                    </div>
-
-                    <div class="mb-6">
-                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Selesai</label>
-                      <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" id="tanggalSelesai">
-                    </div>
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Period Pelaksanaan</label>
+                    <input type="text" id="kurunWaktu" class="form-control w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Select date range" />
+                    <small class="text-gray-500 mt-1 block">Pilih tanggal mulai dan tanggal selesai</small>
                   </div>
                 </div>
               </div>
@@ -494,6 +491,163 @@ export function renderUsulanKakPage(userRole) {
   // Render the main layout
   renderDashboardLayout(pageContent, userRole);
 
+  // Add custom CSS for daterangepicker colors
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Override Bootstrap Daterangepicker colors to match cyan theme */
+    .daterangepicker {
+      border-color: #00BCD4 !important;
+    }
+    
+    .daterangepicker .calendar-table {
+      border-color: #E5F8FB !important;
+    }
+    
+    .daterangepicker td.active, 
+    .daterangepicker td.active:hover {
+      background-color: #00BCD4 !important;
+      border-color: #00BCD4 !important;
+      color: #FFFFFF !important;
+    }
+    
+    .daterangepicker td.in-range {
+      background-color: #E5F8FB !important;
+      color: #374151 !important;
+    }
+    
+    .daterangepicker td.available:hover {
+      background-color: #E5F8FB !important;
+      color: #374151 !important;
+    }
+    
+    .daterangepicker .ranges li.active {
+      background-color: #00BCD4 !important;
+      color: #FFFFFF !important;
+    }
+    
+    .daterangepicker .ranges li:hover {
+      background-color: #E5F8FB !important;
+      color: #374151 !important;
+    }
+    
+    .daterangepicker td.start-date {
+      background-color: #00BCD4 !important;
+      border-color: #00BCD4 !important;
+      color: #FFFFFF !important;
+    }
+    
+    .daterangepicker td.end-date {
+      background-color: #00BCD4 !important;
+      border-color: #00BCD4 !important;
+      color: #FFFFFF !important;
+    }
+    
+    .daterangepicker .drp-buttons .btn-primary {
+      background-color: #00BCD4 !important;
+      border-color: #00BCD4 !important;
+      color: #FFFFFF !important;
+    }
+    
+    .daterangepicker .drp-buttons .btn-primary:hover {
+      background-color: #0097A7 !important;
+      border-color: #0097A7 !important;
+    }
+    
+    .daterangepicker th.month {
+      color: #00BCD4 !important;
+    }
+    
+    .daterangepicker td.off, 
+    .daterangepicker td.off.in-range, 
+    .daterangepicker td.off.start-date, 
+    .daterangepicker td.off.end-date {
+      background-color: #F9FAFB !important;
+      color: #9CA3AF !important;
+    }
+    
+    .daterangepicker select.monthselect, 
+    .daterangepicker select.yearselect {
+      border-color: #E5E7EB !important;
+    }
+    
+    .daterangepicker select.monthselect:focus, 
+    .daterangepicker select.yearselect:focus {
+      border-color: #00BCD4 !important;
+      outline: none !important;
+      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1) !important;
+    }
+    
+    .daterangepicker .calendar-table .next span,
+    .daterangepicker .calendar-table .prev span {
+      border-color: #00BCD4 !important;
+    }
+    
+    .daterangepicker .calendar-table .next:hover,
+    .daterangepicker .calendar-table .prev:hover {
+      background-color: #E5F8FB !important;
+    }
+    
+    .daterangepicker td.today {
+      background-color: #E5F8FB !important;
+      color: #374151 !important;
+    }
+    
+    .daterangepicker td.today.active {
+      background-color: #00BCD4 !important;
+      color: #FFFFFF !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Load required libraries dynamically
+  const loadDateRangePicker = () => {
+    // Load moment.js
+    const momentScript = document.createElement('script');
+    momentScript.src = '../../assets/vendor/libs/moment/moment.js';
+    momentScript.onload = () => {
+      // Load daterangepicker after moment is loaded
+      const daterangeScript = document.createElement('script');
+      daterangeScript.src = '../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js';
+      daterangeScript.onload = initializeDateRangePickers;
+      document.head.appendChild(daterangeScript);
+    };
+    document.head.appendChild(momentScript);
+  };
+
+  // Initialize Bootstrap DateRangePickers
+  function initializeDateRangePickers() {
+    if (typeof $ !== 'undefined' && $.fn.daterangepicker) {
+      // Kurun Waktu - Date Range Picker (Start and End Date in one input)
+      $('#kurunWaktu').daterangepicker({
+        showDropdowns: true,
+        minYear: 2020,
+        maxYear: parseInt(moment().format('YYYY'), 10) + 5,
+        locale: {
+          format: 'DD/MM/YYYY',
+          separator: ' - ',
+          applyLabel: 'Apply',
+          cancelLabel: 'Cancel',
+          fromLabel: 'From',
+          toLabel: 'To',
+          customRangeLabel: 'Custom',
+          weekLabel: 'W',
+          daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+          monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+          firstDay: 1
+        },
+        startDate: moment('2025-03-11', 'YYYY-MM-DD'),
+        endDate: moment('2025-03-11', 'YYYY-MM-DD').add(7, 'days'),
+        opens: 'right'
+      });
+
+      // Optional: Handle date change event
+      $('#kurunWaktu').on('apply.daterangepicker', function(ev, picker) {
+        console.log('Start Date: ' + picker.startDate.format('DD/MM/YYYY'));
+        console.log('End Date: ' + picker.endDate.format('DD/MM/YYYY'));
+      });
+    }
+  }
+
   // --- JavaScript Logic ---
 
   let mainStep = 1; // Main progress step (1, 2, or 3)
@@ -509,6 +663,7 @@ export function renderUsulanKakPage(userRole) {
 
   // Initialize
   function init() {
+    loadDateRangePicker();
     updateMainStepDisplay();
     updateStepDisplay();
     attachEventListeners();
@@ -758,24 +913,23 @@ export function renderUsulanKakPage(userRole) {
     const newItem = document.createElement("div");
     newItem.className = "mb-4";
     newItem.innerHTML = `
-                      <div class="flex items-end gap-4 mb-6">
-                  <div class='w-full'>
-                    <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                  </div>
-                  <div class='w-full'>
-                    <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                  </div>
-                  <div class='w-full'>
-                    <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                  </div>
-                  <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-                    <span class="text-xl font-bold">−</span>
-                  </button>
-                </div>
-
+      <div class="flex items-end gap-4 mb-6">
+        <div class='w-full'>
+          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        </div>
+        <div class='w-full'>
+          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        </div>
+        <div class='w-full'>
+          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        </div>
+        <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
+          <span class="text-xl font-bold">−</span>
+        </button>
+      </div>
     `;
     container.appendChild(newItem);
   };
@@ -829,6 +983,57 @@ export function renderUsulanKakPage(userRole) {
         <span class="text-xl font-bold">−</span>
       </button>
     `;
+    container.appendChild(newItem);
+  };
+
+  // Increment/Decrement value functions
+  window.incrementValue = function(btn, step) {
+    const input = btn.closest('.relative').querySelector('input[type="number"]');
+    const currentValue = parseInt(input.value) || 1;
+    input.value = currentValue + step;
+  };
+
+  window.decrementValue = function(btn, step) {
+    const input = btn.closest('.relative').querySelector('input[type="number"]');
+    const currentValue = parseInt(input.value) || 1;
+    const minValue = parseInt(input.min) || 1;
+    if (currentValue > minValue) {
+      input.value = currentValue - step;
+    }
+  };
+
+  // Belanja item functions
+  window.removeBelanjaItem = function(btn, containerId) {
+    const item = btn.closest('.belanja-barang-item, .belanja-jasa-item, .belanja-perjalanan-item');
+    const container = document.getElementById(containerId);
+    if (container.children.length > 1) {
+      item.remove();
+    } else {
+      alert("Minimal harus ada 1 item!");
+    }
+  };
+
+  window.addBelanjaBarang = function() {
+    const container = document.getElementById("belanjaBarangContainer");
+    const newItem = document.createElement("div");
+    newItem.className = "belanja-barang-item mb-8 p-6 rounded-lg";
+    newItem.innerHTML = container.querySelector('.belanja-barang-item').innerHTML;
+    container.appendChild(newItem);
+  };
+
+  window.addBelanjaJasa = function() {
+    const container = document.getElementById("belanjaJasaContainer");
+    const newItem = document.createElement("div");
+    newItem.className = "belanja-jasa-item mb-8 p-6 rounded-lg";
+    newItem.innerHTML = container.querySelector('.belanja-jasa-item').innerHTML;
+    container.appendChild(newItem);
+  };
+
+  window.addBelanjaPerjalanan = function() {
+    const container = document.getElementById("belanjaPerjalananContainer");
+    const newItem = document.createElement("div");
+    newItem.className = "belanja-perjalanan-item mb-8 p-6 rounded-lg";
+    newItem.innerHTML = container.querySelector('.belanja-perjalanan-item').innerHTML;
     container.appendChild(newItem);
   };
 
