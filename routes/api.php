@@ -1,6 +1,5 @@
 <?php
 
-use App\Controllers\TelaahController;
 use App\Controllers\AuthController;
 use App\Controllers\AccountController;
 use App\Controllers\KAKController;
@@ -130,21 +129,21 @@ if ($method === 'PUT' && preg_match('/^\/admin\/users\/(\d+)\/change-password$/'
 // 8. KAK (KERANGKA ACUAN KERJA) ROUTES
 // =====================================================
 
-// GET /api/kak/{telaah_id} - Download KAK PDF
+// GET /api/kak/{kak_id} - Download KAK PDF
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)$/', $uri)) {
     $controller = new KAKController();
     $controller->download();
     exit;
 }
 
-// GET /api/kak/{telaah_id}/preview - Preview KAK HTML
+// GET /api/kak/{kak_id}/preview - Preview KAK HTML
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/preview$/', $uri)) {
     $controller = new KAKController();
     $controller->preview();
     exit;
 }
 
-// GET /api/kak/{telaah_id}/data - Get KAK data as JSON
+// GET /api/kak/{kak_id}/data - Get KAK data as JSON
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
     $controller = new KAKController();
     $controller->getData();
@@ -158,21 +157,21 @@ if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
 $router = new Router();
 
 // ============================================
-// TELAAH ROUTES (CRUD & Workflow)
+// KAK ROUTES (CRUD & Workflow)
 // ============================================
 
-$router->get('/telaah', 'TelaahController@index');
-$router->post('/telaah', 'TelaahController@store');
-$router->get('/telaah/{id}', 'TelaahController@show');
+$router->get('/kak', 'KAKController@index');
+$router->post('/kak', 'KAKController@store');
+$router->get('/kak/{id}', 'KAKController@show');
 
 // Aksi Pengusul
-$router->post('/telaah/{id}/submit', 'TelaahController@submitForVerification');
-$router->post('/telaah/{id}/resubmit', 'TelaahController@resubmitAfterRevision');
+$router->post('/kak/{id}/submit', 'KAKController@submitForVerification');
+$router->post('/kak/{id}/resubmit', 'KAKController@resubmitAfterRevision');
 
 // Aksi Verifikator
-$router->post('/telaah/{id}/approve', 'TelaahController@approve');
-$router->post('/telaah/{id}/reject', 'TelaahController@reject');
-$router->post('/telaah/{id}/revise', 'TelaahController@requestRevision');
+$router->post('/kak/{id}/approve', 'KAKController@approve');
+$router->post('/kak/{id}/reject', 'KAKController@reject');
+$router->post('/kak/{id}/revise', 'KAKController@requestRevision');
 
 // ============================================
 // KEGIATAN ROUTES (Workflow & Features)
