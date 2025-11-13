@@ -61,7 +61,7 @@ class KegiatanController
             }
 
             // Get kegiatan with filters
-            $kegiatan = $this->kegiatanModel->getAllWithFilters([
+            $kegiatanList = $this->kegiatanModel->getAllWithFilters([
                 'status_id' => $status,
                 'search' => $search,
                 'tanggal_mulai' => $tanggalMulai,
@@ -71,7 +71,23 @@ class KegiatanController
                 'per_page' => $perPage
             ]);
 
-            Response::success($kegiatan, 'Data kegiatan berhasil diambil.');
+            // Loop through each kegiatan to attach its current approval status
+            if (isset($kegiatanList['data'])) { // Handle paginated result
+                foreach ($kegiatanList['data'] as &$kegiatan) {
+                    $currentApproval = $this->kegiatanModel->findCurrentApproval($kegiatan['kegiatan_id']);
+                    $kegiatan['current_approval'] = $currentApproval;
+                }
+                unset($kegiatan);
+            } else { // Handle non-paginated result
+                foreach ($kegiatanList as &$kegiatan) {
+                    $currentApproval = $this->kegiatanModel->findCurrentApproval($kegiatan['kegiatan_id']);
+                    $kegiatan['current_approval'] = $currentApproval;
+                }
+                unset($kegiatan);
+                
+            }
+
+            Response::success($kegiatanList, 'Data kegiatan berhasil diambil.');
 
         } catch (\Exception $e) {
             Response::error('Gagal mengambil data kegiatan: ' . $e->getMessage(), 500);

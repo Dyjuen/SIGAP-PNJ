@@ -15,7 +15,7 @@ export function renderWadirDashboardPage(path, userRole) {
                   <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total Menunggu</h4>
                   <div class="d-flex align-items-end mt-2">
                     <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="waitingCount">0</h1>
-                    <small style="font-size: 15px; font-weight: 500; opacity: 0.9;">Usulan</small>
+                    <small style="font-size: 15px; font-weight: 500; opacity: 0.9;">Kegiatan</small>
                   </div>
                 </div>
               </div>
@@ -31,7 +31,7 @@ export function renderWadirDashboardPage(path, userRole) {
                   <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total Diterima</h4>
                   <div class="d-flex align-items-end mt-2">
                     <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="acceptedCount">0</h1>
-                    <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">Usulan</small>
+                    <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">Kegiatan</small>
                   </div>
                 </div>
               </div>
@@ -48,7 +48,7 @@ export function renderWadirDashboardPage(path, userRole) {
               <th style="width: 50px; text-align: center;">
                 <input type="checkbox" class="form-check-input" id="selectAll">
               </th>
-              <th style="width: 80px;">No.</th>
+              <th>ID</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Pengusul</th>
               <th>Tanggal Diajukan</th>
@@ -56,157 +56,155 @@ export function renderWadirDashboardPage(path, userRole) {
               <th style="text-align: center;">Aksi</th>
             </tr>
           </thead>
-          <tbody id="verificationTableBody">
+          <tbody id="monitoringTableBody">
             <!-- Data will be populated by JavaScript -->
           </tbody>
         </table>
         
-        <!-- Pagination -->
-        <div class="pagination-container">
+        <!-- Pagination - removed for simplicity, all items on one page -->
+        <div class="pagination-container" style="display:none;">
           <div class="pagination-info">
             Showing <span id="startEntry">1</span> to <span id="endEntry">10</span> of <span id="totalEntries">50</span> entries
           </div>
-          <ul class="pagination">
-            <li class="page-item">
-              <a class="page-link" href="#" id="btnFirstPage">«</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#" id="btnPrevPage">‹</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>
-            <li class="page-item"><a class="page-link" href="#" data-page="2">2</a></li>
-            <li class="page-item active"><a class="page-link" href="#" data-page="3">3</a></li>
-            <li class="page-item"><a class="page-link" href="#" data-page="4">4</a></li>
-            <li class="page-item"><a class="page-link" href="#" data-page="5">5</a></li>
-            <li class="page-item"><a class="page-link" href="#" data-page="6">6</a></li>
-            <li class="page-item">
-              <a class="page-link" href="#" id="btnNextPage">›</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#" id="btnLastPage">»</a>
-            </li>
-          </ul>
+          <ul class="pagination"></ul>
         </div>
       </div>
     </div>
   `;
 
   renderDashboardLayout(dashboardContent, userRole);
+  
+  // ==============================================
+  // STATE
+  // ==============================================
+  let state = {
+      allKegiatan: [],
+      displayKegiatan: [],
+  };
 
   // ==============================================
-  // DATA
+  // API FUNCTIONS
   // ==============================================
-  const activities = [
-    {
-      id: 1,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 2,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 3,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 4,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 5,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Diterima",
-    },
-    {
-      id: 6,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Diterima",
-    },
-    {
-      id: 7,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 8,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 9,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Diterima",
-    },
-    {
-      id: 10,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      proposer: "Nama Pengusul",
-      unit: "himpunan /lain",
-      date: "28 Desember 2025",
-      status: "Diterima",
-    },
-  ];
+  async function apiRequest(endpoint, options = {}) {
+    const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+    const headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+    if (!(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+    }
+    const config = { ...options, headers };
+    try {
+        const response = await fetch(`/api${endpoint}`, config);
+        const data = await response.json();
+        if (data.status === false || data.status === "error") {
+            throw new Error(data.message || 'API request failed');
+        }
+        return data;
+    } catch (error) {
+        console.error('API Request Error:', error);
+        throw error;
+    }
+  }
 
-  let currentPage = 3;
-  const itemsPerPage = 10;
+  async function fetchKegiatan() {
+      const tbody = document.getElementById("monitoringTableBody");
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+      try {
+          const response = await apiRequest('/kegiatan');
+          const kegiatanData = response.data.data ? response.data.data : response.data;
+          state.allKegiatan = kegiatanData || [];
+          
+          // Filter for activities waiting for Wadir approval
+          state.displayKegiatan = state.allKegiatan.filter(k => 
+              k.current_approval && k.current_approval.approval_level === 'Wadir' && k.current_approval.status === 'Aktif'
+          );
+
+          renderTableRows(state.displayKegiatan);
+          updateStats(state.allKegiatan);
+      } catch (error) {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+      }
+  }
+
+  async function handleApprovalAction(kegiatanId, action) {
+      const isApprove = action === 'approve';
+      let payload = { status: isApprove ? 'Disetujui' : 'Revisi' };
+      let confirmationMessage = ''; // Will set dynamically
+
+      let catatan = '';
+
+      if (isApprove) {
+          // For Approve action: Prompt for "Rekomendasi Tindak Lanjut"
+          catatan = prompt("Masukkan Rekomendasi Tindak Lanjut (opsional):");
+          // User can click OK with empty note, or Cancel
+          if (catatan === null) return; // User clicked Cancel
+          payload.catatan = catatan; // Add note to payload
+          confirmationMessage = 'Apakah Anda yakin ingin menyetujui kegiatan ini?';
+      } else {
+          // For Revise action: Prompt for "Catatan Revisi"
+          catatan = prompt("Masukkan catatan untuk revisi:");
+          if (catatan === null) return; // User clicked Cancel
+          if (catatan.trim() === '') {
+              alert("Catatan revisi tidak boleh kosong!");
+              return;
+          }
+          payload.catatan = catatan;
+          confirmationMessage = 'Apakah Anda yakin ingin meminta revisi untuk kegiatan ini?';
+      }
+      
+      if (confirm(confirmationMessage)) {
+          try {
+              await apiRequest(`/kegiatan/${kegiatanId}/${action}`, {
+                  method: 'POST',
+                  body: JSON.stringify(payload)
+              });
+              alert(`Kegiatan berhasil di-${isApprove ? 'setujui' : 'revisi'}.`);
+              fetchKegiatan(); // Refresh data
+          } catch (error) {
+              alert(`Gagal memproses aksi: ${error.message}`);
+          }
+      }
+  }
+
+  async function viewPpkNotes(kegiatanId) {
+      try {
+          const response = await apiRequest(`/kegiatan/${kegiatanId}/logs`);
+          const logs = response.data.data ? response.data.data : response.data; // Handle API response structure
+          
+          const ppkLogs = logs.filter(log => log.actor_role === 'PPK' && log.catatan);
+
+          let notesContent = "Tidak ada catatan dari PPK.";
+          if (ppkLogs.length > 0) {
+              notesContent = "Catatan dari PPK:\n\n";
+              ppkLogs.forEach(log => {
+                  notesContent += `- ${log.catatan} (Status: ${log.status_baru_nama})\n`;
+              });
+          }
+          alert(notesContent);
+
+      } catch (error) {
+          alert(`Gagal mengambil catatan PPK: ${error.message}`);
+      }
+  }
 
   // ==============================================
   // RENDER FUNCTIONS
   // ==============================================
-  function renderTableRows() {
-    const tbody = document.getElementById("verificationTableBody");
+    function formatDate(dateString) {
+        if (!dateString) return "-";
+        return new Date(dateString).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+  function renderTableRows(data) {
+    const tbody = document.getElementById("monitoringTableBody");
     if (!tbody) return;
 
     tbody.innerHTML = "";
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada kegiatan yang menunggu persetujuan Anda.</td></tr>';
+        return;
+    }
 
-    activities.forEach((activity, index) => {
-      const statusClass =
-        activity.status === "Menunggu"
-          ? "bg-label-warning"
-          : "bg-label-success";
-
+    data.forEach((kegiatan) => {
       const row = document.createElement("tr");
 
       row.innerHTML = `
@@ -214,29 +212,30 @@ export function renderWadirDashboardPage(path, userRole) {
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
         <td>
-          <span class="number-badge">${activity.id}</span>
+          <span class="number-badge">${kegiatan.kegiatan_id}</span>
         </td>
         <td>
-          <strong>${activity.title}</strong>
-          <div class="text-muted">${activity.subtitle}</div>
+          <strong>${kegiatan.nama_kegiatan}</strong>
         </td>
         <td>
-          <strong>${activity.proposer}</strong>
-          <div class="text-muted">${activity.unit}</div>
+          <strong>${kegiatan.pengusul_nama}</strong>
+          <div class="text-muted">${kegiatan.pengusul_role || ''}</div>
         </td>
         <td>
-          <div class="date-text">${activity.date}</div>
+          <div class="date-text">${formatDate(kegiatan.created_at)}</div>
         </td>
         <td style="text-align: center;">
-          <span class="badge ${statusClass}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${activity.status}</span>
+          <span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>
         </td>
         <td style="text-align: center;">
-          <button class="btn btn-sm btn-primary me-2 gap-2" data-id="${activity.id}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
-            Lanjutkan
+          <button class="btn btn-sm me-2 btn-approve" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Setujui">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
           </button>
-          <button class="btn btn-sm btn-delete" data-id="${activity.id}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>          
+          <button class="btn btn-sm me-2 btn-revise" style="background: linear-gradient(135deg, #743bfaff 0%, #7c3aed 100%); box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Revisi">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>          
+          </button>
+          <button class="btn btn-sm me-2 btn-view-ppk-notes" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Lihat Catatan PPK">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>          
           </button>
         </td>
       `;
@@ -251,159 +250,37 @@ export function renderWadirDashboardPage(path, userRole) {
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
-    // Checkbox select all
-    const selectAll = document.getElementById("selectAll");
-    if (selectAll) {
-      selectAll.addEventListener("change", function () {
-        const checkboxes = document.querySelectorAll(".row-checkbox");
-        checkboxes.forEach((cb) => (cb.checked = this.checked));
-      });
-    }
-
-    // Row checkboxes
-    document.querySelectorAll(".row-checkbox").forEach((checkbox) => {
-      checkbox.addEventListener("change", updateSelectAll);
+    document.querySelectorAll(".btn-approve").forEach((btn) => {
+      btn.addEventListener("click", () =>
+        handleApprovalAction(btn.dataset.id, "approve")
+      );
     });
 
-    // Lanjutkan buttons
-    document.querySelectorAll(".btn-primary").forEach((btn) => {
+    document.querySelectorAll(".btn-revise").forEach((btn) => {
+      btn.addEventListener("click", () =>
+        handleApprovalAction(btn.dataset.id, "revise")
+      );
+    });
+
+    document.querySelectorAll(".btn-view-ppk-notes").forEach((btn) => {
       btn.addEventListener("click", function () {
-        const activityId = this.getAttribute("data-id");
-        console.log("Lanjutkan activity:", activityId);
-        // Navigate to detail page or open modal
-        showInfo(`Navigating to activity ${activityId} detail page...`);
+        const kegiatanId = this.getAttribute("data-id");
+        viewPpkNotes(kegiatanId);
       });
     });
-
-        // Delete buttons
-    document.querySelectorAll(".btn-delete").forEach((btn) => {
-      btn.addEventListener("click", async function () {
-        const activityId = this.getAttribute("data-id");
-
-        // Use reusable SweetAlert confirm
-        const confirmed = await confirmAction(
-          "Yakin ingin menghapus?",
-          "Kegiatan ini akan dihapus secara permanen."
-        );
-
-        if (confirmed) {
-          console.log("Delete activity:", activityId);
-          // Handle delete
-          const index = activities.findIndex((a) => a.id == activityId);
-          if (index !== -1) {
-            activities.splice(index, 1);
-            renderTableRows();
-            updatePagination();
-            updateStats();
-
-            // Show success alert
-            showSuccess("Kegiatan berhasil dihapus!");
-          }
-        }
-      });
-    });
-
-
-    // Pagination buttons
-    document.querySelectorAll(".pagination .page-link").forEach((link) => {
-      link.addEventListener("click", function (e) {
-        e.preventDefault();
-        const page = this.getAttribute("data-page");
-        if (page) {
-          changePage(parseInt(page));
-        }
-      });
-    });
-
-    const btnFirstPage = document.getElementById("btnFirstPage");
-    const btnPrevPage = document.getElementById("btnPrevPage");
-    const btnNextPage = document.getElementById("btnNextPage");
-    const btnLastPage = document.getElementById("btnLastPage");
-
-    if (btnFirstPage) {
-      btnFirstPage.addEventListener("click", (e) => {
-        e.preventDefault();
-        changePage(1);
-      });
-    }
-
-    if (btnPrevPage) {
-      btnPrevPage.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (currentPage > 1) changePage(currentPage - 1);
-      });
-    }
-
-    if (btnNextPage) {
-      btnNextPage.addEventListener("click", (e) => {
-        e.preventDefault();
-        const totalPages = Math.ceil(50 / itemsPerPage);
-        if (currentPage < totalPages) changePage(currentPage + 1);
-      });
-    }
-
-    if (btnLastPage) {
-      btnLastPage.addEventListener("click", (e) => {
-        e.preventDefault();
-        const totalPages = Math.ceil(50 / itemsPerPage);
-        changePage(totalPages);
-      });
-    }
   }
 
-  function updateSelectAll() {
-    const allCheckboxes = document.querySelectorAll(".row-checkbox");
-    const checkedCount = document.querySelectorAll(
-      ".row-checkbox:checked"
+  function updateStats(allData) {
+    const waitingCount = allData.filter(
+      (k) =>
+        k.current_approval &&
+        k.current_approval.approval_level === "Wadir" &&
+        k.current_approval.status === "Aktif"
     ).length;
-    const selectAll = document.getElementById("selectAll");
-
-    if (selectAll) {
-      selectAll.checked =
-        checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAll.indeterminate =
-        checkedCount > 0 && checkedCount < allCheckboxes.length;
-    }
-  }
-
-  function changePage(page) {
-    currentPage = page;
-
-    // Update active pagination button
-    document.querySelectorAll(".pagination .page-item").forEach((item) => {
-      item.classList.remove("active");
-    });
-
-    const pageLink = document.querySelector(
-      `.pagination .page-link[data-page="${page}"]`
-    );
-    if (pageLink) {
-      pageLink.closest(".page-item").classList.add("active");
-    }
-
-    updatePagination();
-  }
-
-  function updatePagination() {
-    const startEntry = (currentPage - 1) * itemsPerPage + 1;
-    const endEntry = Math.min(currentPage * itemsPerPage, 50);
-
-    const startEntryEl = document.getElementById("startEntry");
-    const endEntryEl = document.getElementById("endEntry");
-    const totalEntriesEl = document.getElementById("totalEntries");
-
-    if (startEntryEl) startEntryEl.textContent = startEntry;
-    if (endEntryEl) endEntryEl.textContent = endEntry;
-    if (totalEntriesEl) totalEntriesEl.textContent = 50;
-  }
-
-  function updateStats() {
-    const waitingCount = activities.filter(
-      (a) => a.status === "Menunggu"
-    ).length;
-    const acceptedCount = activities.filter(
-      (a) => a.status === "Diterima"
-    ).length;
+    const acceptedCount = allData.filter((k) => {
+      const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir");
+      return wadirApproval && wadirApproval.status === "Disetujui";
+    }).length;
 
     const waitingEl = document.getElementById("waitingCount");
     const acceptedEl = document.getElementById("acceptedCount");
@@ -412,13 +289,8 @@ export function renderWadirDashboardPage(path, userRole) {
     if (acceptedEl) acceptedEl.textContent = acceptedCount;
   }
 
+  // ==============================================
   // INITIALIZATION
-  renderTableRows();
-  updatePagination();
-  updateStats();
-
-  // Initialize Vuexy menu if available
-  if (window.Helpers) {
-    window.Helpers.init();
-  }
+  // ==============================================
+  fetchKegiatan();
 }
