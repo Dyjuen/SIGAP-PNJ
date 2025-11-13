@@ -17,6 +17,7 @@ class MasterDataSeeder extends AbstractSeed
         $this->execute('TRUNCATE TABLE m_iku');
         $this->execute('TRUNCATE TABLE m_mata_anggaran');
         $this->execute('TRUNCATE TABLE m_satuan');
+        $this->execute('TRUNCATE TABLE m_tipe_kegiatan');
         $this->execute('TRUNCATE TABLE m_kegiatan_status');
         $this->execute('TRUNCATE TABLE m_roles');
         
@@ -37,7 +38,18 @@ class MasterDataSeeder extends AbstractSeed
         $this->table('m_roles')->insert($roles)->saveData();
 
         // ============================================
-        // 2. KEGIATAN STATUS
+        // 2. TIPE KEGIATAN
+        // ============================================
+        $tipeKegiatan = [
+            ['nama_tipe' => 'Bidang 1 - Akademik'],
+            ['nama_tipe' => 'Bidang 2 - Umum & Keuangan'],
+            ['nama_tipe' => 'Bidang 3 - Kemahasiswaan'],
+            ['nama_tipe' => 'Bidang 4 - Kerja Sama'],
+        ];
+        $this->table('m_tipe_kegiatan')->insert($tipeKegiatan)->saveData();
+
+        // ============================================
+        // 3. KEGIATAN STATUS
         // ============================================
         $status = [
             ['status_id' => 1, 'nama_status' => 'Draft', 'urutan' => 1],
@@ -54,7 +66,7 @@ class MasterDataSeeder extends AbstractSeed
         $this->table('m_kegiatan_status')->insert($status)->saveData();
 
         // ============================================
-        // 3. SATUAN
+        // 4. SATUAN
         // ============================================
         $satuan = [
             ['nama_satuan' => 'OJ'], ['nama_satuan' => 'Orang'], ['nama_satuan' => 'Unit'],
@@ -65,7 +77,7 @@ class MasterDataSeeder extends AbstractSeed
         $this->table('m_satuan')->insert($satuan)->saveData();
 
         // ============================================
-        // 4. MATA ANGGARAN
+        // 5. MATA ANGGARAN
         // ============================================
         $mataAnggaran = [
             [
@@ -90,7 +102,7 @@ class MasterDataSeeder extends AbstractSeed
         $this->table('m_mata_anggaran')->insert($mataAnggaran)->saveData();
 
         // ============================================
-        // 5. IKU (8 IKU FIXED)
+        // 6. IKU (8 IKU FIXED)
         // ============================================
         $iku = [
             ['kode_iku' => 'IKU-1', 'nama_iku' => 'Lulusan Mendapat Pekerjaan yang Layak'],
@@ -105,7 +117,7 @@ class MasterDataSeeder extends AbstractSeed
         $this->table('m_iku')->insert($iku)->saveData();
 
         // ============================================
-        // 6. USERS
+        // 7. USERS
         // ============================================
         $users = [
             [
@@ -136,7 +148,7 @@ class MasterDataSeeder extends AbstractSeed
         $this->table('m_users')->insert($users)->saveData();
 
         // ============================================
-        // 7. USER ROLES
+        // 8. USER ROLES
         // ============================================
         $userRoles = [
             ['user_id' => 1, 'role_id' => 1], // admin -> Admin
@@ -149,7 +161,7 @@ class MasterDataSeeder extends AbstractSeed
         $this->table('m_user_roles')->insert($userRoles)->saveData();
 
         echo "✅ Master data seeded successfully!\n";
-        echo "   - Roles, Status, Satuan, Mata Anggaran, IKU, Users, User Roles\n";
+        echo "   - Roles, Tipe Kegiatan, Status, Satuan, Mata Anggaran, IKU, Users, User Roles\n";
         echo "\n";
         echo "🔑 Login Credentials:\n";
         echo "   Admin:       username: admin       password: admin123\n";
