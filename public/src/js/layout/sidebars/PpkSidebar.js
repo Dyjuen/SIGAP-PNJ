@@ -20,7 +20,7 @@ export const ppkSidebar = `
       <!-- Setujui Kegiatan -->
       <li class="menu-item">
         <a href="/ppk/setujui-kegiatan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-check"></i>
+          <i class="menu-icon tf-icons ti ti-check">&#xea5e;</i>
           <div data-i18n="Setujui Kegiatan">Setujui Kegiatan</div>
         </a>
       </li>
@@ -28,7 +28,7 @@ export const ppkSidebar = `
       <!-- Monitoring Kegiatan -->
       <li class="menu-item">
         <a href="/ppk/monitoring-kegiatan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-presentation-analytics"></i>
+          <i class="menu-icon tf-icons ti ti-presentation-analytics">&#xea9a;</i>
           <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
         </a>
       </li>
@@ -36,7 +36,7 @@ export const ppkSidebar = `
       <!-- Riwayat -->
       <li class="menu-item">
         <a href="/ppk/riwayat" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-history"></i>
+          <i class="menu-icon tf-icons ti ti-history">&#xebea;</i>
           <div data-i18n="Riwayat">Riwayat</div>
         </a>
       </li>
@@ -44,7 +44,7 @@ export const ppkSidebar = `
       <!-- Pengaturan -->
       <li class="menu-item">
         <a href="/ppk/pengaturan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-settings"></i>
+          <i class="menu-icon tf-icons ti ti-settings">&#xeb20;</i>
           <div data-i18n="Pengaturan">Pengaturan</div>
         </a>
       </li>

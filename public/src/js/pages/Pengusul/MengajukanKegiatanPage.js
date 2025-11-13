@@ -682,8 +682,8 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         // Hide loading
         setButtonLoading('btnSelesaiAjukan', false);
         
-        // Show success message
-        alert('Kegiatan berhasil diajukan!');
+        showSuccess("Kegiatan berhasil diajukan!");
+
       }, 1000);
     });
   }

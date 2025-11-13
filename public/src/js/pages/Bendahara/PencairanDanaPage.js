@@ -697,7 +697,7 @@ export function renderPencairanDanaPage(path, userRole) {
     const btn = e.currentTarget;
     const id = btn.getAttribute('data-id');
     
-    alert(`Cairkan dana untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`);
+    showInfo(`Cairkan dana untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`);
   }
 
 
@@ -705,7 +705,7 @@ export function renderPencairanDanaPage(path, userRole) {
     const btn = e.currentTarget;
     const id = btn.getAttribute('data-id');
     
-    alert(`Tandai UM Selesai untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`);
+    showInfo(`Tandai UM Selesai untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`);
   }
 
   renderTableRows(kegiatanData);

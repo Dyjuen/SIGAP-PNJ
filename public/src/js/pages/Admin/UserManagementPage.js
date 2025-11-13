@@ -435,7 +435,7 @@ export function renderUserManagementPage(path, userRole) {
       const newPassword = document.getElementById('editPassword').value.trim();
 
       if (!newNama || !newUsername || !newEmail) {
-        alert('Nama, username, dan email tidak boleh kosong!');
+        showError('Nama, username, dan email tidak boleh kosong!');
         return;
       }
 
@@ -454,28 +454,35 @@ export function renderUserManagementPage(path, userRole) {
         
         currentEditIndex = null;
         document.getElementById('editProfileForm').reset();
-        alert('Profil berhasil diupdate!');
+        showSuccess("Profil berhasil diupdate!");
       }
     });
   }
 
-  function handleDelete(e) {
-    const btn = e.currentTarget;
-    const index = parseInt(btn.getAttribute('data-index'));
-    
-    if (confirm('Apakah Anda yakin ingin menghapus user ini?')) {
-      const row = btn.closest('tr');
-      row.style.transition = 'all 0.3s';
-      row.style.opacity = '0';
-      row.style.transform = 'translateX(-20px)';
-      
-      setTimeout(() => {
-        users.splice(index, 1);
-        renderTableRows(users);
-        updateStats();
-      }, 300);
-    }
+  async function handleDelete(e) {
+  const btn = e.currentTarget;
+  const index = parseInt(btn.getAttribute("data-index"));
+
+  const confirmed = await confirmAction(
+    "Yakin ingin menghapus?",
+    "Data user ini akan dihapus secara permanen."
+  );
+
+  if (confirmed) {
+    const row = btn.closest("tr");
+    row.style.transition = "all 0.3s";
+    row.style.opacity = "0";
+    row.style.transform = "translateX(-20px)";
+
+    setTimeout(() => {
+      users.splice(index, 1);
+      renderTableRows(users);
+      updateStats();
+      showSuccess("User berhasil dihapus!");
+    }, 300);
   }
+}
+
 
   function updateStats() {
     const activeCount = users.filter(u => u.status === 'Aktif').length;
@@ -584,7 +591,7 @@ export function renderUserManagementPage(path, userRole) {
         document.getElementById('tambahAkunForm').reset();
         
         // Show success message
-        alert('Akun baru berhasil ditambahkan!');
+        showSuccess("Akun baru berhasil ditambahkan!");
 
       } catch (error) {
         console.error('Error creating user:', error);

@@ -361,21 +361,31 @@ export function renderMonitoringUsulanPage(path, userRole) {
       .querySelectorAll(".btn-edit-profile, .btn-revisi")
       .forEach((btn) => {
         btn.addEventListener("click", function () {
-          alert(`Edit kegiatan ID: ${this.getAttribute("data-id")}`);
+          showInfo(`Edit kegiatan ID: ${this.getAttribute("data-id")}`);
         });
       });
 
+    // Delete buttons
     document.querySelectorAll(".btn-delete").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        if (confirm("Apakah Anda yakin ingin menghapus kegiatan ini?")) {
-          alert(`Hapus kegiatan ID: ${this.getAttribute("data-id")}`);
+      btn.addEventListener("click", async function () {
+        const activityId = this.getAttribute("data-id");
+
+        // Use SweetAlert2 confirmAction (from alerts.js)
+        const confirmed = await confirmAction(
+          "Yakin ingin menghapus?",
+          `Kegiatan dengan ID ${activityId} akan dihapus secara permanen.`
+        );
+
+        if (confirmed) {
+          // Example: show info or perform actual delete
+          showSuccess(`Berhasil menghapus kegiatan ID: ${activityId}`);
         }
       });
     });
 
     document.querySelectorAll(".btn-download").forEach((btn) => {
       btn.addEventListener("click", function () {
-        alert(`Download KAK ID: ${this.getAttribute("data-id")}`);
+        showInfo(`Download PDF kegiatan ID: ${this.getAttribute("data-id")}`);
       });
     });
 

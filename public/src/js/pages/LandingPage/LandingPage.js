@@ -63,7 +63,7 @@ export function renderLandingPage(userRole) {
           <div class="text-center mb-16">
             <span class="inline-block px-4 py-2 bg-cyan-100 text-[#33C8DA] rounded-full text-sm font-semibold mb-4">Fitur Utama</span>
             <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
-              <span class="text-[#33C8DA]">Semua Proses</span>, Satu Sistem.
+              <span class="text-[#33C8DA]">Semua Proses,</span> Satu Sistem.
             </h2>
             <p class="text-lg text-gray-600 max-w-3xl mx-auto">
               SIGAP membantu setiap peran dari pengusul hingga pimpinan, bekerja lebih cepat dan transparan.

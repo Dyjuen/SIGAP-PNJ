@@ -20,7 +20,7 @@ export const wadirSidebar = `
       <!-- Verifikasi Kegiatan -->
       <li class="menu-item">
         <a href="/wd2/verifikasi-kegiatan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-check"></i>
+          <i class="menu-icon tf-icons ti ti-check">&#xea5e;</i>
           <div data-i18n="Verifikasi Kegiatan">Verifikasi Kegiatan</div>
         </a>
       </li>
@@ -28,7 +28,7 @@ export const wadirSidebar = `
       <!-- Monitoring Kegiatan -->
       <li class="menu-item">
         <a href="/wd2/monitoring-kegiatan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-presentation-analytics"></i>
+          <i class="menu-icon tf-icons ti ti-presentation-analytics">&#xea9a;</i>
           <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
         </a>
       </li>
@@ -36,7 +36,7 @@ export const wadirSidebar = `
       <!-- Pengaturan -->
       <li class="menu-item">
         <a href="/wd2/pengaturan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-settings"></i>
+          <i class="menu-icon tf-icons ti ti-settings">&#xeb20;</i>
           <div data-i18n="Pengaturan">Pengaturan</div>
         </a>
       </li>

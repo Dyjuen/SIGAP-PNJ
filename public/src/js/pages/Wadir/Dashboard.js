@@ -271,15 +271,22 @@ export function renderWadirDashboardPage(path, userRole) {
         const activityId = this.getAttribute("data-id");
         console.log("Lanjutkan activity:", activityId);
         // Navigate to detail page or open modal
-        alert(`Navigating to activity ${activityId} detail page...`);
+        showInfo(`Navigating to activity ${activityId} detail page...`);
       });
     });
 
-    // Delete buttons
+        // Delete buttons
     document.querySelectorAll(".btn-delete").forEach((btn) => {
-      btn.addEventListener("click", function () {
+      btn.addEventListener("click", async function () {
         const activityId = this.getAttribute("data-id");
-        if (confirm("Apakah Anda yakin ingin menghapus kegiatan ini?")) {
+
+        // Use reusable SweetAlert confirm
+        const confirmed = await confirmAction(
+          "Yakin ingin menghapus?",
+          "Kegiatan ini akan dihapus secara permanen."
+        );
+
+        if (confirmed) {
           console.log("Delete activity:", activityId);
           // Handle delete
           const index = activities.findIndex((a) => a.id == activityId);
@@ -288,10 +295,14 @@ export function renderWadirDashboardPage(path, userRole) {
             renderTableRows();
             updatePagination();
             updateStats();
+
+            // Show success alert
+            showSuccess("Kegiatan berhasil dihapus!");
           }
         }
       });
     });
+
 
     // Pagination buttons
     document.querySelectorAll(".pagination .page-link").forEach((link) => {
