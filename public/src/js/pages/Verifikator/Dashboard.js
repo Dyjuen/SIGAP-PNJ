@@ -278,45 +278,6 @@ export function renderDashboardVerifikator(path, userRole) {
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="revisiModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalCenterTitle">Revisi Usulan</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="revisiForm">
-              <input type="hidden" id="revisiUsulanId">
-              
-              <div class="row">
-                <div class="col mb-3">
-                  <label for="revisiNama" class="form-label">Nama Kegiatan</label>
-                  <input type="text" id="revisiNama" class="form-control" readonly>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col mb-3">
-                  <label for="revisiPengusul" class="form-label">Pengusul</label>
-                  <input type="text" id="revisiPengusul" class="form-control" readonly>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col mb-3">
-                  <label for="revisiCatatan" class="form-label">Catatan Revisi</label>
-                  <textarea id="revisiCatatan" class="form-control" rows="4" placeholder="Masukkan catatan revisi..." required></textarea>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="button" class="btn btn-primary" id="btnKirimRevisi">Kirim Revisi</button>
-          </div>
-        </div>
-      </div>
-    </div>
   `;
 
   // Render the main layout with the page-specific content
@@ -418,8 +379,6 @@ export function renderDashboardVerifikator(path, userRole) {
     },
   ];
 
-  let currentRevisiIndex = null;
-  let revisiModalInstance = null;
   let currentPage = 1;
   const itemsPerPage = 10;
 
@@ -622,66 +581,20 @@ export function renderDashboardVerifikator(path, userRole) {
     }
   }
 
-  // --- LOGIKA MODAL REVISI ---
+  // --- LOGIKA REDIRECT TO REVISI KAK ---
   function handleRevisi(e) {
     const btn = e.currentTarget;
     const index = parseInt(btn.getAttribute("data-index"));
-
-    currentRevisiIndex = index;
     const usulan = usulanData[index];
 
-    // Populate modal
-    const revisiNamaEl = document.getElementById("revisiNama");
-    const revisiPengusulEl = document.getElementById("revisiPengusul");
-    const revisiCatatanEl = document.getElementById("revisiCatatan");
-
-    if (revisiNamaEl) revisiNamaEl.value = usulan.namaKegiatan || "";
-    if (revisiPengusulEl) revisiPengusulEl.value = usulan.pengusul || "";
-    if (revisiCatatanEl) revisiCatatanEl.value = "";
-
-    // Show modal using Bootstrap 5
-    if (!revisiModalInstance) {
-      if (typeof bootstrap !== "undefined") {
-        revisiModalInstance = new bootstrap.Modal(
-          document.getElementById("revisiModal")
-        );
-      } else {
-        console.error("Bootstrap 5 JS not found. Modals will not work.");
-        return;
-      }
-    }
-    revisiModalInstance.show();
+    // Store usulan data in sessionStorage for the revisi page
+    sessionStorage.setItem('revisiUsulanData', JSON.stringify(usulan));
+    
+    // Redirect to revisi KAK page using full path
+    window.location.href = '/verifikator/revisi-kak';
   }
 
-  // Handle kirim revisi
-  const btnKirimRevisi = document.getElementById("btnKirimRevisi");
-  if (btnKirimRevisi) {
-    btnKirimRevisi.addEventListener("click", () => {
-      const catatan = document.getElementById("revisiCatatan").value.trim();
-
-      if (!catatan) {
-        showError("Catatan revisi harus diisi!");
-        return;
-      }
-
-      if (currentRevisiIndex !== null) {
-        usulanData[currentRevisiIndex].status = "Direvisi";
-
-        renderTableRows(usulanData);
-        updateStats();
-
-        if (revisiModalInstance) {
-          revisiModalInstance.hide();
-        }
-
-        currentRevisiIndex = null;
-        document.getElementById("revisiForm").reset();
-        showSuccess("Revisi berhasil dikirim!");
-      }
-    });
-  }
-
-    // --- LOGIKA DELETE ---
+  // --- LOGIKA DELETE ---
   async function handleDelete(e) {
     const btn = e.currentTarget;
     const index = parseInt(btn.getAttribute("data-index"));
@@ -706,7 +619,6 @@ export function renderDashboardVerifikator(path, userRole) {
       }, 300);
     }
   }
-
 
   // --- LOGIKA UPDATE STATS ---
   function updateStats() {

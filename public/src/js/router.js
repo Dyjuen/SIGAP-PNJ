@@ -16,6 +16,7 @@ import { renderMonitoringUsulanPage } from "./pages/Pengusul/MonitoringUsulan.js
 import { renderPengajuanLpjPage } from "./pages/Pengusul/PengajuanLpj.js";
 import { renderInputLpjPage } from "./pages/Pengusul/InputLpj.js";
 import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
+import { renderRevisiKakPage } from "./pages/Verifikator/RevisiKak.js";
 
 function getCurrentUserRole() {
   // In a real app, this would be more secure, perhaps involving a token verification
@@ -56,6 +57,7 @@ const roleBasedRoutes = {
     "/monitoring-usulan": renderNotFoundPage,
     "/riwayat": renderNotFoundPage,
     "/pengaturan": renderNotFoundPage,
+    "/revisi-kak": renderRevisiKakPage,
   },
   Wadir: {
     "/dashboard": renderWadirDashboardPage,
