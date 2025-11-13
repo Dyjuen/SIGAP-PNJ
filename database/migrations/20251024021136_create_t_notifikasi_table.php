@@ -14,7 +14,7 @@ final class CreateTNotifikasiTable extends AbstractMigration
               ->addColumn('penerima_user_id', 'integer')
               ->addColumn('pesan', 'string', ['limit' => 255])
               ->addColumn('link_tujuan', 'string', ['limit' => 255, 'null' => true])
-              ->addColumn('is_read', 'boolean', ['default' => false])
+              ->addColumn('is_read', 'integer', ['limit' => 1, 'default' => 0])
               ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
               ->addForeignKey('penerima_user_id', 'm_users', 'user_id', [
                   'delete' => 'CASCADE',

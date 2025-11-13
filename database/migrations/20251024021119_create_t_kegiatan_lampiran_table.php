@@ -11,13 +11,13 @@ final class CreateTKegiatanLampiranTable extends AbstractMigration
         $table = $this->table('t_kegiatan_lampiran', ['id' => false, 'primary_key' => ['lampiran_id']]);
 
         $table->addColumn('lampiran_id', 'integer', ['identity' => true])
-              ->addColumn('anggaran_id', 'integer') // DIUBAH: dari telaah_id
+              ->addColumn('anggaran_id', 'integer')
               ->addColumn('nama_file_asli', 'string', ['limit' => 255])
               ->addColumn('path_file_disimpan', 'string', ['limit' => 255])
-              ->addColumn('tipe_file', 'string', ['limit' => 50])
               ->addColumn('uploader_user_id', 'integer')
+              ->addColumn('catatan', 'text', ['null' => true])
               ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
-              ->addForeignKey('anggaran_id', 't_telaah_anggaran', 'anggaran_id', [ // DIUBAH: referensi ke t_telaah_anggaran
+              ->addForeignKey('anggaran_id', 't_kak_anggaran', 'anggaran_id', [
                   'delete' => 'CASCADE',
                   'update' => 'CASCADE'
               ])
@@ -28,3 +28,4 @@ final class CreateTKegiatanLampiranTable extends AbstractMigration
               ->create();
     }
 }
+

@@ -4,29 +4,30 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class CreateTTelaahApprovalTable extends AbstractMigration
+final class CreateTKakApprovalTable extends AbstractMigration
 {
     public function change(): void
     {
-        $table = $this->table('t_telaah_approval', ['id' => false, 'primary_key' => ['approval_telaah_id']]);
+        $table = $this->table('t_kak_approval', ['id' => false, 'primary_key' => ['approval_telaah_id']]);
         $table->addColumn('approval_telaah_id', 'integer', ['identity' => true])
-              ->addColumn('telaah_id', 'integer')
-              ->addColumn('approver_user_id', 'integer', ['null' => true])
+              ->addColumn('kak_id', 'integer')
+              ->addColumn('approver_user_id', 'integer')
               ->addColumn('status', 'enum', [
-                  'values' => ['Menunggu', 'Revisi', 'Ditolak', 'Disetujui'],
+                  'values' => ['Menunggu', 'Aktif', 'Revisi', 'Disetujui'],
                   'default' => 'Menunggu'
               ])
               ->addColumn('catatan', 'text', ['null' => true])
               ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
               ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP', 'update' => 'CURRENT_TIMESTAMP'])
-              ->addForeignKey('telaah_id', 't_telaah', 'telaah_id', [
+              ->addForeignKey('kak_id', 't_kak', 'kak_id', [
                   'delete' => 'CASCADE',
                   'update' => 'CASCADE'
               ])
               ->addForeignKey('approver_user_id', 'm_users', 'user_id', [
-                  'delete' => 'SET_NULL',
+                  'delete' => 'RESTRICT',
                   'update' => 'CASCADE'
               ])
               ->create();
     }
 }
+
