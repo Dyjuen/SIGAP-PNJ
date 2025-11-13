@@ -60,7 +60,6 @@ class KegiatanController
                 $userId = $this->userData['user_id'];
             }
 
-            // Get kegiatan with filters
             $kegiatanList = $this->kegiatanModel->getAllWithFilters([
                 'status_id' => $status,
                 'search' => $search,
@@ -71,21 +70,31 @@ class KegiatanController
                 'per_page' => $perPage
             ]);
 
-            // Loop through each kegiatan to attach its current approval status
-            if (isset($kegiatanList['data'])) { // Handle paginated result
-                foreach ($kegiatanList['data'] as &$kegiatan) {
-                    $currentApproval = $this->kegiatanModel->findCurrentApproval($kegiatan['kegiatan_id']);
-                    $kegiatan['current_approval'] = $currentApproval;
-                }
-                unset($kegiatan);
-            } else { // Handle non-paginated result
-                foreach ($kegiatanList as &$kegiatan) {
-                    $currentApproval = $this->kegiatanModel->findCurrentApproval($kegiatan['kegiatan_id']);
-                    $kegiatan['current_approval'] = $currentApproval;
-                }
-                unset($kegiatan);
-                
+            // Ensure $kegiatanList is an array reference if it's nested
+            $actualKegiatanData = & $kegiatanList;
+            if (isset($kegiatanList['data']) && is_array($kegiatanList['data'])) {
+                $actualKegiatanData = & $kegiatanList['data'];
             }
+
+            foreach ($actualKegiatanData as &$kegiatan) {
+                // Fetch the full kegiatan details to ensure all fields are present (N+1 query workaround)
+                $fullKegiatanDetails = $this->kegiatanModel->findById($kegiatan['kegiatan_id']);
+                if ($fullKegiatanDetails) {
+                    $kegiatan['dana_dicairkan'] = $fullKegiatanDetails['dana_dicairkan'] ?? 0;
+                    $kegiatan['penanggung_jawab_manual'] = $fullKegiatanDetails['penanggung_jawab_manual'] ?? '';
+                    $kegiatan['pelaksana_manual'] = $fullKegiatanDetails['pelaksana_manual'] ?? '';
+                    // Make sure current_approval is also added, as per previous change
+                    $kegiatan['current_approval'] = $this->kegiatanModel->findCurrentApproval($kegiatan['kegiatan_id']);
+                    $kegiatan['pengusul_nama'] = $fullKegiatanDetails['pengusul_nama'] ?? $kegiatan['pengusul_nama']; // Preserve existing or add
+                } else {
+                    // Fallback in case kegiatan details cannot be found
+                    $kegiatan['dana_dicairkan'] = 0;
+                    $kegiatan['penanggung_jawab_manual'] = '';
+                    $kegiatan['pelaksana_manual'] = '';
+                    $kegiatan['current_approval'] = null;
+                }
+            }
+            unset($kegiatan); // Unset the reference
 
             Response::success($kegiatanList, 'Data kegiatan berhasil diambil.');
 

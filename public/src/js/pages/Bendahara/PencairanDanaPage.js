@@ -306,7 +306,7 @@ export function renderPencairanDanaPage(path, userRole) {
                   <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Kegiatan</span>
                   <h4 class="mb-3 mt-1" style="font-size: 18px; font-weight: 600;">Total Dana Keluar</h4>
                   <div class="d-flex align-items-end mt-2">
-                    <h1 class="mb-0 me-2" style="font-size: 32px; font-weight: 700; letter-spacing: -1px;">Rp. <span id="totalDanaKeluar">80.000.000</span></h1>
+                    <h1 class="mb-0 me-2" style="font-size: 32px; font-weight: 700; letter-spacing: -1px;">Rp. <span id="totalDanaKeluar">0</span></h1>
                   </div>
                 </div>
               </div>
@@ -322,7 +322,7 @@ export function renderPencairanDanaPage(path, userRole) {
                   <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Kegiatan</span>
                   <h4 class="mb-3 mt-1" style="font-size: 18px; font-weight: 600;">Menunggu</h4>
                   <div class="d-flex align-items-end mt-2">
-                    <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="totalMenunggu">10</h1>
+                    <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="totalMenunggu">0</h1>
                   </div>
                 </div>
               </div>
@@ -338,7 +338,7 @@ export function renderPencairanDanaPage(path, userRole) {
                   <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Usulan</span>
                   <h4 class="mb-3 mt-1" style="font-size: 18px; font-weight: 600;">Telat</h4>
                   <div class="d-flex align-items-end mt-2">
-                    <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="totalTelat">10</h1>
+                    <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="totalTelat">0</h1>
                   </div>
                 </div>
               </div>
@@ -358,8 +358,10 @@ export function renderPencairanDanaPage(path, userRole) {
               <th style="width: 80px;">No.</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Pengusul</th>
+              <th>Penanggung Jawab / Pelaksana</th>
               <th>Tanggal Diajukan</th>
               <th style="text-align: center;">Status</th>
+              <th style="text-align: center;">Dana Dicairkan</th>
               <th style="text-align: center;">Aksi</th>
             </tr>
           </thead>
@@ -373,259 +375,223 @@ export function renderPencairanDanaPage(path, userRole) {
             Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalEntries">50</span> entries
           </div>
           <nav aria-label="Page navigation">
-            <ul class="pagination mb-0" id="paginationContainer">
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="First">
-                  <i class="ti">&#xea64;</i>
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <i class="ti">&#xea65;</i>
-                </a>
-              </li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item active"><a class="page-link" href="#">3</a></li>
-              <li class="page-item"><a class="page-link" href="#">4</a></li>
-              <li class="page-item"><a class="page-link" href="#">5</a></li>
-              <li class="page-item"><a class="page-link" href="#">6</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                  <i class="ti">&#xea5e;</i>
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Last">
-                  <i class="ti">&#xea5d;</i>
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-    </div>
-  ;spacing: -1px;" id="totalMenunggu">10</h1>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-sm-6 col-xl-4">
-          <div class="card stat-card stat-card-tertiary">
-            <div class="card-body">
-              <div class="d-flex align-items-start justify-content-between">
-                <div class="content-left">
-                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Usulan</span>
-                  <h4 class="mb-3 mt-1" style="font-size: 18px; font-weight: 600;">Telat</h4>
-                  <div class="d-flex align-items-end mt-2">
-                    <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="totalTelat">10</h1>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Data Table -->
-      <div class="card card-datatable table-responsive p-0">
-        <table class="table" style="border-collapse: separate; border-spacing: 0 0.75rem;">
-          <thead>
-            <tr>
-              <th style="width: 50px; text-align: center;">
-                <input type="checkbox" class="form-check-input" id="selectAll">
-              </th>
-              <th style="width: 80px;">No.</th>
-              <th>Nama Usulan Kegiatan</th>
-              <th>Pengusul</th>
-              <th>Tanggal Diajukan</th>
-              <th style="text-align: center;">Status</th>
-              <th style="text-align: center;">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="kegiatanTableBody">
-          </tbody>
-        </table>
-        
-        <!-- Pagination -->
-        <div class="d-flex justify-content-between align-items-center mt-4">
-          <div class="entries-info">
-            Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalEntries">50</span> entries
-          </div>
-          <nav aria-label="Page navigation">
-            <ul class="pagination mb-0" id="paginationContainer">
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="First">
-                  <i class="ti">&#xea64;</i>
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <i class="ti">&#xea65;</i>
-                </a>
-              </li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item active"><a class="page-link" href="#">3</a></li>
-              <li class="page-item"><a class="page-link" href="#">4</a></li>
-              <li class="page-item"><a class="page-link" href="#">5</a></li>
-              <li class="page-item"><a class="page-link" href="#">6</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                  <i class="ti">&#xea5e;</i>
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Last">
-                  <i class="ti">&#xea5d;</i>
-                </a>
-              </li>
-            </ul>
+            <ul class="pagination mb-0" id="paginationContainer"></ul>
           </nav>
         </div>
       </div>
     </div>
   `;
 
-  // Render the main layout with the page-specific content
   renderDashboardLayout(pageContent, userRole);
 
-  // Set active menu item for Pencairan Dana
-  setTimeout(() => {
-    const menuItems = document.querySelectorAll('.menu-item');
-    menuItems.forEach(item => {
-      const link = item.querySelector('a[href="/bendahara/pencairan-dana"]');
-      if (link) {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
+  // ==============================================
+  // STATE
+  // ==============================================
+  let state = {
+    allKegiatan: [], // All activities fetched
+    displayKegiatan: [], // Activities filtered for current approval level
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  };
+
+  // ==============================================
+  // API FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
+    const headers = { ...options.headers, Authorization: `Bearer ${token}` };
+    if (!(options.body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
+    const config = { ...options, headers };
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (data.status === false || data.status === "error") {
+        throw new Error(data.message || "API request failed");
       }
+      return data;
+    } catch (error) {
+      console.error("API Request Error:", error);
+      throw error;
+    }
+  }
+
+  async function fetchKegiatan() {
+    const tbody = document.getElementById("kegiatanTableBody");
+    tbody.innerHTML =
+      '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+    try {
+      const response = await apiRequest("/kegiatan");
+      const kegiatanData = response.data.data
+        ? response.data.data
+        : response.data;
+      state.allKegiatan = kegiatanData || [];
+
+      // Filter for activities waiting for Bendahara-Cair approval
+      state.displayKegiatan = state.allKegiatan.filter(
+        (k) =>
+          k.current_approval &&
+          k.current_approval.approval_level === "Bendahara-Cair" &&
+          k.current_approval.status === "Aktif"
+      );
+
+      state.totalItems = state.displayKegiatan.length;
+      state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage);
+      state.currentPage = 1; // Reset to first page when new data is fetched
+
+      renderTableRows();
+      renderPagination();
+      updateStats();
+    } catch (error) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    }
+  }
+
+  async function handleCairkan(kegiatanId) {
+    const nominalString = prompt("Masukkan nominal dana yang akan dicairkan:");
+    if (nominalString === null) return; // User cancelled
+
+    const nominal = parseFloat(nominalString);
+    if (isNaN(nominal) || nominal <= 0) {
+      alert("Nominal tidak valid. Harap masukkan angka positif.");
+      return;
+    }
+
+    if (
+      confirm(`Anda yakin ingin mencairkan Rp ${nominalString} untuk kegiatan ini?`)
+    ) {
+      try {
+        await apiRequest(`/kegiatan/${kegiatanId}/cairkan`, {
+          method: "POST",
+          body: JSON.stringify({ nominal: nominal }),
+        });
+        alert(`Dana Rp ${nominalString} berhasil dicairkan.`);
+        fetchKegiatan(); // Refresh data
+      } catch (error) {
+        alert(`Gagal mencairkan dana: ${error.message}`);
+      }
+    }
+  }
+
+  async function handleUmSelesai(kegiatanId) {
+    if (
+      confirm("Anda yakin ingin menandai UM Selesai untuk kegiatan ini?")
+    ) {
+      try {
+        // This action completes the Bendahara-Cair approval stage
+        await apiRequest(`/kegiatan/${kegiatanId}/approve`, {
+          method: "POST",
+          body: JSON.stringify({ status: "Disetujui" }), // Status for current approval step
+        });
+        alert("Kegiatan berhasil ditandai UM Selesai.");
+        fetchKegiatan(); // Refresh data
+      } catch (error) {
+        alert(`Gagal menandai UM Selesai: ${error.message}`);
+      }
+    }
+  }
+
+  // ==============================================
+  // RENDER FUNCTIONS
+  // ==============================================
+  function formatRupiah(amount) {
+    if (amount === undefined || amount === null) return "Rp 0";
+    return (
+      "Rp " +
+      parseFloat(amount).toLocaleString("id-ID", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })
+    );
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
-  }, 100);
+  }
 
-  // ==============================================
-  // SAMPLE DATA
-  // ==============================================
-  
-  const kegiatanData = [
-    { 
-      id: 1, 
-      namaKegiatan: 'KAK (Nama Kegiatan)', 
-      subKegiatan: 'Pengusul',
-      pengusul: 'Nama Pengusul',
-      subPengusul: 'himpunan /lain',
-      tanggal: '28 Desember 2025', 
-      status: 'Menunggu' 
-    },
-    { 
-      id: 1, 
-      namaKegiatan: 'KAK (Nama Kegiatan)', 
-      subKegiatan: 'Pengusul',
-      pengusul: 'Nama Pengusul',
-      subPengusul: 'himpunan /lain',
-      tanggal: '28 Desember 2025', 
-      status: 'Menunggu' 
-    },
-    { 
-      id: 1, 
-      namaKegiatan: 'KAK (Nama Kegiatan)', 
-      subKegiatan: 'Pengusul',
-      pengusul: 'Nama Pengusul',
-      subPengusul: 'himpunan /lain',
-      tanggal: '28 Desember 2025', 
-      status: 'Menunggu' 
-    },
-    { 
-      id: 1, 
-      namaKegiatan: 'KAK (Nama Kegiatan)', 
-      subKegiatan: 'Pengusul',
-      pengusul: 'Nama Pengusul',
-      subPengusul: 'himpunan /lain',
-      tanggal: '28 Desember 2025', 
-      status: 'Menunggu' 
-    },
-    { 
-      id: 1, 
-      namaKegiatan: 'KAK (Nama Kegiatan)', 
-      subKegiatan: 'Pengusul',
-      pengusul: 'Nama Pengusul',
-      subPengusul: 'himpunan /lain',
-      tanggal: '28 Desember 2025', 
-      status: 'Menunggu' 
-    },
-    { 
-      id: 1, 
-      namaKegiatan: 'KAK (Nama Kegiatan)', 
-      subKegiatan: 'Pengusul',
-      pengusul: 'Nama Pengusul',
-      subPengusul: 'himpunan /lain',
-      tanggal: '28 Desember 2025', 
-      status: 'Menunggu' 
-    },
-    { 
-      id: 1, 
-      namaKegiatan: 'KAK (Nama Kegiatan)', 
-      subKegiatan: 'Pengusul',
-      pengusul: 'Nama Pengusul',
-      subPengusul: 'himpunan /lain',
-      tanggal: '28 Desember 2025', 
-      status: 'Menunggu' 
-    },
-    { 
-      id: 1, 
-      namaKegiatan: 'KAK (Nama Kegiatan)', 
-      subKegiatan: 'Pengusul',
-      pengusul: 'Nama Pengusul',
-      subPengusul: 'himpunan /lain',
-      tanggal: '28 Desember 2025', 
-      status: 'Menunggu' 
-    },
-  ];
+  function getStatusBadge(status) {
+    switch (status) {
+      case "Menunggu Verifikasi":
+      case "Dalam Review":
+      case "Menunggu":
+        return "badge-menunggu";
+      case "Disetujui":
+        return "badge-disetujui";
+      case "Ditolak":
+        return "badge-ditolak";
+      case "Revisi":
+        return "badge-menunggu"; // Revisions might also be "waiting" for action
+      default:
+        return "badge-menunggu";
+    }
+  }
 
-  /**
-   * Render table rows
-   */
-  function renderTableRows(data) {
-    const tbody = document.getElementById('kegiatanTableBody');
+  function renderTableRows() {
+    const tbody = document.getElementById("kegiatanTableBody");
     if (!tbody) return;
-    
-    tbody.innerHTML = '';
 
-    data.forEach((item, index) => {
-      const statusClass = item.status === 'Menunggu' ? 'badge-menunggu' : 
-                         item.status === 'Disetujui' ? 'badge-disetujui' : 
-                         'badge-ditolak';
-      
-      const row = document.createElement('tr');
+    tbody.innerHTML = "";
+    if (!state.displayKegiatan || state.displayKegiatan.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" class="text-center">Tidak ada kegiatan yang menunggu pencairan dana.</td></tr>';
+      return;
+    }
+
+    const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+    const paginatedData = state.displayKegiatan.slice(
+      startIndex,
+      startIndex + state.itemsPerPage
+    );
+
+    paginatedData.forEach((item) => {
+      const statusClass = getStatusBadge(item.nama_status);
+
+      const row = document.createElement("tr");
       row.innerHTML = `
         <td style="text-align: center;">
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
         <td>
-          <div class="number-badge">${item.id}</div>
+          <div class="number-badge">${item.kegiatan_id}</div>
         </td>
         <td>
-          <div class="activity-title">${item.namaKegiatan}</div>
-          <div class="activity-subtitle">${item.subKegiatan}</div>
+          <div class="activity-title">${item.nama_kegiatan}</div>
+          <div class="activity-subtitle">${item.pengusul_nama}</div>
         </td>
         <td>
-          <div class="activity-title">${item.pengusul}</div>
-          <div class="activity-subtitle">${item.subPengusul}</div>
+          <div class="activity-title">${item.penanggung_jawab_manual || "N/A"}</div>
+          <div class="activity-subtitle">${item.pelaksana_manual || "N/A"}</div>
         </td>
         <td>
-          <span style="font-weight: 600; color: #374151;">${item.tanggal}</span>
+          <span style="font-weight: 600; color: #374151;">${formatDate(
+            item.created_at
+          )}</span>
         </td>
         <td style="text-align: center;">
-          <span class="badge ${statusClass}">${item.status}</span>
+          <span class="badge ${statusClass}">${item.nama_status || "Menunggu"}</span>
         </td>
         <td style="text-align: center;">
-          <button class="btn btn-sm btn-action btn-cairkan me-2" data-id="${item.id}">
+          ${formatRupiah(item.dana_dicairkan)}
+        </td>
+        <td style="text-align: center;">
+          <button class="btn btn-sm btn-action btn-cairkan me-2" data-id="${
+            item.kegiatan_id
+          }">
             <i class="ti">&#xf4a5;</i> Cairkan
           </button>
-          <button class="btn btn-sm btn-action btn-selesai" data-id="${item.id}">
+          <button class="btn btn-sm btn-action btn-selesai" data-id="${
+            item.kegiatan_id
+          }">
             <i class="ti">&#xec63;</i> UM Selesai
           </button>
         </td>
@@ -636,82 +602,155 @@ export function renderPencairanDanaPage(path, userRole) {
     attachEventListeners();
   }
 
-  /**
-   * Attach event listeners
-   */
-  function attachEventListeners() {
-    // Row checkboxes
-    document.querySelectorAll('.row-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', updateSelectAll);
+  function renderPagination() {
+    const paginationEl = document.getElementById("paginationContainer");
+    const showingStartEl = document.getElementById("showingStart");
+    const showingEndEl = document.getElementById("showingEnd");
+    const totalEntriesEl = document.getElementById("totalEntries");
+
+    if (!paginationEl || !showingStartEl || !showingEndEl || !totalEntriesEl)
+      return;
+
+    if (state.totalItems === 0) {
+      showingStartEl.textContent = 0;
+      showingEndEl.textContent = 0;
+      totalEntriesEl.textContent = 0;
+      paginationEl.innerHTML = "";
+      return;
+    }
+
+    paginationEl.innerHTML = "";
+
+    const startEntry = (state.currentPage - 1) * state.itemsPerPage + 1;
+    const endEntry = Math.min(
+      state.currentPage * state.itemsPerPage,
+      state.totalItems
+    );
+
+    showingStartEl.textContent = startEntry;
+    showingEndEl.textContent = endEntry;
+    totalEntriesEl.textContent = state.totalItems;
+
+    if (state.totalPages <= 1) return;
+
+    // Previous button
+    const prevLi = document.createElement("li");
+    prevLi.className = `page-item ${
+      state.currentPage === 1 ? "disabled" : ""
+    }`;
+    prevLi.innerHTML = `<a class="page-link" href="#" aria-label="Previous" data-page="prev"><i class="ti">&#xea65;</i></a>`;
+    paginationEl.appendChild(prevLi);
+
+    // Page numbers
+    for (let i = 1; i <= state.totalPages; i++) {
+      const li = document.createElement("li");
+      li.className = `page-item ${i === state.currentPage ? "active" : ""}`;
+      li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+      paginationEl.appendChild(li);
+    }
+
+    // Next button
+    const nextLi = document.createElement("li");
+    nextLi.className = `page-item ${
+      state.currentPage === state.totalPages ? "disabled" : ""
+    }`;
+    nextLi.innerHTML = `<a class="page-link" href="#" aria-label="Next" data-page="next"><i class="ti">&#xea5e;</i></a>`;
+    paginationEl.appendChild(nextLi);
+
+    // Event listeners for pagination links
+    paginationEl.querySelectorAll(".page-link").forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const page = e.target.closest(".page-link").dataset.page;
+        let newPage = state.currentPage;
+
+        if (page === "prev") newPage--;
+        else if (page === "next") newPage++;
+        else newPage = parseInt(page);
+
+        if (
+          newPage !== state.currentPage &&
+          newPage >= 1 &&
+          newPage <= state.totalPages
+        ) {
+          state.currentPage = newPage;
+          renderTableRows();
+          renderPagination();
+        }
+      });
     });
+  }
+
+  // ==============================================
+  // EVENT LISTENERS
+  // ==============================================
+  function attachEventListeners() {
+    // Row checkboxes (selectAll not fully implemented yet)
+    // document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+    //   checkbox.addEventListener('change', updateSelectAll);
+    // });
 
     // Cairkan buttons
-    document.querySelectorAll('.btn-cairkan').forEach(btn => {
-      btn.addEventListener('click', handleCairkan);
+    document.querySelectorAll(".btn-cairkan").forEach((btn) => {
+      btn.addEventListener("click", () => handleCairkan(btn.dataset.id));
     });
 
     // UM Selesai buttons
-    document.querySelectorAll('.btn-selesai').forEach(btn => {
-      btn.addEventListener('click', handleSelesai);
+    document.querySelectorAll(".btn-selesai").forEach((btn) => {
+      btn.addEventListener("click", () => handleUmSelesai(btn.dataset.id));
     });
   }
 
-  /**
-   * Select all functionality
-   */
-  const selectAllCheckbox = document.getElementById('selectAll');
-  if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener('change', function() {
-      const checkboxes = document.querySelectorAll('.row-checkbox');
-      checkboxes.forEach(cb => cb.checked = this.checked);
-    });
-  }
+  // Select all functionality (placeholder)
+  // const selectAllCheckbox = document.getElementById('selectAll');
+  // if (selectAllCheckbox) {
+  //   selectAllCheckbox.addEventListener('change', function() {
+  //     const checkboxes = document.querySelectorAll('.row-checkbox');
+  //     checkboxes.forEach(cb => cb.checked = this.checked);
+  //   });
+  // }
 
-  /**
-   * Update select all state
-   */
-  function updateSelectAll() {
-    const allCheckboxes = document.querySelectorAll('.row-checkbox');
-    const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-    if (selectAllCheckbox) {
-      selectAllCheckbox.checked = checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
-    }
-  }
+  // function updateSelectAll() { /* ... */ }
 
-  /**
-   * Update statistics
-   */
+  // ==============================================
+  // STATS UPDATE
+  // ==============================================
   function updateStats() {
-    const totalMenunggu = kegiatanData.filter(k => k.status === 'Menunggu').length;
-    
-    const totalMenungguEl = document.getElementById('totalMenunggu');
-    
-    if (totalMenungguEl) totalMenungguEl.textContent = totalMenunggu;
+    const totalDanaKeluar = state.allKegiatan.reduce(
+      (sum, k) => sum + parseFloat(k.dana_dicairkan || 0),
+      0
+    );
+    const totalMenunggu = state.displayKegiatan.length; // Activities waiting for Bendahara-Cair approval
+
+    // "Telat" is dummy for now
+    const totalTelat = 0;
+
+    document.getElementById("totalDanaKeluar").textContent =
+      formatRupiah(totalDanaKeluar);
+    document.getElementById("totalMenunggu").textContent = totalMenunggu;
+    document.getElementById("totalTelat").textContent = totalTelat;
   }
 
-  /**
-   * Handle Cairkan button click
-   */
-  function handleCairkan(e) {
-    const btn = e.currentTarget;
-    const id = btn.getAttribute('data-id');
-    
-    showInfo(`Cairkan dana untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`);
-  }
+  // ==============================================
+  // INITIALIZATION
+  // ==============================================
+  fetchKegiatan();
+  // updateStats(); // Called inside fetchKegiatan
 
+  // Initialize Vuexy menu (active state for current page)
+  setTimeout(() => {
+    const menuItems = document.querySelectorAll(".menu-item");
+    menuItems.forEach((item) => {
+      const link = item.querySelector('a[href="/bendahara/pencairan-dana"]');
+      if (link) {
+        item.classList.add("active");
+      } else {
+        item.classList.remove("active");
+      }
+    });
+  }, 100);
 
-  function handleSelesai(e) {
-    const btn = e.currentTarget;
-    const id = btn.getAttribute('data-id');
-    
-    showInfo(`Tandai UM Selesai untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`);
-  }
-
-  renderTableRows(kegiatanData);
-  updateStats();
-
-  // Initialize Vuexy menu
+  // Initialize Vuexy menu if available
   if (window.Helpers) {
     window.Helpers.init();
   }
