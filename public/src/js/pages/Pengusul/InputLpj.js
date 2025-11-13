@@ -236,7 +236,7 @@ export function renderInputLpjPage(path, userRole) {
     if (sections.length > 1) {
       btn.closest(".rab-section-item").remove();
     } else {
-      alert("Minimal harus ada 1 field!");
+      showError("Minimal harus ada 1 field!");
     }
   };
 

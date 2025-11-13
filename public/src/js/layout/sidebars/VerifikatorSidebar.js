@@ -20,7 +20,7 @@ export const verifikatorSidebar = `
       <!-- Monitoring Usulan -->
       <li class="menu-item">
         <a href="/verifikator/monitoring-usulan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-file-search"></i>
+          <i class="menu-icon tf-icons ti ti-file-search">&#xea9a;</i>
           <div data-i18n="Monitoring Usulan">Monitoring Usulan</div>
         </a>
       </li>
@@ -28,7 +28,7 @@ export const verifikatorSidebar = `
       <!-- Riwayat -->
       <li class="menu-item">
         <a href="/verifikator/riwayat" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-history"></i>
+          <i class="menu-icon tf-icons ti ti-history">&#xebea;</i>
           <div data-i18n="Riwayat">Riwayat</div>
         </a>
       </li>
@@ -36,7 +36,7 @@ export const verifikatorSidebar = `
       <!-- Pengaturan -->
       <li class="menu-item">
         <a href="/verifikator/pengaturan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-settings"></i>
+          <i class="menu-icon tf-icons ti ti-settings">&#xeb20;</i>
           <div data-i18n="Pengaturan">Pengaturan</div>
         </a>
       </li>

@@ -263,7 +263,7 @@ export function renderPpkDashboardPage(path, userRole) {
       btn.addEventListener("click", function () {
         const activityId = this.getAttribute("data-id");
         console.log("Edit activity:", activityId);
-        alert(`Edit kegiatan ${activityId}...`);
+        showInfo(`Edit kegiatan ${activityId}...`);
       });
     });
 
@@ -272,7 +272,7 @@ export function renderPpkDashboardPage(path, userRole) {
       btn.addEventListener("click", function () {
         const activityId = this.getAttribute("data-id");
         console.log("View activity:", activityId);
-        alert(`Lihat detail kegiatan ${activityId}...`);
+        showInfo(`Lihat detail kegiatan ${activityId}...`);
       });
     });
 

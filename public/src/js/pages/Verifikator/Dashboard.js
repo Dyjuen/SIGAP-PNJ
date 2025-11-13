@@ -660,7 +660,7 @@ export function renderDashboardVerifikator(path, userRole) {
       const catatan = document.getElementById("revisiCatatan").value.trim();
 
       if (!catatan) {
-        alert("Catatan revisi harus diisi!");
+        showError("Catatan revisi harus diisi!");
         return;
       }
 
@@ -676,17 +676,22 @@ export function renderDashboardVerifikator(path, userRole) {
 
         currentRevisiIndex = null;
         document.getElementById("revisiForm").reset();
-        alert("Revisi berhasil dikirim!");
+        showSuccess("Revisi berhasil dikirim!");
       }
     });
   }
 
-  // --- LOGIKA DELETE ---
-  function handleDelete(e) {
+    // --- LOGIKA DELETE ---
+  async function handleDelete(e) {
     const btn = e.currentTarget;
     const index = parseInt(btn.getAttribute("data-index"));
 
-    if (confirm("Apakah Anda yakin ingin menghapus usulan ini?")) {
+    const confirmed = await confirmAction(
+      "Yakin ingin menghapus?",
+      "Usulan ini akan dihapus secara permanen."
+    );
+
+    if (confirmed) {
       const row = btn.closest("tr");
       row.style.transition = "all 0.3s";
       row.style.opacity = "0";
@@ -696,9 +701,12 @@ export function renderDashboardVerifikator(path, userRole) {
         usulanData.splice(index, 1);
         renderTableRows(usulanData);
         updateStats();
+
+        showSuccess("Usulan berhasil dihapus!");
       }, 300);
     }
   }
+
 
   // --- LOGIKA UPDATE STATS ---
   function updateStats() {

@@ -307,7 +307,7 @@ export function renderPengajuanLpjPage(path, userRole) {
 
     document.querySelectorAll("button[title='Edit']").forEach((btn) => {
       btn.addEventListener("click", function () {
-        alert(`Edit LPJ ID: ${this.getAttribute("data-id")}`);
+        showInfo(`Edit LPJ ID: ${this.getAttribute("data-id")}`);
       });
     });
 
@@ -315,13 +315,13 @@ export function renderPengajuanLpjPage(path, userRole) {
       .querySelectorAll("button[title='Revisi']:not([disabled])")
       .forEach((btn) => {
         btn.addEventListener("click", function () {
-          alert(`Revisi LPJ ID: ${this.getAttribute("data-id")}`);
+          showInfo(`Revisi LPJ ID: ${this.getAttribute("data-id")}`);
         });
       });
 
     document.querySelectorAll("button[title='Upload']").forEach((btn) => {
       btn.addEventListener("click", function () {
-        alert(`Upload LPJ ID: ${this.getAttribute("data-id")}`);
+        showInfo(`Upload LPJ ID: ${this.getAttribute("data-id")}`);
       });
     });
 

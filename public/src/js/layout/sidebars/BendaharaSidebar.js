@@ -20,7 +20,7 @@ export const bendaharaSidebar = `
       <!-- Pencairan Dana -->
       <li class="menu-item">
         <a href="/bendahara/pencairan-dana" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-wallet"></i>
+          <i class="menu-icon tf-icons ti ti-wallet">&#xeb75;</i>
           <div data-i18n="Pencairan Dana">Pencairan Dana</div>
         </a>
       </li>
@@ -28,7 +28,7 @@ export const bendaharaSidebar = `
       <!-- Daftar LPJ -->
       <li class="menu-item">
         <a href="/bendahara/daftar-lpj" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-list-details"></i>
+          <i class="menu-icon tf-icons ti ti-list-details">&#xef40;</i>
           <div data-i18n="Daftar LPJ">Daftar LPJ</div>
         </a>
       </li>
@@ -36,7 +36,7 @@ export const bendaharaSidebar = `
       <!-- Riwayat -->
       <li class="menu-item">
         <a href="/bendahara/riwayat" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-history"></i>
+          <i class="menu-icon tf-icons ti ti-history">&#xebea;</i>
           <div data-i18n="Riwayat">Riwayat</div>
         </a>
       </li>
@@ -44,7 +44,7 @@ export const bendaharaSidebar = `
       <!-- Pengaturan -->
       <li class="menu-item">
         <a href="/bendahara/pengaturan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-settings"></i>
+          <i class="menu-icon tf-icons ti ti-settings">&#xeb20;</i>
           <div data-i18n="Pengaturan">Pengaturan</div>
         </a>
       </li>

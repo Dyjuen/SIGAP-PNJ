@@ -366,7 +366,7 @@ export function renderFullUsulanKakPage(userRole) {
     if (container.children.length > 1) {
       item.remove();
     } else {
-      alert("Minimal harus ada 1 field!");
+      showError("Minimal harus ada 1 field!");
     }
   };
 
@@ -442,7 +442,7 @@ export function renderFullUsulanKakPage(userRole) {
     if (container.querySelectorAll(".iku-item").length > 1) {
       item.remove();
     } else {
-      alert("Minimal harus ada 1 field!");
+      showError("Minimal harus ada 1 field!");
     }
   };
 
@@ -492,7 +492,7 @@ export function renderFullUsulanKakPage(userRole) {
     if (container.children.length > 1) {
       item.remove();
     } else {
-      alert("Minimal harus ada 1 item belanja!");
+      showError("Minimal harus ada 1 item belanja!");
     }
   };
 
