@@ -21,9 +21,9 @@ class Kegiatan extends Model
                     u.nama_lengkap as pengusul_nama,
                     ks.nama_status,
                     ks.status_id,
-                    (SELECT SUM(ta.jumlah_diusulkan) FROM t_telaah_anggaran ta WHERE ta.telaah_id = t.telaah_id) as total_anggaran_diusulkan
+                    (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_diusulkan
                 FROM t_kegiatan k
-                JOIN t_telaah t ON k.telaah_id = t.telaah_id
+                JOIN t_kak t ON k.kak_id = t.kak_id
                 JOIN m_users u ON t.pengusul_user_id = u.user_id
                 JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
                 WHERE 1=1";
@@ -77,7 +77,7 @@ class Kegiatan extends Model
                     u.nama_lengkap as pengusul_nama, 
                     u.email as pengusul_email
                 FROM t_kegiatan k
-                JOIN t_telaah t ON k.telaah_id = t.telaah_id
+                JOIN t_kak t ON k.kak_id = t.kak_id
                 JOIN m_users u ON t.pengusul_user_id = u.user_id
                 WHERE k.kegiatan_id = ?";
         
@@ -85,7 +85,7 @@ class Kegiatan extends Model
 
         if ($kegiatan) {
             // Fetch related items like anggaran, lampiran etc.
-            $kegiatan['anggaran_items'] = $this->query("SELECT * FROM t_telaah_anggaran WHERE telaah_id = ?", [$kegiatan['telaah_id']])->fetchAll(PDO::FETCH_ASSOC);
+            $kegiatan['anggaran_items'] = $this->query("SELECT * FROM t_kak_anggaran WHERE kak_id = ?", [$kegiatan['kak_id']])->fetchAll(PDO::FETCH_ASSOC);
         }
 
         return $kegiatan;
@@ -95,26 +95,25 @@ class Kegiatan extends Model
     {
         $sql = "SELECT k.*, t.pengusul_user_id, t.status_id, t.nama_kegiatan
                 FROM {$this->table} k
-                JOIN t_telaah t ON k.telaah_id = t.telaah_id
+                JOIN t_kak t ON k.kak_id = t.kak_id
                 WHERE k.{$this->primaryKey} = ?";
         return $this->query($sql, [$id])->fetch(PDO::FETCH_ASSOC);
     }
 
     public function updateStatus($kegiatanId, $statusId)
     {
-        $sql = "UPDATE t_telaah SET status_id = ? WHERE telaah_id = (SELECT telaah_id FROM t_kegiatan WHERE kegiatan_id = ?)";
+        $sql = "UPDATE t_kak SET status_id = ? WHERE kak_id = (SELECT kak_id FROM t_kegiatan WHERE kegiatan_id = ?)";
         return $this->query($sql, [$statusId, $kegiatanId]);
     }
 
     public function updateApproval($kegiatanId, array $data)
     {
         $sql = "INSERT INTO t_kegiatan_approval 
-                (kegiatan_id, approval_level, approver_user_id, status, catatan) 
-                VALUES (?, ?, ?, ?, ?)";
+                (kegiatan_id, approver_user_id, status, catatan) 
+                VALUES (?, ?, ?, ?)";
         
         $params = [
             $kegiatanId,
-            $data['approval_level'],
             $data['approver_user_id'] ?? null,  // ✅ FIX: Tambahkan approver_user_id
             $data['status'],
             $data['catatan'] ?? null            // ✅ FIX: Tambahkan catatan
@@ -162,10 +161,10 @@ class Kegiatan extends Model
                     t.lokasi,
                     u.nama_lengkap as pengusul_nama,
                     ks.nama_status,
-                    (SELECT SUM(ta.jumlah_diusulkan) FROM t_telaah_anggaran ta WHERE ta.telaah_id = t.telaah_id) as total_anggaran_diusulkan,
-                    k.dana_dicairkan as total_anggaran_disetujui
+                    (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_diusulkan,
+                    NULL as total_anggaran_disetujui
                 FROM t_kegiatan k
-                JOIN t_telaah t ON k.telaah_id = t.telaah_id
+                JOIN t_kak t ON k.kak_id = t.kak_id
                 JOIN m_users u ON t.pengusul_user_id = u.user_id
                 JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
                 WHERE 1=1";
