@@ -2,7 +2,7 @@
 
 import { renderDashboardLayout } from '../../layout/AppLayout.js';
 
-export function renderPencairanDanaPage(userRole) {
+export function renderPencairanDanaPage(path, userRole) {
 
   const pageContent = `
     <style>

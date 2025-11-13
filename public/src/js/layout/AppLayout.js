@@ -106,7 +106,7 @@ export function renderDashboardLayout(content, userRole) {
     case "Verifikator":
       dynamicSidebar = verifikatorSidebar;
       break;
-    case "WD2":
+    case "Wadir":
       dynamicSidebar = wadirSidebar;
       break;
     case "PPK":

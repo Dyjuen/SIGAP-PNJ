@@ -2,7 +2,7 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderMonitoringUsulanPage(userRole) {
+export function renderMonitoringUsulanPage(path, userRole) {
   const pageContent = `
     <style>
       /* Import existing CSS styles - assuming they're in a global stylesheet */

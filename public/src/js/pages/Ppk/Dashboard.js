@@ -1,7 +1,7 @@
 // frontend/src/pages/Wadir/MonitoringKegiatan.js
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderPpkDashboardPage(userRole) {
+export function renderPpkDashboardPage(path, userRole) {
   const pageContent = `
     <div class="monitoring-kegiatan-page">
       <!-- Stats Cards -->

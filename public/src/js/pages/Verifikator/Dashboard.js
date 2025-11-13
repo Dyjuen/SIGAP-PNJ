@@ -2,7 +2,7 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderDashboardVerifikator(userRole) {
+export function renderDashboardVerifikator(path, userRole) {
   const pageContent = `
     <style>
       /* --- Custom CSS for Figma Design --- */

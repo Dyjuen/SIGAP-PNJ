@@ -1,7 +1,7 @@
 // frontend/src/pages/Wadir/Dashboard.js
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderWadirDashboardPage(userRole) {
+export function renderWadirDashboardPage(path, userRole) {
   const dashboardContent = `
     <div class="wadir-dashboard-page">
       <!-- Stats Cards -->

@@ -2,7 +2,7 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderPreviewKakPage(userRole, providedData = null) {
+export function renderPreviewKakPage(path, userRole, providedData = null) {
   // Get data from localStorage or use provided data
   let data = providedData;
   

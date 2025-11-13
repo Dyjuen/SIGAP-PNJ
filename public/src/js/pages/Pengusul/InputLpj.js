@@ -2,7 +2,7 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderInputLpjPage(userRole) {
+export function renderInputLpjPage(path, userRole) {
   const pageContent = `
     <div class="realisasi-anggaran-page">
       <!-- Header -->

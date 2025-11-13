@@ -120,10 +120,8 @@ export function router() {
     
     if (matchedKey) {
       const handler = roleRoutes[matchedKey];
-      // PENTING: Fungsi handler sekarang menerima path lengkap.
-      // Anda harus memperbarui fungsi halaman Anda (misalnya, renderPengusulDashboardPage)
-      // untuk menangani path ini dan merender sub-rute yang sesuai.
-      handler(path); 
+      // Pass the path and the userRole to the page handler.
+      handler(path, userRole); 
       return;
     }
   }

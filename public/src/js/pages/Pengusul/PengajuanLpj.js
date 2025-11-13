@@ -2,7 +2,7 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderPengajuanLpjPage(userRole) {
+export function renderPengajuanLpjPage(path, userRole) {
   const pageContent = `
     <style>
       /* Only essential custom CSS that uses ID selectors or can't be done with Tailwind */

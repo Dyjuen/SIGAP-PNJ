@@ -2,7 +2,7 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderPengusulDashboardPage(userRole) {
+export function renderPengusulDashboardPage(path, userRole) {
   const dashboardContent = `
     <style>
       /* Additional inline CSS for dashboard */

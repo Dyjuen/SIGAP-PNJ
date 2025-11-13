@@ -3,7 +3,7 @@
 import { renderDashboardLayout } from '../../layout/AppLayout.js';
 import { pengusulSidebar } from '../../layout/sidebars/pengusulSidebar.js';
 
-export function renderMengajukanKegiatanPage(userRole) {
+export function renderMengajukanKegiatanPage(path, userRole) {
 
   const pageContent = `
     <style>

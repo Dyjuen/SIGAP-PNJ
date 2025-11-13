@@ -2,7 +2,7 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderUsulanKakPage(userRole) {
+export function renderUsulanKakPage(path, userRole) {
   const pageContent = `
     <!-- Add required CSS for daterangepicker in the head section -->
     <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />

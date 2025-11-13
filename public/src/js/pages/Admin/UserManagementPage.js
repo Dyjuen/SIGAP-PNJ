@@ -3,7 +3,7 @@
 import { renderDashboardLayout } from '../../layout/AppLayout.js';
 import { adminSidebar } from '../../layout/sidebars/adminSidebar.js';
 
-export function renderUserManagementPage(userRole) {
+export function renderUserManagementPage(path, userRole) {
 
   const pageContent = `
     <div class="user-management-page">
