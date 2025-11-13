@@ -10,7 +10,7 @@ import { renderBendaharaDashboardPage } from "./pages/Bendahara/Dashboard.js";
 import { renderNotFoundPage } from "./pages/NotFoundPage.js";
 import { renderUsulanKakPage } from "./pages/Pengusul/StepUsulanKak.js";
 import { renderPreviewKakPage } from "./pages/Pengusul/PreviewKak.js";
-import { renderMengajukanKegiatanPage } from "./pages/Admin/MengajukanKegiatanPage.js";
+import { renderMengajukanKegiatanPage } from "./pages/Pengusul/MengajukanKegiatanPage.js";
 import { renderPencairanDanaPage } from "./pages/Bendahara/PencairanDanaPage.js";
 import { renderMonitoringUsulanPage } from "./pages/Pengusul/MonitoringUsulan.js";
 import { renderPengajuanLpjPage } from "./pages/Pengusul/PengajuanLpj.js";
@@ -44,7 +44,7 @@ const roleBasedRoutes = {
     "/usulan-kak": renderUsulanKakPage,
     "/monitoring-usulan": renderMonitoringUsulanPage,
     "/preview-kak": renderPreviewKakPage,
-    "/mengajukan-kegiatan": renderNotFoundPage,
+    "/mengajukan-kegiatan": renderMengajukanKegiatanPage,
     "/monitoring-kegiatan": renderNotFoundPage,
     "/pengajuan-lpj": renderPengajuanLpjPage,
     "/input-lpj": renderInputLpjPage,

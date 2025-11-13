@@ -1,8 +1,9 @@
 // frontend/src/pages/bendahara/PencairanDanaPage.js
 
-import { renderDashboardLayout } from "../../layout/AppLayout.js";
+import { renderDashboardLayout } from '../../layout/AppLayout.js';
 
 export function renderPencairanDanaPage(userRole) {
+
   const pageContent = `
     <style>
       /* --- Custom CSS for Pencairan Dana Page --- */
@@ -494,13 +495,13 @@ export function renderPencairanDanaPage(userRole) {
 
   // Set active menu item for Pencairan Dana
   setTimeout(() => {
-    const menuItems = document.querySelectorAll(".menu-item");
-    menuItems.forEach((item) => {
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(item => {
       const link = item.querySelector('a[href="/bendahara/pencairan-dana"]');
       if (link) {
-        item.classList.add("active");
+        item.classList.add('active');
       } else {
-        item.classList.remove("active");
+        item.classList.remove('active');
       }
     });
   }, 100);
@@ -508,104 +509,97 @@ export function renderPencairanDanaPage(userRole) {
   // ==============================================
   // SAMPLE DATA
   // ==============================================
-
+  
   const kegiatanData = [
-    {
-      id: 1,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      subKegiatan: "Pengusul",
-      pengusul: "Nama Pengusul",
-      subPengusul: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
+    { 
+      id: 1, 
+      namaKegiatan: 'KAK (Nama Kegiatan)', 
+      subKegiatan: 'Pengusul',
+      pengusul: 'Nama Pengusul',
+      subPengusul: 'himpunan /lain',
+      tanggal: '28 Desember 2025', 
+      status: 'Menunggu' 
     },
-    {
-      id: 1,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      subKegiatan: "Pengusul",
-      pengusul: "Nama Pengusul",
-      subPengusul: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
+    { 
+      id: 1, 
+      namaKegiatan: 'KAK (Nama Kegiatan)', 
+      subKegiatan: 'Pengusul',
+      pengusul: 'Nama Pengusul',
+      subPengusul: 'himpunan /lain',
+      tanggal: '28 Desember 2025', 
+      status: 'Menunggu' 
     },
-    {
-      id: 1,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      subKegiatan: "Pengusul",
-      pengusul: "Nama Pengusul",
-      subPengusul: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
+    { 
+      id: 1, 
+      namaKegiatan: 'KAK (Nama Kegiatan)', 
+      subKegiatan: 'Pengusul',
+      pengusul: 'Nama Pengusul',
+      subPengusul: 'himpunan /lain',
+      tanggal: '28 Desember 2025', 
+      status: 'Menunggu' 
     },
-    {
-      id: 1,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      subKegiatan: "Pengusul",
-      pengusul: "Nama Pengusul",
-      subPengusul: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
+    { 
+      id: 1, 
+      namaKegiatan: 'KAK (Nama Kegiatan)', 
+      subKegiatan: 'Pengusul',
+      pengusul: 'Nama Pengusul',
+      subPengusul: 'himpunan /lain',
+      tanggal: '28 Desember 2025', 
+      status: 'Menunggu' 
     },
-    {
-      id: 1,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      subKegiatan: "Pengusul",
-      pengusul: "Nama Pengusul",
-      subPengusul: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
+    { 
+      id: 1, 
+      namaKegiatan: 'KAK (Nama Kegiatan)', 
+      subKegiatan: 'Pengusul',
+      pengusul: 'Nama Pengusul',
+      subPengusul: 'himpunan /lain',
+      tanggal: '28 Desember 2025', 
+      status: 'Menunggu' 
     },
-    {
-      id: 1,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      subKegiatan: "Pengusul",
-      pengusul: "Nama Pengusul",
-      subPengusul: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
+    { 
+      id: 1, 
+      namaKegiatan: 'KAK (Nama Kegiatan)', 
+      subKegiatan: 'Pengusul',
+      pengusul: 'Nama Pengusul',
+      subPengusul: 'himpunan /lain',
+      tanggal: '28 Desember 2025', 
+      status: 'Menunggu' 
     },
-    {
-      id: 1,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      subKegiatan: "Pengusul",
-      pengusul: "Nama Pengusul",
-      subPengusul: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
+    { 
+      id: 1, 
+      namaKegiatan: 'KAK (Nama Kegiatan)', 
+      subKegiatan: 'Pengusul',
+      pengusul: 'Nama Pengusul',
+      subPengusul: 'himpunan /lain',
+      tanggal: '28 Desember 2025', 
+      status: 'Menunggu' 
     },
-    {
-      id: 1,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      subKegiatan: "Pengusul",
-      pengusul: "Nama Pengusul",
-      subPengusul: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
+    { 
+      id: 1, 
+      namaKegiatan: 'KAK (Nama Kegiatan)', 
+      subKegiatan: 'Pengusul',
+      pengusul: 'Nama Pengusul',
+      subPengusul: 'himpunan /lain',
+      tanggal: '28 Desember 2025', 
+      status: 'Menunggu' 
     },
   ];
-
-  // ==============================================
-  // RENDER FUNCTIONS
-  // ==============================================
 
   /**
    * Render table rows
    */
   function renderTableRows(data) {
-    const tbody = document.getElementById("kegiatanTableBody");
+    const tbody = document.getElementById('kegiatanTableBody');
     if (!tbody) return;
-
-    tbody.innerHTML = "";
+    
+    tbody.innerHTML = '';
 
     data.forEach((item, index) => {
-      const statusClass =
-        item.status === "Menunggu"
-          ? "badge-menunggu"
-          : item.status === "Disetujui"
-          ? "badge-disetujui"
-          : "badge-ditolak";
-
-      const row = document.createElement("tr");
+      const statusClass = item.status === 'Menunggu' ? 'badge-menunggu' : 
+                         item.status === 'Disetujui' ? 'badge-disetujui' : 
+                         'badge-ditolak';
+      
+      const row = document.createElement('tr');
       row.innerHTML = `
         <td style="text-align: center;">
           <input type="checkbox" class="form-check-input row-checkbox">
@@ -647,29 +641,29 @@ export function renderPencairanDanaPage(userRole) {
    */
   function attachEventListeners() {
     // Row checkboxes
-    document.querySelectorAll(".row-checkbox").forEach((checkbox) => {
-      checkbox.addEventListener("change", updateSelectAll);
+    document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', updateSelectAll);
     });
 
     // Cairkan buttons
-    document.querySelectorAll(".btn-cairkan").forEach((btn) => {
-      btn.addEventListener("click", handleCairkan);
+    document.querySelectorAll('.btn-cairkan').forEach(btn => {
+      btn.addEventListener('click', handleCairkan);
     });
 
     // UM Selesai buttons
-    document.querySelectorAll(".btn-selesai").forEach((btn) => {
-      btn.addEventListener("click", handleSelesai);
+    document.querySelectorAll('.btn-selesai').forEach(btn => {
+      btn.addEventListener('click', handleSelesai);
     });
   }
 
   /**
    * Select all functionality
    */
-  const selectAllCheckbox = document.getElementById("selectAll");
+  const selectAllCheckbox = document.getElementById('selectAll');
   if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener("change", function () {
-      const checkboxes = document.querySelectorAll(".row-checkbox");
-      checkboxes.forEach((cb) => (cb.checked = this.checked));
+    selectAllCheckbox.addEventListener('change', function() {
+      const checkboxes = document.querySelectorAll('.row-checkbox');
+      checkboxes.forEach(cb => cb.checked = this.checked);
     });
   }
 
@@ -677,15 +671,11 @@ export function renderPencairanDanaPage(userRole) {
    * Update select all state
    */
   function updateSelectAll() {
-    const allCheckboxes = document.querySelectorAll(".row-checkbox");
-    const checkedCount = document.querySelectorAll(
-      ".row-checkbox:checked"
-    ).length;
+    const allCheckboxes = document.querySelectorAll('.row-checkbox');
+    const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
     if (selectAllCheckbox) {
-      selectAllCheckbox.checked =
-        checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAllCheckbox.indeterminate =
-        checkedCount > 0 && checkedCount < allCheckboxes.length;
+      selectAllCheckbox.checked = checkedCount > 0 && checkedCount === allCheckboxes.length;
+      selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
     }
   }
 
@@ -693,12 +683,10 @@ export function renderPencairanDanaPage(userRole) {
    * Update statistics
    */
   function updateStats() {
-    const totalMenunggu = kegiatanData.filter(
-      (k) => k.status === "Menunggu"
-    ).length;
-
-    const totalMenungguEl = document.getElementById("totalMenunggu");
-
+    const totalMenunggu = kegiatanData.filter(k => k.status === 'Menunggu').length;
+    
+    const totalMenungguEl = document.getElementById('totalMenunggu');
+    
     if (totalMenungguEl) totalMenungguEl.textContent = totalMenunggu;
   }
 
@@ -707,30 +695,19 @@ export function renderPencairanDanaPage(userRole) {
    */
   function handleCairkan(e) {
     const btn = e.currentTarget;
-    const id = btn.getAttribute("data-id");
-
-    alert(
-      `Cairkan dana untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`
-    );
+    const id = btn.getAttribute('data-id');
+    
+    alert(`Cairkan dana untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`);
   }
 
-  /**
-   * Handle UM Selesai button click
-   */
+
   function handleSelesai(e) {
     const btn = e.currentTarget;
-    const id = btn.getAttribute("data-id");
-
-    alert(
-      `Tandai UM Selesai untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`
-    );
+    const id = btn.getAttribute('data-id');
+    
+    alert(`Tandai UM Selesai untuk kegiatan ID: ${id}\n\nFitur ini akan terintegrasi dengan API nanti.`);
   }
 
-  // ==============================================
-  // INITIALIZATION
-  // ==============================================
-
-  // Initial render
   renderTableRows(kegiatanData);
   updateStats();
 
