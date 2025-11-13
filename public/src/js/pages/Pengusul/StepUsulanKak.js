@@ -179,19 +179,6 @@ export function renderUsulanKakPage(path, userRole) {
                     </div>
                     <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addIndikatorKinerja()">Tambah</button>
                   </div>
-
-                  <div class="mb-8">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tahapan Pelaksanaan</label>
-                    <div id="tahapanPelaksanaanKinerjaContainer">
-                      <div class="flex gap-4 items-start mb-4">
-                        <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                        <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-                          <span class="text-xl font-bold">−</span>
-                        </button>
-                      </div>
-                    </div>
-                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addTahapanPelaksanaanKinerja()">Tambah</button>
-                  </div>
                 </div>
 
                 <!-- Step 5: Kurun Waktu Pelaksanaan -->
@@ -661,19 +648,10 @@ export function renderUsulanKakPage(path, userRole) {
     "kurun-waktu",
   ];
 
-  // Initialize
-  function init() {
-    loadDateRangePicker();
-    updateMainStepDisplay();
-    updateStepDisplay();
-    attachEventListeners();
-  }
-
-  // Update Main Progress Step Display
-  function updateMainStepDisplay() {
-    const progressSteps = document.querySelectorAll(".progress-step-item");
-
-    progressSteps.forEach((step, index) => {
+        // Update Main Progress Step Display
+        function updateMainStepDisplay() {
+          const progressSteps = document.querySelectorAll(".progress-step-item");
+      progressSteps.forEach((step, index) => {
       const stepNum = index + 1;
       const circle = step.querySelector(".progress-step-circle");
       const text = step.querySelector(".progress-step-text");
@@ -718,8 +696,274 @@ export function renderUsulanKakPage(path, userRole) {
       });
   }
 
+        // Initialize
+        function init() {
+          loadDateRangePicker();
+          updateMainStepDisplay();
+          updateStepDisplay();
+          attachEventListeners();
+          populateIkuDropdowns(); // Populate IKU dropdowns on init
+        }
+  
+        // ==============================================  // API FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+    const defaultHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+    
+    const config = {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...options.headers,
+      },
+    };
+    
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+      }
+      return data;
+    } catch (error) {
+      console.error('API Request Error:', error);
+      throw error;
+    }
+  }
+
+  async function submitTelaah(data) {
+    return await apiRequest('/telaah', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  function deriveKurunWaktuPelaksanaan(startDate, endDate) {
+    if (!startDate || !endDate) return "";
+    const start = moment(startDate, 'YYYY-MM-DD');
+    const end = moment(endDate, 'YYYY-MM-DD');
+    const diffDays = end.diff(start, 'days') + 1; // +1 to include both start and end day
+
+    if (diffDays <= 0) return "";
+
+    if (diffDays < 30) {
+      return `${diffDays} hari`;
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      const remainingDays = diffDays % 30;
+      return `${months} bulan ${remainingDays > 0 ? `${remainingDays} hari` : ''}`.trim();
+    } else {
+      const years = Math.floor(diffDays / 365);
+      const remainingMonths = Math.floor((diffDays % 365) / 30);
+      return `${years} tahun ${remainingMonths > 0 ? `${remainingMonths} bulan` : ''}`.trim();
+    }
+  }
+
+  // Helper to combine separate sasaran and manfaat lists into one for backend
+  function combineSasaranManfaat(sasaranArray, manfaatArray) {
+    const combined = [];
+    const maxLength = Math.max(sasaranArray.length, manfaatArray.length);
+    for (let i = 0; i < maxLength; i++) {
+      combined.push({
+        sasaran_utama: sasaranArray[i] || '',
+        manfaat: manfaatArray[i] || ''
+      });
+    }
+    return combined;
+  }
+
+  // Placeholder for mapping satuan string to ID. Needs API call for m_satuan
+  function mapSatuanToId(satuanString) {
+    // For now, return a default ID. This needs proper lookup from m_satuan master data
+    const satuanMap = {
+      'Unit': 1, 'pcs': 2, 'box': 3, 'set': 4, // Example IDs
+      'orang': 5, 'jam': 6, 'hari': 7, 'bulan': 8, 'tahun': 9, // Example IDs
+      'perjalanan': 10, 'kali': 11
+    };
+    return satuanMap[satuanString.toLowerCase()] || 1; // Default to ID 1
+  }
+
+  // Populate IKU dropdowns with dummy data (1-8)
+  function populateIkuDropdowns() {
+    const ikuSelects = document.querySelectorAll('#ikuRenstraContainer select');
+    ikuSelects.forEach(select => {
+      // Clear existing options except the first one (if it's a placeholder)
+      // Check if the first option is a placeholder and keep it if so
+      const isPlaceholder = select.options.length > 0 && select.options[0].value === "";
+      while (select.options.length > (isPlaceholder ? 1 : 0)) { 
+        select.remove(isPlaceholder ? 1 : 0);
+      }
+      for (let i = 1; i <= 8; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `IKU #${i}`;
+        select.appendChild(option);
+      }
+    });
+  }
+
+  function collectFormData() {
+    // Helper function to get values from a container of inputs (array of strings)
+    const getDynamicListValues = (containerId) => {
+      const container = document.getElementById(containerId);
+      if (!container) return [];
+      return Array.from(container.querySelectorAll('input[type="text"]')).map(input => input.value).filter(Boolean);
+    };
+
+    // Helper function to get values from complex dynamic rows for t_telaah_target
+    const getTargetData = () => { // Renamed from getIndikatorKinerja
+      const container = document.getElementById('indikatorKinerjaContainer');
+      if (!container) return [];
+      const rows = container.querySelectorAll('.flex.items-end.gap-4');
+      return Array.from(rows).map(row => ({
+        bulan_indikator: row.children[0].querySelector('input').value, // Frontend "Bulan"
+        deskripsi_target: row.children[1].querySelector('input').value, // Frontend "Indikator Keberhasilan"
+        persentase_target: parseFloat(row.children[2].querySelector('input').value) || 0 // Frontend "Target"
+      })).filter(item => item.bulan_indikator || item.deskripsi_target || item.persentase_target);
+    };
+
+    const getIkuRenstraData = () => { // Renamed from getIkuRenstra
+        const container = document.getElementById('ikuRenstraContainer');
+        if (!container) return [];
+        return Array.from(container.querySelectorAll('.iku-item')).map(row => {
+            const inputs = row.querySelectorAll('input, select');
+            return {
+                iku_id: parseInt(inputs[0].value) || 0, // Assuming value is iku_id
+                persentase_target: parseFloat(inputs[1].value) || 0,
+            }
+        }).filter(item => item.iku_id || item.persentase_target);
+    }
+
+    const getAnggaranItems = (containerId) => { // Renamed from getAnggaran
+        const container = document.getElementById(containerId);
+        if (!container) return [];
+        return Array.from(container.querySelectorAll('.grid')).map(row => {
+            const inputs = row.querySelectorAll('input, select');
+            return {
+                uraian: inputs[0].value,
+                volume1: parseInt(inputs[1].value) || 1,
+                satuan1_str: inputs[2].value, // Storing string for now, needs mapping to ID
+                volume2: parseInt(inputs[3].value) || 1,
+                satuan2_str: inputs[4].value, // Storing string for now, needs mapping to ID
+                harga_satuan: parseFloat(inputs[5].value) || 0,
+            }
+        }).filter(item => item.uraian || item.harga_satuan);
+    }
+    
+    // Get date range from daterangepicker
+    let tanggalMulai = null;
+    let tanggalSelesai = null;
+    if (typeof $ !== 'undefined' && $('#kurunWaktu').data('daterangepicker')) {
+        tanggalMulai = $('#kurunWaktu').data('daterangepicker').startDate.format('YYYY-MM-DD');
+        tanggalSelesai = $('#kurunWaktu').data('daterangepicker').endDate.format('YYYY-MM-DD');
+    }
+
+    const sasaranUtamaList = getDynamicListValues('sasaranUtamaContainer');
+    const manfaatList = getDynamicListValues('manfaatContainer');
+    
+    const formData = {
+      kak: { // This is the main KAK object
+        nama_kegiatan: document.getElementById('namaKegiatan')?.value || '',
+        deskripsi_kegiatan: document.getElementById('gambaranUmum')?.value || '', // Map gambaran_umum to deskripsi_kegiatan
+        metode_pelaksanaan: document.getElementById('metodePelaksanaan')?.value || '',
+        kurun_waktu_pelaksanaan: deriveKurunWaktuPelaksanaan(tanggalMulai, tanggalSelesai) || '', 
+        tanggal_mulai: tanggalMulai || '',
+        tanggal_selesai: tanggalSelesai || '',
+        lokasi: 'PNJ Depok', // Placeholder: Missing input in frontend form, or get from user profile
+        
+        // Assembled penerima_manfaat to match backend array of objects
+        penerima_manfaat: combineSasaranManfaat(sasaranUtamaList, manfaatList),
+        
+        // Transformed tahapan_pelaksanaan to match backend array of objects
+        tahapan_pelaksanaan: getDynamicListValues('tahapanPelaksanaanContainer').map((nama, index) => ({
+            nama_tahapan: nama,
+            urutan: index + 1
+        })),
+
+        // Indikator Kinerja is now empty for kak header, as step 1.4 maps to top-level 'target'
+        indikator_kinerja: [], 
+      },
+      // These are top-level arrays for $input['target_iku'] and $input['target'] and $input['rab']
+      target_iku: getIkuRenstraData().map(item => ({ 
+          iku_id: item.iku_id, 
+          persentase_target: item.persentase_target
+      })),
+      target: getTargetData().map(item => ({ 
+          deskripsi_target: item.deskripsi_target,
+          bulan_indikator: item.bulan_indikator,
+          persentase_target: item.persentase_target
+      })),
+      rab: [ // Flattened anggaran
+        ...getAnggaranItems('belanjaBarangContainer').map(item => ({
+            uraian: item.uraian,
+            volume1: item.volume1,
+            volume2: item.volume2,
+            satuan_id: mapSatuanToId(item.satuan1_str), // Using helper map string to ID
+            harga_satuan: item.harga_satuan,
+            jumlah_diusulkan: item.volume1 * item.volume2 * item.harga_satuan // Calculate total
+        })),
+        ...getAnggaranItems('belanjaJasaContainer').map(item => ({
+            uraian: item.uraian,
+            volume1: item.volume1,
+            volume2: item.volume2,
+            satuan_id: mapSatuanToId(item.satuan1_str), // Using helper map string to ID
+            harga_satuan: item.harga_satuan,
+            jumlah_diusulkan: item.volume1 * item.volume2 * item.harga_satuan // Calculate total
+        })),
+        ...getAnggaranItems('belanjaPerjalananContainer').map(item => ({
+            uraian: item.uraian,
+            volume1: item.volume1,
+            volume2: item.volume2,
+            satuan_id: mapSatuanToId(item.satuan1_str), // Using helper map string to ID
+            harga_satuan: item.harga_satuan,
+            jumlah_diusulkan: item.volume1 * item.volume2 * item.harga_satuan // Calculate total
+        })),
+      ]
+    };
+
+    console.log("Collected Form Data:", formData);
+    return formData;
+  }
+
   // Attach Event Listeners
   function attachEventListeners() {
+    // ... (existing event listeners for navigation)
+
+    // Submit button for Step 3 (RAB)
+    const btnSubmitRab = document.getElementById("btnSubmitRab");
+    if (btnSubmitRab) {
+      btnSubmitRab.addEventListener("click", async () => {
+        // Show loading state
+        btnSubmitRab.disabled = true;
+        btnSubmitRab.innerHTML = 'Submitting... <span class="spinner-border spinner-border-sm"></span>';
+
+        try {
+          const formData = collectFormData();
+          console.log("Submitting data:", formData);
+
+          const result = await submitTelaah(formData);
+
+          if (result.status) {
+            alert("Usulan KAK berhasil diajukan!");
+            // Redirect to monitoring page
+            window.location.hash = "#/pengusul/monitoring-usulan";
+          } else {
+            throw new Error(result.message || "Terjadi kesalahan saat pengajuan.");
+          }
+
+        } catch (error) {
+          alert(`Error: ${error.message}`);
+          // Re-enable button on error
+          btnSubmitRab.disabled = false;
+          btnSubmitRab.innerHTML = 'Submit';
+        }
+      });
+    }
+     
     // Progress step items - allow clicking to navigate
     document.querySelectorAll(".progress-step-item").forEach((step) => {
       step.addEventListener("click", function () {
@@ -800,14 +1044,6 @@ export function renderUsulanKakPage(path, userRole) {
       btnBackRab.addEventListener("click", () => {
         mainStep = 2;
         updateMainStepDisplay();
-      });
-    }
-
-    // Submit button for Step 3 (RAB)
-    const btnSubmitRab = document.getElementById("btnSubmitRab");
-    if (btnSubmitRab) {
-      btnSubmitRab.addEventListener("click", () => {
-        window.location.href = "/pengusul/form-kak";
       });
     }
   }
@@ -909,48 +1145,6 @@ export function renderUsulanKakPage(path, userRole) {
   };
 
   window.addIndikatorKinerja = function () {
-    const container = document.getElementById("indikatorKinerjaContainer");
-    const newItem = document.createElement("div");
-    newItem.className = "mb-4";
-    newItem.innerHTML = `
-      <div class="flex items-end gap-4 mb-6">
-        <div class='w-full'>
-          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <div class='w-full'>
-          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <div class='w-full'>
-          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-          <span class="text-xl font-bold">−</span>
-        </button>
-      </div>
-    `;
-    container.appendChild(newItem);
-  };
-
-  window.addTahapanPelaksanaanKinerja = function () {
-    const container = document.getElementById(
-      "tahapanPelaksanaanKinerjaContainer"
-    );
-    const newItem = document.createElement("div");
-    newItem.className = "flex gap-4 items-start mb-4";
-    newItem.innerHTML = `
-      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-        <span class="text-xl font-bold">−</span>
-      </button>
-    `;
-    container.appendChild(newItem);
-  };
-
-  // IKU Field Functions
-  window.removeIkuField = function (btn) {
     const item = btn.closest(".iku-item");
     const container = document.getElementById("ikuRenstraContainer");
     if (container.querySelectorAll(".iku-item").length > 1) {
@@ -960,32 +1154,32 @@ export function renderUsulanKakPage(path, userRole) {
     }
   };
 
-  window.addIkuField = function () {
-    const container = document.getElementById("ikuRenstraContainer");
-    const newItem = document.createElement("div");
-    newItem.className =
-      "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
-    newItem.innerHTML = `
-      <div>
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-          <option value="">Input</option>
-        </select>
-      </div>
-      <div>
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-        <div class="flex gap-2 items-center">
-          <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+    window.addIkuField = function () {
+      const container = document.getElementById("ikuRenstraContainer");
+      const newItem = document.createElement("div");
+      newItem.className =
+        "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
+      newItem.innerHTML = `
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
         </div>
-      </div>
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeIkuField(this)">
-        <span class="text-xl font-bold">−</span>
-      </button>
-    `;
-    container.appendChild(newItem);
-  };
-
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+          <div class="flex gap-2 items-center">
+            <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+          </div>
+        </div>
+        <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeIkuField(this)">
+              <span class="text-xl font-bold">−</span>
+            </button>
+          `;
+          container.appendChild(newItem);
+          populateIkuDropdowns(); // Populate dropdowns for new item
+        };
   // Increment/Decrement value functions
   window.incrementValue = function(btn, step) {
     const input = btn.closest('.relative').querySelector('input[type="number"]');

@@ -123,111 +123,93 @@ export function renderMonitoringUsulanPage(path, userRole) {
   renderDashboardLayout(pageContent, userRole);
 
   // ==============================================
-  // DATA
+  // STATE
   // ==============================================
-  const activities = [
-    {
-      id: 1,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Diajukan",
-    },
-    {
-      id: 2,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Direvisi",
-    },
-    {
-      id: 3,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Diajukan",
-    },
-    {
-      id: 4,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Diajukan",
-    },
-    {
-      id: 5,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Diterima",
-    },
-    {
-      id: 6,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Ditolak",
-    },
-    {
-      id: 7,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Diajukan",
-    },
-    {
-      id: 8,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Draft",
-    },
-    {
-      id: 9,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Diterima",
-    },
-    {
-      id: 10,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      dateSubmitted: "29 September 2025",
-      dateApproved: "28 Desember 2025",
-      status: "Diterima",
-    },
-  ];
+  let state = {
+    activities: [],
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalEntries: 0,
+    totalPages: 1,
+  };
 
-  let currentPage = 3;
-  const itemsPerPage = 10;
+  // ==============================================
+  // API FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+    const defaultHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+    
+    const config = {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...options.headers,
+      },
+    };
+    
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (!data.status) {
+        throw new Error(data.message || 'API request failed');
+      }
+      return data;
+    } catch (error) {
+      console.error('API Request Error:', error);
+      throw error;
+    }
+  }
+
+  async function fetchTelaah() {
+    const tbody = document.getElementById("monitoringTableBody");
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading...</td></tr>';
+
+    try {
+      const response = await apiRequest('/telaah');
+      state.activities = response.data;
+      state.totalEntries = response.data.length;
+      state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
+      renderTableRows(state.activities);
+      updatePagination();
+    } catch (error) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Error: ${error.message}</td></tr>`;
+    }
+  }
+
 
   // ==============================================
   // HELPER FUNCTIONS
   // ==============================================
+  function formatDate(dateString) {
+    if (!dateString) return "-";
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('id-ID', options);
+  }
+
   function getStatusBadge(status) {
     const statusMap = {
-      Diajukan: { class: "bg-label-warning", text: "Diajukan" },
-      Direvisi: { class: "bg-label-info", text: "Direvisi" },
-      Diterima: { class: "bg-label-success", text: "Diterima" },
-      Ditolak: { class: "bg-label-danger", text: "Ditolak" },
-      Draft: { class: "bg-label-secondary", text: "Draft" },
+      'Draft': { class: "bg-label-warning", text: "Diajukan" },
+      'Menunggu Verifikasi': { class: "bg-label-warning", text: "Diajukan" },
+      'Direvisi': { class: "bg-label-warning", text: "Diajukan" },
+      'Disetujui WD': { class: "bg-label-success", text: "Disetujui" },
+      'Disetujui PPK': { class: "bg-label-success", text: "Disetujui" },
+      'Ditolak': { class: "bg-label-danger", text: "Ditolak" },
+      'Default': { class: "bg-label-secondary", text: "Tidak Diketahui" } // Fallback
     };
-    return statusMap[status] || statusMap["Draft"];
+    return statusMap[status] || statusMap['Default'];
   }
 
   function getActionButtons(status, id) {
+    // This function will likely need more logic based on all possible statuses
     switch (status) {
-      case "Diajukan":
+      case 'Draft':
+      case 'Direvisi':
+      case 'Ditolak':
         return `
           <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" title="Edit">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
@@ -236,57 +218,42 @@ export function renderMonitoringUsulanPage(path, userRole) {
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
           </button>
         `;
-      case "Direvisi":
-        return `
-          <button class="btn btn-sm btn-revisi me-2" data-id="${id}" title="Revisi">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
-          </button>
-          <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-          </button>
-        `;
-      case "Diterima":
+      case 'Disetujui PPK':
+      case 'Disetujui WD':
         return `
           <button class="btn btn-sm btn-download" data-id="${id}" title="Download PDF">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path dM12 4l0 12" /></svg>
             Download PDF
           </button>
         `;
-      case "Ditolak":
-        return `
-          <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" title="Edit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
-          </button>
-          <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-          </button>
-        `;
-      case "Draft":
-        return `
-          <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" title="Edit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
-          </button>
-          <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-          </button>
-        `;
       default:
-        return "";
+        return `<span class="text-muted">No actions available</span>`;
     }
   }
 
   // ==============================================
   // RENDER FUNCTIONS
   // ==============================================
-  function renderTableRows() {
+  function renderTableRows(data) {
     const tbody = document.getElementById("monitoringTableBody");
     if (!tbody) return;
 
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Tidak ada data usulan.</td></tr>';
+      return;
+    }
+
     tbody.innerHTML = "";
 
-    activities.forEach((activity) => {
-      const statusBadge = getStatusBadge(activity.status);
-      const actionButtons = getActionButtons(activity.status, activity.id);
+    const paginatedData = data.slice(
+      (state.currentPage - 1) * state.itemsPerPage,
+      state.currentPage * state.itemsPerPage
+    );
+
+    paginatedData.forEach((activity) => {
+      const status = activity.status ? activity.status.nama_status : 'N/A';
+      const statusBadge = getStatusBadge(status);
+      const actionButtons = getActionButtons(status, activity.id);
 
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -297,14 +264,14 @@ export function renderMonitoringUsulanPage(path, userRole) {
           <span class="number-badge">${activity.id}</span>
         </td>
         <td>
-          <strong>${activity.title}</strong>
-          <div class="text-muted small">${activity.subtitle}</div>
+          <strong>${activity.nama_kegiatan || 'Tanpa Judul'}</strong>
+          <div class="text-muted small">${activity.pengusul?.nama_lengkap || 'Tanpa Pengusul'}</div>
         </td>
         <td>
-          <div>${activity.dateSubmitted}</div>
+          <div>${formatDate(activity.created_at)}</div>
         </td>
         <td>
-          <div>${activity.dateApproved}</div>
+          <div>${formatDate(activity.tanggal_disetujui)}</div>
         </td>
         <td style="text-align: center;">
           <span class="badge ${statusBadge.class}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${statusBadge.text}</span>
@@ -391,11 +358,32 @@ export function renderMonitoringUsulanPage(path, userRole) {
   // PAGINATION
   // ==============================================
   function setupPagination() {
+    const paginationContainer = document.querySelector(".pagination");
+    if (!paginationContainer) return;
+    
+    paginationContainer.innerHTML = ''; // Clear existing buttons
+
+    // Previous buttons
+    paginationContainer.innerHTML += `<li class="page-item ${state.currentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" id="btnFirstPage">«</a></li>`;
+    paginationContainer.innerHTML += `<li class="page-item ${state.currentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" id="btnPrevPage">‹</a></li>`;
+
+    // Page number buttons (simplified logic)
+    for(let i = 1; i <= state.totalPages; i++) {
+        paginationContainer.innerHTML += `<li class="page-item ${i === state.currentPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+    }
+
+    // Next buttons
+    paginationContainer.innerHTML += `<li class="page-item ${state.currentPage === state.totalPages ? 'disabled' : ''}"><a class="page-link" href="#" id="btnNextPage">›</a></li>`;
+    paginationContainer.innerHTML += `<li class="page-item ${state.currentPage === state.totalPages ? 'disabled' : ''}"><a class="page-link" href="#" id="btnLastPage">»</a></li>`;
+
+
     document.querySelectorAll(".pagination .page-link").forEach((link) => {
       link.addEventListener("click", function (e) {
         e.preventDefault();
         const page = this.getAttribute("data-page");
-        if (page) changePage(parseInt(page));
+        if (page) {
+          changePage(parseInt(page));
+        }
       });
     });
 
@@ -412,47 +400,43 @@ export function renderMonitoringUsulanPage(path, userRole) {
     if (btnPrevPage)
       btnPrevPage.addEventListener("click", (e) => {
         e.preventDefault();
-        if (currentPage > 1) changePage(currentPage - 1);
+        if (state.currentPage > 1) changePage(state.currentPage - 1);
       });
     if (btnNextPage)
       btnNextPage.addEventListener("click", (e) => {
         e.preventDefault();
-        const totalPages = Math.ceil(50 / itemsPerPage);
-        if (currentPage < totalPages) changePage(currentPage + 1);
+        if (state.currentPage < state.totalPages) changePage(state.currentPage + 1);
       });
     if (btnLastPage)
       btnLastPage.addEventListener("click", (e) => {
         e.preventDefault();
-        changePage(Math.ceil(50 / itemsPerPage));
+        changePage(state.totalPages);
       });
   }
 
   function changePage(page) {
-    currentPage = page;
-    document
-      .querySelectorAll(".pagination .page-item")
-      .forEach((item) => item.classList.remove("active"));
-    const pageLink = document.querySelector(
-      `.pagination .page-link[data-page="${page}"]`
-    );
-    if (pageLink) pageLink.closest(".page-item").classList.add("active");
+    if(page < 1 || page > state.totalPages) return;
+    state.currentPage = page;
+    renderTableRows(state.activities);
     updatePagination();
   }
 
   function updatePagination() {
-    const startEntry = (currentPage - 1) * itemsPerPage + 1;
-    const endEntry = Math.min(currentPage * itemsPerPage, 50);
+    const startEntry = (state.currentPage - 1) * state.itemsPerPage + 1;
+    const endEntry = Math.min(state.currentPage * state.itemsPerPage, state.totalEntries);
 
-    document.getElementById("startEntry").textContent = startEntry;
+    document.getElementById("startEntry").textContent = state.totalEntries > 0 ? startEntry : 0;
     document.getElementById("endEntry").textContent = endEntry;
-    document.getElementById("totalEntries").textContent = 50;
+    document.getElementById("totalEntries").textContent = state.totalEntries;
+
+    // Re-generate pagination buttons to update active state
+    setupPagination();
   }
 
   // ==============================================
   // INITIALIZATION
   // ==============================================
-  renderTableRows();
-  updatePagination();
+  fetchTelaah();
 
   if (window.Helpers) {
     window.Helpers.init();
