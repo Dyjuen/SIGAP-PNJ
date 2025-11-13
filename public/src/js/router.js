@@ -57,7 +57,7 @@ const roleBasedRoutes = {
     "/riwayat": renderNotFoundPage,
     "/pengaturan": renderNotFoundPage,
   },
-  WD2: {
+  Wadir: {
     "/dashboard": renderWadirDashboardPage,
     "/verifikasi-kegiatan": renderNotFoundPage,
     "/monitoring-kegiatan": renderNotFoundPage,
@@ -81,7 +81,7 @@ const roleBasedRoutes = {
 
 export function router() {
   const path = window.location.pathname;
-  const userRole = getCurrentUserRole();
+  const userRole = getCurrentUserRole(); // This will be 'Wadir' and now matches the key
 
   // Handle public routes first
   if (publicRoutes[path]) {
@@ -90,28 +90,40 @@ export function router() {
   }
 
   // Handle role-based routes
-  const pathSegments = path.split("/").filter((segment) => segment); // e.g., ['pengusul', 'dashboard']
+  const pathSegments = path.split("/").filter((segment) => segment);
   
   if (pathSegments.length > 0) {
-    const roleFromUrl = pathSegments[0].charAt(0).toUpperCase() + pathSegments[0].slice(1);
+    const urlRoleSegment = pathSegments[0].toLowerCase();
+
+    // Find the role key from the URL, case-insensitively (e.g., 'Wadir' from 'wadir')
+    const roleFromUrl = Object.keys(roleBasedRoutes).find(k => k.toLowerCase() === urlRoleSegment);
+    
+    // 1. Check if the role from the URL is valid
+    if (!roleFromUrl) {
+      renderNotFoundPage(userRole);
+      return;
+    }
+
+    // 2. Security Check: direct comparison now works
+    if (userRole === "guest" || userRole !== roleFromUrl) { 
+      renderUnauthorizedPage();
+      return;
+    }
+
+    // 3. If authorized, find the best matching page using prefix matching for nesting
     const pagePath = "/" + pathSegments.slice(1).join("/");
-
-    // 1. Check if the role from the URL is a valid role
-    if (!roleBasedRoutes[roleFromUrl]) {
-      renderNotFoundPage(userRole); // If the role itself doesn't exist, it's a 404
-      return;
-    }
-
-    // 2. Security Check: Does the user's role match the URL's role?
-    if (userRole === "guest" || userRole !== roleFromUrl) {
-      renderUnauthorizedPage(); // If role is valid but user is not authorized, it's a 403
-      return;
-    }
-
-    // 3. If authorized, find the specific page
     const roleRoutes = roleBasedRoutes[userRole];
-    if (roleRoutes && roleRoutes[pagePath]) {
-      roleRoutes[pagePath](userRole);
+
+    const matchedKey = Object.keys(roleRoutes)
+      .sort((a, b) => b.length - a.length)
+      .find(key => pagePath.startsWith(key));
+    
+    if (matchedKey) {
+      const handler = roleRoutes[matchedKey];
+      // PENTING: Fungsi handler sekarang menerima path lengkap.
+      // Anda harus memperbarui fungsi halaman Anda (misalnya, renderPengusulDashboardPage)
+      // untuk menangani path ini dan merender sub-rute yang sesuai.
+      handler(path); 
       return;
     }
   }
