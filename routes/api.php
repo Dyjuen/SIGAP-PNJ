@@ -4,6 +4,7 @@ use App\Controllers\AuthController;
 use App\Controllers\AccountController;
 use App\Controllers\KAKController;
 use App\Controllers\LpjController;
+use App\Controllers\MasterController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
 use App\Middlewares\CorsMiddleware;
@@ -155,6 +156,14 @@ if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
 // =====================================================
 
 $router = new Router();
+
+// ============================================
+// MASTER DATA ROUTES
+// ============================================
+$router->get('/master/iku', 'MasterController@getIku');
+$router->get('/master/tipe-kegiatan', 'MasterController@getTipeKegiatan');
+$router->get('/master/satuan', 'MasterController@getSatuan');
+
 
 // ============================================
 // KAK ROUTES (CRUD & Workflow)
