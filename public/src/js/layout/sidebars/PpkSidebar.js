@@ -17,7 +17,7 @@ export const ppkSidebar = `
     <div class="menu-inner-shadow"></div>
 
     <ul class="menu-inner py-1">
-      <!-- Setujui Kegiatan -->
+      <!-- verif Kegiatan -->
       <li class="menu-item">
         <a href="/ppk/setujui-kegiatan" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-check">&#xea5e;</i>

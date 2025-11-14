@@ -3,7 +3,7 @@
 export const wadirSidebar = `
   <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-      <a href="/wd2/dashboard" data-link class="app-brand-link">
+      <a href="/wadir/dashboard" data-link class="app-brand-link">
         <span class="app-brand-logo demo">
           <img src="/assets/img/logo/logo2.svg" alt="Logo" style="width: 160px; height: 160px;">
         </span>
@@ -19,7 +19,7 @@ export const wadirSidebar = `
     <ul class="menu-inner py-1">
       <!-- Verifikasi Kegiatan -->
       <li class="menu-item">
-        <a href="/wd2/verifikasi-kegiatan" data-link class="menu-link">
+        <a href="/wadir/verifikasi-kegiatan" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-check">&#xea5e;</i>
           <div data-i18n="Verifikasi Kegiatan">Verifikasi Kegiatan</div>
         </a>
@@ -27,7 +27,7 @@ export const wadirSidebar = `
 
       <!-- Monitoring Kegiatan -->
       <li class="menu-item">
-        <a href="/wd2/monitoring-kegiatan" data-link class="menu-link">
+        <a href="/wadir/monitoring-kegiatan" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-presentation-analytics">&#xea9a;</i>
           <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
         </a>
@@ -35,7 +35,7 @@ export const wadirSidebar = `
 
       <!-- Pengaturan -->
       <li class="menu-item">
-        <a href="/wd2/pengaturan" data-link class="menu-link">
+        <a href="/wadir/pengaturan" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-settings">&#xeb20;</i>
           <div data-i18n="Pengaturan">Pengaturan</div>
         </a>

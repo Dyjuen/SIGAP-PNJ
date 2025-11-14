@@ -260,12 +260,30 @@ export function renderLoginPage() {
           const primaryRole = roles[0];
           localStorage.setItem("userRole", primaryRole);
 
-          // Redirect to the role-based dashboard
+          // Redirect based on user's role
           const rolePath = primaryRole.toLowerCase();
-          window.location.pathname = `/${rolePath}/dashboard`;
+          let redirectPath = `/${rolePath}/dashboard`; // Default redirect
+
+          switch (primaryRole) {
+            case "Verifikator":
+              redirectPath = `/${rolePath}/monitoring-usulan`;
+              break;
+            case "Wadir":
+              redirectPath = `/${rolePath}/verifikasi-kegiatan`;
+              break;
+            case "PPK": // PPK also redirects to verifikasi-kegiatan
+              redirectPath = `/${rolePath}/setujui-kegiatan`;
+              break;
+            case "Bendahara":
+              redirectPath = `/${rolePath}/pencairan-dana`;
+              break;
+          }
+          window.location.pathname = redirectPath;
         } else {
           // Handle case where user has no roles
-          showError("Login berhasil, tetapi tidak ada peran yang ditetapkan untuk pengguna ini.");
+          showError(
+            "Login berhasil, tetapi tidak ada peran yang ditetapkan untuk pengguna ini."
+          );
           setLoading(false);
         }
       } else {
@@ -323,24 +341,17 @@ export function renderLoginPage() {
     });
   }
 
-    // Add a pageshow event listener to reset the loading state
+  // Add a pageshow event listener to reset the loading state
 
-    window.addEventListener("pageshow", function(event) {
+  window.addEventListener("pageshow", function (event) {
+    // The event.persisted property is true if the page is from the cache
 
-      // The event.persisted property is true if the page is from the cache
+    if (event.persisted) {
+      setLoading(false);
+    }
+  });
 
-      if (event.persisted) {
+  // Ensure the loading state is reset when the page is rendered
 
-        setLoading(false);
-
-      }
-
-    });
-
-  
-
-    // Ensure the loading state is reset when the page is rendered
-
-    setLoading(false);
-
-  }
+  setLoading(false);
+}

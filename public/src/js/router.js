@@ -54,20 +54,20 @@ const roleBasedRoutes = {
   },
   Verifikator: {
     "/dashboard": renderDashboardVerifikator,
-    "/monitoring-usulan": renderNotFoundPage,
+    "/monitoring-usulan": renderDashboardVerifikator,
     "/riwayat": renderNotFoundPage,
     "/pengaturan": renderNotFoundPage,
     "/revisi-kak": renderRevisiKakPage,
   },
   Wadir: {
     "/dashboard": renderWadirDashboardPage,
-    "/verifikasi-kegiatan": renderNotFoundPage,
+    "/verifikasi-kegiatan": renderWadirDashboardPage,
     "/monitoring-kegiatan": renderNotFoundPage,
     "/pengaturan": renderNotFoundPage,
   },
   PPK: {
     "/dashboard": renderPpkDashboardPage,
-    "/setujui-kegiatan": renderNotFoundPage,
+    "/setujui-kegiatan": renderPpkDashboardPage,
     "/monitoring-kegiatan": renderNotFoundPage,
     "/riwayat": renderNotFoundPage,
     "/pengaturan": renderNotFoundPage,
@@ -93,13 +93,15 @@ export function router() {
 
   // Handle role-based routes
   const pathSegments = path.split("/").filter((segment) => segment);
-  
+
   if (pathSegments.length > 0) {
     const urlRoleSegment = pathSegments[0].toLowerCase();
 
     // Find the role key from the URL, case-insensitively (e.g., 'Wadir' from 'wadir')
-    const roleFromUrl = Object.keys(roleBasedRoutes).find(k => k.toLowerCase() === urlRoleSegment);
-    
+    const roleFromUrl = Object.keys(roleBasedRoutes).find(
+      (k) => k.toLowerCase() === urlRoleSegment
+    );
+
     // 1. Check if the role from the URL is valid
     if (!roleFromUrl) {
       renderNotFoundPage(userRole);
@@ -107,7 +109,7 @@ export function router() {
     }
 
     // 2. Security Check: direct comparison now works
-    if (userRole === "guest" || userRole !== roleFromUrl) { 
+    if (userRole === "guest" || userRole !== roleFromUrl) {
       renderUnauthorizedPage();
       return;
     }
@@ -118,12 +120,12 @@ export function router() {
 
     const matchedKey = Object.keys(roleRoutes)
       .sort((a, b) => b.length - a.length)
-      .find(key => pagePath.startsWith(key));
-    
+      .find((key) => pagePath.startsWith(key));
+
     if (matchedKey) {
       const handler = roleRoutes[matchedKey];
       // Pass the path and the userRole to the page handler.
-      handler(path, userRole); 
+      handler(path, userRole);
       return;
     }
   }
