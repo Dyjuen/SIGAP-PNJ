@@ -12,7 +12,6 @@ final class CreateMRolesTable extends AbstractMigration
         
         $table->addColumn('role_id', 'integer', ['identity' => true])
               ->addColumn('nama_role', 'string', ['limit' => 50])
-              ->addColumn('deskripsi', 'text', ['null' => true])
               ->addIndex(['nama_role'], ['unique' => true])
               ->create();
     }

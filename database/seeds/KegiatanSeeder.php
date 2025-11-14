@@ -33,7 +33,6 @@ class KegiatanSeeder extends AbstractSeed
         // 2. SCENARIO 1: KAK in "Review Verifikator"
         // ============================================ 
         $kak1_data = [
-            'kak_id' => 1,
             'tipe_kegiatan_id' => 1, // Akademik
             'nama_kegiatan' => 'Seminar Nasional Blockchain untuk Pendidikan',
             'deskripsi_kegiatan' => 'Seminar untuk memperkenalkan potensi teknologi blockchain dalam meningkatkan transparansi dan keamanan data di sektor pendidikan.',
@@ -74,7 +73,6 @@ class KegiatanSeeder extends AbstractSeed
         // 3. SCENARIO 2: KAK Approved -> Becomes Kegiatan
         // ============================================ 
         $kak2_data = [
-            'kak_id' => 2,
             'tipe_kegiatan_id' => 4, // Kerja Sama
             'nama_kegiatan' => 'Workshop Implementasi AI dalam Kurikulum Vokasi',
             'deskripsi_kegiatan' => 'Sebuah workshop untuk dosen guna merancang dan mengimplementasikan materi kecerdasan buatan (AI) ke dalam mata kuliah yang sudah ada di PNJ, bekerja sama dengan praktisi industri.',
@@ -91,8 +89,8 @@ class KegiatanSeeder extends AbstractSeed
 
         // Anggaran for KAK 2
         $this->table('t_kak_anggaran')->insert([
-            [ 'anggaran_id' => 10, 'kak_id' => 2, 'uraian' => 'Honorarium Narasumber Industri', 'volume1' => 2, 'satuan1_id' => 2, 'harga_satuan' => 2500000, 'jumlah_diusulkan' => 5000000 ],
-            [ 'anggaran_id' => 11, 'kak_id' => 2, 'uraian' => 'Paket Materi Workshop', 'volume1' => 50, 'satuan1_id' => 4, 'harga_satuan' => 150000, 'jumlah_diusulkan' => 7500000 ],
+            [ 'kak_id' => 2, 'uraian' => 'Honorarium Narasumber Industri', 'volume1' => 2, 'satuan1_id' => 2, 'harga_satuan' => 2500000, 'jumlah_diusulkan' => 5000000 ],
+            [ 'kak_id' => 2, 'uraian' => 'Paket Materi Workshop', 'volume1' => 50, 'satuan1_id' => 4, 'harga_satuan' => 150000, 'jumlah_diusulkan' => 7500000 ],
         ])->saveData();
 
         // IKU for KAK 2
@@ -114,7 +112,6 @@ class KegiatanSeeder extends AbstractSeed
 
         // --- Corresponding Kegiatan record ---
         $kegiatan1_data = [
-            'kegiatan_id' => 1,
             'kak_id' => 2,
             'surat_pengantar_path' => 'uploads/mock/surat_pengantar_AI_workshop.pdf',
             'penanggung_jawab_manual' => 'Jurusan Teknik Informatika dan Komputer',
@@ -124,9 +121,9 @@ class KegiatanSeeder extends AbstractSeed
         ];
         $this->table('t_kegiatan')->insert($kegiatan1_data)->saveData();
         
-        // Lampiran for Kegiatan 1 (linked to anggaran_id 11)
+        // Lampiran for Kegiatan 1 (linked to anggaran_id 4)
         $this->table('t_kegiatan_lampiran')->insert([
-            [ 'anggaran_id' => 11, 'nama_file_asli' => 'invoice_materi_workshop.pdf', 'path_file_disimpan' => 'uploads/mock/invoice_materi_workshop.pdf', 'uploader_user_id' => 3, 'catatan' => 'Invoice dari percetakan.' ]
+            [ 'anggaran_id' => 4, 'nama_file_asli' => 'invoice_materi_workshop.pdf', 'path_file_disimpan' => 'uploads/mock/invoice_materi_workshop.pdf', 'uploader_user_id' => 3, 'catatan' => 'Invoice dari percetakan.' ]
         ])->saveData();
 
         // Approval flow for Kegiatan 1
