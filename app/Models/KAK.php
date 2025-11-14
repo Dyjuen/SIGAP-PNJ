@@ -86,56 +86,22 @@ class KAK extends Model {
                                 $kak['total_anggaran_disetujui'] = null; // Kolom ini tidak ada lagi
                         
                         
-                                        // 4. Ambil lampiran dari t_kegiatan_lampiran melalui t_kak_anggaran
-                        
-                        
-                                        $sqlLampiran = "
-                        
-                        
-                                            SELECT DISTINCT
-                        
-                        
-                                                kl.nama_file_asli,
-                        
-                        
-                                                kl.tipe_file,
-                        
-                        
-                                                kl.created_at,
-                        
-                        
-                                                kl.lampiran_id
-                        
-                        
-                                            FROM t_kegiatan_lampiran kl
-                        
-                        
-                                            INNER JOIN t_kak_anggaran ta ON kl.anggaran_id = ta.anggaran_id
-                        
-                        
-                                            WHERE ta.kak_id = ?
-                        
-                        
-                                            ORDER BY kl.lampiran_id ASC
-                        
-                        
-                                        ";
-                        
-                        
-                                        $lampiran = $this->query($sqlLampiran, [$kakId])->fetchAll(\PDO::FETCH_ASSOC);
-                        
-                        
-                                        $kak['lampiran'] = $lampiran;
-                        
-                        
-                                
-                        
-                        
-                                        // 5. Kembalikan data gabungan
-                        
-                        
-                                        return $kak;
-                        
-                        
-                                    }    }
+        // 4. Ambil lampiran dari t_kegiatan_lampiran melalui t_kak_anggaran
+        $sqlLampiran = "
+            SELECT DISTINCT
+                kl.nama_file_asli,
+                kl.created_at,
+                kl.lampiran_id
+            FROM t_kegiatan_lampiran kl
+            INNER JOIN t_kak_anggaran ta ON kl.anggaran_id = ta.anggaran_id
+            WHERE ta.kak_id = ?
+            ORDER BY kl.lampiran_id ASC
+        ";
+
+        $lampiran = $this->query($sqlLampiran, [$kakId])->fetchAll(\PDO::FETCH_ASSOC);
+        $kak['lampiran'] = $lampiran;
+
+        // 5. Kembalikan data gabungan
+        return $kak;
+    }    }
     
