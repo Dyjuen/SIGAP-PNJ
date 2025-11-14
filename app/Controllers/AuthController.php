@@ -11,12 +11,10 @@ use App\Middlewares\AuthMiddleware;
 class AuthController
 {
     private $userModel;
-    private $userRoleModel;
 
     public function __construct()
     {
         $this->userModel = new User();
-        $this->userRoleModel = new UserRole();
     }
 
     /**
@@ -124,7 +122,7 @@ class AuthController
      * 
      * POST /api/auth/register
      * Header: Authorization: Bearer <token>
-     * Body: {username, password, nama_lengkap, email, unit_kerja_id, role_ids[]}
+     * Body: {username, password, nama_lengkap, email, role_id}
      */
     public function register()
     {
@@ -133,7 +131,7 @@ class AuthController
             $data = json_decode(file_get_contents('php://input'), true);
 
             // Validate required fields
-            $required = ['username', 'password', 'nama_lengkap', 'email'];
+            $required = ['username', 'password', 'nama_lengkap', 'email', 'role_id'];
             foreach ($required as $field) {
                 if (empty($data[$field])) {
                     Response::error("Field '$field' wajib diisi", 400);
@@ -154,6 +152,11 @@ class AuthController
             if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
                 Response::error('Format email tidak valid', 400);
             }
+            
+            // Validate role_id
+            if (!is_int($data['role_id'])) {
+                Response::error('role_id harus berupa integer', 400);
+            }
 
             // Check if username already exists
             if ($this->userModel->usernameExists($data['username'])) {
@@ -171,12 +174,8 @@ class AuthController
                 'password' => $data['password'],
                 'nama_lengkap' => $data['nama_lengkap'],
                 'email' => $data['email'],
+                'role_id' => $data['role_id'],
             ]);
-
-            // Assign roles (if provided)
-            if (!empty($data['role_ids']) && is_array($data['role_ids'])) {
-                $this->userRoleModel->assignRoles($userId, $data['role_ids']);
-            }
 
             // Get created user with roles
             $user = $this->userModel->getUserWithRoles($userId);
@@ -272,8 +271,8 @@ class AuthController
                 Response::error('Username atau password salah', 401);
             }
 
-            // Convert roles string to array
-            $roles = $user['roles'] ? explode(',', $user['roles']) : [];
+            // Convert role string to array
+            $roles = $user['roles'] ? [$user['roles']] : [];
 
             // Generate JWT token
             $token = JWT::encode([
