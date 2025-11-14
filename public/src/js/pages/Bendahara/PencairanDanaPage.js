@@ -452,49 +452,95 @@ export function renderPencairanDanaPage(path, userRole) {
     }
   }
 
-  async function handleCairkan(kegiatanId) {
-    const nominalString = prompt("Masukkan nominal dana yang akan dicairkan:");
-    if (nominalString === null) return; // User cancelled
+    async function handleCairkan(kegiatanId) {
+    // Step 1 — Ask for nominal using SweetAlert2
+    const { value: nominalString } = await Swal.fire({
+      title: "Masukkan Nominal Pencairan",
+      input: "number",
+      inputPlaceholder: "Masukkan nominal dana...",
+      inputAttributes: {
+        min: 1,
+        step: 1,
+      },
+      showCancelButton: true,
+      confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Lanjut",
+      cancelButtonText: "Batal",
+    });
+
+    if (nominalString === undefined) return; // Cancelled
 
     const nominal = parseFloat(nominalString);
+
     if (isNaN(nominal) || nominal <= 0) {
-      alert("Nominal tidak valid. Harap masukkan angka positif.");
+      showError("Nominal tidak valid. Harap masukkan angka positif.");
       return;
     }
 
-    if (
-      confirm(`Anda yakin ingin mencairkan Rp ${nominalString} untuk kegiatan ini?`)
-    ) {
-      try {
-        await apiRequest(`/kegiatan/${kegiatanId}/cairkan`, {
-          method: "POST",
-          body: JSON.stringify({ nominal: nominal }),
-        });
-        alert(`Dana Rp ${nominalString} berhasil dicairkan.`);
-        fetchKegiatan(); // Refresh data
-      } catch (error) {
-        alert(`Gagal mencairkan dana: ${error.message}`);
-      }
+    // Step 2 — Confirmation modal
+    const confirmResult = await Swal.fire({
+      title: "Konfirmasi Pencairan",
+      text: `Anda yakin ingin mencairkan Rp ${nominal.toLocaleString("id-ID")} untuk kegiatan ini?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, cairkan",
+      cancelButtonText: "Batal",
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    // Step 3 — API call
+    try {
+      await apiRequest(`/kegiatan/${kegiatanId}/cairkan`, {
+        method: "POST",
+        body: JSON.stringify({ nominal }),
+      });
+
+      // Step 4 — Success popup
+      showSuccess(`Dana Rp ${nominal.toLocaleString("id-ID")} berhasil dicairkan.`);
+
+      fetchKegiatan(); // Refresh data
+    } catch (error) {
+      showError(`Gagal mencairkan dana: ${error.message}`);
     }
   }
 
-  async function handleUmSelesai(kegiatanId) {
-    if (
-      confirm("Anda yakin ingin menandai UM Selesai untuk kegiatan ini?")
-    ) {
-      try {
-        // This action completes the Bendahara-Cair approval stage
-        await apiRequest(`/kegiatan/${kegiatanId}/approve`, {
-          method: "POST",
-          body: JSON.stringify({ status: "Disetujui" }), // Status for current approval step
-        });
-        alert("Kegiatan berhasil ditandai UM Selesai.");
-        fetchKegiatan(); // Refresh data
-      } catch (error) {
-        alert(`Gagal menandai UM Selesai: ${error.message}`);
-      }
+
+    async function handleUmSelesai(kegiatanId) {
+    // Step 1 — Confirmation modal
+    const confirmResult = await Swal.fire({
+      title: "Anda yakin ingin menandai UM Selesai?",
+      text: "Tindakan ini akan menyelesaikan tahap Bendahara-Cair.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, lanjutkan",
+      cancelButtonText: "Batal",
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    // Step 2 — Execute the request
+    try {
+      await apiRequest(`/kegiatan/${kegiatanId}/approve`, {
+        method: "POST",
+        body: JSON.stringify({ status: "Disetujui" }),
+      });
+
+      // Step 3 — Success popup
+      showSuccess("Kegiatan berhasil ditandai UM Selesai.");
+
+      fetchKegiatan(); // Refresh table
+    } catch (error) {
+      // Step 4 — Error popup
+      showError(`Gagal menandai UM Selesai: ${error.message}`);
     }
   }
+
 
   // ==============================================
   // RENDER FUNCTIONS

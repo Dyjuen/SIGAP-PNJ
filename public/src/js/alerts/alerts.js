@@ -234,3 +234,41 @@ window.confirmAction = async function (title, text, confirmText = "Ya", cancelTe
 };
 
 });
+
+// SweetAlert2 reusable textarea prompt
+window.promptTextarea = async function (title, placeholder = "", required = false) {
+  const result = await Swal.fire({
+    title: title,
+    input: "textarea",
+    inputPlaceholder: placeholder,
+    inputValidator: (value) => {
+      if (required && (!value || value.trim() === "")) {
+        return "Field ini wajib diisi!";
+      }
+    },
+    showCancelButton: true,
+    confirmButtonColor: "#00BCD4",
+    cancelButtonColor: "#d33",
+    cancelButtonText: "Batal",
+  });
+
+  return result.value; // null/undefined if cancelled
+};
+
+// SweetAlert2 reusable number input
+window.promptNumber = async function (title, min = 1) {
+  const result = await Swal.fire({
+    title: title,
+    input: "number",
+    inputAttributes: {
+      min: min,
+      step: 1,
+    },
+    showCancelButton: true,
+    confirmButtonColor: "#00BCD4",
+    cancelButtonColor: "#d33",
+    cancelButtonText: "Batal",
+  });
+
+  return result.value; // null/undefined if cancelled
+};

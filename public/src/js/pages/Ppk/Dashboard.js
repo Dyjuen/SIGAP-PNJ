@@ -119,45 +119,87 @@ export function renderPpkDashboardPage(path, userRole) {
       }
   }
 
-  async function handleApprovalAction(kegiatanId, action) {
-      const isApprove = action === 'approve';
-      let payload = { status: isApprove ? 'Disetujui' : 'Revisi' };
-      let confirmationMessage = ''; // Will set dynamically
+    async function handleApprovalAction(kegiatanId, action) {
+    const isApprove = action === "approve";
+    let payload = {
+      status: isApprove ? "Disetujui" : "Revisi",
+    };
 
-      let catatan = '';
+    const titleText = isApprove
+      ? "Masukkan Rekomendasi Tindak Lanjut (opsional)"
+      : "Masukkan Catatan Revisi";
 
-      if (isApprove) {
-          // For Approve action: Prompt for "Rekomendasi Tindak Lanjut"
-          catatan = prompt("Masukkan Rekomendasi Tindak Lanjut (opsional):");
-          // User can click OK with empty note, or Cancel
-          if (catatan === null) return; // User clicked Cancel
-          payload.catatan = catatan; // Add note to payload
-          confirmationMessage = 'Apakah Anda yakin ingin menyetujui kegiatan ini?';
-      } else {
-          // For Revise action: Prompt for "Catatan Revisi"
-          catatan = prompt("Masukkan catatan untuk revisi:");
-          if (catatan === null) return; // User clicked Cancel
-          if (catatan.trim() === '') {
-              alert("Catatan revisi tidak boleh kosong!");
-              return;
-          }
-          payload.catatan = catatan;
-          confirmationMessage = 'Apakah Anda yakin ingin meminta revisi untuk kegiatan ini?';
-      }
-      
-      if (confirm(confirmationMessage)) {
-          try {
-              await apiRequest(`/kegiatan/${kegiatanId}/${action}`, {
-                  method: 'POST',
-                  body: JSON.stringify(payload)
-              });
-              alert(`Kegiatan berhasil di-${isApprove ? 'setujui' : 'revisi'}.`);
-              fetchKegiatan(); // Refresh data
-          } catch (error) {
-              alert(`Gagal memproses aksi: ${error.message}`);
-          }
-      }
+    // ===============================
+    // Step 1: Textarea input modal
+    // ===============================
+    const swalInput = await Swal.fire({
+      title: titleText,
+      input: "textarea",
+      inputPlaceholder: isApprove
+        ? "Tulis rekomendasi (boleh kosong)..."
+        : "Tulis catatan revisi...",
+      inputAttributes: {
+        maxlength: 500,
+        "aria-label": "Catatan",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Lanjut",
+      cancelButtonText: "Batal",
+      confirmButtonColor: "#00BCD4",
+    });
+
+    // User clicked Cancel
+    if (!swalInput.isConfirmed) return;
+
+    const catatan = swalInput.value ?? "";
+
+    // Revisi requires non-empty note
+    if (!isApprove && catatan.trim() === "") {
+      showError("Catatan revisi tidak boleh kosong!");
+      return;
+    }
+
+    payload.catatan = catatan.trim() || null;
+
+    // ===============================
+    // Step 2: Confirmation modal
+    // ===============================
+    const confirmMessage = isApprove
+      ? "Apakah Anda yakin ingin menyetujui kegiatan ini?"
+      : "Apakah Anda yakin ingin meminta revisi kegiatan ini?";
+
+    const confirmResult = await Swal.fire({
+      title: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: isApprove ? "Setujui" : "Revisi",
+      cancelButtonText: "Batal",
+      confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#d33",
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    // ===============================
+    // Step 3: API request
+    // ===============================
+    try {
+      await apiRequest(`/kegiatan/${kegiatanId}/${action}`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      showSuccess(
+        `Kegiatan berhasil di-${isApprove ? "setujui" : "revisi"}.`
+      );
+
+      fetchKegiatan();
+    } catch (error) {
+      showError(`Gagal memproses aksi: ${error.message}`);
+    }
   }
+
+
 
   // ==============================================
   // RENDER FUNCTIONS
@@ -223,26 +265,39 @@ export function renderPpkDashboardPage(path, userRole) {
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
-    document.querySelectorAll(".btn-approve").forEach((btn) => {
-      btn.addEventListener("click", () =>
-        handleApprovalAction(btn.dataset.id, "approve")
-      );
-    });
 
-    document.querySelectorAll(".btn-revise").forEach((btn) => {
-      btn.addEventListener("click", () =>
-        handleApprovalAction(btn.dataset.id, "revise")
-      );
-    });
+  // --- APPROVE BUTTON ---
+  document.querySelectorAll(".btn-approve").forEach((btn) => {
+    btn.addEventListener("click", () =>
+      handleApprovalAction(btn.dataset.id, "approve")
+    );
+  });
 
-    document.querySelectorAll(".btn-view-detail").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const kegiatanId = this.getAttribute("data-id");
-        alert(`Lihat detail kegiatan: ${kegiatanId}`);
-        // TODO: Implement actual navigation to a detail page
+  // --- REVISE BUTTON ---
+  document.querySelectorAll(".btn-revise").forEach((btn) => {
+    btn.addEventListener("click", () =>
+      handleApprovalAction(btn.dataset.id, "revise")
+    );
+  });
+
+  // --- VIEW DETAIL BUTTON ---
+  document.querySelectorAll(".btn-view-detail").forEach((btn) => {
+    btn.addEventListener("click", async function () {
+      const kegiatanId = this.dataset.id;
+
+      await Swal.fire({
+        icon: "info",
+        title: "Detail Kegiatan",
+        text: `Lihat detail kegiatan: ${kegiatanId}`,
+        confirmButtonColor: "#00BCD4",
       });
+
+      // TODO: Implement actual navigation
+      // window.location.href = `/kegiatan/${kegiatanId}`;
     });
-  }
+  });
+}
+
 
   function updateStats(allData) {
     const waitingCount = allData.filter(

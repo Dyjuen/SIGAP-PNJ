@@ -2,6 +2,7 @@
 
 import { createFooter } from "./Footer.js";
 import { createNavbar } from "./Navbar.js";
+import { ShaderBackground } from "./ShaderBackground.js";
 
 export function renderLandingPage(userRole) {
   const mainContent = `
@@ -126,11 +127,15 @@ export function renderLandingPage(userRole) {
         </div>
       </section>
 
-      <!-- Roles Section -->
-      <section id="landingRoles" class="section-py py-20 px-4 bg-gradient-to-b from-gray-50 to-white">
-        <div class="container mx-auto">
+          <!-- Roles Section with Shader Background -->
+      <section id="landingRoles" class="section-py py-20 px-4 relative overflow-hidden">
+        <!-- Shader Background Canvas -->
+        <canvas id="rolesShaderBg" class="absolute top-0 left-0 w-full h-full opacity-100 pointer-events-none"></canvas>
+        
+        <!-- Original content with increased z-index -->
+        <div class="container mx-auto relative z-10">
           <div class="text-center mb-16">
-            <span class="inline-block px-4 py-2 bg-cyan-100 text-[#33C8DA] rounded-full text-sm font-semibold mb-4">TOP ROLES</span>
+            <span class="inline-block px-4 py-2 bg-cyan-100 text-[#33C8DA] rounded-full text-sm font-semibold mb-4">ROLES</span>
             <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
               Siapa yang Menggunakan SIGAP?
             </h2>
@@ -433,10 +438,25 @@ export function renderLandingPage(userRole) {
     rootElement.innerHTML = mainContent;
   } else {
     console.error("Root element #root not found.");
+    return;
   }
 
   // Import and run createFooter from Footer.js
   createFooter();
+
+  // ===== CRITICAL: Initialize Shader AFTER DOM is ready =====
+  let shaderBg = null;
+  
+  // Use setTimeout to ensure DOM is fully rendered
+  setTimeout(() => {
+    const rolesCanvas = document.getElementById('rolesShaderBg');
+    if (rolesCanvas) {
+      console.log('Initializing shader background...');
+      shaderBg = new ShaderBackground('rolesShaderBg');
+    } else {
+      console.error('Shader canvas not found in DOM');
+    }
+  }, 100);
 
   // Toggle mobile menu logic
   const toggle = document.getElementById("nav-toggle");
@@ -457,7 +477,6 @@ export function renderLandingPage(userRole) {
           behavior: 'smooth',
           block: 'start'
         });
-        // Close mobile menu if open
         if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
           mobileMenu.classList.add('hidden');
         }
@@ -486,7 +505,6 @@ export function renderLandingPage(userRole) {
       itemIcon.classList.add('text-gray-400');
       itemButton.classList.remove('bg-cyan-50');
       
-      // Remove cyan background from content
       const contentDiv = itemContent.querySelector('div');
       if (contentDiv) {
         contentDiv.classList.remove('bg-cyan-50/50', 'border-cyan-100');
@@ -504,7 +522,6 @@ export function renderLandingPage(userRole) {
       icon.classList.add('text-[#33C8DA]');
       button.classList.add('bg-cyan-50');
       
-      // Add cyan background to content
       const contentDiv = content.querySelector('div');
       if (contentDiv) {
         contentDiv.classList.remove('bg-gray-50', 'border-gray-100');
@@ -514,38 +531,40 @@ export function renderLandingPage(userRole) {
   };
 
   // 3D Multi-Layer Dashboard Animation
-  const dashboardContainer = document.getElementById('heroAnimationImg');
+  const dashboardContainer = document.getElementById('heroAnimationImg');
   const dashboardBg = document.getElementById('dashboard-bg');
   const dashboardElements = document.getElementById('dashboard-elements');
 
-  if (dashboardContainer && dashboardBg && dashboardElements) {
-    dashboardContainer.addEventListener('mousemove', (e) => {
-      const rect = dashboardContainer.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      
-      // INCREASED from 5 to 8 for more rotation
-      const rotateX = ((y - centerY) / centerY) * 6; 
-      const rotateY = ((x - centerX) / centerX) * 6;
+  if (dashboardContainer && dashboardBg && dashboardElements) {
+    dashboardContainer.addEventListener('mousemove', (e) => {
+      const rect = dashboardContainer.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
       
-      // Apply transforms
-      // Layer 1 (BG) rotates and moves slightly
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = ((y - centerY) / centerY) * 6; 
+      const rotateY = ((x - centerX) / centerX) * 6;
+      
       dashboardBg.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
 
-      // Layer 2 (Elements) rotates and moves *more*
-      // INCREASED from 1.5 to 2.5 for more depth
       const elementTranslateX = rotateY * 1; 
       const elementTranslateY = -rotateX * 1;
       dashboardElements.style.transform = `translateX(${elementTranslateX}px) translateY(${elementTranslateY}px) rotateX(${-rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-    });
+    });
 
-    dashboardContainer.addEventListener('mouseleave', () => {
-      // Reset both images
-      dashboardBg.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
-      dashboardElements.style.transform = 'translateX(0px) translateY(0px) rotateX(0deg) rotateY(0deg) scale(1)';
-    });
-  }
+    dashboardContainer.addEventListener('mouseleave', () => {
+      dashboardBg.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+      dashboardElements.style.transform = 'translateX(0px) translateY(0px) rotateX(0deg) rotateY(0deg) scale(1)';
+    });
+  }
+
+  // Cleanup function (important for single-page apps)
+  return () => {
+    if (shaderBg) {
+      console.log('Cleaning up shader background...');
+      shaderBg.destroy();
+    }
+  };
 }

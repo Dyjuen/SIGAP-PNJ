@@ -126,44 +126,60 @@ export function renderWadirDashboardPage(path, userRole) {
   }
 
   async function handleApprovalAction(kegiatanId, action) {
-      const isApprove = action === 'approve';
-      let payload = { status: isApprove ? 'Disetujui' : 'Revisi' };
-      let confirmationMessage = ''; // Will set dynamically
+  const isApprove = action === "approve";
+  let payload = { status: isApprove ? "Disetujui" : "Revisi" };
 
-      let catatan = '';
+  // --- Step 1: Ask for notes using SweetAlert2 ---
+  const { value: catatan } = await Swal.fire({
+    title: isApprove 
+      ? "Masukkan Rekomendasi Tindak Lanjut (Opsional)"
+      : "Masukkan Catatan Revisi",
+    input: "textarea",
+    inputPlaceholder: isApprove
+      ? "Contoh: Lanjutkan pengadaan sesuai rencana..."
+      : "Contoh: Mohon perbaiki detail RAB...",
+    inputValidator: (value) => {
+      if (!isApprove && (!value || value.trim() === "")) {
+        return "Catatan revisi tidak boleh kosong!";
+      }
+    },
+    showCancelButton: true,
+    cancelButtonText: "Batal",
+    confirmButtonColor: "#00BCD4",
+  });
 
-      if (isApprove) {
-          // For Approve action: Prompt for "Rekomendasi Tindak Lanjut"
-          catatan = prompt("Masukkan Rekomendasi Tindak Lanjut (opsional):");
-          // User can click OK with empty note, or Cancel
-          if (catatan === null) return; // User clicked Cancel
-          payload.catatan = catatan; // Add note to payload
-          confirmationMessage = 'Apakah Anda yakin ingin menyetujui kegiatan ini?';
-      } else {
-          // For Revise action: Prompt for "Catatan Revisi"
-          catatan = prompt("Masukkan catatan untuk revisi:");
-          if (catatan === null) return; // User clicked Cancel
-          if (catatan.trim() === '') {
-              alert("Catatan revisi tidak boleh kosong!");
-              return;
-          }
-          payload.catatan = catatan;
-          confirmationMessage = 'Apakah Anda yakin ingin meminta revisi untuk kegiatan ini?';
-      }
-      
-      if (confirm(confirmationMessage)) {
-          try {
-              await apiRequest(`/kegiatan/${kegiatanId}/${action}`, {
-                  method: 'POST',
-                  body: JSON.stringify(payload)
-              });
-              alert(`Kegiatan berhasil di-${isApprove ? 'setujui' : 'revisi'}.`);
-              fetchKegiatan(); // Refresh data
-          } catch (error) {
-              alert(`Gagal memproses aksi: ${error.message}`);
-          }
-      }
+  if (catatan === undefined) return; // User clicked Cancel
+
+  payload.catatan = catatan;
+
+  // --- Step 2: Confirmation Dialog ---
+  const confirmResult = await Swal.fire({
+    title: isApprove
+      ? "Setujui kegiatan ini?"
+      : "Ajukan revisi untuk kegiatan ini?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: isApprove ? "Setujui" : "Revisi",
+    cancelButtonText: "Batal",
+    confirmButtonColor: "#00BCD4",
+  });
+
+  if (!confirmResult.isConfirmed) return;
+
+  // --- Step 3: Send request ---
+  try {
+    await apiRequest(`/kegiatan/${kegiatanId}/${action}`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+
+    showSuccess(`Kegiatan berhasil di-${isApprove ? "setujui" : "revisi"}.`);
+    fetchKegiatan();
+  } catch (error) {
+    showError(`Gagal memproses aksi: ${error.message}`);
   }
+}
+
 
   async function viewPpkNotes(kegiatanId) {
       try {
@@ -182,7 +198,7 @@ export function renderWadirDashboardPage(path, userRole) {
           alert(notesContent);
 
       } catch (error) {
-          alert(`Gagal mengambil catatan PPK: ${error.message}`);
+          showError(`Gagal mengambil catatan PPK: ${error.message}`);
       }
   }
 

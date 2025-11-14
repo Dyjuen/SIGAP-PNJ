@@ -948,7 +948,7 @@ export function renderUsulanKakPage(path, userRole) {
           const result = await submitTelaah(formData);
 
           if (result.status) {
-            alert("Usulan KAK berhasil diajukan!");
+            showSuccess("Usulan KAK berhasil diajukan!");
             // Redirect to monitoring page
             window.location.hash = "#/pengusul/monitoring-usulan";
           } else {
@@ -956,7 +956,7 @@ export function renderUsulanKakPage(path, userRole) {
           }
 
         } catch (error) {
-          alert(`Error: ${error.message}`);
+          showError(`Error: ${error.message}`);
           // Re-enable button on error
           btnSubmitRab.disabled = false;
           btnSubmitRab.innerHTML = 'Submit';

@@ -375,29 +375,45 @@ export function renderDashboardVerifikator(path, userRole) {
   // ACTIONS
   // ==============================================
   async function handleAction(telaahId, actionType, payload = {}) {
-    // Custom confirmation messages
-    const messages = {
-      approve: "Anda yakin ingin menyetujui usulan ini?",
-      revise: "Anda yakin ingin mengirim revisi untuk usulan ini?",
-      reject: "Anda yakin ingin menolak usulan ini?",
-    };
+  // Custom confirmation messages
+  const messages = {
+    approve: "Anda yakin ingin menyetujui usulan ini?",
+    revise:  "Anda yakin ingin mengirim revisi untuk usulan ini?",
+    reject:  "Anda yakin ingin menolak usulan ini?",
+  };
 
-    if (!confirm(messages[actionType] || `Are you sure?`)) {
-      return;
-    }
+    // --- Step 1: SweetAlert2 confirmation ---
+    const confirmResult = await Swal.fire({
+      title: messages[actionType] || "Anda yakin?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya",
+      cancelButtonText: "Batal"
+    });
 
+    if (!confirmResult.isConfirmed) return;
+
+    // --- Step 2: Execute POST request ---
     try {
       await apiRequest(`/telaah/${telaahId}/${actionType}`, {
         method: "POST",
         body: JSON.stringify(payload),
       });
-      alert(`Usulan berhasil di-${actionType}!`);
-      initializeDashboard(); // Refresh all data from server
+
+      // --- Step 3: SweetAlert2 success ---
+      showSuccess(`Usulan berhasil di-${actionType}!`);
+
+      initializeDashboard(); // Refresh UI
     } catch (error) {
       console.error(`Gagal ${actionType} usulan:`, error);
-      alert(`Error saat ${actionType} usulan: ${error.message}`);
+
+      // --- Step 4: SweetAlert2 error ---
+      showError(`Gagal ${actionType} usulan: ${error.message}`);
     }
   }
+
 
   // ==============================================
   // HELPER FUNCTIONS
@@ -580,14 +596,50 @@ export function renderDashboardVerifikator(path, userRole) {
     });
 
     document.querySelectorAll(".btn-reject").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const catatan = prompt("Masukkan alasan penolakan:");
-        if (catatan) {
-          // Only proceed if user provides a reason
-          handleAction(btn.dataset.id, "reject", { catatan });
-        }
+    btn.addEventListener("click", async () => {
+      // Step 1: Ask for rejection reason
+      const result = await Swal.fire({
+        title: "Masukkan Alasan Penolakan",
+        input: "textarea",
+        inputPlaceholder: "Contoh: Dokumen tidak valid...",
+        inputAttributes: {
+          maxlength: 500,
+          "aria-label": "Catatan Penolakan",
+        },
+        showCancelButton: true,
+        confirmButtonText: "Lanjut",
+        cancelButtonText: "Batal",
+        confirmButtonColor: "#00BCD4",
       });
+
+      // Cancel pressed
+      if (!result.isConfirmed) return;
+
+      const catatan = (result.value || "").trim();
+
+      if (!catatan) {
+        showError("Alasan penolakan tidak boleh kosong!");
+        return;
+      }
+
+      // Step 2: Confirm rejection
+      const confirmReject = await Swal.fire({
+        title: "Tolak Usulan?",
+        text: "Usulan akan ditolak berdasarkan alasan yang Anda berikan.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#00BCD4",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Tolak",
+        cancelButtonText: "Batal",
+      });
+
+      if (!confirmReject.isConfirmed) return;
+
+      // Step 3: Call your backend action
+      handleAction(btn.dataset.id, "reject", { catatan });
     });
+  });
   }
 
   // ==============================================
