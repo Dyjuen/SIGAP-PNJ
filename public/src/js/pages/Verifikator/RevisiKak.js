@@ -355,12 +355,12 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="section-header">
           <div class="section-title">
             <div class="section-icon">
-              <i class="ti ti-file-description"></i>
+              <i class="ti ti-file-description">&#xf028;</i>
             </div>
             Gambaran Umum
           </div>
           <button type="button" class="btn-comment" data-section="gambaran-umum" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl"></i>
+            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
           </button>
         </div>
         
@@ -385,12 +385,12 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="section-header">
           <div class="section-title">
             <div class="section-icon">
-              <i class="ti ti-users"></i>
+              <i class="ti ti-users">&#xebf2;</i>
             </div>
             Penerima Manfaat
           </div>
           <button type="button" class="btn-comment" data-section="penerima-manfaat" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl"></i>
+            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
           </button>
         </div>
         
@@ -413,12 +413,12 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="section-header">
           <div class="section-title">
             <div class="section-icon">
-              <i class="ti ti-target"></i>
+              <i class="ti ti-target">&#xeb35;</i>
             </div>
             Strategi Pencapaian
           </div>
           <button type="button" class="btn-comment" data-section="strategi-pencapaian" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl"></i>
+            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
           </button>
         </div>
         
@@ -441,12 +441,12 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="section-header">
           <div class="section-title">
             <div class="section-icon">
-              <i class="ti ti-chart-line"></i>
+              <i class="ti ti-chart-line">&#xea5c;</i>
             </div>
             Indikator Kinerja
           </div>
           <button type="button" class="btn-comment" data-section="indikator-kinerja" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl"></i>
+            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
           </button>
         </div>
         
@@ -473,12 +473,12 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="section-header">
           <div class="section-title">
             <div class="section-icon">
-              <i class="ti ti-calendar"></i>
+              <i class="ti ti-calendar">&#xea53;</i>
             </div>
             Kurun Waktu Pelaksanaan
           </div>
           <button type="button" class="btn-comment" data-section="kurun-waktu-pelaksanaan" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl"></i>
+            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
           </button>
         </div>
         
@@ -499,12 +499,12 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="section-header">
           <div class="section-title">
             <div class="section-icon">
-              <i class="ti ti-trophy"></i>
+              <i class="ti ti-trophy">&#xeb45;</i>
             </div>
             Indikator Kinerja Utama dan Renstra
           </div>
           <button type="button" class="btn-comment" data-section="iku-renstra" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl"></i>
+            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
           </button>
         </div>
         
@@ -530,12 +530,12 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="section-header">
           <div class="section-title">
             <div class="section-icon">
-              <i class="ti ti-receipt"></i>
+              <i class="ti ti-receipt">&#xedfd;</i>
             </div>
             Rincian Anggaran Biaya
           </div>
           <button type="button" class="btn-comment" data-section="rab-global" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl"></i>
+            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
           </button>
         </div>
 
@@ -543,7 +543,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="rab-section">
           <div class="rab-category-header">
             <div class="rab-category-icon">
-              <i class="ti ti-package"></i>
+              <i class="ti ti-package">&#xeaff;</i>
             </div>
             <div class="rab-category-title">Belanja Barang</div>
           </div>
@@ -576,7 +576,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
               </div>
               <div class="flex items-end pb-3">
                 <button type="button" class="btn-comment-item" data-item-id="bb-1" onclick="openItemCommentModal(this)">
-                  <i class="ti ti-message-circle-2 text-xl"></i>
+                  <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
                 </button>
               </div>
             </div>
@@ -587,7 +587,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="rab-section">
           <div class="rab-category-header">
             <div class="rab-category-icon">
-              <i class="ti ti-briefcase"></i>
+              <i class="ti ti-briefcase">&#xea46;</i>
             </div>
             <div class="rab-category-title">Belanja Jasa</div>
           </div>
@@ -620,7 +620,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
               </div>
               <div class="flex items-end pb-3">
                 <button type="button" class="btn-comment-item" data-item-id="bj-1" onclick="openItemCommentModal(this)">
-                  <i class="ti ti-message-circle-2 text-xl"></i>
+                  <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
                 </button>
               </div>
             </div>
@@ -631,7 +631,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="rab-section">
           <div class="rab-category-header">
             <div class="rab-category-icon">
-              <i class="ti ti-plane"></i>
+              <i class="ti ti-plane">&#xeb6f;</i>
             </div>
             <div class="rab-category-title">Belanja Perjalanan</div>
           </div>
@@ -664,7 +664,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
               </div>
               <div class="flex items-end pb-3">
                 <button type="button" class="btn-comment-item" data-item-id="bp-1" onclick="openItemCommentModal(this)">
-                  <i class="ti ti-message-circle-2 text-xl"></i>
+                  <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
                 </button>
               </div>
             </div>
@@ -675,15 +675,15 @@ export function renderRevisiKakPage(usulanId, userRole) {
       <!-- Action Buttons -->
       <div class="action-buttons">
         <button class="btn-back" onclick="window.history.back()">
-          <i class="ti ti-arrow-left"></i> Kembali
+          <i class="ti ti-arrow-left">&#xea19;</i> Kembali
         </button>
         <div class="flex gap-4">
           <button class="btn-primary-action btn-revise" onclick="submitReview('REVISI')">
-            <i class="ti ti-x"></i>
+            <i class="ti ti-x">&#xeb55;</i>
             Kirim Revisi
           </button>
           <button class="btn-primary-action btn-approve" onclick="submitReview('SETUJU')">
-            <i class="ti ti-check"></i>
+            <i class="ti ti-check">&#xea5e;</i>
             Setujui Usulan
           </button>
         </div>
@@ -696,7 +696,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              💬 Catatan Revisi untuk <span id="commentSectionTitle" style="color: #00BCD4; font-weight: 700;"></span>
+              Catatan Revisi untuk <span id="commentSectionTitle" style="color: #00BCD4; font-weight: 700;"></span>
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -704,15 +704,15 @@ export function renderRevisiKakPage(usulanId, userRole) {
             <label class="form-label-enhanced mb-3">Tuliskan catatan revisi spesifik untuk bagian ini</label>
             <textarea id="commentInput" class="form-control" rows="6" placeholder="Contoh: Gambaran umum kegiatan perlu lebih detail mengenai metodologi yang akan digunakan..."></textarea>
             <div class="mt-3 text-sm text-gray-600">
-              <i class="ti ti-info-circle"></i> Catatan akan dikirim ke pengusul untuk diperbaiki
+              <i class="ti ti-info-circle">&#xeac5;</i> Catatan akan dikirim ke pengusul untuk diperbaiki
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
-              <i class="ti ti-x"></i> Batal
+              <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
             <button type="button" class="btn btn-primary" onclick="saveSectionComment()">
-              <i class="ti ti-check"></i> Simpan Catatan
+              <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
             </button>
           </div>
         </div>
@@ -746,10 +746,10 @@ export function renderRevisiKakPage(usulanId, userRole) {
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
-              <i class="ti ti-x"></i> Batal
+              <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
             <button type="button" class="btn btn-primary" onclick="saveItemComment()">
-              <i class="ti ti-check"></i> Simpan Catatan
+              <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
             </button>
           </div>
         </div>

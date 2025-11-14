@@ -48,12 +48,12 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
       /* Button variants if not already in global CSS */
       .btn-revisi {
-        background: linear-gradient(135deg, #743bfaff 0%, #7c3aed 100%) !important;
+        background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%) !important;
         color: white !important;
         box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
       }
       .btn-download {
-        background: linear-gradient(135deg, #743bfaff 0%, #7c3aed 100%) !important;
+        background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%) !important;
         color: white !important;
         box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
         padding: 0.5rem 1rem !important;
@@ -185,33 +185,40 @@ export function renderMonitoringUsulanPage(path, userRole) {
   }
 
   async function submitForVerification(id) {
-    if (
-      !confirm(
-        "Apakah Anda yakin ingin mengajukan usulan ini untuk verifikasi?"
-      )
-    ) {
-      return;
-    }
+  // SweetAlert2 confirmation (replace native confirm)
+  const confirmed = await confirmAction(
+    "Ajukan untuk Verifikasi?",
+    "Apakah Anda yakin ingin mengajukan usulan ini untuk verifikasi?"
+  );
 
-    const btn = document.querySelector(`.btn-ajukan[data-id='${id}']`);
+  if (!confirmed) return;
+
+  const btn = document.querySelector(`.btn-ajukan[data-id='${id}']`);
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = "Mengajukan...";
+  }
+
+  try {
+    await apiRequest(`/telaah/${id}/submit`, { method: "POST" });
+
+    // SweetAlert2 success modal
+    showSuccess("Usulan berhasil diajukan.");
+
+    fetchTelaah(); // Refresh data
+  } catch (error) {
+    console.error("Submission Error:", error);
+
+    // SweetAlert2 error modal
+    showError(`Gagal mengajukan usulan: ${error.message}`);
+
     if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = "Mengajukan...";
-    }
-
-    try {
-      await apiRequest(`/telaah/${id}/submit`, { method: "POST" });
-      alert("Usulan berhasil diajukan.");
-      fetchTelaah(); // Refresh the data
-    } catch (error) {
-      console.error("Submission Error:", error);
-      alert(`Gagal mengajukan usulan: ${error.message}`);
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = "Ajukan";
-      }
+      btn.disabled = false;
+      btn.innerHTML = "Ajukan";
     }
   }
+}
+
 
   // ==============================================
   // HELPER FUNCTIONS
