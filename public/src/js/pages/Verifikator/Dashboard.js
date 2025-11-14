@@ -285,362 +285,352 @@ export function renderDashboardVerifikator(path, userRole) {
 
   // --- All the page-specific JavaScript logic goes here ---
 
-  // Sample usulan data
-  const usulanData = [
-    {
-      id: 1,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 2,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Direvisi",
-    },
-    {
-      id: 3,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 4,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 5,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Disetujui",
-    },
-    {
-      id: 6,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Disetujui",
-    },
-    {
-      id: 7,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
-    },
-    {
-      id: 8,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Diterima",
-    },
-    {
-      id: 9,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Diterima",
-    },
-    {
-      id: 10,
-      namaKegiatan: "KAK (Nama Kegiatan)",
-      kategori: "Pengusul",
-      pengusul: "Nama Pengusul",
-      detail: "himpunan /lain",
-      tanggal: "28 Desember 2025",
-      status: "Menunggu",
-    },
-  ];
+  // ==============================================
+  // STATE
+  // ==============================================
+  let state = {
+    allUsulan: [], // Holds all data from API
+    displayUsulan: [], // Holds data to be displayed in the table (e.g., filtered by status)
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  };
 
-  let currentPage = 1;
-  const itemsPerPage = 10;
+  let revisiModalInstance = null;
 
-  // Render table rows with pagination
-  function renderTableRows(data) {
+  // ==============================================
+  // API FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
+    const defaultHeaders = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    const config = {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...options.headers,
+      },
+    };
+
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (data.status === false || data.status === "error") {
+        throw new Error(data.message || "API request failed");
+      }
+      return data;
+    } catch (error) {
+      console.error("API Request Error:", error);
+      throw error;
+    }
+  }
+
+  // ==============================================
+  // DATA HANDLING
+  // ==============================================
+  async function initializeDashboard() {
+    const tbody = document.getElementById("usulanTableBody");
+    if (tbody) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" style="text-align: center;">Loading...</td></tr>';
+    }
+
+    try {
+      // Fetch all relevant data at once
+      const response = await apiRequest(`/telaah`);
+      state.allUsulan = response.data || [];
+
+      updateStats();
+
+      // Set default view to 'Menunggu Verifikasi'
+      filterAndDisplayUsulan(2);
+    } catch (error) {
+      console.error("Failed to initialize dashboard:", error);
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Error loading data: ${error.message}</td></tr>`;
+      }
+    }
+  }
+
+  function filterAndDisplayUsulan(statusId) {
+    state.displayUsulan = state.allUsulan.filter(
+      (u) => u.status_id === statusId
+    );
+    state.totalItems = state.displayUsulan.length;
+    state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage);
+    state.currentPage = 1; // Reset to first page
+
+    renderTableRows();
+    renderPagination();
+  }
+
+  // ==============================================
+  // ACTIONS
+  // ==============================================
+  async function handleAction(telaahId, actionType, payload = {}) {
+    // Custom confirmation messages
+    const messages = {
+      approve: "Anda yakin ingin menyetujui usulan ini?",
+      revise: "Anda yakin ingin mengirim revisi untuk usulan ini?",
+      reject: "Anda yakin ingin menolak usulan ini?",
+    };
+
+    if (!confirm(messages[actionType] || `Are you sure?`)) {
+      return;
+    }
+
+    try {
+      await apiRequest(`/telaah/${telaahId}/${actionType}`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      alert(`Usulan berhasil di-${actionType}!`);
+      initializeDashboard(); // Refresh all data from server
+    } catch (error) {
+      console.error(`Gagal ${actionType} usulan:`, error);
+      alert(`Error saat ${actionType} usulan: ${error.message}`);
+    }
+  }
+
+  // ==============================================
+  // HELPER FUNCTIONS
+  // ==============================================
+  function formatDate(dateString) {
+    if (!dateString) return "-";
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("id-ID", options);
+  }
+
+  function getStatusBadge(statusId) {
+    const statusMap = {
+      1: { class: "bg-label-secondary", text: "Draf" },
+      2: { class: "bg-label-warning", text: "Diajukan" },
+      3: { class: "bg-label-success", text: "Disetujui" },
+      4: { class: "bg-label-danger", text: "Ditolak" },
+      5: { class: "bg-label-info", text: "Revisi" },
+    };
+    return (
+      statusMap[statusId] || { class: "bg-label-dark", text: "Tidak Diketahui" }
+    );
+  }
+
+  function getActionButtons(statusId, telaahId) {
+    switch (statusId) {
+      case 2: // Menunggu Verifikasi
+        return `
+          <button class="btn btn-sm btn-success me-2 btn-approve" data-id="${telaahId}" title="Setujui">
+             Setujui
+          </button>
+          <button class="btn btn-sm btn-warning me-2 btn-revise" data-id="${telaahId}" title="Revisi">
+             Revisi
+          </button>
+          <button class="btn btn-sm btn-danger btn-reject" data-id="${telaahId}" title="Tolak">
+             Tolak
+          </button>
+        `;
+      default:
+        return `<span class="text-muted">Tidak ada aksi</span>`;
+    }
+  }
+
+  // ==============================================
+  // RENDER FUNCTIONS
+  // ==============================================
+  function renderTableRows() {
     const tbody = document.getElementById("usulanTableBody");
     if (!tbody) return;
 
+    if (state.displayUsulan.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" style="text-align: center;">Tidak ada usulan yang menunggu verifikasi.</td></tr>';
+      return;
+    }
+
     tbody.innerHTML = "";
 
-    // Calculate pagination
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedData = data.slice(startIndex, endIndex);
+    const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+    const paginatedData = state.displayUsulan.slice(
+      startIndex,
+      startIndex + state.itemsPerPage
+    );
 
-    paginatedData.forEach((usulan, index) => {
-      let statusClass = "";
-      let statusText = usulan.status;
-
-      switch (usulan.status) {
-        case "Menunggu":
-          statusClass = "bg-warning";
-          break;
-        case "Direvisi":
-          statusClass = "bg-info";
-          break;
-        case "Disetujui":
-          statusClass = "bg-success";
-          break;
-        case "Diterima":
-          statusClass = "bg-success";
-          break;
-        default:
-          statusClass = "bg-secondary";
-      }
+    paginatedData.forEach((usulan) => {
+      const statusBadge = getStatusBadge(usulan.status_id);
+      const actionButtons = getActionButtons(
+        usulan.status_id,
+        usulan.telaah_id
+      );
 
       const row = document.createElement("tr");
       row.innerHTML = `
         <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox">
+          <input type="checkbox" class="form-check-input row-checkbox" data-id="${
+            usulan.telaah_id
+          }">
         </td>
         <td>
           <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${
-            usulan.id
+            usulan.telaah_id
           }</span>
         </td>
-        <td>
-          <strong>${usulan.namaKegiatan}</strong><br>
-          <small class="text-muted">${usulan.kategori}</small>
-        </td>
-        <td>
-          <strong>${usulan.pengusul}</strong><br>
-          <small class="text-muted">${usulan.detail}</small>
-        </td>
-        <td>${usulan.tanggal}</td>
+        <td><strong>${usulan.nama_kegiatan || "Tanpa Judul"}</strong></td>
+        <td><strong>${usulan.pengusul_nama || "Tanpa Pengusul"}</strong></td>
+        <td>${formatDate(usulan.created_at)}</td>
         <td style="text-align: center;">
-          <span class="badge ${statusClass}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${statusText}</span>
+          <span class="badge ${
+            statusBadge.class
+          }" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${
+        statusBadge.text
+      }</span>
         </td>
-        <td style="text-align: center;">
-          <button 
-            class="btn btn-sm me-2 btn-revisi" 
-            data-index="${startIndex + index}"
-          >
-            <i class="ti me-1">&#xeb04;</i> Revisi
-          </button>
-          <button 
-            class="btn btn-sm btn-delete" 
-            data-index="${startIndex + index}"
-          >
-            <i class="ti">&#xeb55;</i>
-          </button>
-        </td>
+        <td style="text-align: center;">${actionButtons}</td>
       `;
       tbody.appendChild(row);
     });
 
-    renderPagination(data.length);
     attachEventListeners();
   }
 
-  // Render pagination
-  function renderPagination(totalItems) {
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
+  function renderPagination() {
+    const totalPages = state.totalPages;
     const paginationEl = document.getElementById("pagination");
     const paginationInfoEl = document.getElementById("paginationInfo");
 
-    if (!paginationEl) return;
+    if (!paginationEl || !paginationInfoEl) return;
+
+    if (state.totalItems === 0) {
+      paginationInfoEl.textContent = "No entries found";
+      paginationEl.innerHTML = "";
+      return;
+    }
 
     paginationEl.innerHTML = "";
 
-    // Update info text
-    const startItem = (currentPage - 1) * itemsPerPage + 1;
-    const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-    if (paginationInfoEl) {
-      paginationInfoEl.textContent = `Showing ${startItem} to ${endItem} of ${totalItems} entries`;
-    }
+    const startItem = (state.currentPage - 1) * state.itemsPerPage + 1;
+    const endItem = Math.min(
+      state.currentPage * state.itemsPerPage,
+      state.totalItems
+    );
+    paginationInfoEl.textContent = `Showing ${startItem} to ${endItem} of ${state.totalItems} entries`;
 
-    // First page button
-    const firstLi = document.createElement("li");
-    firstLi.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
-    firstLi.innerHTML = `<a class="page-link" href="#" data-page="first">«</a>`;
-    paginationEl.appendChild(firstLi);
+    if (totalPages <= 1) return;
 
-    // Previous button
-    const prevLi = document.createElement("li");
-    prevLi.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
-    prevLi.innerHTML = `<a class="page-link" href="#" data-page="prev">‹</a>`;
-    paginationEl.appendChild(prevLi);
+    const pageLink = (page, text, disabled = false) => {
+      const li = document.createElement("li");
+      li.className = `page-item ${state.currentPage === page ? "active" : ""} ${
+        disabled ? "disabled" : ""
+      }`;
+      li.innerHTML = `<a class="page-link" href="#" data-page="${page}">${text}</a>`;
+      return li;
+    };
 
-    // Page numbers
+    paginationEl.appendChild(
+      pageLink(state.currentPage - 1, "‹", state.currentPage === 1)
+    );
+
     for (let i = 1; i <= totalPages; i++) {
-      if (
-        i === 1 ||
-        i === totalPages ||
-        (i >= currentPage - 1 && i <= currentPage + 1)
-      ) {
-        const li = document.createElement("li");
-        li.className = `page-item ${i === currentPage ? "active" : ""}`;
-        li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
-        paginationEl.appendChild(li);
-      } else if (i === currentPage - 2 || i === currentPage + 2) {
-        const li = document.createElement("li");
-        li.className = "page-item disabled";
-        li.innerHTML = `<span class="page-link">...</span>`;
-        paginationEl.appendChild(li);
-      }
+      paginationEl.appendChild(pageLink(i, i));
     }
 
-    // Next button
-    const nextLi = document.createElement("li");
-    nextLi.className = `page-item ${
-      currentPage === totalPages ? "disabled" : ""
-    }`;
-    nextLi.innerHTML = `<a class="page-link" href="#" data-page="next">›</a>`;
-    paginationEl.appendChild(nextLi);
+    paginationEl.appendChild(
+      pageLink(state.currentPage + 1, "›", state.currentPage === totalPages)
+    );
 
-    // Last page button
-    const lastLi = document.createElement("li");
-    lastLi.className = `page-item ${
-      currentPage === totalPages ? "disabled" : ""
-    }`;
-    lastLi.innerHTML = `<a class="page-link" href="#" data-page="last">»</a>`;
-    paginationEl.appendChild(lastLi);
-
-    // Add click handlers
     paginationEl.querySelectorAll(".page-link").forEach((link) => {
       link.addEventListener("click", (e) => {
         e.preventDefault();
-        const page = e.target.getAttribute("data-page");
-
-        if (page === "first") currentPage = 1;
-        else if (page === "prev" && currentPage > 1) currentPage--;
-        else if (page === "next" && currentPage < totalPages) currentPage++;
-        else if (page === "last") currentPage = totalPages;
-        else if (!isNaN(page)) currentPage = parseInt(page);
-
-        renderTableRows(usulanData);
+        const page = parseInt(e.target.getAttribute("data-page"));
+        if (
+          page &&
+          page !== state.currentPage &&
+          page > 0 &&
+          page <= totalPages
+        ) {
+          state.currentPage = page;
+          renderTableRows();
+          renderPagination();
+        }
       });
     });
   }
 
-  // Attach event listeners
+  // ==============================================
+  // EVENT LISTENERS
+  // ==============================================
   function attachEventListeners() {
-    // Row checkboxes
-    document.querySelectorAll(".row-checkbox").forEach((checkbox) => {
-      checkbox.addEventListener("change", updateSelectAll);
+    document.querySelectorAll(".btn-approve").forEach((btn) => {
+      btn.addEventListener("click", () =>
+        handleAction(btn.dataset.id, "approve")
+      );
     });
 
-    // Revisi buttons
-    document.querySelectorAll(".btn-revisi").forEach((btn) => {
-      btn.addEventListener("click", handleRevisi);
+    document.querySelectorAll(".btn-revise").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const telaahId = btn.dataset.id;
+        // Redirect to the revision page with the ID
+        window.location.pathname = `/verifikator/revisi-kak/${telaahId}`;
+      });
     });
 
-    // Delete buttons
-    document.querySelectorAll(".btn-delete").forEach((btn) => {
-      btn.addEventListener("click", handleDelete);
+    document.querySelectorAll(".btn-reject").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const catatan = prompt("Masukkan alasan penolakan:");
+        if (catatan) {
+          // Only proceed if user provides a reason
+          handleAction(btn.dataset.id, "reject", { catatan });
+        }
+      });
     });
   }
 
-  // Select all functionality
-  const selectAllCheckbox = document.getElementById("selectAll");
-  if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener("change", function () {
-      const checkboxes = document.querySelectorAll(".row-checkbox");
-      checkboxes.forEach((cb) => (cb.checked = this.checked));
-    });
-  }
+  // ==============================================
+  // MODAL & STATS
+  // ==============================================
+  function setupModal() {
+    if (typeof bootstrap !== "undefined") {
+      revisiModalInstance = new bootstrap.Modal(
+        document.getElementById("revisiModal")
+      );
 
-  // Update select all state
-  function updateSelectAll() {
-    const allCheckboxes = document.querySelectorAll(".row-checkbox");
-    const checkedCount = document.querySelectorAll(
-      ".row-checkbox:checked"
-    ).length;
-    if (selectAllCheckbox) {
-      selectAllCheckbox.checked =
-        checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAllCheckbox.indeterminate =
-        checkedCount > 0 && checkedCount < allCheckboxes.length;
+      const btnKirimRevisi = document.getElementById("btnKirimRevisi");
+      btnKirimRevisi.addEventListener("click", async () => {
+        const catatan = document.getElementById("revisiCatatan").value.trim();
+        const telaahId = document.getElementById("revisiUsulanId").value;
+        if (!catatan) return alert("Catatan revisi harus diisi!");
+
+        await handleAction(telaahId, "revise", {
+          catatan_telaah: { deskripsi_kegiatan: catatan },
+        }); // Assuming note goes here
+        revisiModalInstance.hide();
+      });
+    } else {
+      console.error("Bootstrap 5 JS not found. Modals will not work.");
     }
   }
 
-  // --- LOGIKA REDIRECT TO REVISI KAK ---
-  function handleRevisi(e) {
-    const btn = e.currentTarget;
-    const index = parseInt(btn.getAttribute("data-index"));
-    const usulan = usulanData[index];
-
-    // Store usulan data in sessionStorage for the revisi page
-    sessionStorage.setItem('revisiUsulanData', JSON.stringify(usulan));
-    
-    // Redirect to revisi KAK page using full path
-    window.location.href = '/verifikator/revisi-kak';
-  }
-
-  // --- LOGIKA DELETE ---
-  async function handleDelete(e) {
-    const btn = e.currentTarget;
-    const index = parseInt(btn.getAttribute("data-index"));
-
-    const confirmed = await confirmAction(
-      "Yakin ingin menghapus?",
-      "Usulan ini akan dihapus secara permanen."
-    );
-
-    if (confirmed) {
-      const row = btn.closest("tr");
-      row.style.transition = "all 0.3s";
-      row.style.opacity = "0";
-      row.style.transform = "translateX(-20px)";
-
-      setTimeout(() => {
-        usulanData.splice(index, 1);
-        renderTableRows(usulanData);
-        updateStats();
-
-        showSuccess("Usulan berhasil dihapus!");
-      }, 300);
-    }
-  }
-
-  // --- LOGIKA UPDATE STATS ---
   function updateStats() {
-    const menungguCount = usulanData.filter(
-      (u) => u.status === "Menunggu"
+    const menungguCount = state.allUsulan.filter(
+      (u) => u.status_id === 2
     ).length;
-    const revisiCount = usulanData.filter(
-      (u) => u.status === "Direvisi"
-    ).length;
+    const revisiCount = state.allUsulan.filter((u) => u.status_id === 5).length;
 
-    const menungguEl = document.getElementById("menungguCount");
-    const revisiEl = document.getElementById("revisiCount");
-
-    if (menungguEl) menungguEl.textContent = menungguCount;
-    if (revisiEl) revisiEl.textContent = revisiCount;
+    document.getElementById("menungguCount").textContent = menungguCount;
+    document.getElementById("revisiCount").textContent = revisiCount;
   }
 
-  // Initial render
-  renderTableRows(usulanData);
-  updateStats();
+  // ==============================================
+  // INITIALIZATION
+  // ==============================================
+  initializeDashboard();
+  setupModal();
 
-  // Initialize Vuexy menu (jika diperlukan)
   if (window.Helpers) {
     window.Helpers.init();
   }
