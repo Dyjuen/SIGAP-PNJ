@@ -12,7 +12,6 @@ final class CreateMKegiatanStatusTable extends AbstractMigration
         
         $table->addColumn('status_id', 'integer', ['identity' => true])
               ->addColumn('nama_status', 'string', ['limit' => 50])
-              ->addColumn('urutan', 'integer', ['null' => true])
               ->addIndex(['nama_status'], ['unique' => true])
               ->create();
     }

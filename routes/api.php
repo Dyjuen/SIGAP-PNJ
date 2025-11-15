@@ -5,6 +5,7 @@ use App\Controllers\AccountController;
 use App\Controllers\KAKController;
 use App\Controllers\LpjController;
 use App\Controllers\MasterController;
+use App\Controllers\PanduanController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
 use App\Middlewares\CorsMiddleware;
@@ -163,6 +164,11 @@ $router = new Router();
 $router->get('/master/iku', 'MasterController@getIku');
 $router->get('/master/tipe-kegiatan', 'MasterController@getTipeKegiatan');
 $router->get('/master/satuan', 'MasterController@getSatuan');
+$router->get('/panduan', 'PanduanController@index');
+$router->post('/panduan', 'PanduanController@store');
+$router->get('/panduan/{id}', 'PanduanController@show');
+$router->put('/panduan/{id}', 'PanduanController@update');
+$router->delete('/panduan/{id}', 'PanduanController@destroy');
 
 
 // ============================================

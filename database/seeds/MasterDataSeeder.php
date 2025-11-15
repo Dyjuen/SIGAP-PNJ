@@ -51,16 +51,16 @@ class MasterDataSeeder extends AbstractSeed
         // 3. KEGIATAN STATUS
         // ============================================
         $status = [
-            ['nama_status' => 'Draft', 'urutan' => 1],
-            ['nama_status' => 'Review Verifikator', 'urutan' => 2],
-            ['nama_status' => 'Disetujui Verifikator', 'urutan' => 3],
-            ['nama_status' => 'Ditolak', 'urutan' => 99],
-            ['nama_status' => 'Revisi', 'urutan' => 98],
-            ['nama_status' => 'Proses Pencairan', 'urutan' => 4],
-            ['nama_status' => 'Uang Muka Dicairkan', 'urutan' => 5],
-            ['nama_status' => 'Kegiatan Berlangsung', 'urutan' => 6],
-            ['nama_status' => 'Proses LPJ', 'urutan' => 7],
-            ['nama_status' => 'Selesai', 'urutan' => 8]
+            ['nama_status' => 'Draft'],
+            ['nama_status' => 'Review Verifikator'],
+            ['nama_status' => 'Disetujui Verifikator'],
+            ['nama_status' => 'Ditolak'],
+            ['nama_status' => 'Revisi'],
+            ['nama_status' => 'Proses Pencairan'],
+            ['nama_status' => 'Uang Muka Dicairkan'],
+            ['nama_status' => 'Kegiatan Berlangsung'],
+            ['nama_status' => 'Proses LPJ'],
+            ['nama_status' => 'Selesai']
         ];
         $this->table('m_kegiatan_status')->insert($status)->saveData();
 
