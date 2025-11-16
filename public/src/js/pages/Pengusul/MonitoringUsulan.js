@@ -166,16 +166,20 @@ export function renderMonitoringUsulanPage(path, userRole) {
     }
   }
 
-  async function fetchTelaah() {
+  async function fetchKak() {
     const tbody = document.getElementById("monitoringTableBody");
     if (!tbody) return;
     tbody.innerHTML =
       '<tr><td colspan="7" style="text-align: center;">Loading...</td></tr>';
 
     try {
-      const response = await apiRequest("/telaah");
-      state.activities = response.data;
-      state.totalEntries = response.data.length;
+      const response = await apiRequest("/kak");
+      const allActivities = response.data;
+      const filteredActivities = allActivities.filter((activity) =>
+        [1, 2, 3, 4, 5].includes(activity.status_id)
+      );
+      state.activities = filteredActivities;
+      state.totalEntries = state.activities.length; // Update totalEntries based on filtered data
       state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
       renderTableRows(state.activities);
       updatePagination();
@@ -185,40 +189,39 @@ export function renderMonitoringUsulanPage(path, userRole) {
   }
 
   async function submitForVerification(id) {
-  // SweetAlert2 confirmation (replace native confirm)
-  const confirmed = await confirmAction(
-    "Ajukan untuk Verifikasi?",
-    "Apakah Anda yakin ingin mengajukan usulan ini untuk verifikasi?"
-  );
+    // SweetAlert2 confirmation (replace native confirm)
+    const confirmed = await confirmAction(
+      "Ajukan untuk Verifikasi?",
+      "Apakah Anda yakin ingin mengajukan usulan ini untuk verifikasi?"
+    );
 
-  if (!confirmed) return;
+    if (!confirmed) return;
 
-  const btn = document.querySelector(`.btn-ajukan[data-id='${id}']`);
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = "Mengajukan...";
-  }
-
-  try {
-    await apiRequest(`/telaah/${id}/submit`, { method: "POST" });
-
-    // SweetAlert2 success modal
-    showSuccess("Usulan berhasil diajukan.");
-
-    fetchTelaah(); // Refresh data
-  } catch (error) {
-    console.error("Submission Error:", error);
-
-    // SweetAlert2 error modal
-    showError(`Gagal mengajukan usulan: ${error.message}`);
-
+    const btn = document.querySelector(`.btn-ajukan[data-id='${id}']`);
     if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = "Ajukan";
+      btn.disabled = true;
+      btn.innerHTML = "Mengajukan...";
+    }
+
+    try {
+      await apiRequest(`/kak/${id}/submit`, { method: "POST" });
+
+      // SweetAlert2 success modal
+      showSuccess("Usulan berhasil diajukan.");
+
+      fetchKak(); // Refresh data
+    } catch (error) {
+      console.error("Submission Error:", error);
+
+      // SweetAlert2 error modal
+      showError(`Gagal mengajukan usulan: ${error.message}`);
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = "Ajukan";
+      }
     }
   }
-}
-
 
   // ==============================================
   // HELPER FUNCTIONS
@@ -300,7 +303,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
     paginatedData.forEach((activity) => {
       const statusId = activity.status_id;
       const statusBadge = getStatusBadge(statusId);
-      const actionButtons = getActionButtons(statusId, activity.telaah_id);
+      const actionButtons = getActionButtons(statusId, activity.kak_id);
 
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -308,7 +311,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
         <td>
-          <span class="number-badge">${activity.telaah_id}</span>
+          <span class="number-badge">${activity.kak_id}</span>
         </td>
         <td>
           <strong>${activity.nama_kegiatan || "Tanpa Judul"}</strong>
@@ -510,7 +513,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
   // ==============================================
   // INITIALIZATION
   // ==============================================
-  fetchTelaah();
+  fetchKak();
 
   if (window.Helpers) {
     window.Helpers.init();

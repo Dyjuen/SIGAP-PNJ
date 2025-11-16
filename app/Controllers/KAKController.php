@@ -370,7 +370,9 @@ class KAKController
             ]);
         } catch (PDOException $e) {
             if ($this->db->inTransaction()) {
+                if ($this->db->inTransaction()) {
                 $this->db->rollBack();
+            }
             }
             return $this->responseError($e->getMessage());
         }
@@ -425,7 +427,7 @@ class KAKController
             $db->query("
                 INSERT INTO t_kak_approval
                 (kak_id, approver_user_id, status, created_at)
-                VALUES (:id, NULL, 'SUBMITTED', NOW())
+                VALUES (:id, NULL, 'Menunggu', NOW())
             ");
             $db->bind(':id', $id);
             $db->execute();
@@ -447,7 +449,9 @@ class KAKController
 
             return $this->responseSuccess("KAK berhasil disubmit.");
         } catch (\Exception $e) {
-            $this->db->rollBack();
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             return $this->responseError($e->getMessage());
         }
     }
@@ -525,7 +529,7 @@ class KAKController
             $db->query("
                 INSERT INTO t_kak_approval
                 (kak_id, approver_user_id, status, catatan, created_at)
-                VALUES (:id, :usr, 'REVISED', NULL, NOW())
+                VALUES (:id, :usr, 'Revisi', NULL, NOW())
             ");
             $db->bind(':id', $id);
             $db->bind(':usr', $user['user_id']);
@@ -542,7 +546,9 @@ class KAKController
 
             return $this->responseSuccess("Revisi berhasil diberikan.");
         } catch (\Exception $e) {
-            $this->db->rollBack();
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             return $this->responseError($e->getMessage());
         }
     }
@@ -664,7 +670,7 @@ class KAKController
             $db->query("
                 INSERT INTO t_kak_approval
                 (kak_id, approver_user_id, status, created_at)
-                VALUES (:id, :usr, 'RESUBMITTED', NOW())
+                VALUES (:id, :usr, 'Menunggu', NOW())
             ");
             $db->bind(':id', $id);
             $db->bind(':usr', $user['user_id']);
@@ -674,7 +680,9 @@ class KAKController
 
             return $this->responseSuccess("Berhasil resubmit revisi.");
         } catch (\Exception $e) {
-            $this->db->rollBack();
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             return $this->responseError($e->getMessage());
         }
     }
@@ -717,7 +725,7 @@ class KAKController
             $db->query("
                 INSERT INTO t_kak_approval
                 (kak_id, approver_user_id, status, created_at)
-                VALUES (:id, :usr, 'APPROVED', NOW())
+                VALUES (:id, :usr, 'Disetujui', NOW())
             ");
             $db->bind(':id', $id);
             $db->bind(':usr', $user['user_id']);
@@ -762,7 +770,9 @@ class KAKController
 
             return $this->responseSuccess("KAK berhasil disetujui.");
         } catch (\Exception $e) {
-            $this->db->rollBack();
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             return $this->responseError($e->getMessage());
         }
     }
@@ -809,7 +819,7 @@ class KAKController
             $db->query("
                 INSERT INTO t_kak_approval
                 (kak_id, approver_user_id, status, catatan, created_at)
-                VALUES (:id, :usr, 'REJECTED', :ct, NOW())
+                VALUES (:id, :usr, 'Ditolak', :ct, NOW())
             ");
             $db->bind(':id', $id);
             $db->bind(':usr', $user['user_id']);
@@ -866,7 +876,9 @@ class KAKController
 
             return $this->responseSuccess("KAK berhasil ditolak.");
         } catch (\Exception $e) {
-            $this->db->rollBack();
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             return $this->responseError($e->getMessage());
         }
     }

@@ -5,6 +5,9 @@ namespace App\Core;
 /**
  * SemaphoreService provides a simple, non-blocking semaphore implementation
  * using APCu for high-performance concurrency limiting.
+ *
+ * If the APCu extension is not available, the service will be disabled
+ * and all acquire calls will return true without providing any locking.
  */
 class SemaphoreService
 {
@@ -20,55 +23,73 @@ class SemaphoreService
     private const SEMAPHORE_TTL = 60; // 1 minute
 
     /**
+     * @var bool Flag indicating if the APCu extension is loaded and enabled.
+     */
+    private $apcuEnabled = false;
+
+    public function __construct()
+    {
+        $this->apcuEnabled = extension_loaded('apcu') && function_exists('apcu_inc');
+        if (!$this->apcuEnabled) {
+            // Log once during instantiation to avoid flooding logs.
+            error_log('Warning: APCu extension is not installed or enabled. SemaphoreService is disabled and will not provide concurrency limiting.');
+        }
+    }
+
+    /**
      * Attempts to acquire a lock for a given key.
      *
-     * This method is non-blocking. It atomically increments a counter. If the
-     * resulting count is within the max limit, the lock is considered acquired.
-     * If not, it immediately decrements the counter and returns false.
-     *
-     * @param string $key      A unique identifier for the resource to be locked (e.g., 'login_process').
+     * @param string $key      A unique identifier for the resource to be locked.
      * @param int    $maxLocks The maximum number of concurrent locks allowed.
-     * @return bool True if the lock was acquired, false otherwise.
+     * @return bool True if the lock was acquired or if APCu is disabled, false otherwise.
      */
     public function acquire(string $key, int $maxLocks): bool
     {
+        if (!$this->apcuEnabled) {
+            return true; // Bypass if APCu is not available.
+        }
+
         if ($maxLocks <= 0) {
             return false;
         }
 
         $fullKey = self::KEY_PREFIX . $key;
+        $success = false;
 
         // Atomically increment the counter.
-        // apcu_inc returns the new value. If the key doesn't exist, it's created with a value of 1.
-        $currentLocks = apcu_inc($fullKey, 1, $success, self::SEMAPHORE_TTL);
+        $currentLocks = \apcu_inc($fullKey, 1, $success, self::SEMAPHORE_TTL);
 
-        // If the counter exceeds the maximum allowed locks, we fail to acquire the lock.
+        // If the counter exceeds the maximum, we fail to acquire the lock.
         if ($currentLocks > $maxLocks) {
-            // We must decrement the counter back, as we failed to get the lock.
-            $this->release($key);
+            // A concurrent process has acquired the lock just after we incremented.
+            // We must decrement the counter back to maintain an accurate lock count.
+            \apcu_dec($fullKey);
             return false;
         }
 
-        // Lock successfully acquired.
         return true;
     }
 
     /**
      * Releases a lock for a given key.
      *
-     * This method atomically decrements the counter.
-     *
      * @param string $key The unique identifier for the resource that was locked.
      */
     public function release(string $key): void
     {
+        if (!$this->apcuEnabled) {
+            return; // Do nothing if APCu is not available.
+        }
+
         $fullKey = self::KEY_PREFIX . $key;
         
         // Atomically decrement the counter.
-        // We ensure the counter does not go below zero.
-        $currentValue = apcu_dec($fullKey);
-        if ($currentValue < 0) {
-            apcu_store($fullKey, 0, self::SEMAPHORE_TTL);
+        // To prevent the counter from going below zero on race conditions or multiple releases.
+        if (\apcu_fetch($fullKey) !== false) {
+             $currentValue = \apcu_dec($fullKey);
+             if ($currentValue < 0) {
+                \apcu_store($fullKey, 0, self::SEMAPHORE_TTL);
+            }
         }
     }
 }
