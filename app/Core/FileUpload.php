@@ -5,8 +5,8 @@ namespace App\Core;
 class FileUpload
 {
     private $uploadPath;
-    private $allowedTypes;
     private $maxSize;
+    private $allowedMimeTypes;
 
     /**
      * Constructor
@@ -14,18 +14,63 @@ class FileUpload
      * @param string $uploadPath Relative path from document root
      * @param array $allowedTypes Allowed file extensions
      * @param int $maxSize Max file size in bytes (default 20MB)
+     * @param array $allowedMimeTypes Allowed MIME types. If null, will be generated from $allowedTypes.
      */
     public function __construct(
         $uploadPath = '/uploads/documents/',
-        $allowedTypes = ['pdf'],
-        $maxSize = 20971520  // 20MB
+        $allowedTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'zip', 'rar'],
+        $maxSize = 20971520,  // 20MB
+        $allowedMimeTypes = null
     ) {
         $this->uploadPath = rtrim($uploadPath, '/') . '/';
         $this->allowedTypes = $allowedTypes;
         $this->maxSize = $maxSize;
         
+        if ($allowedMimeTypes === null) {
+            $this->allowedMimeTypes = $this->generateMimeTypesFromExtensions($allowedTypes);
+        } else {
+            $this->allowedMimeTypes = $allowedMimeTypes;
+        }
+        
         // Create upload directory if not exists
         $this->createUploadDirectory();
+    }
+
+    /**
+     * Generate allowed MIME types from extensions
+     */
+    private function generateMimeTypesFromExtensions($extensions)
+    {
+        $mimeMap = $this->getMimeTypeMap();
+        $mimeTypes = [];
+        foreach ($extensions as $ext) {
+            if (isset($mimeMap[$ext])) {
+                $mimeTypes = array_merge($mimeTypes, (array)$mimeMap[$ext]);
+            }
+        }
+        return array_unique($mimeTypes);
+    }
+
+    /**
+     * Get a map of common extensions to MIME types
+     */
+    private function getMimeTypeMap()
+    {
+        return [
+            'pdf'  => 'application/pdf',
+            'doc'  => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls'  => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'ppt'  => 'application/vnd.ms-powerpoint',
+            'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            'zip'  => ['application/zip', 'application/x-zip-compressed'],
+            'rar'  => ['application/x-rar-compressed', 'application/octet-stream'],
+        ];
     }
 
     /**
@@ -132,14 +177,10 @@ class FileUpload
         $mimeType = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
 
-        $allowedMimes = [
-            'pdf' => 'application/pdf'
-        ];
-
-        if (isset($allowedMimes[$extension]) && $mimeType !== $allowedMimes[$extension]) {
+        if (!in_array($mimeType, $this->allowedMimeTypes)) {
             return [
                 'success' => false,
-                'message' => 'MIME type file tidak sesuai dengan ekstensi.'
+                'message' => "Tipe file tidak valid (terdeteksi: {$mimeType}). Pastikan file tidak korup dan sesuai dengan ekstensinya."
             ];
         }
 

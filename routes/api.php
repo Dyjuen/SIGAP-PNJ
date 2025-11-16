@@ -1,12 +1,16 @@
 <?php
 
-use App\Controllers\TelaahController;
 use App\Controllers\AuthController;
 use App\Controllers\AccountController;
 use App\Controllers\KAKController;
 use App\Controllers\LpjController;
+use App\Controllers\MasterController;
+use App\Controllers\PanduanController;
+use App\Controllers\DashboardController;
+use App\Controllers\NotificationController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
+use App\Middlewares\RateLimitMiddleware;
 use App\Middlewares\CorsMiddleware;
 use App\Core\Router;
 
@@ -15,6 +19,13 @@ use App\Core\Router;
 // =====================================================
 $cors = new CorsMiddleware();
 $cors->handle();
+
+// =====================================================
+// 1.1. APPLY GLOBAL RATE LIMIT MIDDLEWARE
+// =====================================================
+$rateLimit = new RateLimitMiddleware(50, 10, 'global_access');
+$rateLimit->handle();
+
 
 // Start session for captcha
 if (session_status() === PHP_SESSION_NONE) {
@@ -130,21 +141,21 @@ if ($method === 'PUT' && preg_match('/^\/admin\/users\/(\d+)\/change-password$/'
 // 8. KAK (KERANGKA ACUAN KERJA) ROUTES
 // =====================================================
 
-// GET /api/kak/{telaah_id} - Download KAK PDF
+// GET /api/kak/{kak_id} - Download KAK PDF
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)$/', $uri)) {
     $controller = new KAKController();
     $controller->download();
     exit;
 }
 
-// GET /api/kak/{telaah_id}/preview - Preview KAK HTML
+// GET /api/kak/{kak_id}/preview - Preview KAK HTML
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/preview$/', $uri)) {
     $controller = new KAKController();
     $controller->preview();
     exit;
 }
 
-// GET /api/kak/{telaah_id}/data - Get KAK data as JSON
+// GET /api/kak/{kak_id}/data - Get KAK data as JSON
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
     $controller = new KAKController();
     $controller->getData();
@@ -158,21 +169,34 @@ if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
 $router = new Router();
 
 // ============================================
-// TELAAH ROUTES (CRUD & Workflow)
+// MASTER DATA ROUTES
+// ============================================
+$router->get('/master/iku', 'MasterController@getIku');
+$router->get('/master/tipe-kegiatan', 'MasterController@getTipeKegiatan');
+$router->get('/master/satuan', 'MasterController@getSatuan');
+$router->get('/panduan', 'PanduanController@index');
+$router->post('/panduan', 'PanduanController@store');
+$router->get('/panduan/{id}', 'PanduanController@show');
+$router->put('/panduan/{id}', 'PanduanController@update');
+$router->delete('/panduan/{id}', 'PanduanController@destroy');
+
+
+// ============================================
+// KAK ROUTES (CRUD & Workflow)
 // ============================================
 
-$router->get('/telaah', 'TelaahController@index');
-$router->post('/telaah', 'TelaahController@store');
-$router->get('/telaah/{id}', 'TelaahController@show');
+$router->get('/kak', 'KAKController@index');
+$router->post('/kak', 'KAKController@store');
+$router->get('/kak/{id}', 'KAKController@show');
 
 // Aksi Pengusul
-$router->post('/telaah/{id}/submit', 'TelaahController@submitForVerification');
-$router->post('/telaah/{id}/resubmit', 'TelaahController@resubmitAfterRevision');
+$router->post('/kak/{id}/submit', 'KAKController@submitForVerification');
+$router->post('/kak/{id}/resubmit', 'KAKController@resubmitAfterRevision');
 
 // Aksi Verifikator
-$router->post('/telaah/{id}/approve', 'TelaahController@approve');
-$router->post('/telaah/{id}/reject', 'TelaahController@reject');
-$router->post('/telaah/{id}/revise', 'TelaahController@requestRevision');
+$router->post('/kak/{id}/approve', 'KAKController@approve');
+$router->post('/kak/{id}/reject', 'KAKController@reject');
+$router->post('/kak/{id}/revise', 'KAKController@requestRevision');
 
 // ============================================
 // KEGIATAN ROUTES (Workflow & Features)
@@ -212,6 +236,20 @@ $router->get('/pencairan/kegiatan/{kegiatan_id}', 'PencairanController@index');
 
 // GET /api/pencairan/sisa-dana/{kegiatan_id} - Cek sisa dana
 $router->get('/pencairan/sisa-dana/{kegiatan_id}', 'PencairanController@getSisaDana');
+
+// ============================================
+// NOTIFICATION ROUTES
+// ============================================
+$router->get('/notifications', 'NotificationController@getNotificationsForUser');
+$router->post('/notifications/{id}/read', 'NotificationController@markAsRead');
+
+// ============================================
+// DASHBOARD ROUTES
+// ============================================
+$router->get('/dashboard/summary', 'DashboardController@getSummary');
+$router->get('/dashboard/lpj', 'DashboardController@getLpj');
+$router->get('/dashboard/template', 'DashboardController@getTemplates');
+$router->get('/dashboard/video', 'DashboardController@getVideos');
 
 // =====================================================
 // 11. DISPATCH ROUTER & HANDLE 404

@@ -47,7 +47,7 @@ class AccountController
      * 
      * PUT /api/admin/users/{id}
      * Header: Authorization: Bearer <token>
-     * Body: { nama_lengkap, email, role_ids }
+     * Body: { nama_lengkap, email, role_id }
      */
     public function updateUser($userId)
     {
@@ -58,7 +58,7 @@ class AccountController
         $rules = [
             'nama_lengkap' => 'required|min:3|max:100',
             'email' => 'required|email|max:100',
-            'role_ids' => 'required|array' // Expecting an array of role IDs
+            'role_id' => 'required|integer' // Expecting a single role ID
         ];
 
         $validator = new ProfileValidator();
@@ -88,8 +88,8 @@ class AccountController
 
             $this->userModel->updateProfile($userId, $updateData);
 
-            // Update roles using role_ids
-            $this->userModel->updateUserRoles($userId, $input['role_ids']);
+            // Update role using role_id
+            $this->userModel->updateUserRole($userId, $input['role_id']);
 
             // Get updated user
             $updatedUser = $this->userModel->getUserWithRoles($userId);

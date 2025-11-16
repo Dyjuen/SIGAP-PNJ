@@ -33,3 +33,5 @@ backup_*/
 /database/.phinxlog
 
 /vendor
+
+/cache

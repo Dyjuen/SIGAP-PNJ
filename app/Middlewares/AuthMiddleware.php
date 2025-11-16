@@ -5,92 +5,80 @@ namespace App\Middlewares;
 use App\Core\Middleware;
 use App\Core\JWT;
 use App\Core\Response;
-use App\Models\User;
+use App\Core\Database;
 
 class AuthMiddleware implements Middleware
 {
     /**
      * Handle authentication check
-     * 
-     * Validates JWT token from Authorization header and sets user data in request
      */
     public function handle(): void
     {
-        // Get Authorization header
         $headers = getallheaders();
         $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
 
-        // Check if Authorization header exists
         if (!$authHeader) {
             Response::unauthorized('Token tidak ditemukan. Silakan login terlebih dahulu.');
         }
 
-        // Extract token from header
         $token = JWT::extractFromHeader($authHeader);
-
         if (!$token) {
             Response::unauthorized('Format token tidak valid. Gunakan format: Bearer <token>');
         }
 
-        // Validate and decode token
         $decoded = JWT::decode($token);
-
         if (!$decoded) {
             Response::unauthorized('Token tidak valid atau sudah expired. Silakan login ulang.');
         }
 
-        // Verify user still exists in database
-        $userModel = new User();
-        $user = $userModel->findById($decoded->user_id);
+        $db = Database::getInstance();
+        $db->query("
+            SELECT 
+                u.user_id, 
+                u.username, 
+                u.nama_lengkap, 
+                u.email,
+                u.role_id,
+                r.nama_role
+            FROM m_users u
+            LEFT JOIN m_roles r ON u.role_id = r.role_id
+            WHERE u.user_id = :user_id
+        ");
+        $db->bind(':user_id', $decoded->user_id);
+        $user = $db->single();
 
         if (!$user) {
             Response::unauthorized('User tidak ditemukan. Token tidak valid.');
         }
 
-        // Set authenticated user data in global variable (dapat diakses di controller)
+        // Set authenticated user data in global variable
+        // Format 'roles' sebagai array of strings, sesuai harapan RoleMiddleware
         $GLOBALS['auth_user'] = [
-            'user_id' => $decoded->user_id,
-            'username' => $decoded->username,
-            'nama_lengkap' => $decoded->nama_lengkap,  // ✅ Ganti email jadi nama_lengkap
-            'roles' => $decoded->roles ?? [],
-            'unit_kerja_id' => $decoded->unit_kerja_id ?? null
+            'user_id' => $user['user_id'],
+            'username' => $user['username'],
+            'nama_lengkap' => $user['nama_lengkap'],
+            'role_id' => $user['role_id'],
+            'roles' => $user['nama_role'] ? [$user['nama_role']] : []
         ];
 
-        // Check if token is about to expire (kurang dari 1 jam)
         $timeToExpire = JWT::getTimeToExpire($token);
         if ($timeToExpire !== null && $timeToExpire < 3600) {
-            // Add header to inform client that token will expire soon
             header('X-Token-Expiring: true');
             header('X-Token-Expires-In: ' . $timeToExpire);
         }
     }
 
-    /**
-     * Get authenticated user data
-     * 
-     * @return array|null
-     */
     public static function getAuthUser(): ?array
     {
         return $GLOBALS['auth_user'] ?? null;
     }
 
-    /**
-     * Get authenticated user ID
-     * 
-     * @return int|null
-     */
     public static function getAuthUserId(): ?int
     {
         $user = self::getAuthUser();
         return $user['user_id'] ?? null;
     }
 
-    /**
-     * Check if user is authenticated
-     * 
-     * @return bool
-     */
     public static function isAuthenticated(): bool
     {
         return isset($GLOBALS['auth_user']);

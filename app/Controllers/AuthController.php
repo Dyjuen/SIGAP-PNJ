@@ -7,16 +7,15 @@ use App\Core\JWT;
 use App\Models\User;
 use App\Models\UserRole;
 use App\Middlewares\AuthMiddleware;
+use App\Core\SemaphoreService;
 
 class AuthController
 {
     private $userModel;
-    private $userRoleModel;
 
     public function __construct()
     {
         $this->userModel = new User();
-        $this->userRoleModel = new UserRole();
     }
 
     /**
@@ -124,7 +123,7 @@ class AuthController
      * 
      * POST /api/auth/register
      * Header: Authorization: Bearer <token>
-     * Body: {username, password, nama_lengkap, email, unit_kerja_id, role_ids[]}
+     * Body: {username, password, nama_lengkap, email, role_id}
      */
     public function register()
     {
@@ -133,7 +132,7 @@ class AuthController
             $data = json_decode(file_get_contents('php://input'), true);
 
             // Validate required fields
-            $required = ['username', 'password', 'nama_lengkap', 'email'];
+            $required = ['username', 'password', 'nama_lengkap', 'email', 'role_id'];
             foreach ($required as $field) {
                 if (empty($data[$field])) {
                     Response::error("Field '$field' wajib diisi", 400);
@@ -154,6 +153,11 @@ class AuthController
             if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
                 Response::error('Format email tidak valid', 400);
             }
+            
+            // Validate role_id
+            if (!is_int($data['role_id'])) {
+                Response::error('role_id harus berupa integer', 400);
+            }
 
             // Check if username already exists
             if ($this->userModel->usernameExists($data['username'])) {
@@ -171,12 +175,8 @@ class AuthController
                 'password' => $data['password'],
                 'nama_lengkap' => $data['nama_lengkap'],
                 'email' => $data['email'],
+                'role_id' => $data['role_id'],
             ]);
-
-            // Assign roles (if provided)
-            if (!empty($data['role_ids']) && is_array($data['role_ids'])) {
-                $this->userRoleModel->assignRoles($userId, $data['role_ids']);
-            }
 
             // Get created user with roles
             $user = $this->userModel->getUserWithRoles($userId);
@@ -209,98 +209,103 @@ class AuthController
      */
     public function login()
     {
+        $semaphore = new SemaphoreService();
+        $lockKey = 'login_process';
+        $maxConcurrency = 20; // Max 20 concurrent login processes allowed
+
+        // Attempt to acquire the lock. If it fails, the server is too busy.
+        if (!$semaphore->acquire($lockKey, $maxConcurrency)) {
+            Response::error('Server sedang sibuk, silakan coba beberapa saat lagi.', 503);
+            return;
+        }
+
         try {
-            // Start session if not already started
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
-
-            // Get request body
-            $data = json_decode(file_get_contents('php://input'), true);
-
-            // Validate required fields
-            if (empty($data['username']) || empty($data['password'])) {
-                Response::error('Username dan password wajib diisi', 400);
-            }
-
-            // ============================================
-            // CAPTCHA VALIDATION WITH BYPASS FOR TESTING
-            // ============================================
-            
-            // Get bypass code from environment
-            $bypassCode = $_ENV['CAPTCHA_BYPASS'] ?? null;
-            $captchaInput = $data['captcha'] ?? '';
-            
-            // Check if bypass code is used
-            $isBypass = !empty($bypassCode) && $captchaInput === $bypassCode;
-            
-            if ($isBypass) {
-                // Bypass mode - skip captcha validation
-                // Optional: Log for security audit
-                error_log("CAPTCHA BYPASS: User '{$data['username']}' used bypass code for testing");
-            } else {
-                // Normal captcha validation
-                if (empty($captchaInput)) {
-                    Response::error('Captcha wajib diisi', 400);
+            // This inner try-catch handles specific logic errors for login.
+            try {
+                // Start session if not already started
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
                 }
 
-                // Validate captcha from session
-                if (!isset($_SESSION['code'])) {
-                    Response::error('Captcha sudah expired. Silakan refresh captcha.', 400);
+                // Get request body
+                $data = json_decode(file_get_contents('php://input'), true);
+
+                // Validate required fields
+                if (empty($data['username']) || empty($data['password'])) {
+                    Response::error('Username dan password wajib diisi', 400);
                 }
 
-                // Case-insensitive comparison
-                if (strcasecmp($_SESSION['code'], $captchaInput) !== 0) {
-                    // Clear captcha on failed attempt
+                // ============================================
+                // CAPTCHA VALIDATION WITH BYPASS FOR TESTING
+                // ============================================
+                
+                $bypassCode = $_ENV['CAPTCHA_BYPASS'] ?? null;
+                $captchaInput = $data['captcha'] ?? '';
+                
+                $isBypass = !empty($bypassCode) && $captchaInput === $bypassCode;
+                
+                if ($isBypass) {
+                    error_log("CAPTCHA BYPASS: User '{$data['username']}' used bypass code for testing");
+                } else {
+                    if (empty($captchaInput)) {
+                        Response::error('Captcha wajib diisi', 400);
+                    }
+                    if (!isset($_SESSION['code'])) {
+                        Response::error('Captcha sudah expired. Silakan refresh captcha.', 400);
+                    }
+                    if (strcasecmp($_SESSION['code'], $captchaInput) !== 0) {
+                        unset($_SESSION['code']);
+                        Response::error('Kode captcha yang Anda masukkan salah.', 400);
+                    }
                     unset($_SESSION['code']);
-                    Response::error('Kode captcha yang Anda masukkan salah.', 400);
                 }
 
-                // Clear captcha after successful validation
-                unset($_SESSION['code']);
+                // Find user by username
+                $user = $this->userModel->findByUsername($data['username']);
+
+                if (!$user) {
+                    Response::error('Username atau password salah', 401);
+                }
+
+                // Verify password
+                if (!$this->userModel->verifyPassword($data['password'], $user['password_hash'])) {
+                    Response::error('Username atau password salah', 401);
+                }
+
+                // Convert role string to array
+                $roles = $user['roles'] ? [$user['roles']] : [];
+
+                // Generate JWT token
+                $token = JWT::encode([
+                    'user_id' => $user['user_id'],
+                    'username' => $user['username'],
+                    'nama_lengkap' => $user['nama_lengkap'],
+                    'roles' => $roles
+                ]);
+
+                // Get full user data
+                $userData = $this->userModel->getUserWithRoles($user['user_id']);
+
+                Response::success([
+                    'token' => $token,
+                    'token_type' => 'Bearer',
+                    'expires_in' => 86400, // 24 hours
+                    'user' => [
+                        'user_id' => $userData['user_id'],
+                        'username' => $userData['username'],
+                        'nama_lengkap' => $userData['nama_lengkap'],
+                        'email' => $userData['email'],
+                        'roles' => $userData['roles']
+                    ]
+                ], 'Login berhasil');
+
+            } catch (\Exception $e) {
+                // This catches exceptions during the login process itself.
+                Response::error('Gagal login: ' . $e->getMessage(), 500);
             }
-
-            // Find user by username
-            $user = $this->userModel->findByUsername($data['username']);
-
-            if (!$user) {
-                Response::error('Username atau password salah', 401);
-            }
-
-            // Verify password
-            if (!$this->userModel->verifyPassword($data['password'], $user['password_hash'])) {
-                Response::error('Username atau password salah', 401);
-            }
-
-            // Convert roles string to array
-            $roles = $user['roles'] ? explode(',', $user['roles']) : [];
-
-            // Generate JWT token
-            $token = JWT::encode([
-                'user_id' => $user['user_id'],
-                'username' => $user['username'],
-                'nama_lengkap' => $user['nama_lengkap'],
-                'roles' => $roles
-            ]);
-
-            // Get full user data with unit kerja
-            $userData = $this->userModel->getUserWithRoles($user['user_id']);
-
-            Response::success([
-                'token' => $token,
-                'token_type' => 'Bearer',
-                'expires_in' => 86400, // 24 hours
-                'user' => [
-                    'user_id' => $userData['user_id'],
-                    'username' => $userData['username'],
-                    'nama_lengkap' => $userData['nama_lengkap'],
-                    'email' => $userData['email'],
-                    'roles' => $userData['roles']
-                ]
-            ], 'Login berhasil');
-
-        } catch (\Exception $e) {
-            Response::error('Gagal login: ' . $e->getMessage(), 500);
+        } finally {
+            // This block is guaranteed to run, ensuring the lock is always released.
+            $semaphore->release($lockKey);
         }
     }
 

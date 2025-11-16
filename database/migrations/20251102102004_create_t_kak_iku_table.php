@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class CreateTTelaahIkuTable extends AbstractMigration
+final class CreateTKakIkuTable extends AbstractMigration
 {
     public function change(): void
     {
-        $table = $this->table('t_telaah_iku', ['id' => false, 'primary_key' => ['telaah_id', 'iku_id']]);
+        $table = $this->table('t_kak_iku', ['id' => false, 'primary_key' => ['kak_id', 'iku_id']]);
         
-        $table->addColumn('telaah_id', 'integer', ['null' => false])
-              ->addColumn('iku_id', 'integer', ['null' => false])
+        $table->addColumn('kak_id', 'integer')
+              ->addColumn('iku_id', 'integer')
               ->addColumn('persentase_target', 'decimal', ['precision' => 5, 'scale' => 2, 'null' => true])
               ->addColumn('catatan_verifikator', 'text', ['null' => true])
-              ->addForeignKey('telaah_id', 't_telaah', 'telaah_id', [
+              ->addForeignKey('kak_id', 't_kak', 'kak_id', [
                   'delete' => 'CASCADE',
                   'update' => 'CASCADE'
               ])

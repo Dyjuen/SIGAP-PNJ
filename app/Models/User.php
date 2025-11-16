@@ -34,7 +34,7 @@ class User
     }
 
     /**
-     * Find user by username (dengan roles)
+     * Find user by username (dengan role)
      */
     public function findByUsername($username)
     {
@@ -46,17 +46,13 @@ class User
                 u.nama_lengkap, 
                 u.email,
                 u.created_at,
-                GROUP_CONCAT(r.nama_role) as roles
+                r.nama_role as roles
             FROM 
                 m_users u
             LEFT JOIN 
-                m_user_roles ur ON u.user_id = ur.user_id
-            LEFT JOIN 
-                m_roles r ON ur.role_id = r.role_id
+                m_roles r ON u.role_id = r.role_id
             WHERE 
                 u.username = :username
-            GROUP BY
-                u.user_id
         ");
         $this->db->bind(':username', $username);
         return $this->db->single();
@@ -75,17 +71,13 @@ class User
                 u.nama_lengkap, 
                 u.email,
                 u.created_at,
-                GROUP_CONCAT(r.nama_role) as roles
+                r.nama_role as roles
             FROM 
                 m_users u
             LEFT JOIN 
-                m_user_roles ur ON u.user_id = ur.user_id
-            LEFT JOIN 
-                m_roles r ON ur.role_id = r.role_id
+                m_roles r ON u.role_id = r.role_id
             WHERE 
                 u.email = :email
-            GROUP BY
-                u.user_id
         ");
         $this->db->bind(':email', $email);
         return $this->db->single();
@@ -103,25 +95,20 @@ class User
                 u.nama_lengkap, 
                 u.email,
                 u.created_at,
-                GROUP_CONCAT(r.nama_role) as roles
+                r.nama_role as roles
             FROM 
                 m_users u
             LEFT JOIN 
-                m_user_roles ur ON u.user_id = ur.user_id
-            LEFT JOIN 
-                m_roles r ON ur.role_id = r.role_id
-
+                m_roles r ON u.role_id = r.role_id
             WHERE 
                 u.user_id = :user_id
-            GROUP BY
-                u.user_id
         ");
         $this->db->bind(':user_id', $userId);
         $user = $this->db->single();
         
         // Convert roles dari string ke array
         if ($user && $user['roles']) {
-            $user['roles'] = explode(',', $user['roles']);
+            $user['roles'] = [$user['roles']];
         } else if ($user) {
             $user['roles'] = [];
         }
@@ -147,15 +134,16 @@ class User
         
         $this->db->query("
             INSERT INTO m_users 
-            (username, password_hash, nama_lengkap, email, created_at) 
+            (username, password_hash, nama_lengkap, email, role_id, created_at) 
             VALUES 
-            (:username, :password_hash, :nama_lengkap, :email, NOW())
+            (:username, :password_hash, :nama_lengkap, :email, :role_id, NOW())
         ");
         
         $this->db->bind(':username', $data['username']);
         $this->db->bind(':password_hash', $hashedPassword);
         $this->db->bind(':nama_lengkap', $data['nama_lengkap']);
         $this->db->bind(':email', $data['email']);
+        $this->db->bind(':role_id', $data['role_id']);
         
         $this->db->execute();
         
@@ -265,13 +253,11 @@ class User
                 u.nama_lengkap,
                 u.email,
                 u.created_at,
-                GROUP_CONCAT(r.nama_role) as roles
+                r.nama_role as roles
             FROM 
                 m_users u
             LEFT JOIN 
-                m_user_roles ur ON u.user_id = ur.user_id
-            LEFT JOIN 
-                m_roles r ON ur.role_id = r.role_id
+                m_roles r ON u.role_id = r.role_id
         ";
 
         if ($excludeUserId) {
@@ -279,8 +265,6 @@ class User
         }
 
         $sql .= "
-            GROUP BY
-                u.user_id
             ORDER BY
                 u.created_at DESC
         ";
@@ -293,9 +277,9 @@ class User
         
         $users = $this->db->resultSet();
         
-        // Convert roles dari string ke array untuk setiap user
+        // Convert role dari string ke array untuk setiap user
         foreach ($users as &$user) {
-            $user['roles'] = $user['roles'] ? explode(',', $user['roles']) : [];
+            $user['roles'] = $user['roles'] ? [$user['roles']] : [];
         }
         
         return $users;
@@ -312,36 +296,40 @@ class User
     }
 
     /**
-     * Update user roles
+     * Update user role
      */
-    public function updateUserRoles($userId, $roleIds)
+    public function updateUserRole($userId, $roleId)
     {
-        // Start transaction
-        $this->db->beginTransaction();
+        $this->db->query("
+            UPDATE m_users 
+            SET role_id = :role_id 
+            WHERE user_id = :user_id
+        ");
+        
+        $this->db->bind(':role_id', $roleId);
+        $this->db->bind(':user_id', $userId);
+        
+        return $this->db->execute();
+    }
 
-        try {
-            // Delete existing roles
-            $this->db->query("DELETE FROM m_user_roles WHERE user_id = :user_id");
-            $this->db->bind(':user_id', $userId);
-            $this->db->execute();
-
-            // Add new roles
-            foreach ($roleIds as $roleId) {
-                // Ensure the role_id is an integer
-                $roleId = (int) $roleId;
-                $this->db->query("INSERT INTO m_user_roles (user_id, role_id) VALUES (:user_id, :role_id)");
-                $this->db->bind(':user_id', $userId);
-                $this->db->bind(':role_id', $roleId);
-                $this->db->execute();
-            }
-
-            // Commit transaction
-            $this->db->commit();
-            return true;
-        } catch (\Exception $e) {
-            // Rollback transaction
-            $this->db->rollBack();
-            return false;
-        }
+    /**
+     * Find users by role id
+     */
+    public function findByRoleId($roleId)
+    {
+        $this->db->query("
+            SELECT
+                user_id,
+                username,
+                nama_lengkap,
+                email,
+                created_at
+            FROM
+                m_users
+            WHERE
+                role_id = :role_id
+        ");
+        $this->db->bind(':role_id', $roleId);
+        return $this->db->resultSet();
     }
 }

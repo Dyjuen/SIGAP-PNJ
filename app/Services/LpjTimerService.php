@@ -118,11 +118,12 @@ class LpjTimerService
      */
     private function getKegiatanNeedingReminders(): array
     {
-        $sql = "SELECT k.kegiatan_id, k.nama_kegiatan, k.tgl_batas_lpj,
+        $sql = "SELECT k.kegiatan_id, t.nama_kegiatan, k.tgl_batas_lpj,
                        k.lpj_reminder_h7_sent, k.lpj_reminder_h3_sent,
                        k.lpj_reminder_h1_sent, k.lpj_overdue_notified,
-                       k.pengusul_user_id
+                       t.pengusul_user_id
                 FROM t_kegiatan k
+                JOIN t_kak t ON k.kak_id = t.kak_id
                 WHERE k.bendahara_cair_approved_at IS NOT NULL
                   AND k.lpj_submitted_at IS NULL
                   AND k.tgl_batas_lpj IS NOT NULL";
