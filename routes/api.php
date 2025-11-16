@@ -6,6 +6,8 @@ use App\Controllers\KAKController;
 use App\Controllers\LpjController;
 use App\Controllers\MasterController;
 use App\Controllers\PanduanController;
+use App\Controllers\DashboardController;
+use App\Controllers\NotificationController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
 use App\Middlewares\CorsMiddleware;
@@ -226,6 +228,20 @@ $router->get('/pencairan/kegiatan/{kegiatan_id}', 'PencairanController@index');
 
 // GET /api/pencairan/sisa-dana/{kegiatan_id} - Cek sisa dana
 $router->get('/pencairan/sisa-dana/{kegiatan_id}', 'PencairanController@getSisaDana');
+
+// ============================================
+// NOTIFICATION ROUTES
+// ============================================
+$router->get('/notifications', 'NotificationController@getNotificationsForUser');
+$router->post('/notifications/{id}/read', 'NotificationController@markAsRead');
+
+// ============================================
+// DASHBOARD ROUTES
+// ============================================
+$router->get('/dashboard/summary', 'DashboardController@getSummary');
+$router->get('/dashboard/lpj', 'DashboardController@getLpj');
+$router->get('/dashboard/template', 'DashboardController@getTemplates');
+$router->get('/dashboard/video', 'DashboardController@getVideos');
 
 // =====================================================
 // 11. DISPATCH ROUTER & HANDLE 404

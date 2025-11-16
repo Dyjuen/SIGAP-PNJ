@@ -311,4 +311,25 @@ class User
         
         return $this->db->execute();
     }
+
+    /**
+     * Find users by role id
+     */
+    public function findByRoleId($roleId)
+    {
+        $this->db->query("
+            SELECT
+                user_id,
+                username,
+                nama_lengkap,
+                email,
+                created_at
+            FROM
+                m_users
+            WHERE
+                role_id = :role_id
+        ");
+        $this->db->bind(':role_id', $roleId);
+        return $this->db->resultSet();
+    }
 }

@@ -14,17 +14,26 @@ use App\Models\KAKLogStatus;
 use App\Models\KAKManfaat;
 use App\Models\KAKTahapan;
 use App\Models\KAKTarget;
+use App\Models\Notifikasi;
+use App\Models\Role;
+use App\Models\User;
 use PDOException;
 
 class KAKController
 {
     private $db;
     private $kakModel;
+    private $notifikasiModel;
+    private $userModel;
+    private $roleModel;
 
     public function __construct()
     {
         $this->db = Database::getInstance();
         $this->kakModel = new KAK();
+        $this->notifikasiModel = new Notifikasi();
+        $this->userModel = new User();
+        $this->roleModel = new Role();
     }
 
     private function responseSuccess($data, $code = 200)
@@ -422,6 +431,20 @@ class KAKController
             $db->execute();
 
             $db->commit();
+
+            // Notify Verifikator
+            $role = $this->roleModel->findByName('Verifikator');
+            if ($role) {
+                $verifikators = $this->userModel->findByRoleId($role['role_id']);
+                foreach ($verifikators as $verifikator) {
+                    $this->notifikasiModel->create([
+                        'penerima_user_id' => $verifikator['user_id'],
+                        'pesan' => "KAK baru \"{$data['nama_kegiatan']}\" telah disubmit dan membutuhkan verifikasi.",
+                        'link_tujuan' => '/verifikator/kak/' . $id,
+                    ]);
+                }
+            }
+
             return $this->responseSuccess("KAK berhasil disubmit.");
         } catch (\Exception $e) {
             $this->db->rollBack();
@@ -509,6 +532,13 @@ class KAKController
             $db->execute();
 
             $db->commit();
+
+            // Notify Pengusul
+            $this->notifikasiModel->create([
+                'penerima_user_id' => $data['pengusul_user_id'],
+                'pesan' => "KAK Anda \"{$data['nama_kegiatan']}\" membutuhkan revisi.",
+                'link_tujuan' => '/pengusul/kak/' . $id,
+            ]);
 
             return $this->responseSuccess("Revisi berhasil diberikan.");
         } catch (\Exception $e) {
@@ -723,6 +753,13 @@ class KAKController
 
             $db->commit();
 
+            // Notify Pengusul
+            $this->notifikasiModel->create([
+                'penerima_user_id' => $data['pengusul_user_id'],
+                'pesan' => "KAK Anda \"{$data['nama_kegiatan']}\" telah disetujui oleh verifikator.",
+                'link_tujuan' => '/pengusul/kak/' . $id,
+            ]);
+
             return $this->responseSuccess("KAK berhasil disetujui.");
         } catch (\Exception $e) {
             $this->db->rollBack();
@@ -819,6 +856,13 @@ class KAKController
             }
 
             $db->commit();
+
+            // Notify Pengusul
+            $this->notifikasiModel->create([
+                'penerima_user_id' => $data['pengusul_user_id'],
+                'pesan' => "KAK Anda \"{$data['nama_kegiatan']}\" ditolak. " . ($catatan ? "Catatan: {$catatan}" : ""),
+                'link_tujuan' => '/pengusul/kak/' . $id,
+            ]);
 
             return $this->responseSuccess("KAK berhasil ditolak.");
         } catch (\Exception $e) {

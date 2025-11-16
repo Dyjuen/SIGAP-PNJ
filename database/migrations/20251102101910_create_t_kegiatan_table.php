@@ -16,7 +16,8 @@ final class CreateTKegiatanTable extends AbstractMigration
               ->addColumn('pelaksana_manual', 'string', ['limit' => 255, 'null' => true])
               ->addColumn('tanggal_mulai_final', 'date', ['null' => true])
               ->addColumn('surat_pengantar_path', 'string', ['limit' => 255, 'null' => true])
-              ->addColumn('tgl_batas_lpj', 'date', ['null' => true])
+              ->addColumn('tgl_batas_lpj', 'datetime', ['null' => true])
+              ->addColumn('lpj_submitted_at', 'datetime', ['null' => true])
               ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
               ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP', 'update' => 'CURRENT_TIMESTAMP'])
 

@@ -8,6 +8,8 @@ use App\Models\KegiatanAnggaran;
 use App\Models\KegiatanLampiran;
 use App\Models\KegiatanLogStatus;
 use App\Models\Notifikasi;
+use App\Models\Role;
+use App\Models\User;
 use App\Validators\KegiatanValidator;
 use App\Validators\AnggaranValidator;
 use App\Core\FileUpload;
@@ -23,6 +25,8 @@ class KegiatanController
     private $logStatusModel;
     private $notifikasiModel;
     private $telaahModel;
+    private $userModel;
+    private $roleModel;
     private $userData;
 
     public function __construct()
@@ -33,6 +37,8 @@ class KegiatanController
         $this->logStatusModel = new KegiatanLogStatus();
         $this->notifikasiModel = new Notifikasi();
         $this->telaahModel = new Telaah();
+        $this->userModel = new User();
+        $this->roleModel = new Role();
         
         // Get authenticated user data
         $this->userData = AuthMiddleware::getAuthUser();
@@ -46,32 +52,29 @@ class KegiatanController
     public function index()
     {
         try {
-            // Get query parameters
-            $status = $_GET['status'] ?? null;
-            $search = $_GET['search'] ?? null;
-            $tanggalMulai = $_GET['tanggal_mulai'] ?? null;
-            $tanggalSelesai = $_GET['tanggal_selesai'] ?? null;
-            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-            $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+            // Get query parameters for filtering, searching, and pagination
+            $filters = [
+                'status_id' => $_GET['status'] ?? null,
+                'search' => $_GET['search'] ?? null,
+                'tanggal_mulai' => $_GET['tanggal_mulai'] ?? null,
+                'tanggal_selesai' => $_GET['tanggal_selesai'] ?? null,
+                'unit_pengusul' => $_GET['unit_pengusul'] ?? null,
+                'kategori_kegiatan' => $_GET['kategori_kegiatan'] ?? null,
+                'kode_kegiatan' => $_GET['kode_kegiatan'] ?? null,
+                'page' => isset($_GET['page']) ? (int)$_GET['page'] : 1,
+                'per_page' => isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10
+            ];
 
-            // Authorization: Pengusul hanya bisa lihat kegiatan sendiri
-            $userId = null;
+            // Authorization: Pengusul can only see their own activities.
+            // Admin and other high-level roles can see all, but can filter by 'unit_pengusul'.
             if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
-                $userId = $this->userData['user_id'];
+                $filters['user_id'] = $this->userData['user_id'];
             }
 
             // Get kegiatan with filters
-            $kegiatan = $this->kegiatanModel->getAllWithFilters([
-                'status_id' => $status,
-                'search' => $search,
-                'tanggal_mulai' => $tanggalMulai,
-                'tanggal_selesai' => $tanggalSelesai,
-                'user_id' => $userId,
-                'page' => $page,
-                'per_page' => $perPage
-            ]);
+            $result = $this->kegiatanModel->getAllWithFilters($filters);
 
-            Response::success($kegiatan, 'Data kegiatan berhasil diambil.');
+            Response::success($result, 'Data kegiatan berhasil diambil.');
 
         } catch (\Exception $e) {
             Response::error('Gagal mengambil data kegiatan: ' . $e->getMessage(), 500);
@@ -195,6 +198,20 @@ class KegiatanController
             $this->telaahModel->update($telaahId, ['status_id' => 6]); // 6 = Proses Pencairan
 
             $db->commit();
+
+            // Notify PPK
+            $role = $this->roleModel->findByName('PPK');
+            if ($role) {
+                $ppkUsers = $this->userModel->findByRoleId($role['role_id']);
+                $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+                foreach ($ppkUsers as $ppk) {
+                    $this->notifikasiModel->create([
+                        'penerima_user_id' => $ppk['user_id'],
+                        'pesan' => "Kegiatan baru \"{$kegiatan['nama_kegiatan']}\" telah dibuat dan menunggu persetujuan Anda.",
+                        'link_tujuan' => '/verifikator/kegiatan/' . $kegiatanId,
+                    ]);
+                }
+            }
 
             Response::created([
                 'kegiatan_id' => $kegiatanId,
@@ -606,7 +623,22 @@ class KegiatanController
                 $this->kegiatanModel->updateApprovalStatus($nextApproval['approval_kegiatan_id'], 'Aktif');
                 
                 // Notify next approver
-                // (Implementation depends on how you map roles to users)
+                $nextApproverRoleName = $nextApproval['approval_level'];
+                if (in_array($nextApproverRoleName, ['Bendahara-Cair', 'Bendahara-LPJ'])) {
+                    $nextApproverRoleName = 'Bendahara';
+                }
+
+                $role = $this->roleModel->findByName($nextApproverRoleName);
+                if ($role) {
+                    $nextApprovers = $this->userModel->findByRoleId($role['role_id']);
+                    foreach ($nextApprovers as $approver) {
+                        $this->notifikasiModel->create([
+                            'penerima_user_id' => $approver['user_id'],
+                            'pesan' => "Kegiatan \"{$kegiatan['nama_kegiatan']}\" membutuhkan persetujuan Anda.",
+                            'link_tujuan' => '/verifikator/kegiatan/' . $kegiatanId, // Generic link for approvers
+                        ]);
+                    }
+                }
 
                 $db->commit();
 
@@ -626,6 +658,13 @@ class KegiatanController
                      $this->notifikasiModel->create([
                         'penerima_user_id' => $kegiatan['pengusul_user_id'],
                         'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah disetujui. Kegiatan selesai.",
+                        'link_tujuan' => '/pengusul/kegiatan/' . $kegiatanId,
+                    ]);
+
+                    // General final approval notification
+                    $this->notifikasiModel->create([
+                        'penerima_user_id' => $kegiatan['pengusul_user_id'],
+                        'pesan' => "Kegiatan Anda \"{$kegiatan['nama_kegiatan']}\" telah sepenuhnya disetujui.",
                         'link_tujuan' => '/pengusul/kegiatan/' . $kegiatanId,
                     ]);
 
