@@ -13,7 +13,7 @@ final class CreateTKakApprovalTable extends AbstractMigration
               ->addColumn('kak_id', 'integer')
               ->addColumn('approver_user_id', 'integer')
               ->addColumn('status', 'enum', [
-                  'values' => ['Menunggu', 'Aktif', 'Revisi', 'Disetujui'],
+                  'values' => ['Menunggu', 'Aktif', 'Revisi', 'Disetujui', 'Ditolak'],
                   'default' => 'Menunggu'
               ])
               ->addColumn('catatan', 'text', ['null' => true])
