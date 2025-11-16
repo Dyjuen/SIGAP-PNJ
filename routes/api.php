@@ -10,6 +10,7 @@ use App\Controllers\DashboardController;
 use App\Controllers\NotificationController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
+use App\Middlewares\RateLimitMiddleware;
 use App\Middlewares\CorsMiddleware;
 use App\Core\Router;
 
@@ -18,6 +19,13 @@ use App\Core\Router;
 // =====================================================
 $cors = new CorsMiddleware();
 $cors->handle();
+
+// =====================================================
+// 1.1. APPLY GLOBAL RATE LIMIT MIDDLEWARE
+// =====================================================
+$rateLimit = new RateLimitMiddleware(50, 10, 'global_access');
+$rateLimit->handle();
+
 
 // Start session for captcha
 if (session_status() === PHP_SESSION_NONE) {

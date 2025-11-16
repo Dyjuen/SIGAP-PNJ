@@ -66,10 +66,7 @@ class RateLimitMiddleware implements Middleware
      */
     private function getRateLimitKey(): string
     {
-        $ip = $this->getClientIp();
-        $endpoint = $_SERVER['REQUEST_URI'] ?? '/';
-        
-        return $this->prefix . ':' . md5($ip . $endpoint);
+        return $this->prefix . ':global';
     }
 
     /**
