@@ -291,12 +291,8 @@ export function renderUsulanKakPage(path, userRole) {
                   </div>
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
                       <option value="">Input</option>
-                      <option value="unit">Unit</option>
-                      <option value="pcs">Pcs</option>
-                      <option value="box">Box</option>
-                      <option value="set">Set</option>
                     </select>
                   </div>
                   <div>
@@ -311,11 +307,8 @@ export function renderUsulanKakPage(path, userRole) {
                   </div>
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
                       <option value="">Input</option>
-                      <option value="hari">Hari</option>
-                      <option value="bulan">Bulan</option>
-                      <option value="tahun">Tahun</option>
                     </select>
                   </div>
                   <div>
@@ -355,12 +348,8 @@ export function renderUsulanKakPage(path, userRole) {
                   </div>
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
                       <option value="">Input</option>
-                      <option value="orang">Orang</option>
-                      <option value="jam">Jam</option>
-                      <option value="hari">Hari</option>
-                      <option value="bulan">Bulan</option>
                     </select>
                   </div>
                   <div>
@@ -375,11 +364,8 @@ export function renderUsulanKakPage(path, userRole) {
                   </div>
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
                       <option value="">Input</option>
-                      <option value="hari">Hari</option>
-                      <option value="bulan">Bulan</option>
-                      <option value="tahun">Tahun</option>
                     </select>
                   </div>
                   <div>
@@ -419,11 +405,8 @@ export function renderUsulanKakPage(path, userRole) {
                   </div>
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
                       <option value="">Input</option>
-                      <option value="orang">Orang</option>
-                      <option value="perjalanan">Perjalanan</option>
-                      <option value="kali">Kali</option>
                     </select>
                   </div>
                   <div>
@@ -438,11 +421,8 @@ export function renderUsulanKakPage(path, userRole) {
                   </div>
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
                       <option value="">Input</option>
-                      <option value="hari">Hari</option>
-                      <option value="bulan">Bulan</option>
-                      <option value="tahun">Tahun</option>
                     </select>
                   </div>
                   <div>
@@ -465,7 +445,7 @@ export function renderUsulanKakPage(path, userRole) {
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackRab">
               <span>←</span> Back
             </button>
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnSubmitRab">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnSubmitRab">
               Submit
             </button>
           </div>
@@ -479,7 +459,7 @@ export function renderUsulanKakPage(path, userRole) {
   renderDashboardLayout(pageContent, userRole);
 
   // Add custom CSS for daterangepicker colors
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     /* Override Bootstrap Daterangepicker colors to match cyan theme */
     .daterangepicker {
@@ -589,12 +569,13 @@ export function renderUsulanKakPage(path, userRole) {
   // Load required libraries dynamically
   const loadDateRangePicker = () => {
     // Load moment.js
-    const momentScript = document.createElement('script');
-    momentScript.src = '../../assets/vendor/libs/moment/moment.js';
+    const momentScript = document.createElement("script");
+    momentScript.src = "../../assets/vendor/libs/moment/moment.js";
     momentScript.onload = () => {
       // Load daterangepicker after moment is loaded
-      const daterangeScript = document.createElement('script');
-      daterangeScript.src = '../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js';
+      const daterangeScript = document.createElement("script");
+      daterangeScript.src =
+        "../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js";
       daterangeScript.onload = initializeDateRangePickers;
       document.head.appendChild(daterangeScript);
     };
@@ -603,34 +584,47 @@ export function renderUsulanKakPage(path, userRole) {
 
   // Initialize Bootstrap DateRangePickers
   function initializeDateRangePickers() {
-    if (typeof $ !== 'undefined' && $.fn.daterangepicker) {
+    if (typeof $ !== "undefined" && $.fn.daterangepicker) {
       // Kurun Waktu - Date Range Picker (Start and End Date in one input)
-      $('#kurunWaktu').daterangepicker({
+      $("#kurunWaktu").daterangepicker({
         showDropdowns: true,
         minYear: 2020,
-        maxYear: parseInt(moment().format('YYYY'), 10) + 5,
+        maxYear: parseInt(moment().format("YYYY"), 10) + 5,
         locale: {
-          format: 'DD/MM/YYYY',
-          separator: ' - ',
-          applyLabel: 'Apply',
-          cancelLabel: 'Cancel',
-          fromLabel: 'From',
-          toLabel: 'To',
-          customRangeLabel: 'Custom',
-          weekLabel: 'W',
-          daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-          monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-          firstDay: 1
+          format: "DD/MM/YYYY",
+          separator: " - ",
+          applyLabel: "Apply",
+          cancelLabel: "Cancel",
+          fromLabel: "From",
+          toLabel: "To",
+          customRangeLabel: "Custom",
+          weekLabel: "W",
+          daysOfWeek: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+          monthNames: [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ],
+          firstDay: 1,
         },
-        startDate: moment('2025-03-11', 'YYYY-MM-DD'),
-        endDate: moment('2025-03-11', 'YYYY-MM-DD').add(7, 'days'),
-        opens: 'right'
+        startDate: moment("2025-03-11", "YYYY-MM-DD"),
+        endDate: moment("2025-03-11", "YYYY-MM-DD").add(7, "days"),
+        opens: "right",
       });
 
       // Optional: Handle date change event
-      $('#kurunWaktu').on('apply.daterangepicker', function(ev, picker) {
-        console.log('Start Date: ' + picker.startDate.format('DD/MM/YYYY'));
-        console.log('End Date: ' + picker.endDate.format('DD/MM/YYYY'));
+      $("#kurunWaktu").on("apply.daterangepicker", function (ev, picker) {
+        console.log("Start Date: " + picker.startDate.format("DD/MM/YYYY"));
+        console.log("End Date: " + picker.endDate.format("DD/MM/YYYY"));
       });
     }
   }
@@ -648,10 +642,10 @@ export function renderUsulanKakPage(path, userRole) {
     "kurun-waktu",
   ];
 
-        // Update Main Progress Step Display
-        function updateMainStepDisplay() {
-          const progressSteps = document.querySelectorAll(".progress-step-item");
-      progressSteps.forEach((step, index) => {
+  // Update Main Progress Step Display
+  function updateMainStepDisplay() {
+    const progressSteps = document.querySelectorAll(".progress-step-item");
+    progressSteps.forEach((step, index) => {
       const stepNum = index + 1;
       const circle = step.querySelector(".progress-step-circle");
       const text = step.querySelector(".progress-step-text");
@@ -696,24 +690,27 @@ export function renderUsulanKakPage(path, userRole) {
       });
   }
 
-        // Initialize
-        function init() {
-          loadDateRangePicker();
-          updateMainStepDisplay();
-          updateStepDisplay();
-          attachEventListeners();
-          populateIkuDropdowns(); // Populate IKU dropdowns on init
-        }
-  
-        // ==============================================  // API FUNCTIONS
+  // Initialize
+  function init() {
+    loadDateRangePicker();
+    updateMainStepDisplay();
+    updateStepDisplay();
+    attachEventListeners();
+    populateIkuDropdowns(); // Populate IKU dropdowns on init
+    populateSatuanDropdowns(); // Populate Satuan dropdowns on init
+  }
+
+  // ==============================================  // API FUNCTIONS
   // ==============================================
   async function apiRequest(endpoint, options = {}) {
-    const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
     const defaultHeaders = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     };
-    
+
     const config = {
       ...options,
       headers: {
@@ -721,32 +718,32 @@ export function renderUsulanKakPage(path, userRole) {
         ...options.headers,
       },
     };
-    
+
     try {
       const response = await fetch(`/api${endpoint}`, config);
       const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+      if (!response.ok || response.status !== 201) { // Check for successful HTTP status code
+        throw new Error(data.message || `API request failed with status ${response.status}`);
       }
       return data;
     } catch (error) {
-      console.error('API Request Error:', error);
+      console.error("API Request Error:", error);
       throw error;
     }
   }
 
-  async function submitTelaah(data) {
-    return await apiRequest('/telaah', {
-      method: 'POST',
+  async function submitKak(data) {
+    return await apiRequest("/kak", {
+      method: "POST",
       body: JSON.stringify(data),
     });
   }
 
   function deriveKurunWaktuPelaksanaan(startDate, endDate) {
     if (!startDate || !endDate) return "";
-    const start = moment(startDate, 'YYYY-MM-DD');
-    const end = moment(endDate, 'YYYY-MM-DD');
-    const diffDays = end.diff(start, 'days') + 1; // +1 to include both start and end day
+    const start = moment(startDate, "YYYY-MM-DD");
+    const end = moment(endDate, "YYYY-MM-DD");
+    const diffDays = end.diff(start, "days") + 1;
 
     if (diffDays <= 0) return "";
 
@@ -755,11 +752,15 @@ export function renderUsulanKakPage(path, userRole) {
     } else if (diffDays < 365) {
       const months = Math.floor(diffDays / 30);
       const remainingDays = diffDays % 30;
-      return `${months} bulan ${remainingDays > 0 ? `${remainingDays} hari` : ''}`.trim();
+      return `${months} bulan ${
+        remainingDays > 0 ? `${remainingDays} hari` : ""
+      }`.trim();
     } else {
       const years = Math.floor(diffDays / 365);
       const remainingMonths = Math.floor((diffDays % 365) / 30);
-      return `${years} tahun ${remainingMonths > 0 ? `${remainingMonths} bulan` : ''}`.trim();
+      return `${years} tahun ${
+        remainingMonths > 0 ? `${remainingMonths} bulan` : ""
+      }`.trim();
     }
   }
 
@@ -769,40 +770,74 @@ export function renderUsulanKakPage(path, userRole) {
     const maxLength = Math.max(sasaranArray.length, manfaatArray.length);
     for (let i = 0; i < maxLength; i++) {
       combined.push({
-        sasaran_utama: sasaranArray[i] || '',
-        manfaat: manfaatArray[i] || ''
+        sasaran_utama: sasaranArray[i] || "",
+        manfaat: manfaatArray[i] || "",
       });
     }
     return combined;
   }
 
-  // Placeholder for mapping satuan string to ID. Needs API call for m_satuan
-  function mapSatuanToId(satuanString) {
-    // For now, return a default ID. This needs proper lookup from m_satuan master data
-    const satuanMap = {
-      'Unit': 1, 'pcs': 2, 'box': 3, 'set': 4, // Example IDs
-      'orang': 5, 'jam': 6, 'hari': 7, 'bulan': 8, 'tahun': 9, // Example IDs
-      'perjalanan': 10, 'kali': 11
-    };
-    return satuanMap[satuanString.toLowerCase()] || 1; // Default to ID 1
-  }
-
-  // Populate IKU dropdowns with dummy data (1-8)
+  // Populate IKU dropdowns from dummy data
   function populateIkuDropdowns() {
-    const ikuSelects = document.querySelectorAll('#ikuRenstraContainer select');
-    ikuSelects.forEach(select => {
-      // Clear existing options except the first one (if it's a placeholder)
-      // Check if the first option is a placeholder and keep it if so
-      const isPlaceholder = select.options.length > 0 && select.options[0].value === "";
-      while (select.options.length > (isPlaceholder ? 1 : 0)) { 
+    const dummyIkuData = [
+      {
+        iku_id: 1,
+        kode_iku: "IKU001",
+        nama_iku: "Peningkatan Kualitas Lulusan",
+      },
+      {
+        iku_id: 2,
+        kode_iku: "IKU002",
+        nama_iku: "Peningkatan Relevansi Penelitian",
+      },
+      {
+        iku_id: 3,
+        kode_iku: "IKU003",
+        nama_iku: "Peningkatan Tata Kelola Perguruan Tinggi",
+      },
+    ];
+
+    const ikuSelects = document.querySelectorAll("#ikuRenstraContainer select");
+    ikuSelects.forEach((select) => {
+      const isPlaceholder =
+        select.options.length > 0 && select.options[0].value === "";
+      while (select.options.length > (isPlaceholder ? 1 : 0)) {
         select.remove(isPlaceholder ? 1 : 0);
       }
-      for (let i = 1; i <= 8; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = `IKU #${i}`;
+
+      dummyIkuData.forEach((iku) => {
+        const option = document.createElement("option");
+        option.value = iku.iku_id;
+        option.textContent = iku.nama_iku;
         select.appendChild(option);
+      });
+    });
+  }
+
+  // Populate Satuan dropdowns from dummy data
+  function populateSatuanDropdowns() {
+    const dummySatuanData = [
+      { satuan_id: 1, nama_satuan: "Unit" },
+      { satuan_id: 2, nama_satuan: "Orang" },
+      { satuan_id: 3, nama_satuan: "Paket" },
+      { satuan_id: 4, nama_satuan: "Kegiatan" },
+      { satuan_id: 5, nama_satuan: "Jam" },
+    ];
+
+    const satuanSelects = document.querySelectorAll(".satuan-select");
+    satuanSelects.forEach((select) => {
+      const isPlaceholder =
+        select.options.length > 0 && select.options[0].value === "";
+      while (select.options.length > (isPlaceholder ? 1 : 0)) {
+        select.remove(isPlaceholder ? 1 : 0);
       }
+
+      dummySatuanData.forEach((satuan) => {
+        const option = document.createElement("option");
+        option.value = satuan.satuan_id;
+        option.textContent = satuan.nama_satuan;
+        select.appendChild(option);
+      });
     });
   }
 
@@ -811,118 +846,122 @@ export function renderUsulanKakPage(path, userRole) {
     const getDynamicListValues = (containerId) => {
       const container = document.getElementById(containerId);
       if (!container) return [];
-      return Array.from(container.querySelectorAll('input[type="text"]')).map(input => input.value).filter(Boolean);
+      return Array.from(container.querySelectorAll('input[type="text"]'))
+        .map((input) => input.value)
+        .filter(Boolean);
     };
 
-    // Helper function to get values from complex dynamic rows for t_telaah_target
-    const getTargetData = () => { // Renamed from getIndikatorKinerja
-      const container = document.getElementById('indikatorKinerjaContainer');
+    // Helper function to get values from complex dynamic rows for t_kak_target
+    const getTargetData = () => {
+      const container = document.getElementById("indikatorKinerjaContainer");
       if (!container) return [];
-      const rows = container.querySelectorAll('.flex.items-end.gap-4');
-      return Array.from(rows).map(row => ({
-        bulan_indikator: row.children[0].querySelector('input').value, // Frontend "Bulan"
-        deskripsi_target: row.children[1].querySelector('input').value, // Frontend "Indikator Keberhasilan"
-        persentase_target: parseFloat(row.children[2].querySelector('input').value) || 0 // Frontend "Target"
-      })).filter(item => item.bulan_indikator || item.deskripsi_target || item.persentase_target);
+      const rows = container.querySelectorAll(".flex.items-end.gap-4");
+      return Array.from(rows)
+        .map((row) => ({
+          bulan_indikator: row.children[0].querySelector("input").value,
+          deskripsi_target: row.children[1].querySelector("input").value,
+          persentase_target:
+            parseFloat(row.children[2].querySelector("input").value) || 0,
+        }))
+        .filter(
+          (item) =>
+            item.bulan_indikator ||
+            item.deskripsi_target ||
+            item.persentase_target
+        );
     };
 
-    const getIkuRenstraData = () => { // Renamed from getIkuRenstra
-        const container = document.getElementById('ikuRenstraContainer');
-        if (!container) return [];
-        return Array.from(container.querySelectorAll('.iku-item')).map(row => {
-            const inputs = row.querySelectorAll('input, select');
-            return {
-                iku_id: parseInt(inputs[0].value) || 0, // Assuming value is iku_id
-                persentase_target: parseFloat(inputs[1].value) || 0,
-            }
-        }).filter(item => item.iku_id || item.persentase_target);
-    }
+    const getIkuRenstraData = () => {
+      const container = document.getElementById("ikuRenstraContainer");
+      if (!container) return [];
+      return Array.from(container.querySelectorAll(".iku-item"))
+        .map((row) => {
+          const inputs = row.querySelectorAll("input, select");
+          return {
+            iku_id: parseInt(inputs[0].value) || 0,
+            persentase_target: parseFloat(inputs[1].value) || 0,
+          };
+        })
+        .filter((item) => item.iku_id || item.persentase_target);
+    };
 
-    const getAnggaranItems = (containerId) => { // Renamed from getAnggaran
-        const container = document.getElementById(containerId);
-        if (!container) return [];
-        return Array.from(container.querySelectorAll('.grid')).map(row => {
-            const inputs = row.querySelectorAll('input, select');
-            return {
-                uraian: inputs[0].value,
-                volume1: parseInt(inputs[1].value) || 1,
-                satuan1_str: inputs[2].value, // Storing string for now, needs mapping to ID
-                volume2: parseInt(inputs[3].value) || 1,
-                satuan2_str: inputs[4].value, // Storing string for now, needs mapping to ID
-                harga_satuan: parseFloat(inputs[5].value) || 0,
-            }
-        }).filter(item => item.uraian || item.harga_satuan);
-    }
-    
+    const getAnggaranItems = (containerId) => {
+      const container = document.getElementById(containerId);
+      if (!container) return [];
+      return Array.from(container.querySelectorAll(".grid"))
+        .map((row) => {
+          const inputs = row.querySelectorAll("input, select");
+          return {
+            uraian: inputs[0].value,
+            volume1: parseInt(inputs[1].value) || 1,
+            satuan_id: parseInt(inputs[2].value) || null, // Directly get satuan_id from select value
+            volume2: parseInt(inputs[3].value) || 1,
+            satuan2_id: parseInt(inputs[4].value) || null, // Directly get satuan_id from select value
+            harga_satuan: parseFloat(inputs[5].value) || 0,
+          };
+        })
+        .filter((item) => item.uraian || item.harga_satuan);
+    };
+
     // Get date range from daterangepicker
     let tanggalMulai = null;
     let tanggalSelesai = null;
-    if (typeof $ !== 'undefined' && $('#kurunWaktu').data('daterangepicker')) {
-        tanggalMulai = $('#kurunWaktu').data('daterangepicker').startDate.format('YYYY-MM-DD');
-        tanggalSelesai = $('#kurunWaktu').data('daterangepicker').endDate.format('YYYY-MM-DD');
+    if (typeof $ !== "undefined" && $("#kurunWaktu").data("daterangepicker")) {
+      tanggalMulai = $("#kurunWaktu")
+        .data("daterangepicker")
+        .startDate.format("YYYY-MM-DD");
+      tanggalSelesai = $("#kurunWaktu")
+        .data("daterangepicker")
+        .endDate.format("YYYY-MM-DD");
     }
 
-    const sasaranUtamaList = getDynamicListValues('sasaranUtamaContainer');
-    const manfaatList = getDynamicListValues('manfaatContainer');
-    
+    const sasaranUtamaList = getDynamicListValues("sasaranUtamaContainer");
+    const manfaatList = getDynamicListValues("manfaatContainer");
+    const indikatorKinerjaData = getTargetData();
+
     const formData = {
-      kak: { // This is the main KAK object
-        nama_kegiatan: document.getElementById('namaKegiatan')?.value || '',
-        deskripsi_kegiatan: document.getElementById('gambaranUmum')?.value || '', // Map gambaran_umum to deskripsi_kegiatan
-        metode_pelaksanaan: document.getElementById('metodePelaksanaan')?.value || '',
-        kurun_waktu_pelaksanaan: deriveKurunWaktuPelaksanaan(tanggalMulai, tanggalSelesai) || '', 
-        tanggal_mulai: tanggalMulai || '',
-        tanggal_selesai: tanggalSelesai || '',
-        lokasi: 'PNJ Depok', // Placeholder: Missing input in frontend form, or get from user profile
-        
-        // Assembled penerima_manfaat to match backend array of objects
+      kak: {
+        nama_kegiatan: document.getElementById("namaKegiatan")?.value || "",
+        deskripsi_kegiatan:
+          document.getElementById("gambaranUmum")?.value || "",
+        metode_pelaksanaan:
+          document.getElementById("metodePelaksanaan")?.value || "",
+        kurun_waktu_pelaksanaan:
+          deriveKurunWaktuPelaksanaan(tanggalMulai, tanggalSelesai) || "",
+        tanggal_mulai: tanggalMulai || "",
+        tanggal_selesai: tanggalSelesai || "",
+        lokasi: "PNJ Depok",
+
+        // Assembled penerima_manfaat
         penerima_manfaat: combineSasaranManfaat(sasaranUtamaList, manfaatList),
-        
-        // Transformed tahapan_pelaksanaan to match backend array of objects
-        tahapan_pelaksanaan: getDynamicListValues('tahapanPelaksanaanContainer').map((nama, index) => ({
-            nama_tahapan: nama,
-            urutan: index + 1
+
+        // Transformed tahapan_pelaksanaan
+        tahapan_pelaksanaan: getDynamicListValues(
+          "tahapanPelaksanaanContainer"
+        ).map((nama, index) => ({
+          nama_tahapan: nama,
+          urutan: index + 1,
         })),
 
-        // Indikator Kinerja is now empty for kak header, as step 1.4 maps to top-level 'target'
-        indikator_kinerja: [], 
-      },
-      // These are top-level arrays for $input['target_iku'] and $input['target'] and $input['rab']
-      target_iku: getIkuRenstraData().map(item => ({ 
-          iku_id: item.iku_id, 
-          persentase_target: item.persentase_target
-      })),
-      target: getTargetData().map(item => ({ 
-          deskripsi_target: item.deskripsi_target,
+        // FIX: Include indikator_kinerja data here instead of empty array
+        indikator_kinerja: indikatorKinerjaData.map((item) => ({
           bulan_indikator: item.bulan_indikator,
-          persentase_target: item.persentase_target
+          deskripsi_target: item.deskripsi_target,
+          persentase_target: item.persentase_target,
+        })),
+      },
+
+      // These are top-level arrays for target_iku and rab
+      target_iku: getIkuRenstraData().map((item) => ({
+        iku_id: item.iku_id,
+        persentase_target: item.persentase_target,
       })),
-      rab: [ // Flattened anggaran
-        ...getAnggaranItems('belanjaBarangContainer').map(item => ({
-            uraian: item.uraian,
-            volume1: item.volume1,
-            volume2: item.volume2,
-            satuan_id: mapSatuanToId(item.satuan1_str), // Using helper map string to ID
-            harga_satuan: item.harga_satuan,
-            jumlah_diusulkan: item.volume1 * item.volume2 * item.harga_satuan // Calculate total
-        })),
-        ...getAnggaranItems('belanjaJasaContainer').map(item => ({
-            uraian: item.uraian,
-            volume1: item.volume1,
-            volume2: item.volume2,
-            satuan_id: mapSatuanToId(item.satuan1_str), // Using helper map string to ID
-            harga_satuan: item.harga_satuan,
-            jumlah_diusulkan: item.volume1 * item.volume2 * item.harga_satuan // Calculate total
-        })),
-        ...getAnggaranItems('belanjaPerjalananContainer').map(item => ({
-            uraian: item.uraian,
-            volume1: item.volume1,
-            volume2: item.volume2,
-            satuan_id: mapSatuanToId(item.satuan1_str), // Using helper map string to ID
-            harga_satuan: item.harga_satuan,
-            jumlah_diusulkan: item.volume1 * item.volume2 * item.harga_satuan // Calculate total
-        })),
-      ]
+
+      rab: [
+        ...getAnggaranItems("belanjaBarangContainer"),
+        ...getAnggaranItems("belanjaJasaContainer"),
+        ...getAnggaranItems("belanjaPerjalananContainer"),
+      ],
     };
 
     console.log("Collected Form Data:", formData);
@@ -939,31 +978,27 @@ export function renderUsulanKakPage(path, userRole) {
       btnSubmitRab.addEventListener("click", async () => {
         // Show loading state
         btnSubmitRab.disabled = true;
-        btnSubmitRab.innerHTML = 'Submitting... <span class="spinner-border spinner-border-sm"></span>';
+        btnSubmitRab.innerHTML =
+          'Submitting... <span class="spinner-border spinner-border-sm"></span>';
 
         try {
           const formData = collectFormData();
           console.log("Submitting data:", formData);
 
-          const result = await submitTelaah(formData);
+          const result = await submitKak(formData);
 
-          if (result.status) {
-            showSuccess("Usulan KAK berhasil diajukan!");
-            // Redirect to monitoring page
-            window.location.hash = "#/pengusul/monitoring-usulan";
-          } else {
-            throw new Error(result.message || "Terjadi kesalahan saat pengajuan.");
-          }
-
+          showSuccess("Usulan KAK berhasil diajukan!");
+          // Redirect to monitoring page
+          window.location.hash = "#/pengusul/monitoring-usulan";
         } catch (error) {
           showError(`Error: ${error.message}`);
           // Re-enable button on error
           btnSubmitRab.disabled = false;
-          btnSubmitRab.innerHTML = 'Submit';
+          btnSubmitRab.innerHTML = "Submit";
         }
       });
     }
-     
+
     // Progress step items - allow clicking to navigate
     document.querySelectorAll(".progress-step-item").forEach((step) => {
       step.addEventListener("click", function () {
@@ -1145,21 +1180,51 @@ export function renderUsulanKakPage(path, userRole) {
   };
 
   window.addIndikatorKinerja = function () {
-    const item = btn.closest(".iku-item");
-    const container = document.getElementById("ikuRenstraContainer");
-    if (container.querySelectorAll(".iku-item").length > 1) {
-      item.remove();
-    } else {
-      showError("Minimal harus ada 1 field!");
-    }
+    // This function seems to be misplaced or incorrectly named,
+    // as it tries to remove an IKU item but is named addIndikatorKinerja.
+    // Assuming it's meant to add an indikator kinerja field, similar to others.
+    // For now, I'll comment out the original incorrect logic to avoid errors.
+    // The actual addIndikatorKinerja logic would likely be similar to addIkuField,
+    // but targetting #indikatorKinerjaContainer.
+
+    // const item = btn.closest(".iku-item"); // This refers to an IKU item
+    // const container = document.getElementById("ikuRenstraContainer"); // This refers to IKU container
+    // if (container.querySelectorAll(".iku-item").length > 1) {
+    //   item.remove();
+    // } else {
+    //   showError("Minimal harus ada 1 field!");
+    // }
+
+    // Corrected logic for adding Indikator Kinerja fields (Target data)
+    const container = document.getElementById("indikatorKinerjaContainer");
+    const newItem = document.createElement("div");
+    newItem.className = "flex items-end gap-4 mb-6";
+    newItem.innerHTML = `
+      <div class='w-full'>
+        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+      </div>
+      <div class='w-full'>
+        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+      </div>
+      <div class='w-full'>
+        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+      </div>
+      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
+        <span class="text-xl font-bold">−</span>
+      </button>
+    `;
+    container.appendChild(newItem);
   };
 
-    window.addIkuField = function () {
-      const container = document.getElementById("ikuRenstraContainer");
-      const newItem = document.createElement("div");
-      newItem.className =
-        "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
-      newItem.innerHTML = `
+  window.addIkuField = function () {
+    const container = document.getElementById("ikuRenstraContainer");
+    const newItem = document.createElement("div");
+    newItem.className =
+      "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
+    newItem.innerHTML = `
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
@@ -1177,18 +1242,22 @@ export function renderUsulanKakPage(path, userRole) {
               <span class="text-xl font-bold">−</span>
             </button>
           `;
-          container.appendChild(newItem);
-          populateIkuDropdowns(); // Populate dropdowns for new item
-        };
+    container.appendChild(newItem);
+    populateIkuDropdowns(); // Populate dropdowns for new item
+  };
   // Increment/Decrement value functions
-  window.incrementValue = function(btn, step) {
-    const input = btn.closest('.relative').querySelector('input[type="number"]');
+  window.incrementValue = function (btn, step) {
+    const input = btn
+      .closest(".relative")
+      .querySelector('input[type="number"]');
     const currentValue = parseInt(input.value) || 1;
     input.value = currentValue + step;
   };
 
-  window.decrementValue = function(btn, step) {
-    const input = btn.closest('.relative').querySelector('input[type="number"]');
+  window.decrementValue = function (btn, step) {
+    const input = btn
+      .closest(".relative")
+      .querySelector('input[type="number"]');
     const currentValue = parseInt(input.value) || 1;
     const minValue = parseInt(input.min) || 1;
     if (currentValue > minValue) {
@@ -1197,8 +1266,10 @@ export function renderUsulanKakPage(path, userRole) {
   };
 
   // Belanja item functions
-  window.removeBelanjaItem = function(btn, containerId) {
-    const item = btn.closest('.belanja-barang-item, .belanja-jasa-item, .belanja-perjalanan-item');
+  window.removeBelanjaItem = function (btn, containerId) {
+    const item = btn.closest(
+      ".belanja-barang-item, .belanja-jasa-item, .belanja-perjalanan-item"
+    );
     const container = document.getElementById(containerId);
     if (container.children.length > 1) {
       item.remove();
@@ -1207,28 +1278,176 @@ export function renderUsulanKakPage(path, userRole) {
     }
   };
 
-  window.addBelanjaBarang = function() {
+  window.addBelanjaBarang = function () {
     const container = document.getElementById("belanjaBarangContainer");
     const newItem = document.createElement("div");
     newItem.className = "belanja-barang-item mb-8 p-6 rounded-lg";
-    newItem.innerHTML = container.querySelector('.belanja-barang-item').innerHTML;
+    // Construct innerHTML dynamically for select elements
+    newItem.innerHTML = `
+      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+          <div class="relative">
+            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+          <div class="relative">
+            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        </div>
+        <div class="flex items-end pb-3">
+          <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaBarangContainer')">
+            <span class="text-xl font-bold">−</span>
+          </button>
+        </div>
+      </div>
+    `;
     container.appendChild(newItem);
+    populateSatuanDropdowns(); // Populate dropdowns for new item
   };
 
-  window.addBelanjaJasa = function() {
+  window.addBelanjaJasa = function () {
     const container = document.getElementById("belanjaJasaContainer");
     const newItem = document.createElement("div");
     newItem.className = "belanja-jasa-item mb-8 p-6 rounded-lg";
-    newItem.innerHTML = container.querySelector('.belanja-jasa-item').innerHTML;
+    newItem.innerHTML = `
+      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+          <div class="relative">
+            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+          <div class="relative">
+            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        </div>
+        <div class="flex items-end pb-3">
+          <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaJasaContainer')">
+            <span class="text-xl font-bold">−</span>
+          </button>
+        </div>
+      </div>
+    `;
     container.appendChild(newItem);
+    populateSatuanDropdowns(); // Populate dropdowns for new item
   };
 
-  window.addBelanjaPerjalanan = function() {
+  window.addBelanjaPerjalanan = function () {
     const container = document.getElementById("belanjaPerjalananContainer");
     const newItem = document.createElement("div");
     newItem.className = "belanja-perjalanan-item mb-8 p-6 rounded-lg";
-    newItem.innerHTML = container.querySelector('.belanja-perjalanan-item').innerHTML;
+    newItem.innerHTML = `
+      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+          <div class="relative">
+            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+          <div class="relative">
+            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        </div>
+        <div class="flex items-end pb-3">
+          <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaPerjalananContainer')">
+            <span class="text-xl font-bold">−</span>
+          </button>
+        </div>
+      </div>
+    `;
     container.appendChild(newItem);
+    populateSatuanDropdowns(); // Populate dropdowns for new item
   };
 
   // Initialize

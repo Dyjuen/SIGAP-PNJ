@@ -638,7 +638,7 @@ export function renderPencairanDanaPage(path, userRole) {
           <button class="btn btn-sm btn-action btn-selesai" data-id="${
             item.kegiatan_id
           }">
-            <i class="ti">&#xec63;</i> UM Selesai
+            <i class="ti">&#xec63;</i> Selesaikan Pencairan
           </button>
         </td>
       `;
@@ -731,32 +731,48 @@ export function renderPencairanDanaPage(path, userRole) {
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
-    // Row checkboxes (selectAll not fully implemented yet)
-    // document.querySelectorAll('.row-checkbox').forEach(checkbox => {
-    //   checkbox.addEventListener('change', updateSelectAll);
-    // });
-
     // Cairkan buttons
     document.querySelectorAll(".btn-cairkan").forEach((btn) => {
       btn.addEventListener("click", () => handleCairkan(btn.dataset.id));
     });
 
-    // UM Selesai buttons
+    // Selesaikan Pencairan buttons
     document.querySelectorAll(".btn-selesai").forEach((btn) => {
-      btn.addEventListener("click", () => handleUmSelesai(btn.dataset.id));
+      btn.addEventListener("click", () => handleSelesaikanPencairan(btn.dataset.id));
     });
   }
 
-  // Select all functionality (placeholder)
-  // const selectAllCheckbox = document.getElementById('selectAll');
-  // if (selectAllCheckbox) {
-  //   selectAllCheckbox.addEventListener('change', function() {
-  //     const checkboxes = document.querySelectorAll('.row-checkbox');
-  //     checkboxes.forEach(cb => cb.checked = this.checked);
-  //   });
-  // }
+  async function handleSelesaikanPencairan(kegiatanId) {
+    // Step 1 — Confirmation modal
+    const confirmResult = await Swal.fire({
+      title: "Selesaikan Proses Pencairan?",
+      text: "Tindakan ini akan mengunci proses pencairan dan memulai tahap LPJ. Pastikan semua dana telah dicairkan.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, Selesaikan",
+      cancelButtonText: "Batal",
+    });
 
-  // function updateSelectAll() { /* ... */ }
+    if (!confirmResult.isConfirmed) return;
+
+    // Step 2 — Execute the request
+    try {
+      await apiRequest(`/kegiatan/${kegiatanId}/selesaikan-pencairan`, {
+        method: "POST",
+      });
+
+      // Step 3 — Success popup
+      showSuccess("Proses pencairan selesai. Tahap LPJ telah dimulai.");
+
+      fetchKegiatan(); // Refresh table
+    } catch (error) {
+      // Step 4 — Error popup
+      showError(`Gagal menyelesaikan proses: ${error.message}`);
+    }
+  }
+
 
   // ==============================================
   // STATS UPDATE
@@ -781,7 +797,6 @@ export function renderPencairanDanaPage(path, userRole) {
   // INITIALIZATION
   // ==============================================
   fetchKegiatan();
-  // updateStats(); // Called inside fetchKegiatan
 
   // Initialize Vuexy menu (active state for current page)
   setTimeout(() => {

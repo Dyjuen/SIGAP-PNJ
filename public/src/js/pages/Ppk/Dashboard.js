@@ -87,7 +87,7 @@ export function renderPpkDashboardPage(path, userRole) {
     try {
         const response = await fetch(`/api${endpoint}`, config);
         const data = await response.json();
-        if (data.status === false || data.status === "error") {
+        if (data.success !== true) {
             throw new Error(data.message || 'API request failed');
         }
         return data;
@@ -102,12 +102,9 @@ export function renderPpkDashboardPage(path, userRole) {
       tbody.innerHTML = '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
       try {
           const response = await apiRequest('/kegiatan');
-          // Handle both paginated and non-paginated responses
           const kegiatanData = response.data.data ? response.data.data : response.data;
           state.allKegiatan = kegiatanData || [];
           
-          // Filter for activities waiting for PPK approval
-          // Assuming the current approval step is available in the data, e.g., current_approval.approval_level
           state.displayKegiatan = state.allKegiatan.filter(k => 
               k.current_approval && k.current_approval.approval_level === 'PPK' && k.current_approval.status === 'Aktif'
           );
@@ -119,25 +116,14 @@ export function renderPpkDashboardPage(path, userRole) {
       }
   }
 
-    async function handleApprovalAction(kegiatanId, action) {
-    const isApprove = action === "approve";
-    let payload = {
-      status: isApprove ? "Disetujui" : "Revisi",
-    };
-
-    const titleText = isApprove
-      ? "Masukkan Rekomendasi Tindak Lanjut (opsional)"
-      : "Masukkan Catatan Revisi";
-
+    async function handleApproveAction(kegiatanId) {
     // ===============================
-    // Step 1: Textarea input modal
+    // Step 1: Textarea input modal for optional note
     // ===============================
     const swalInput = await Swal.fire({
-      title: titleText,
+      title: "Masukkan Rekomendasi Tindak Lanjut (opsional)",
       input: "textarea",
-      inputPlaceholder: isApprove
-        ? "Tulis rekomendasi (boleh kosong)..."
-        : "Tulis catatan revisi...",
+      inputPlaceholder: "Tulis rekomendasi (boleh kosong)...",
       inputAttributes: {
         maxlength: 500,
         "aria-label": "Catatan",
@@ -148,31 +134,23 @@ export function renderPpkDashboardPage(path, userRole) {
       confirmButtonColor: "#00BCD4",
     });
 
-    // User clicked Cancel
     if (!swalInput.isConfirmed) return;
 
     const catatan = swalInput.value ?? "";
-
-    // Revisi requires non-empty note
-    if (!isApprove && catatan.trim() === "") {
-      showError("Catatan revisi tidak boleh kosong!");
-      return;
-    }
-
-    payload.catatan = catatan.trim() || null;
+    
+    let payload = {
+      status: "Disetujui",
+      catatan: catatan.trim() || null,
+    };
 
     // ===============================
     // Step 2: Confirmation modal
     // ===============================
-    const confirmMessage = isApprove
-      ? "Apakah Anda yakin ingin menyetujui kegiatan ini?"
-      : "Apakah Anda yakin ingin meminta revisi kegiatan ini?";
-
     const confirmResult = await Swal.fire({
-      title: confirmMessage,
+      title: "Apakah Anda yakin ingin menyetujui kegiatan ini?",
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: isApprove ? "Setujui" : "Revisi",
+      confirmButtonText: "Setujui",
       cancelButtonText: "Batal",
       confirmButtonColor: "#00BCD4",
       cancelButtonColor: "#d33",
@@ -184,22 +162,17 @@ export function renderPpkDashboardPage(path, userRole) {
     // Step 3: API request
     // ===============================
     try {
-      await apiRequest(`/kegiatan/${kegiatanId}/${action}`, {
+      await apiRequest(`/kegiatan/${kegiatanId}/approve`, {
         method: "POST",
         body: JSON.stringify(payload),
       });
 
-      showSuccess(
-        `Kegiatan berhasil di-${isApprove ? "setujui" : "revisi"}.`
-      );
-
-      fetchKegiatan();
+      showSuccess(`Kegiatan berhasil disetujui.`);
+      fetchKegiatan(); // Refresh data
     } catch (error) {
-      showError(`Gagal memproses aksi: ${error.message}`);
+      showError(`Gagal menyetujui kegiatan: ${error.message}`);
     }
   }
-
-
 
   // ==============================================
   // RENDER FUNCTIONS
@@ -246,9 +219,6 @@ export function renderPpkDashboardPage(path, userRole) {
           <button class="btn btn-sm me-2 btn-approve" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Setujui">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
           </button>
-          <button class="btn btn-sm me-2 btn-revise" style="background: linear-gradient(135deg, #743bfaff 0%, #7c3aed 100%); box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Revisi">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>          
-          </button>
           <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Lihat">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>          
           </button>
@@ -269,14 +239,7 @@ export function renderPpkDashboardPage(path, userRole) {
   // --- APPROVE BUTTON ---
   document.querySelectorAll(".btn-approve").forEach((btn) => {
     btn.addEventListener("click", () =>
-      handleApprovalAction(btn.dataset.id, "approve")
-    );
-  });
-
-  // --- REVISE BUTTON ---
-  document.querySelectorAll(".btn-revise").forEach((btn) => {
-    btn.addEventListener("click", () =>
-      handleApprovalAction(btn.dataset.id, "revise")
+      handleApproveAction(btn.dataset.id)
     );
   });
 
@@ -298,6 +261,23 @@ export function renderPpkDashboardPage(path, userRole) {
   });
 }
 
+  function showError(message) {
+      Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: message,
+      });
+  }
+
+  function showSuccess(message) {
+      Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: message,
+          timer: 2000,
+          showConfirmButton: false
+      });
+  }
 
   function updateStats(allData) {
     const waitingCount = allData.filter(

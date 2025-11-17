@@ -156,7 +156,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
     try {
       const response = await fetch(`/api${endpoint}`, config);
       const data = await response.json();
-      if (!data.status) {
+      if (data.success !== true) {
         throw new Error(data.message || "API request failed");
       }
       return data;

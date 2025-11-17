@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Database;
 use App\Core\Response;
 use App\Core\PDF;
+use App\Middlewares\AuthMiddleware;
 use App\Models\KAK;
 use App\Models\KAKAnggaran;
 use App\Models\KAKApproval;
@@ -17,6 +18,7 @@ use App\Models\KAKTarget;
 use App\Models\Notifikasi;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Iku;
 use PDOException;
 
 class KAKController
@@ -26,6 +28,8 @@ class KAKController
     private $notifikasiModel;
     private $userModel;
     private $roleModel;
+    private $ikuModel;
+    private $userData;
 
     public function __construct()
     {
@@ -34,26 +38,8 @@ class KAKController
         $this->notifikasiModel = new Notifikasi();
         $this->userModel = new User();
         $this->roleModel = new Role();
-    }
-
-    private function responseSuccess($data, $code = 200)
-    {
-        http_response_code($code);
-        echo json_encode([
-            "status" => "success",
-            "data" => $data
-        ]);
-        exit;
-    }
-
-    private function responseError($message, $code = 500)
-    {
-        http_response_code($code);
-        echo json_encode([
-            "status" => "error",
-            "message" => $message
-        ]);
-        exit;
+        $this->ikuModel = new Iku();
+        $this->userData = AuthMiddleware::getAuthUser();
     }
     
     public function download()
@@ -161,9 +147,9 @@ class KAKController
             $this->db->query($sql);
             $rows = $this->db->resultSet();
 
-            return $this->responseSuccess($rows);
+            Response::success($rows, 'Data KAK berhasil diambil.');
         } catch (PDOException $e) {
-            return $this->responseError($e->getMessage());
+            Response::error('Gagal mengambil data KAK: ' . $e->getMessage(), 500);
         }
     }
 
@@ -175,7 +161,7 @@ class KAKController
             $kak = $this->db->single();
 
             if (!$kak) {
-                return $this->responseError("Data tidak ditemukan", 404);
+                Response::notFound("KAK tidak ditemukan.");
             }
 
             $childTables = [
@@ -227,22 +213,21 @@ class KAKController
             $this->db->bind(':id', $id);
             $data['approval'] = $this->db->resultSet();
 
-            return $this->responseSuccess($data);
+            Response::success($data, 'Detail KAK berhasil diambil.');
         } catch (PDOException $e) {
-            return $this->responseError($e->getMessage());
+            Response::error('Gagal mengambil detail KAK: ' . $e->getMessage(), 500);
         }
     }
 
     public function store()
     {
         try {
-            $auth = auth_user();
-            if (!$auth) return $this->responseError("Unauthorized", 401);
-            $pengusul = $auth['user_id'];
+            if (!$this->userData) Response::unauthorized();
+            $pengusul = $this->userData['user_id'];
 
             $input = json_decode(file_get_contents('php://input'), true);
             if (!$input || !isset($input['kak'])) {
-                return $this->responseError("Format JSON tidak valid", 400);
+                Response::badRequest("Format JSON tidak valid");
             }
 
             $k = $input['kak'];
@@ -306,13 +291,23 @@ class KAKController
                         VALUES (:id, :d)
                     ");
                     $this->db->bind(':id', $id);
-                    $this->db->bind(':d', $i['deskripsi_indikator']);
+                    $this->db->bind(':d', $i['deskripsi_indikator'] ?? '');
                     $this->db->execute();
                 }
             }
 
             if (!empty($input['target_iku'])) {
                 foreach ($input['target_iku'] as $iku) {
+                    if (!isset($iku['iku_id'])) {
+                        $this->db->rollBack();
+                        Response::badRequest("IKU ID tidak boleh kosong dalam target_iku.");
+                    }
+                    $existingIku = $this->ikuModel->find($iku['iku_id']);
+                    if (!$existingIku) {
+                        $this->db->rollBack();
+                        Response::badRequest("IKU dengan ID '{$iku['iku_id']}' tidak ditemukan. Pastikan semua IKU ID valid.");
+                    }
+
                     $this->db->query("
                         INSERT INTO t_kak_iku
                         (kak_id, iku_id, persentase_target)
@@ -348,7 +343,7 @@ class KAKController
 
                     $this->db->query("
                         INSERT INTO t_kak_anggaran
-                        (kak_id, uraian, volume1, volume2, satuan_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
+                        (kak_id, uraian, volume1, volume2, satuan1_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
                         VALUES (:id, :u, :v1, :v2, :sat, :h, :j, NULL)
                     ");
                     $this->db->bind(':id', $id);
@@ -364,25 +359,21 @@ class KAKController
 
             $this->db->commit();
 
-            return $this->responseSuccess([
-                "message" => "Draft berhasil dibuat",
-                "kak_id" => $id
-            ]);
-        } catch (PDOException $e) {
+            Response::created(["kak_id" => $id], "Draft KAK berhasil dibuat.");
+        } catch (\Exception $e) { // Catch general Exception
             if ($this->db->inTransaction()) {
-                if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
-            }
-            return $this->responseError($e->getMessage());
+            // Log the detailed error message for debugging purposes (not directly sent to client)
+            error_log('Gagal membuat draft KAK: ' . $e->getMessage());
+            Response::serverError('Gagal membuat draft KAK. Silakan coba lagi nanti.'); // Generic message for client
         }
     }
 
     public function submitForVerification($id)
     {
         try {
-            $user = auth_user();
-            if (!$user) return $this->responseError("Unauthorized", 401);
+            if (!$this->userData) Response::unauthorized();
 
             $db = $this->db;
 
@@ -390,13 +381,13 @@ class KAKController
             $db->bind(':id', $id);
             $data = $db->single();
 
-            if (!$data) return $this->responseError("Data tidak ditemukan", 404);
+            if (!$data) Response::notFound("Data KAK tidak ditemukan.");
 
-            if ($data['pengusul_user_id'] != $user['user_id'])
-                return $this->responseError("Tidak boleh submit milik orang lain", 403);
+            if ($data['pengusul_user_id'] != $this->userData['user_id'])
+                Response::forbidden("Anda tidak memiliki akses untuk submit KAK ini.");
 
             if (!in_array($data['status_id'], [1, 5]))
-                return $this->responseError("Tidak dapat submit pada status ini", 400);
+                Response::error("Hanya KAK berstatus Draft atau Revisi yang bisa disubmit.", 400);
 
             $db->beginTransaction();
 
@@ -420,8 +411,8 @@ class KAKController
             ");
             $db->bind(':id', $id);
             $db->bind(':lama', $data['status_id']);
-            $db->bind(':user', $user['user_id']);
-            $db->bind(':ct', "Pengusul submit");
+            $db->bind(':user', $this->userData['user_id']);
+            $db->bind(':ct', "Pengusul melakukan submit KAK.");
             $db->execute();
 
             $db->query("
@@ -447,20 +438,19 @@ class KAKController
                 }
             }
 
-            return $this->responseSuccess("KAK berhasil disubmit.");
+            Response::success(null, "KAK berhasil disubmit untuk verifikasi.");
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
-            return $this->responseError($e->getMessage());
+            Response::error('Gagal submit KAK: ' . $e->getMessage(), 500);
         }
     }
 
     public function requestRevision($id)
     {
         try {
-            $user = auth_user();
-            if (!$user) return $this->responseError("Unauthorized", 401);
+            if (!$this->userData) Response::unauthorized();
 
             $db = $this->db;
 
@@ -468,13 +458,13 @@ class KAKController
             $db->bind(':id', $id);
             $data = $db->single();
 
-            if (!$data) return $this->responseError("Data tidak ditemukan", 404);
+            if (!$data) Response::notFound("Data KAK tidak ditemukan.");
 
             if ($data['status_id'] != 2)
-                return $this->responseError("Hanya bisa revisi pada status 'Dalam Review'", 400);
+                Response::error("Hanya KAK berstatus 'Dalam Review' yang bisa direvisi.", 400);
 
             $input = json_decode(file_get_contents("php://input"), true);
-            if (!$input) return $this->responseError("Input tidak valid", 400);
+            if (!$input) Response::badRequest("Input JSON tidak valid.");
 
             $db->beginTransaction();
 
@@ -520,10 +510,10 @@ class KAKController
             $db->query("
                 INSERT INTO t_kak_log_status 
                 (kak_id, status_id_lama, status_id_baru, actor_user_id, catatan, timestamp)
-                VALUES (:id, 2, 5, :usr, 'Diminta revisi', NOW())
+                VALUES (:id, 2, 5, :usr, 'Diminta revisi oleh verifikator.', NOW())
             ");
             $db->bind(':id', $id);
-            $db->bind(':usr', $user['user_id']);
+            $db->bind(':usr', $this->userData['user_id']);
             $db->execute();
 
             $db->query("
@@ -532,7 +522,7 @@ class KAKController
                 VALUES (:id, :usr, 'Revisi', NULL, NOW())
             ");
             $db->bind(':id', $id);
-            $db->bind(':usr', $user['user_id']);
+            $db->bind(':usr', $this->userData['user_id']);
             $db->execute();
 
             $db->commit();
@@ -544,20 +534,19 @@ class KAKController
                 'link_tujuan' => '/pengusul/kak/' . $id,
             ]);
 
-            return $this->responseSuccess("Revisi berhasil diberikan.");
+            Response::success(null, "KAK berhasil dikembalikan untuk revisi.");
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
-            return $this->responseError($e->getMessage());
+            Response::error('Gagal meminta revisi KAK: ' . $e->getMessage(), 500);
         }
     }
 
     public function resubmitAfterRevision($id)
     {
         try {
-            $user = auth_user();
-            if (!$user) return $this->responseError("Unauthorized", 401);
+            if (!$this->userData) Response::unauthorized();
 
             $db = $this->db;
 
@@ -565,16 +554,16 @@ class KAKController
             $db->bind(':id', $id);
             $data = $db->single();
 
-            if (!$data) return $this->responseError("Data tidak ditemukan", 404);
+            if (!$data) Response::notFound("Data KAK tidak ditemukan.");
 
-            if ($data['pengusul_user_id'] != $user['user_id'])
-                return $this->responseError("Tidak boleh mengedit milik orang lain", 403);
+            if ($data['pengusul_user_id'] != $this->userData['user_id'])
+                Response::forbidden("Anda tidak dapat mengedit KAK milik orang lain.");
 
             if ($data['status_id'] != 5)
-                return $this->responseError("Tidak dalam status revisi", 400);
+                Response::error("KAK tidak dalam status revisi.", 400);
 
             $input = json_decode(file_get_contents('php://input'), true);
-            if (!$input) return $this->responseError("Input tidak valid", 400);
+            if (!$input) Response::badRequest("Input JSON tidak valid.");
 
             $db->beginTransaction();
 
@@ -661,10 +650,10 @@ class KAKController
             $db->query("
                 INSERT INTO t_kak_log_status
                 (kak_id, status_id_lama, status_id_baru, actor_user_id, catatan, timestamp)
-                VALUES (:id, 5, 2, :usr, 'Resubmit revisi', NOW())
+                VALUES (:id, 5, 2, :usr, 'Resubmit setelah revisi.', NOW())
             ");
             $db->bind(':id', $id);
-            $db->bind(':usr', $user['user_id']);
+            $db->bind(':usr', $this->userData['user_id']);
             $db->execute();
 
             $db->query("
@@ -673,25 +662,24 @@ class KAKController
                 VALUES (:id, :usr, 'Menunggu', NOW())
             ");
             $db->bind(':id', $id);
-            $db->bind(':usr', $user['user_id']);
+            $db->bind(':usr', $this->userData['user_id']);
             $db->execute();
 
             $db->commit();
 
-            return $this->responseSuccess("Berhasil resubmit revisi.");
+            Response::success(null, "KAK berhasil di-resubmit setelah revisi.");
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
-            return $this->responseError($e->getMessage());
+            Response::error('Gagal resubmit KAK: ' . $e->getMessage(), 500);
         }
     }
 
     public function approve($id)
     {
         try {
-            $user = auth_user();
-            if (!$user) return $this->responseError("Unauthorized", 401);
+            if (!$this->userData) Response::unauthorized();
 
             $db = $this->db;
 
@@ -699,13 +687,13 @@ class KAKController
             $db->bind(':id', $id);
             $data = $db->single();
 
-            if (!$data) return $this->responseError("Data tidak ditemukan", 404);
+            if (!$data) Response::notFound("Data KAK tidak ditemukan.");
 
             if ($data['status_id'] != 2)
-                return $this->responseError("Tidak dalam status review", 400);
+                Response::error("Hanya KAK berstatus 'Dalam Review' yang bisa disetujui.", 400);
 
-            if ($data['pengusul_user_id'] == $user['user_id'])
-                return $this->responseError("Pengusul tidak dapat approve", 403);
+            if ($data['pengusul_user_id'] == $this->userData['user_id'])
+                Response::forbidden("Pengusul tidak dapat menyetujui KAK sendiri.");
 
             $db->beginTransaction();
 
@@ -716,10 +704,10 @@ class KAKController
             $db->query("
                 INSERT INTO t_kak_log_status
                 (kak_id, status_id_lama, status_id_baru, actor_user_id, catatan, timestamp)
-                VALUES (:id, 2, 3, :usr, 'Disetujui', NOW())
+                VALUES (:id, 2, 3, :usr, 'Disetujui oleh verifikator.', NOW())
             ");
             $db->bind(':id', $id);
-            $db->bind(':usr', $user['user_id']);
+            $db->bind(':usr', $this->userData['user_id']);
             $db->execute();
 
             $db->query("
@@ -728,7 +716,7 @@ class KAKController
                 VALUES (:id, :usr, 'Disetujui', NOW())
             ");
             $db->bind(':id', $id);
-            $db->bind(':usr', $user['user_id']);
+            $db->bind(':usr', $this->userData['user_id']);
             $db->execute();
 
             $fields = [
@@ -768,20 +756,19 @@ class KAKController
                 'link_tujuan' => '/pengusul/kak/' . $id,
             ]);
 
-            return $this->responseSuccess("KAK berhasil disetujui.");
+            Response::success(null, "KAK berhasil disetujui.");
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
-            return $this->responseError($e->getMessage());
+            Response::error('Gagal menyetujui KAK: ' . $e->getMessage(), 500);
         }
     }
 
     public function reject($id)
     {
         try {
-            $user = auth_user();
-            if (!$user) return $this->responseError("Unauthorized", 401);
+            if (!$this->userData) Response::unauthorized();
 
             $db = $this->db;
 
@@ -789,16 +776,20 @@ class KAKController
             $db->bind(':id', $id);
             $data = $db->single();
 
-            if (!$data) return $this->responseError("Data tidak ditemukan", 404);
+            if (!$data) Response::notFound("Data KAK tidak ditemukan.");
 
             if ($data['status_id'] != 2)
-                return $this->responseError("Tidak dalam status review", 400);
+                Response::error("Hanya KAK berstatus 'Dalam Review' yang bisa ditolak.", 400);
 
-            if ($data['pengusul_user_id'] == $user['user_id'])
-                return $this->responseError("Pengusul tidak dapat menolak", 403);
+            if ($data['pengusul_user_id'] == $this->userData['user_id'])
+                Response::forbidden("Pengusul tidak dapat menolak KAK sendiri.");
 
             $input = json_decode(file_get_contents('php://input'), true);
             $catatan = $input['catatan'] ?? null;
+
+            if (empty($catatan)) {
+                Response::badRequest("Catatan penolakan wajib diisi.");
+            }
 
             $db->beginTransaction();
 
@@ -812,7 +803,7 @@ class KAKController
                 VALUES (:id, 2, 4, :usr, :ct, NOW())
             ");
             $db->bind(':id', $id);
-            $db->bind(':usr', $user['user_id']);
+            $db->bind(':usr', $this->userData['user_id']);
             $db->bind(':ct', $catatan);
             $db->execute();
 
@@ -822,7 +813,7 @@ class KAKController
                 VALUES (:id, :usr, 'Ditolak', :ct, NOW())
             ");
             $db->bind(':id', $id);
-            $db->bind(':usr', $user['user_id']);
+            $db->bind(':usr', $this->userData['user_id']);
             $db->bind(':ct', $catatan);
             $db->execute();
 
@@ -874,12 +865,12 @@ class KAKController
                 'link_tujuan' => '/pengusul/kak/' . $id,
             ]);
 
-            return $this->responseSuccess("KAK berhasil ditolak.");
+            Response::success(null, "KAK berhasil ditolak.");
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
-            return $this->responseError($e->getMessage());
+            Response::error('Gagal menolak KAK: ' . $e->getMessage(), 500);
         }
     }
 }

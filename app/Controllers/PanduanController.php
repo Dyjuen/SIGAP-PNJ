@@ -12,18 +12,19 @@ use App\Validators\PanduanValidator;
 class PanduanController extends Controller
 {
     private $panduanModel;
+    private $userData;
 
     public function __construct()
     {
         $this->panduanModel = new Panduan();
+        $this->userData = AuthMiddleware::getAuthUser();
     }
 
     public function index()
     {
         try {
-            $authUser = AuthMiddleware::getAuthUser();
-            $role_id = $authUser['role_id'] ?? null;
-            $userRoles = $authUser['roles'] ?? [];
+            $role_id = $this->userData['role_id'] ?? null;
+            $userRoles = $this->userData['roles'] ?? [];
 
             // Jika user adalah admin, tampilkan semua panduan
             if (in_array('Admin', $userRoles)) {
@@ -32,9 +33,9 @@ class PanduanController extends Controller
                  $panduan = $this->panduanModel->findByRole($role_id);
             }
             
-            Response::json($panduan);
+            Response::success($panduan, 'Data panduan berhasil diambil.');
         } catch (\Exception $e) {
-            Response::json(['error' => 'Gagal mengambil data panduan: ' . $e->getMessage()], 500);
+            Response::error('Gagal mengambil data panduan: ' . $e->getMessage(), 500);
         }
     }
 
@@ -44,29 +45,28 @@ class PanduanController extends Controller
             $panduan = $this->panduanModel->find($id);
 
             if (!$panduan) {
-                Response::json(['error' => 'Panduan tidak ditemukan'], 404);
+                Response::notFound('Panduan tidak ditemukan.');
                 return;
             }
 
-            $authUser = AuthMiddleware::getAuthUser();
-            $role_id = $authUser['role_id'] ?? null;
-            $userRoles = $authUser['roles'] ?? [];
+            $role_id = $this->userData['role_id'] ?? null;
+            $userRoles = $this->userData['roles'] ?? [];
 
             // Admin bisa melihat semua
             if (in_array('Admin', $userRoles)) {
-                Response::json($panduan);
+                Response::success($panduan, 'Detail panduan berhasil diambil.');
                 return;
             }
 
             // Pengguna biasa hanya bisa melihat panduan untuk perannya
             if ($panduan['target_role_id'] == $role_id) {
-                Response::json($panduan);
+                Response::success($panduan, 'Detail panduan berhasil diambil.');
             } else {
-                Response::json(['error' => 'Panduan tidak ditemukan'], 404);
+                Response::notFound('Panduan tidak ditemukan atau Anda tidak memiliki akses.');
             }
             
         } catch (\Exception $e) {
-            Response::json(['error' => 'Gagal mengambil data panduan: ' . $e->getMessage()], 500);
+            Response::error('Gagal mengambil data panduan: ' . $e->getMessage(), 500);
         }
     }
 
@@ -78,7 +78,7 @@ class PanduanController extends Controller
 
         $errors = PanduanValidator::validate($data);
         if (!empty($errors)) {
-            Response::json(['errors' => $errors], 400);
+            Response::validationError($errors, 'Validasi gagal.');
             return;
         }
 
@@ -92,9 +92,9 @@ class PanduanController extends Controller
             $panduanId = $this->panduanModel->create($createData);
             $newPanduan = $this->panduanModel->find($panduanId);
 
-            Response::json($newPanduan, 201);
+            Response::created($newPanduan, 'Panduan berhasil dibuat.');
         } catch (\Exception $e) {
-            Response::json(['error' => 'Gagal menyimpan panduan: ' . $e->getMessage()], 500);
+            Response::error('Gagal menyimpan panduan: ' . $e->getMessage(), 500);
         }
     }
 
@@ -106,13 +106,13 @@ class PanduanController extends Controller
         
         $errors = PanduanValidator::validate($data);
         if (!empty($errors)) {
-            Response::json(['errors' => $errors], 400);
+            Response::validationError($errors, 'Validasi gagal.');
             return;
         }
 
         try {
             if (!$this->panduanModel->exists($id)) {
-                Response::json(['error' => 'Panduan tidak ditemukan'], 404);
+                Response::notFound('Panduan tidak ditemukan.');
                 return;
             }
 
@@ -125,9 +125,9 @@ class PanduanController extends Controller
             $this->panduanModel->update($id, $updateData);
             $updatedPanduan = $this->panduanModel->find($id);
 
-            Response::json($updatedPanduan);
+            Response::success($updatedPanduan, 'Panduan berhasil diperbarui.');
         } catch (\Exception $e) {
-            Response::json(['error' => 'Gagal memperbarui panduan: ' . $e->getMessage()], 500);
+            Response::error('Gagal memperbarui panduan: ' . $e->getMessage(), 500);
         }
     }
 
@@ -137,15 +137,15 @@ class PanduanController extends Controller
 
         try {
             if (!$this->panduanModel->exists($id)) {
-                Response::json(['error' => 'Panduan tidak ditemukan'], 404);
+                Response::notFound('Panduan tidak ditemukan.');
                 return;
             }
 
             $this->panduanModel->delete($id);
 
-            Response::json(['message' => 'Panduan berhasil dihapus']);
+            Response::success(null, 'Panduan berhasil dihapus.');
         } catch (\Exception $e) {
-            Response::json(['error' => 'Gagal menghapus panduan: ' . $e->getMessage()], 500);
+            Response::error('Gagal menghapus panduan: ' . $e->getMessage(), 500);
         }
     }
 }

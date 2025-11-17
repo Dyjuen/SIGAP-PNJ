@@ -24,7 +24,7 @@ class Notifikasi extends Model
             'penerima_user_id' => $data['penerima_user_id'],
             'pesan' => $data['pesan'],
             'link_tujuan' => $data['link_tujuan'] ?? null,
-            'is_read' => $data['is_read'] ?? false
+            'is_read' => (int)($data['is_read'] ?? false)
         ]);
         return $stmt->rowCount() > 0;
     }

@@ -8,6 +8,7 @@ use App\Models\PencairanDana;
 use App\Models\Kegiatan;
 use App\Models\Notifikasi;
 use App\Validators\PencairanValidator;
+use App\Middlewares\AuthMiddleware;
 use PDO;
 
 class PencairanController extends Controller
@@ -15,13 +16,16 @@ class PencairanController extends Controller
     private $pencairanModel;
     private $kegiatanModel;
     private $notifikasiModel;
+    private $userData;
+    private $db;
 
     public function __construct()
     {
-        parent::__construct();
         $this->pencairanModel = new PencairanDana();
         $this->kegiatanModel = new Kegiatan();
         $this->notifikasiModel = new Notifikasi();
+        $this->userData = AuthMiddleware::getAuthUser();
+        $this->db = $this->pencairanModel->getDb();
     }
 
     /**
@@ -33,31 +37,22 @@ class PencairanController extends Controller
         try {
             $kegiatanId = (int) $kegiatan_id;
             
-            // Cek akses user
             if (!$this->canAccessKegiatan($kegiatanId)) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Anda tidak memiliki akses ke kegiatan ini'
-                ], 403);
+                Response::forbidden('Anda tidak memiliki akses ke kegiatan ini.');
             }
 
             $pencairan = $this->pencairanModel->getByKegiatanId($kegiatanId);
             $sisaDana = $this->pencairanModel->getSisaDana($kegiatanId);
 
-            return Response::json([
-                'success' => true,
-                'message' => 'Data pencairan berhasil diambil',
-                'data' => [
-                    'pencairan' => $pencairan,
-                    'ringkasan' => $sisaDana
-                ]
-            ]);
+            $data = [
+                'pencairan' => $pencairan,
+                'ringkasan' => $sisaDana
+            ];
+
+            Response::success($data, 'Data pencairan berhasil diambil.');
 
         } catch (\Exception $e) {
-            return Response::json([
-                'success' => false,
-                'message' => 'Gagal mengambil data pencairan: ' . $e->getMessage()
-            ], 500);
+            Response::error('Gagal mengambil data pencairan: ' . $e->getMessage(), 500);
         }
     }
 
@@ -71,24 +66,15 @@ class PencairanController extends Controller
             $kegiatanId = (int) $kegiatan_id;
             
             if (!$this->canAccessKegiatan($kegiatanId)) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Anda tidak memiliki akses ke kegiatan ini'
-                ], 403);
+                Response::forbidden('Anda tidak memiliki akses ke kegiatan ini.');
             }
 
             $sisaDana = $this->pencairanModel->getSisaDana($kegiatanId);
 
-            return Response::json([
-                'success' => true,
-                'data' => $sisaDana
-            ]);
+            Response::success($sisaDana, 'Data sisa dana berhasil diambil.');
 
         } catch (\Exception $e) {
-            return Response::json([
-                'success' => false,
-                'message' => 'Gagal mengambil data sisa dana: ' . $e->getMessage()
-            ], 500);
+            Response::error('Gagal mengambil data sisa dana: ' . $e->getMessage(), 500);
         }
     }
 
@@ -101,74 +87,46 @@ class PencairanController extends Controller
         try {
             $input = $this->getInput();
             
-            // Validasi input
             $validation = PencairanValidator::validateCreate($input);
             if (!$validation['valid']) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Validasi gagal',
-                    'errors' => $validation['errors']
-                ], 422);
+                Response::validationError($validation['errors'], 'Validasi gagal.');
             }
 
             $kegiatanId = (int) $input['kegiatan_id'];
-            $nominalPencairan = (float) $input['nominal_pencairan'];
+            $jumlahDicairkan = (float) $input['jumlah_dicairkan']; // Changed from nominal_pencairan
 
-            // Cek apakah user adalah pengusul kegiatan ini
             if (!$this->isPengusul($kegiatanId)) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Hanya pengusul yang dapat mengajukan pencairan'
-                ], 403);
+                Response::forbidden('Hanya pengusul yang dapat mengajukan pencairan.');
             }
 
-            // Cek apakah Bendahara-Cair sudah Aktif
             $approvalBendahara = $this->getApprovalBendaharaCair($kegiatanId);
             if (!$approvalBendahara || $approvalBendahara['status'] !== 'Aktif') {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Pencairan belum dapat dilakukan. Menunggu persetujuan Bendahara-Cair.'
-                ], 400);
+                Response::error('Pencairan belum dapat dilakukan. Menunggu persetujuan Bendahara-Cair.', 400);
             }
 
-            // Cek sisa dana
             $sisaDana = $this->pencairanModel->getSisaDana($kegiatanId);
-            if ($nominalPencairan > $sisaDana['sisa_dana']) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Nominal pencairan melebihi sisa dana yang tersedia',
-                    'data' => [
-                        'sisa_dana' => $sisaDana['sisa_dana'],
-                        'nominal_diajukan' => $nominalPencairan
-                    ]
-                ], 400);
+            if ($jumlahDicairkan > $sisaDana['sisa_dana']) {
+                $errorData = [
+                    'sisa_dana' => $sisaDana['sisa_dana'],
+                    'jumlah_dicairkan' => $jumlahDicairkan // Changed from nominal_diajukan
+                ];
+                Response::error('Nominal pencairan melebihi sisa dana yang tersedia.', 400, $errorData);
             }
 
-            // Create pencairan
             $pencairanId = $this->pencairanModel->createPencairan([
                 'kegiatan_id' => $kegiatanId,
                 'approval_kegiatan_id' => $approvalBendahara['approval_kegiatan_id'],
-                'nominal_pencairan' => $nominalPencairan,
+                'jumlah_dicairkan' => $jumlahDicairkan, // Changed from nominal_pencairan
                 'keterangan' => $input['keterangan'],
-                'created_by' => $this->user['user_id']
+                'created_by' => $this->userData['user_id']
             ]);
 
-            // Kirim notifikasi ke bendahara
-            $this->sendNotifikasiPengajuan($kegiatanId, $approvalBendahara['approver_user_id'], $nominalPencairan);
+            $this->sendNotifikasiPengajuan($kegiatanId, $approvalBendahara['approver_user_id'], $jumlahDicairkan); // Changed from nominalPencairan
 
-            return Response::json([
-                'success' => true,
-                'message' => 'Pengajuan pencairan berhasil diajukan',
-                'data' => [
-                    'pencairan_id' => $pencairanId
-                ]
-            ], 201);
+            Response::created(['pencairan_id' => $pencairanId], 'Pengajuan pencairan berhasil diajukan.');
 
         } catch (\Exception $e) {
-            return Response::json([
-                'success' => false,
-                'message' => 'Gagal mengajukan pencairan: ' . $e->getMessage()
-            ], 500);
+            Response::error('Gagal mengajukan pencairan: ' . $e->getMessage(), 500);
         }
     }
 
@@ -182,73 +140,47 @@ class PencairanController extends Controller
             $pencairanId = (int) $id;
             $input = $this->getInput();
             
-            // Validasi input
             $validation = PencairanValidator::validateApproval($input);
             if (!$validation['valid']) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Validasi gagal',
-                    'errors' => $validation['errors']
-                ], 422);
+                Response::validationError($validation['errors'], 'Validasi gagal.');
             }
 
-            // Get detail pencairan
             $pencairan = $this->pencairanModel->getDetailById($pencairanId);
             if (!$pencairan) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Pencairan tidak ditemukan'
-                ], 404);
+                Response::notFound('Pencairan tidak ditemukan.');
             }
 
-            // Cek apakah user adalah bendahara
             if (!$this->isBendahara()) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Hanya bendahara yang dapat menyetujui pencairan'
-                ], 403);
+                Response::forbidden('Hanya bendahara yang dapat menyetujui pencairan.');
             }
 
-            // Cek apakah status masih Diajukan
             if ($pencairan['status'] !== 'Diajukan') {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Pencairan ini sudah diproses sebelumnya'
-                ], 400);
+                Response::error('Pencairan ini sudah diproses sebelumnya.', 400);
             }
 
-            // Approve pencairan
             $this->pencairanModel->approvePencairan(
                 $pencairanId, 
-                $this->user['user_id'],
+                $this->userData['user_id'],
                 $input['catatan_bendahara'] ?? null
             );
 
-            // Update dana_dicairkan di t_kegiatan
-            $this->pencairanModel->updateDanaDicairkan($pencairan['kegiatan_id']);
+            // Refactor: No longer updating dana_dicairkan here. It's now calculated on-the-fly.
+            // $this->pencairanModel->updateDanaDicairkan($pencairan['kegiatan_id']); 
+            
+            $this->sendNotifikasiApproval($pencairan['kegiatan_id'], $pencairan['created_by'], $pencairan['jumlah_dicairkan'], true); // Changed from nominal_pencairan
 
-            // Kirim notifikasi ke pengusul
-            $this->sendNotifikasiApproval($pencairan['kegiatan_id'], $pencairan['created_by'], $pencairan['nominal_pencairan'], true);
-
-            // Cek apakah semua dana sudah dicairkan
+            // These checks are now done by the 'Selesaikan Pencairan' endpoint
+            /*
             if ($this->pencairanModel->isSemuaDanaDicairkan($pencairan['kegiatan_id'])) {
-                // Update tgl_batas_lpj (14 hari dari sekarang)
                 $this->pencairanModel->updateTglBatasLpj($pencairan['kegiatan_id']);
-                
-                // Kirim notifikasi timer LPJ dimulai
                 $this->sendNotifikasiTimerLpj($pencairan['kegiatan_id'], $pencairan['created_by']);
             }
+            */
 
-            return Response::json([
-                'success' => true,
-                'message' => 'Pencairan berhasil disetujui'
-            ]);
+            Response::success(null, 'Pencairan berhasil disetujui.');
 
         } catch (\Exception $e) {
-            return Response::json([
-                'success' => false,
-                'message' => 'Gagal menyetujui pencairan: ' . $e->getMessage()
-            ], 500);
+            Response::error('Gagal menyetujui pencairan: ' . $e->getMessage(), 500);
         }
     }
 
@@ -262,61 +194,36 @@ class PencairanController extends Controller
             $pencairanId = (int) $id;
             $input = $this->getInput();
             
-            // Validasi input
             $validation = PencairanValidator::validateReject($input);
             if (!$validation['valid']) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Validasi gagal',
-                    'errors' => $validation['errors']
-                ], 422);
+                Response::validationError($validation['errors'], 'Validasi gagal.');
             }
 
-            // Get detail pencairan
             $pencairan = $this->pencairanModel->getDetailById($pencairanId);
             if (!$pencairan) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Pencairan tidak ditemukan'
-                ], 404);
+                Response::notFound('Pencairan tidak ditemukan.');
             }
 
-            // Cek apakah user adalah bendahara
             if (!$this->isBendahara()) {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Hanya bendahara yang dapat menolak pencairan'
-                ], 403);
+                Response::forbidden('Hanya bendahara yang dapat menolak pencairan.');
             }
 
-            // Cek apakah status masih Diajukan
             if ($pencairan['status'] !== 'Diajukan') {
-                return Response::json([
-                    'success' => false,
-                    'message' => 'Pencairan ini sudah diproses sebelumnya'
-                ], 400);
+                Response::error('Pencairan ini sudah diproses sebelumnya.', 400);
             }
 
-            // Reject pencairan
             $this->pencairanModel->rejectPencairan(
                 $pencairanId, 
-                $this->user['user_id'],
+                $this->userData['user_id'],
                 $input['catatan_bendahara']
             );
 
-            // Kirim notifikasi ke pengusul
-            $this->sendNotifikasiApproval($pencairan['kegiatan_id'], $pencairan['created_by'], $pencairan['nominal_pencairan'], false);
+            $this->sendNotifikasiApproval($pencairan['kegiatan_id'], $pencairan['created_by'], $pencairan['jumlah_dicairkan'], false); // Changed from nominal_pencairan
 
-            return Response::json([
-                'success' => true,
-                'message' => 'Pencairan berhasil ditolak'
-            ]);
+            Response::success(null, 'Pencairan berhasil ditolak.');
 
         } catch (\Exception $e) {
-            return Response::json([
-                'success' => false,
-                'message' => 'Gagal menolak pencairan: ' . $e->getMessage()
-            ], 500);
+            Response::error('Gagal menolak pencairan: ' . $e->getMessage(), 500);
         }
     }
 
@@ -326,43 +233,26 @@ class PencairanController extends Controller
 
     private function canAccessKegiatan(int $kegiatanId): bool
     {
-        // User bisa akses jika:
-        // 1. Pengusul kegiatan
-        // 2. Bendahara
-        // 3. Admin
-        
         if ($this->isBendahara() || $this->isAdmin()) {
             return true;
         }
-
         return $this->isPengusul($kegiatanId);
     }
 
     private function isPengusul(int $kegiatanId): bool
     {
-        $sql = "SELECT k.kegiatan_id 
-                FROM t_kegiatan k
-                INNER JOIN t_telaah t ON k.telaah_id = t.telaah_id
-                WHERE k.kegiatan_id = :kegiatan_id 
-                AND t.created_by = :user_id";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            'kegiatan_id' => $kegiatanId,
-            'user_id' => $this->user['user_id']
-        ]);
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
+        $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+        return $kegiatan && $kegiatan['pengusul_user_id'] == $this->userData['user_id'];
     }
 
     private function isBendahara(): bool
     {
-        return in_array('Bendahara', $this->user['roles'] ?? []);
+        return in_array('Bendahara', $this->userData['roles'] ?? []);
     }
 
     private function isAdmin(): bool
     {
-        return in_array('Admin', $this->user['roles'] ?? []);
+        return in_array('Admin', $this->userData['roles'] ?? []);
     }
 
     private function getApprovalBendaharaCair(int $kegiatanId): ?array
@@ -382,11 +272,9 @@ class PencairanController extends Controller
     private function sendNotifikasiPengajuan(int $kegiatanId, int $bendaharaUserId, float $nominal): void
     {
         $this->notifikasiModel->create([
-            'user_id' => $bendaharaUserId,
-            'judul' => 'Pengajuan Pencairan Dana Baru',
+            'penerima_user_id' => $bendaharaUserId,
             'pesan' => "Ada pengajuan pencairan dana sebesar Rp " . number_format($nominal, 0, ',', '.') . " yang menunggu persetujuan Anda.",
-            'link' => "/pencairan/kegiatan/{$kegiatanId}",
-            'is_read' => 0
+            'link_tujuan' => "/verifikator/kegiatan/{$kegiatanId}",
         ]);
     }
 
@@ -395,22 +283,23 @@ class PencairanController extends Controller
         $status = $isApproved ? 'disetujui' : 'ditolak';
         
         $this->notifikasiModel->create([
-            'user_id' => $pengusulUserId,
-            'judul' => 'Status Pencairan Dana',
-            'pesan' => "Pencairan dana sebesar Rp " . number_format($nominal, 0, ',', '.') . " telah {$status}.",
-            'link' => "/pencairan/kegiatan/{$kegiatanId}",
-            'is_read' => 0
+            'penerima_user_id' => $pengusulUserId,
+            'pesan' => "Pencairan dana sebesar Rp " . number_format($nominal, 0, ',', '.') . " untuk kegiatan Anda telah {$status}.",
+            'link_tujuan' => "/pengusul/kegiatan/{$kegiatanId}",
         ]);
     }
 
     private function sendNotifikasiTimerLpj(int $kegiatanId, int $pengusulUserId): void
     {
         $this->notifikasiModel->create([
-            'user_id' => $pengusulUserId,
-            'judul' => 'Timer LPJ Dimulai',
+            'penerima_user_id' => $pengusulUserId,
             'pesan' => "Semua dana telah dicairkan. Anda memiliki waktu 14 hari untuk mengirimkan Laporan Pertanggungjawaban (LPJ).",
-            'link' => "/lpj/{$kegiatanId}",
-            'is_read' => 0
+            'link_tujuan' => "/pengusul/kegiatan/{$kegiatanId}/lpj",
         ]);
+    }
+
+    private function getInput()
+    {
+        return json_decode(file_get_contents('php://input'), true);
     }
 }

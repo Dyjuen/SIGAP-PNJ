@@ -202,7 +202,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         padding: 1.5rem;
       }
       
-      .modal-title {
+.modal-title {
         font-weight: 600;
         color: #1f2937;
       }
@@ -339,7 +339,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
                     <th style="width: 50px; text-align: center;">
                     <input type="checkbox" class="form-check-input" id="selectAll">
                     </th>
-                    <th>ID Telaah</th>
+                    <th>ID KAK</th>
                     <th>Nama Usulan Kegiatan</th>
                     <th>Tanggal Diajukan</th>
                     <th>Tanggal Disetujui</th>
@@ -366,7 +366,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
           <div class="modal-body">
             <div id="ajukanKegiatanError" class="alert alert-danger" style="display: none;"></div>
             <form id="ajukanKegiatanForm">
-              <input type="hidden" id="telaahId">
+              <input type="hidden" id="kakId">
               <div class="mb-3">
                 <label for="penanggungJawab" class="form-label">Penanggung Jawab</label>
                 <input type="text" id="penanggungJawab" class="form-control" placeholder="Masukkan nama penanggung jawab" required>
@@ -425,7 +425,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     try {
       const response = await fetch(`/api${endpoint}`, config);
       const data = await response.json();
-      if (!data.status && data.status !== "success") {
+      if (data.success !== true) {
         throw new Error(data.message || "API request failed");
       }
       return data;
@@ -440,7 +440,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     tbody.innerHTML =
       '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
     try {
-      const response = await apiRequest("/telaah");
+      const response = await apiRequest("/kak");
       // Client-side filtering to ensure only approved (status_id = 3) are shown
       approvedTelaah = response.data.filter((item) => item.status_id === 3);
       renderTableRows(approvedTelaah);
@@ -539,10 +539,10 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox" data-id="${item.telaah_id}">
+          <input type="checkbox" class="form-check-input row-checkbox" data-id="${item.kak_id}">
         </td>
         <td>
-          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${item.telaah_id}</span>
+          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${item.kak_id}</span>
         </td>
         <td>
           <div style="display: flex; flex-direction: column;">
@@ -558,7 +558,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         <td style="text-align: center;">
           <button 
             class="btn btn-sm btn-ajukan" 
-            data-id="${item.telaah_id}"
+            data-id="${item.kak_id}"
           >
             Ajukan Kegiatan
           </button>
@@ -587,11 +587,19 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         e.stopPropagation();
       });
     }
+
+    // Prevent default form submission for the modal form
+    const ajukanKegiatanForm = document.getElementById("ajukanKegiatanForm");
+    if (ajukanKegiatanForm) {
+      ajukanKegiatanForm.addEventListener("submit", (e) => {
+        e.preventDefault(); // Prevent default form submission
+      });
+    }
   }
 
   function handleAjukanClick(e) {
-    const telaahId = e.currentTarget.dataset.id;
-    document.getElementById("telaahId").value = telaahId;
+    const kakId = e.currentTarget.dataset.id;
+    document.getElementById("kakId").value = kakId;
     document.getElementById("ajukanKegiatanForm").reset();
     hideModalError(); // Clear modal errors on open
     ajukanModalInstance.show();
@@ -600,7 +608,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   const btnSelesaiAjukan = document.getElementById("btnSelesaiAjukan");
   if (btnSelesaiAjukan) {
     btnSelesaiAjukan.addEventListener("click", () => {
-      const telaahId = document.getElementById("telaahId").value;
+      const kakId = document.getElementById("kakId").value;
       const penanggungJawab = document.getElementById("penanggungJawab").value.trim();
       const pelaksana = document.getElementById("pelaksana").value.trim();
       const suratPengantar = document.getElementById("suratPengantar").files[0];
@@ -616,7 +624,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       }
 
       const formData = new FormData();
-      formData.append("telaah_id", telaahId);
+      formData.append("kak_id", kakId);
       formData.append("penanggung_jawab_manual", penanggungJawab);
       formData.append("pelaksana_manual", pelaksana);
       formData.append("surat_pengantar", suratPengantar);

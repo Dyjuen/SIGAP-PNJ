@@ -214,7 +214,7 @@ $router->get('/kegiatan/{id}/logs', 'KegiatanController@logs');
 
 // Fitur Tambahan
 $router->post('/kegiatan/{id}/duplicate', 'KegiatanController@duplicate');
-$router->post('/kegiatan/{id}/cairkan', 'KegiatanController@cairkanDana');
+$router->post('/kegiatan/{id}/selesaikan-pencairan', 'KegiatanController@selesaikanPencairan');
 $router->get('/kegiatan/export/excel', 'KegiatanController@exportExcel');
 $router->get('/kegiatan/statistics/dashboard', 'KegiatanController@statistics');
 

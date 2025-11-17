@@ -11,9 +11,10 @@ final class CreateTKegiatanApprovalTable extends AbstractMigration
         $table = $this->table('t_kegiatan_approval', ['id' => false, 'primary_key' => ['approval_kegiatan_id']]);
         $table->addColumn('approval_kegiatan_id', 'integer', ['identity' => true])
               ->addColumn('kegiatan_id', 'integer')
-              ->addColumn('approver_user_id', 'integer')
+              ->addColumn('approval_level', 'string', ['limit' => 50])
+              ->addColumn('approver_user_id', 'integer', ['null' => true])
               ->addColumn('status', 'enum', [
-                  'values' => ['Menunggu', 'Aktif', 'Disetujui'],
+                  'values' => ['Menunggu', 'Aktif', 'Disetujui', 'Revisi'],
                   'default' => 'Menunggu'
               ])
               ->addColumn('catatan', 'text', ['null' => true])
