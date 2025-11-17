@@ -5,18 +5,19 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderPengajuanLpjPage(path, userRole) {
   const pageContent = `
     <style>
-      /* Only essential custom CSS that uses ID selectors or can't be done with Tailwind */
-      
-      /* Countdown Timer Colors - specific utility */
-      .countdown-normal {
-        color: #D97706;
-      }
-      .countdown-danger {
-        color: #be123c;
-      }
+      .countdown-normal { color: #D97706; }
+      .countdown-danger { color: #be123c; }
+      .table-responsive { overflow-x: auto; }
     </style>
 
     <div class="pengajuan-lpj-page">
+      <!-- Search and Filters -->
+      <div class="card-header flex justify-between items-center p-6">
+        <div class="w-full md:w-1/3">
+          <input type="text" id="searchInput" class="form-control" placeholder="Cari kegiatan...">
+        </div>
+      </div>
+
       <!-- Main Table Card -->
       <div class="card card-datatable table-responsive p-0">
         <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
@@ -27,41 +28,22 @@ export function renderPengajuanLpjPage(path, userRole) {
               </th>
               <th style="width: 80px;">No.</th>
               <th>Nama Usulan Kegiatan</th>
-              <th>Tanggal</th>
+              <th>Batas Waktu LPJ</th>
               <th class="text-center">Hitung Mundur</th>
               <th class="text-center">Status</th>
               <th class="text-center">Aksi</th>
             </tr>
           </thead>
-          <tbody id="lpjTableBody">
-            <!-- Data will be populated by JavaScript -->
-          </tbody>
+          <tbody id="lpjTableBody"></tbody>
         </table>
         
         <!-- Pagination -->
-        <div class="flex justify-between items-center p-6">
+        <div class="flex justify-between items-center p-6" id="paginationContainer">
           <div class="text-gray-500 text-sm">
-            Showing <span id="startEntry">1</span> to <span id="endEntry">10</span> of <span id="totalEntries">50</span> entries
+            Showing <span id="startEntry">0</span> to <span id="endEntry">0</span> of <span id="totalEntries">0</span> entries
           </div>
-          <ul class="flex list-none gap-2 m-0 p-0">
-            <li class="inline-block">
-              <a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100" href="#" id="btnFirstPage">«</a>
-            </li>
-            <li class="inline-block">
-              <a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100" href="#" id="btnPrevPage">‹</a>
-            </li>
-            <li class="inline-block"><a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100" href="#" data-page="1">1</a></li>
-            <li class="inline-block"><a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100" href="#" data-page="2">2</a></li>
-            <li class="inline-block active"><a class="px-3 py-2 border border-cyan-500 rounded-md text-white no-underline bg-cyan-500" href="#" data-page="3">3</a></li>
-            <li class="inline-block"><a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100" href="#" data-page="4">4</a></li>
-            <li class="inline-block"><a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100" href="#" data-page="5">5</a></li>
-            <li class="inline-block"><a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100" href="#" data-page="6">6</a></li>
-            <li class="inline-block">
-              <a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100" href="#" id="btnNextPage">›</a>
-            </li>
-            <li class="inline-block">
-              <a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100" href="#" id="btnLastPage">»</a>
-            </li>
+          <ul class="flex list-none gap-2 m-0 p-0" id="pagination-links">
+            <!-- Pagination links will be populated by JavaScript -->
           </ul>
         </div>
       </div>
@@ -71,153 +53,122 @@ export function renderPengajuanLpjPage(path, userRole) {
   renderDashboardLayout(pageContent, userRole);
 
   // ==============================================
-  // DATA
+  // STATE MANAGEMENT
   // ==============================================
-  const activities = [
-    {
-      id: 1,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      date: "29 September 2025",
-      deadlineDays: 13,
-      status: "Menunggu",
-    },
-    {
-      id: 2,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      date: "",
-      deadlineDays: -1,
-      status: "Menunggu",
-    },
-    {
-      id: 3,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      date: "29 September 2025",
-      deadlineDays: 0,
-      status: "Diajukan",
-    },
-    {
-      id: 4,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      date: "29 September 2025",
-      deadlineDays: 5,
-      status: "Direvisi",
-    },
-    {
-      id: 5,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      date: "29 September 2025",
-      deadlineDays: 0,
-      status: "Setor Fisik",
-    },
-    {
-      id: 6,
-      title: "KAK (Nama Kegiatan)",
-      subtitle: "Pengusul",
-      date: "29 September 2025",
-      deadlineDays: 0,
-      status: "Diterima",
-    },
-  ];
+  const state = {
+    lpjData: [],
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+    searchQuery: "",
+    countdownTimers: [],
+  };
 
-  let currentPage = 3;
-  const itemsPerPage = 10;
+  // ==============================================
+  // API FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+    const headers = { ...options.headers, Authorization: `Bearer ${token}` };
+    if (!(options.body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
+    const config = { ...options, headers };
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (data.success === false) {
+        throw new Error(data.message || "API request failed");
+      }
+      return data;
+    } catch (error) {
+      console.error("API Request Error:", error);
+      showError(error.message);
+      throw error;
+    }
+  }
+
+  async function fetchLpjData() {
+    const tbody = document.getElementById("lpjTableBody");
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center">Loading...</td></tr>`;
+
+    let url = `/dashboard/lpj?page=${state.currentPage}&per_page=${state.itemsPerPage}`;
+    if (state.searchQuery) {
+      url += `&search=${encodeURIComponent(state.searchQuery)}`;
+    }
+
+    try {
+      const response = await apiRequest(url);
+      const { data, pagination } = response.data;
+      
+      state.lpjData = data;
+      state.totalItems = pagination.total;
+      state.totalPages = pagination.last_page;
+      state.currentPage = pagination.current_page;
+      
+      renderTableRows();
+      renderPagination();
+      startCountdownTimers(); // Start the countdown timers
+    } catch (error) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Gagal memuat data LPJ.</td></tr>`;
+    }
+  }
 
   // ==============================================
   // HELPER FUNCTIONS
   // ==============================================
   function getStatusBadge(status) {
     const statusMap = {
-      Menunggu: { class: "bg-label-warning", text: "Menunggu" },
-      Diajukan: { class: "bg-label-warning", text: "Diajukan" },
-      Direvisi: { class: "bg-label-info", text: "Direvisi" },
-      "Setor Fisik": { class: "bg-label-danger", text: "Setor Fisik" },
-      Diterima: { class: "bg-label-success", text: "Diterima" },
+      'Menunggu Penyerahan': { class: "bg-label-warning", text: "Menunggu" },
+      'Diajukan': { class: "bg-label-info", text: "Diajukan" },
+      'Direvisi': { class: "bg-label-danger", text: "Revisi" },
+      'Selesai': { class: "bg-label-success", text: "Selesai" },
     };
-    return statusMap[status] || statusMap["Menunggu"];
+    return statusMap[status] || { class: "bg-label-secondary", text: status };
   }
 
-  function getCountdownDisplay(days) {
-    if (days > 0) {
-      return `
-        <span class="countdown-normal font-semibold px-2 py-1 rounded-md text-sm inline-flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          ${days} Hari 12 Jam
-        </span>
-      `;
-    } else if (days === 0) {
-      return `
-        <span class="countdown-danger font-semibold px-2 py-1 rounded-md text-sm inline-flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          Hari Ini
-        </span>
-      `;
+  function calculateCountdown(deadline) {
+    if (!deadline) return { text: '-', colorClass: '' };
+    
+    const now = new Date();
+    const deadlineDate = new Date(deadline);
+    const diffTime = deadlineDate - now;
+    const diffSeconds = Math.floor(diffTime / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) {
+      return { text: `${diffDays} hari lagi`, colorClass: 'countdown-normal' };
+    } else if (diffDays === 0 && diffHours >= 0 && diffMinutes >= 0 && diffSeconds >= 0) {
+      const remainingHours = diffHours % 24;
+      const remainingMinutes = diffMinutes % 60;
+      const remainingSeconds = diffSeconds % 60;
+      return { text: `Hari Ini (${remainingHours}j ${remainingMinutes}m ${remainingSeconds}d)`, colorClass: 'countdown-danger' };
     } else {
-      const overdueDays = Math.abs(days);
-      return `
-        <span class="countdown-danger font-semibold px-2 py-1 rounded-md text-sm inline-flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          ${overdueDays} Hari 0 Jam
-        </span>
-      `;
+      const overdueDays = Math.abs(diffDays);
+      return { text: `Terlambat ${overdueDays} hari`, colorClass: 'countdown-danger' };
     }
   }
 
   function getActionButtons(status, id) {
     switch (status) {
-      case "Menunggu":
-        return `
-          <button class="btn btn-sm bg-cyan-500 text-white shadow-md hover:bg-cyan-600 border-0 px-4 py-2 rounded-md text-sm inline-flex items-center gap-2 transition-all hover:-translate-y-0.5" data-id="${id}" title="Edit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-            </svg>
-            Edit
-          </button>
-        `;
-      case "Diajukan":
-        return `
-          <button class="btn btn-sm bg-gray-100 text-gray-500 shadow-sm border-0 px-4 py-2 rounded-md text-sm inline-flex items-center gap-2 cursor-not-allowed" data-id="${id}" title="Revisi" disabled>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-            </svg>
-            Revisi
-          </button>
-        `;
+      case "Menunggu Penyerahan":
       case "Direvisi":
         return `
-          <button class="btn btn-sm bg-gray-100 text-gray-600 shadow-sm hover:bg-gray-200 border-0 px-4 py-2 rounded-md text-sm inline-flex items-center gap-2 transition-all hover:-translate-y-0.5" data-id="${id}" title="Revisi">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-            </svg>
-            Revisi
-          </button>
-        `;
-      case "Setor Fisik":
-        return `
-          <button class="btn btn-sm bg-cyan-500 text-white shadow-md hover:bg-cyan-600 border-0 px-4 py-2 rounded-md text-sm inline-flex items-center gap-2 transition-all hover:-translate-y-0.5" data-id="${id}" title="Upload">
+          <button class="btn btn-sm bg-cyan-500 text-white shadow-md hover:bg-cyan-600 border-0 px-4 py-2 rounded-md text-sm inline-flex items-center gap-2 transition-all hover:-translate-y-0.5" data-id="${id}" title="Upload LPJ">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            Upload
+            Upload LPJ
           </button>
         `;
-      case "Diterima":
+      case "Diajukan":
+        return `<span class="text-gray-400 text-sm">Diproses</span>`;
+      case "Selesai":
         return `<span class="text-gray-400 text-sm">-</span>`;
       default:
         return "";
@@ -231,201 +182,150 @@ export function renderPengajuanLpjPage(path, userRole) {
     const tbody = document.getElementById("lpjTableBody");
     if (!tbody) return;
 
+    if (state.lpjData.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center">Tidak ada data LPJ ditemukan.</td></tr>`;
+      return;
+    }
+
     tbody.innerHTML = "";
-
-    activities.forEach((activity) => {
-      const statusBadge = getStatusBadge(activity.status);
-      const countdownDisplay = getCountdownDisplay(activity.deadlineDays);
-      const actionButtons = getActionButtons(activity.status, activity.id);
-
+    state.lpjData.forEach((item, index) => {
+      const statusBadge = getStatusBadge(item.status_lpj);
+      const countdown = calculateCountdown(item.tgl_batas_lpj);
+      const actionButtons = getActionButtons(item.status_lpj, item.kegiatan_id);
+      const rowNum = (state.currentPage - 1) * state.itemsPerPage + index + 1;
+      
       const row = document.createElement("tr");
       row.innerHTML = `
         <td class="text-center">
-          <input type="checkbox" class="form-check-input row-checkbox">
+          <input type="checkbox" class="form-check-input row-checkbox" data-id="${item.kegiatan_id}">
         </td>
         <td>
-          <span class="number-badge">${activity.id}</span>
+          <span class="number-badge">${rowNum}</span>
         </td>
         <td>
-          <strong>${activity.title}</strong>
-          <div class="text-gray-500 text-sm">${activity.subtitle}</div>
+          <strong>${item.nama_kegiatan}</strong>
+          <div class="text-gray-500 text-sm">${item.pengusul_nama}</div>
         </td>
         <td>
-          <div>${activity.date || "-"}</div>
+          <div>${item.tgl_batas_lpj ? new Date(item.tgl_batas_lpj).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : "-"}</div>
         </td>
         <td class="text-center">
-          ${countdownDisplay}
+          <span id="countdown-${item.kegiatan_id}" class="${countdown.colorClass} font-semibold px-2 py-1 rounded-md text-sm">${countdown.text}</span>
         </td>
         <td class="text-center">
-          <span class="badge ${
-            statusBadge.class
-          }" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${
-        statusBadge.text
-      }</span>
+          <span class="badge ${statusBadge.class}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${statusBadge.text}</span>
         </td>
-        <td class="text-center">
-          ${actionButtons}
-        </td>
+        <td class="text-center">${actionButtons}</td>
       `;
-
       tbody.appendChild(row);
     });
 
-    attachEventListeners();
-    startCountdownTimers();
+    attachActionListeners();
   }
 
   // ==============================================
   // COUNTDOWN TIMER
   // ==============================================
   function startCountdownTimers() {
-    setInterval(() => {
-      activities.forEach((activity) => {
-        if (activity.deadlineDays > 0) {
-          // Real countdown logic would go here
+    // Clear any existing interval to prevent multiple timers running
+    if (state.countdownInterval) {
+      clearInterval(state.countdownInterval);
+    }
+
+    state.countdownInterval = setInterval(() => {
+      state.lpjData.forEach((item) => {
+        const countdownSpan = document.getElementById(`countdown-${item.kegiatan_id}`);
+        if (countdownSpan) {
+          const countdown = calculateCountdown(item.tgl_batas_lpj);
+          countdownSpan.textContent = countdown.text;
+          countdownSpan.className = `${countdown.colorClass} font-semibold px-2 py-1 rounded-md text-sm`;
         }
       });
-    }, 1000);
+    }, 1000); // Update every second
+  }
+
+  function renderPagination() {
+    const container = document.getElementById("paginationContainer");
+    if (!container) return;
+
+    const { totalItems, itemsPerPage, currentPage, totalPages } = state;
+    
+    document.getElementById("startEntry").textContent = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+    document.getElementById("endEntry").textContent = Math.min(currentPage * itemsPerPage, totalItems);
+    document.getElementById("totalEntries").textContent = totalItems;
+    
+    const paginationLinks = container.querySelector("#pagination-links");
+    paginationLinks.innerHTML = "";
+
+    if (totalPages <= 1) return;
+
+    // Previous button
+    paginationLinks.innerHTML += `
+      <li class="inline-block">
+        <a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100 ${currentPage === 1 ? 'disabled' : ''}" href="#" data-page="${currentPage - 1}">‹</a>
+      </li>
+    `;
+
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+      paginationLinks.innerHTML += `
+        <li class="inline-block">
+          <a class="px-3 py-2 border rounded-md no-underline transition-all ${i === currentPage ? 'border-cyan-500 text-white bg-cyan-500' : 'border-gray-200 text-gray-700 hover:bg-gray-100'}" href="#" data-page="${i}">${i}</a>
+        </li>
+      `;
+    }
+
+    // Next button
+    paginationLinks.innerHTML += `
+      <li class="inline-block">
+        <a class="px-3 py-2 border border-gray-200 rounded-md text-gray-700 no-underline transition-all hover:bg-gray-100 ${currentPage === totalPages ? 'disabled' : ''}" href="#" data-page="${currentPage + 1}">›</a>
+      </li>
+    `;
+
+    paginationLinks.querySelectorAll("a[data-page]").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        if (link.classList.contains('disabled')) return;
+        const page = parseInt(link.dataset.page);
+        if (page !== state.currentPage) {
+          state.currentPage = page;
+          fetchLpjData();
+        }
+      });
+    });
   }
 
   // ==============================================
   // EVENT LISTENERS
   // ==============================================
+  function attachActionListeners() {
+    document.querySelectorAll("button[title='Upload LPJ']").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const kegiatanId = this.dataset.id;
+        window.location.href = `/pengusul/input-lpj?kegiatan_id=${kegiatanId}`;
+      });
+    });
+  }
+
   function attachEventListeners() {
-    const selectAll = document.getElementById("selectAll");
-    if (selectAll) {
-      selectAll.addEventListener("change", function () {
-        document
-          .querySelectorAll(".row-checkbox")
-          .forEach((cb) => (cb.checked = this.checked));
-      });
-    }
-
-    document.querySelectorAll(".row-checkbox").forEach((checkbox) => {
-      checkbox.addEventListener("change", updateSelectAll);
+    const searchInput = document.getElementById("searchInput");
+    let searchTimeout;
+    searchInput.addEventListener("input", (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        state.searchQuery = e.target.value;
+        state.currentPage = 1; // Reset to first page on new search
+        fetchLpjData();
+      }, 500); // Debounce search
     });
-
-    document.querySelectorAll("button[title='Edit']").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        showInfo(`Edit LPJ ID: ${this.getAttribute("data-id")}`);
-      });
-    });
-
-    document
-      .querySelectorAll("button[title='Revisi']:not([disabled])")
-      .forEach((btn) => {
-        btn.addEventListener("click", function () {
-          showInfo(`Revisi LPJ ID: ${this.getAttribute("data-id")}`);
-        });
-      });
-
-    document.querySelectorAll("button[title='Upload']").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        showInfo(`Upload LPJ ID: ${this.getAttribute("data-id")}`);
-      });
-    });
-
-    setupPagination();
-  }
-
-  function updateSelectAll() {
-    const allCheckboxes = document.querySelectorAll(".row-checkbox");
-    const checkedCount = document.querySelectorAll(
-      ".row-checkbox:checked"
-    ).length;
-    const selectAll = document.getElementById("selectAll");
-
-    if (selectAll) {
-      selectAll.checked =
-        checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAll.indeterminate =
-        checkedCount > 0 && checkedCount < allCheckboxes.length;
-    }
-  }
-
-  // ==============================================
-  // PAGINATION
-  // ==============================================
-  function setupPagination() {
-    document.querySelectorAll("a[data-page]").forEach((link) => {
-      link.addEventListener("click", function (e) {
-        e.preventDefault();
-        const page = parseInt(this.getAttribute("data-page"));
-        changePage(page);
-      });
-    });
-
-    const btnFirstPage = document.getElementById("btnFirstPage");
-    const btnPrevPage = document.getElementById("btnPrevPage");
-    const btnNextPage = document.getElementById("btnNextPage");
-    const btnLastPage = document.getElementById("btnLastPage");
-
-    if (btnFirstPage)
-      btnFirstPage.addEventListener("click", (e) => {
-        e.preventDefault();
-        changePage(1);
-      });
-    if (btnPrevPage)
-      btnPrevPage.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (currentPage > 1) changePage(currentPage - 1);
-      });
-    if (btnNextPage)
-      btnNextPage.addEventListener("click", (e) => {
-        e.preventDefault();
-        const totalPages = Math.ceil(50 / itemsPerPage);
-        if (currentPage < totalPages) changePage(currentPage + 1);
-      });
-    if (btnLastPage)
-      btnLastPage.addEventListener("click", (e) => {
-        e.preventDefault();
-        changePage(Math.ceil(50 / itemsPerPage));
-      });
-  }
-
-  function changePage(page) {
-    currentPage = page;
-
-    // Update active state
-    document.querySelectorAll("li.inline-block").forEach((item) => {
-      const link = item.querySelector("a[data-page]");
-      if (link && parseInt(link.getAttribute("data-page")) === page) {
-        item.classList.add("active");
-        link.classList.remove(
-          "border-gray-200",
-          "text-gray-700",
-          "hover:bg-gray-100"
-        );
-        link.classList.add("border-cyan-500", "text-white", "bg-cyan-500");
-      } else if (link) {
-        item.classList.remove("active");
-        link.classList.remove("border-cyan-500", "text-white", "bg-cyan-500");
-        link.classList.add(
-          "border-gray-200",
-          "text-gray-700",
-          "hover:bg-gray-100"
-        );
-      }
-    });
-
-    updatePagination();
-  }
-
-  function updatePagination() {
-    const startEntry = (currentPage - 1) * itemsPerPage + 1;
-    const endEntry = Math.min(currentPage * itemsPerPage, 50);
-
-    document.getElementById("startEntry").textContent = startEntry;
-    document.getElementById("endEntry").textContent = endEntry;
-    document.getElementById("totalEntries").textContent = 50;
   }
 
   // ==============================================
   // INITIALIZATION
   // ==============================================
-  renderTableRows();
-  updatePagination();
-
+  fetchLpjData();
+  attachEventListeners();
+  
   if (window.Helpers) {
     window.Helpers.init();
   }

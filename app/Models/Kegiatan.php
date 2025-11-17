@@ -239,9 +239,10 @@ class Kegiatan extends Model
         $offset = ($page - 1) * $perPage;
 
         $sql .= " ORDER BY k.tgl_batas_lpj DESC LIMIT ? OFFSET ?";
-        $params[] = array_merge($params, [$perPage, $offset]);
+        
+        $finalParams = array_merge($params, [$perPage, $offset]);
 
-        $data = $this->query($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
+        $data = $this->query($sql, $finalParams)->fetchAll(PDO::FETCH_ASSOC);
 
         return [
             'data' => $data,

@@ -969,4 +969,25 @@ class KegiatanController
             Response::error('Gagal menyelesaikan proses pencairan: ' . $e->getMessage(), 500);
         }
     }
+
+    public function getDetail($id)
+    {
+        try {
+            $kegiatan = $this->kegiatanModel->getKegiatanForPDF($id);
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // Authorization: Pengusul can only see their own activities.
+            if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
+                if ($kegiatan['pengusul_user_id'] != $this->userData['user_id']) {
+                    Response::forbidden('Anda tidak memiliki akses ke detail kegiatan ini.');
+                }
+            }
+
+            Response::success($kegiatan, 'Detail kegiatan berhasil diambil.');
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil detail kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
 }
