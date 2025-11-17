@@ -7,6 +7,7 @@ use App\Models\Kegiatan;
 use App\Models\KegiatanAnggaran;
 use App\Models\KegiatanLampiran;
 use App\Models\KegiatanLogStatus;
+use App\Models\KegiatanApproval;
 use App\Models\Notifikasi;
 use App\Models\Role;
 use App\Models\User;
@@ -23,6 +24,7 @@ class KegiatanController
     private $anggaranModel;
     private $lampiranModel;
     private $logStatusModel;
+    private $kegiatanApprovalModel;
     private $notifikasiModel;
     private $kakModel;
     private $userModel;
@@ -35,6 +37,7 @@ class KegiatanController
         $this->anggaranModel = new KegiatanAnggaran();
         $this->lampiranModel = new KegiatanLampiran();
         $this->logStatusModel = new KegiatanLogStatus();
+        $this->kegiatanApprovalModel = new KegiatanApproval();
         $this->notifikasiModel = new Notifikasi();
         $this->kakModel = new KAK();
         $this->userModel = new User();
@@ -732,6 +735,38 @@ class KegiatanController
 
         } catch (\Exception $e) {
             Response::error('Gagal mengambil log status: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Get PPK's notes for a specific kegiatan
+     *
+     * GET /api/kegiatan/{id}/catatan-ppk
+     */
+    public function getCatatanPPK()
+    {
+        try {
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/catatan-ppk$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Find the notes from PPK
+            $catatan = $this->kegiatanApprovalModel->findCatatanByKegiatanIdAndLevel($kegiatanId, 'PPK');
+
+            if (!$catatan) {
+                Response::success(['catatan' => 'Tidak ada catatan dari PPK.'], 'Catatan PPK berhasil diambil.');
+                return;
+            }
+            
+            Response::success($catatan, 'Catatan PPK berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil catatan PPK: ' . $e->getMessage(), 500);
         }
     }
 

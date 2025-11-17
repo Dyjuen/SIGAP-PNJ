@@ -211,6 +211,7 @@ $router->post('/kegiatan/{id}/submit', 'KegiatanController@submit');
 $router->post('/kegiatan/{id}/revise', 'KegiatanController@revise');
 $router->post('/kegiatan/{id}/approve', 'KegiatanController@approve');
 $router->get('/kegiatan/{id}/logs', 'KegiatanController@logs');
+$router->get('/kegiatan/{id}/catatan-ppk', 'KegiatanController@getCatatanPPK');
 
 // Fitur Tambahan
 $router->post('/kegiatan/{id}/duplicate', 'KegiatanController@duplicate');

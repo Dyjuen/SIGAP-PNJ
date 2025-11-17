@@ -190,21 +190,34 @@ export function renderWadirDashboardPage(path, userRole) {
 
   async function viewPpkNotes(kegiatanId) {
     try {
-      const response = await apiRequest(`/kegiatan/${kegiatanId}/logs`);
-      const logs = response.data.data ? response.data.data : response.data; // Handle API response structure
+      // Use the new, correct endpoint
+      const response = await apiRequest(`/kegiatan/${kegiatanId}/catatan-ppk`);
+      const data = response.data; // The API returns { catatan: "...", updated_at: "..." }
 
-      const ppkLogs = logs.filter(
-        (log) => log.actor_role === "PPK" && log.catatan
-      );
-
-      let notesContent = "Tidak ada catatan dari PPK.";
-      if (ppkLogs.length > 0) {
-        notesContent = "Catatan dari PPK:\n\n";
-        ppkLogs.forEach((log) => {
-          notesContent += `- ${log.catatan} (Status: ${log.status_baru_nama})\n`;
+      let notesContent;
+      if (data && data.catatan) {
+        const formattedDate = new Date(data.updated_at).toLocaleDateString("id-ID", {
+          day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
         });
+        notesContent = `
+          <div style="text-align: left;">
+            <p style="margin-bottom: 1rem;">${data.catatan}</p>
+            <hr>
+            <small class="text-muted">Dibuat pada: ${formattedDate}</small>
+          </div>
+        `;
+      } else {
+        notesContent = "Tidak ada catatan yang ditemukan dari PPK untuk kegiatan ini.";
       }
-      alert(notesContent);
+
+      Swal.fire({
+        title: "Catatan dari PPK",
+        html: notesContent,
+        icon: "info",
+        confirmButtonText: "Tutup",
+        confirmButtonColor: "#00BCD4",
+      });
+
     } catch (error) {
       showError(`Gagal mengambil catatan PPK: ${error.message}`);
     }
