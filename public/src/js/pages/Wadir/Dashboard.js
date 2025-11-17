@@ -73,142 +73,154 @@ export function renderWadirDashboardPage(path, userRole) {
   `;
 
   renderDashboardLayout(dashboardContent, userRole);
-  
+
   // ==============================================
   // STATE
   // ==============================================
   let state = {
-      allKegiatan: [],
-      displayKegiatan: [],
+    allKegiatan: [],
+    displayKegiatan: [],
   };
 
   // ==============================================
   // API FUNCTIONS
   // ==============================================
   async function apiRequest(endpoint, options = {}) {
-    const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
-    const headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
+    const headers = { ...options.headers, Authorization: `Bearer ${token}` };
     if (!(options.body instanceof FormData)) {
-        headers['Content-Type'] = 'application/json';
+      headers["Content-Type"] = "application/json";
     }
     const config = { ...options, headers };
     try {
-        const response = await fetch(`/api${endpoint}`, config);
-        const data = await response.json();
-        if (data.status === false || data.status === "error") {
-            throw new Error(data.message || 'API request failed');
-        }
-        return data;
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (data.status === false || data.status === "error") {
+        throw new Error(data.message || "API request failed");
+      }
+      return data;
     } catch (error) {
-        console.error('API Request Error:', error);
-        throw error;
+      console.error("API Request Error:", error);
+      throw error;
     }
   }
 
   async function fetchKegiatan() {
-      const tbody = document.getElementById("monitoringTableBody");
-      tbody.innerHTML = '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
-      try {
-          const response = await apiRequest('/kegiatan');
-          const kegiatanData = response.data.data ? response.data.data : response.data;
-          state.allKegiatan = kegiatanData || [];
-          
-          // Filter for activities waiting for Wadir approval
-          state.displayKegiatan = state.allKegiatan.filter(k => 
-              k.current_approval && k.current_approval.approval_level === 'Wadir' && k.current_approval.status === 'Aktif'
-          );
+    const tbody = document.getElementById("monitoringTableBody");
+    tbody.innerHTML =
+      '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+    try {
+      const response = await apiRequest("/kegiatan");
+      const kegiatanData = response.data.data
+        ? response.data.data
+        : response.data;
+      state.allKegiatan = kegiatanData || [];
 
-          renderTableRows(state.displayKegiatan);
-          updateStats(state.allKegiatan);
-      } catch (error) {
-          tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
-      }
+      // Filter for activities waiting for Wadir approval
+      state.displayKegiatan = state.allKegiatan.filter(
+        (k) =>
+          k.current_approval &&
+          k.current_approval.approval_level === "Wadir" &&
+          k.current_approval.status === "Aktif"
+      );
+
+      renderTableRows(state.displayKegiatan);
+      updateStats(state.allKegiatan);
+    } catch (error) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    }
   }
 
   async function handleApprovalAction(kegiatanId, action) {
-  const isApprove = action === "approve";
-  let payload = { status: isApprove ? "Disetujui" : "Revisi" };
+    const isApprove = action === "approve";
+    let payload = { status: isApprove ? "Disetujui" : "Revisi" };
 
-  // --- Step 1: Ask for notes using SweetAlert2 ---
-  const { value: catatan } = await Swal.fire({
-    title: isApprove 
-      ? "Masukkan Rekomendasi Tindak Lanjut (Opsional)"
-      : "Masukkan Catatan Revisi",
-    input: "textarea",
-    inputPlaceholder: isApprove
-      ? "Contoh: Lanjutkan pengadaan sesuai rencana..."
-      : "Contoh: Mohon perbaiki detail RAB...",
-    inputValidator: (value) => {
-      if (!isApprove && (!value || value.trim() === "")) {
-        return "Catatan revisi tidak boleh kosong!";
-      }
-    },
-    showCancelButton: true,
-    cancelButtonText: "Batal",
-    confirmButtonColor: "#00BCD4",
-  });
-
-  if (catatan === undefined) return; // User clicked Cancel
-
-  payload.catatan = catatan;
-
-  // --- Step 2: Confirmation Dialog ---
-  const confirmResult = await Swal.fire({
-    title: isApprove
-      ? "Setujui kegiatan ini?"
-      : "Ajukan revisi untuk kegiatan ini?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: isApprove ? "Setujui" : "Revisi",
-    cancelButtonText: "Batal",
-    confirmButtonColor: "#00BCD4",
-  });
-
-  if (!confirmResult.isConfirmed) return;
-
-  // --- Step 3: Send request ---
-  try {
-    await apiRequest(`/kegiatan/${kegiatanId}/${action}`, {
-      method: "POST",
-      body: JSON.stringify(payload),
+    // --- Step 1: Ask for notes using SweetAlert2 ---
+    const { value: catatan } = await Swal.fire({
+      title: isApprove
+        ? "Masukkan Rekomendasi Tindak Lanjut (Opsional)"
+        : "Masukkan Catatan Revisi",
+      input: "textarea",
+      inputPlaceholder: isApprove
+        ? "Contoh: Lanjutkan pengadaan sesuai rencana..."
+        : "Contoh: Mohon perbaiki detail RAB...",
+      inputValidator: (value) => {
+        if (!isApprove && (!value || value.trim() === "")) {
+          return "Catatan revisi tidak boleh kosong!";
+        }
+      },
+      showCancelButton: true,
+      cancelButtonText: "Batal",
+      confirmButtonColor: "#00BCD4",
     });
 
-    showSuccess(`Kegiatan berhasil di-${isApprove ? "setujui" : "revisi"}.`);
-    fetchKegiatan();
-  } catch (error) {
-    showError(`Gagal memproses aksi: ${error.message}`);
-  }
-}
+    if (catatan === undefined) return; // User clicked Cancel
 
+    payload.catatan = catatan;
+
+    // --- Step 2: Confirmation Dialog ---
+    const confirmResult = await Swal.fire({
+      title: isApprove
+        ? "Setujui kegiatan ini?"
+        : "Ajukan revisi untuk kegiatan ini?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: isApprove ? "Setujui" : "Revisi",
+      cancelButtonText: "Batal",
+      confirmButtonColor: "#00BCD4",
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    // --- Step 3: Send request ---
+    try {
+      await apiRequest(`/kegiatan/${kegiatanId}/${action}`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      showSuccess(`Kegiatan berhasil di-${isApprove ? "setujui" : "revisi"}.`);
+      fetchKegiatan();
+    } catch (error) {
+      showError(`Gagal memproses aksi: ${error.message}`);
+    }
+  }
 
   async function viewPpkNotes(kegiatanId) {
-      try {
-          const response = await apiRequest(`/kegiatan/${kegiatanId}/logs`);
-          const logs = response.data.data ? response.data.data : response.data; // Handle API response structure
-          
-          const ppkLogs = logs.filter(log => log.actor_role === 'PPK' && log.catatan);
+    try {
+      const response = await apiRequest(`/kegiatan/${kegiatanId}/logs`);
+      const logs = response.data.data ? response.data.data : response.data; // Handle API response structure
 
-          let notesContent = "Tidak ada catatan dari PPK.";
-          if (ppkLogs.length > 0) {
-              notesContent = "Catatan dari PPK:\n\n";
-              ppkLogs.forEach(log => {
-                  notesContent += `- ${log.catatan} (Status: ${log.status_baru_nama})\n`;
-              });
-          }
-          alert(notesContent);
+      const ppkLogs = logs.filter(
+        (log) => log.actor_role === "PPK" && log.catatan
+      );
 
-      } catch (error) {
-          showError(`Gagal mengambil catatan PPK: ${error.message}`);
+      let notesContent = "Tidak ada catatan dari PPK.";
+      if (ppkLogs.length > 0) {
+        notesContent = "Catatan dari PPK:\n\n";
+        ppkLogs.forEach((log) => {
+          notesContent += `- ${log.catatan} (Status: ${log.status_baru_nama})\n`;
+        });
       }
+      alert(notesContent);
+    } catch (error) {
+      showError(`Gagal mengambil catatan PPK: ${error.message}`);
+    }
   }
 
   // ==============================================
   // RENDER FUNCTIONS
   // ==============================================
-    function formatDate(dateString) {
-        if (!dateString) return "-";
-        return new Date(dateString).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
-    }
+  function formatDate(dateString) {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
 
   function renderTableRows(data) {
     const tbody = document.getElementById("monitoringTableBody");
@@ -216,8 +228,9 @@ export function renderWadirDashboardPage(path, userRole) {
 
     tbody.innerHTML = "";
     if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada kegiatan yang menunggu persetujuan Anda.</td></tr>';
-        return;
+      tbody.innerHTML =
+        '<tr><td colspan="7" class="text-center">Tidak ada kegiatan yang menunggu persetujuan Anda.</td></tr>';
+      return;
     }
 
     data.forEach((kegiatan) => {
@@ -235,7 +248,7 @@ export function renderWadirDashboardPage(path, userRole) {
         </td>
         <td>
           <strong>${kegiatan.pengusul_nama}</strong>
-          <div class="text-muted">${kegiatan.pengusul_role || ''}</div>
+          <div class="text-muted">${kegiatan.pengusul_role || ""}</div>
         </td>
         <td>
           <div class="date-text">${formatDate(kegiatan.created_at)}</div>
@@ -244,13 +257,14 @@ export function renderWadirDashboardPage(path, userRole) {
           <span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>
         </td>
         <td style="text-align: center;">
-          <button class="btn btn-sm me-2 btn-approve" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Setujui">
+          <button class="btn btn-sm me-2 btn-approve" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${
+            kegiatan.kegiatan_id
+          }" title="Setujui">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
           </button>
-          <button class="btn btn-sm me-2 btn-revise" style="background: linear-gradient(135deg, #743bfaff 0%, #7c3aed 100%); box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Revisi">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>          
-          </button>
-          <button class="btn btn-sm me-2 btn-view-ppk-notes" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Lihat Catatan PPK">
+          <button class="btn btn-sm me-2 btn-view-ppk-notes" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${
+            kegiatan.kegiatan_id
+          }" title="Lihat Catatan PPK">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>          
           </button>
         </td>
@@ -294,7 +308,9 @@ export function renderWadirDashboardPage(path, userRole) {
         k.current_approval.status === "Aktif"
     ).length;
     const acceptedCount = allData.filter((k) => {
-      const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir");
+      const wadirApproval = k.approvals?.find(
+        (a) => a.approval_level === "Wadir"
+      );
       return wadirApproval && wadirApproval.status === "Disetujui";
     }).length;
 

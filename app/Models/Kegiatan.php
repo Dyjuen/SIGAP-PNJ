@@ -163,7 +163,7 @@ class Kegiatan extends Model
         $sql = "SELECT k.*, t.pengusul_user_id, t.status_id, t.nama_kegiatan,
                        COALESCE((SELECT SUM(pd.jumlah_dicairkan) 
                                  FROM t_pencairan_dana pd 
-                                 WHERE pd.kegiatan_id = k.kegiatan_id AND pd.status = 'Disetujui'), 0) as dana_dicairkan
+                                 WHERE pd.kegiatan_id = k.kegiatan_id), 0) as dana_dicairkan
                 FROM {$this->table} k
                 JOIN t_kak t ON k.kak_id = t.kak_id
                 WHERE k.{$this->primaryKey} = ?";
