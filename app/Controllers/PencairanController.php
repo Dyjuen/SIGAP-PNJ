@@ -17,15 +17,18 @@ class PencairanController extends Controller
     private $kegiatanModel;
     private $notifikasiModel;
     private $userData;
-    private $db;
 
     public function __construct()
     {
+        // The parent Controller's constructor should handle DB initialization.
+        // The models can get the DB connection from the parent controller if needed,
+        // or they might establish their own. For now, we trust the models' internal workings.
+        parent::__construct(); // It's good practice to call parent constructor
+        
         $this->pencairanModel = new PencairanDana();
         $this->kegiatanModel = new Kegiatan();
         $this->notifikasiModel = new Notifikasi();
         $this->userData = AuthMiddleware::getAuthUser();
-        $this->db = $this->pencairanModel->getDb();
     }
 
     /**
@@ -79,7 +82,62 @@ class PencairanController extends Controller
     }
 
     /**
-     * POST /api/pencairan
+     * POST /api/kegiatan/{id}/cairkan
+     * Bendahara mencatat pencairan dana.
+     */
+    public function cairkanDana($kegiatanId)
+    {
+        try {
+            $input = $this->getInput();
+
+            // 1. Validasi Input
+            $nominal = $input['nominal'] ?? null;
+
+            if (!$kegiatanId || !$nominal || !is_numeric($nominal) || $nominal <= 0) {
+                Response::error('Kegiatan ID dan nominal pencairan yang valid harus diisi.', 400);
+            }
+
+            // 2. Authorisasi: Hanya Bendahara
+            if (!$this->isBendahara() && !$this->isAdmin()) {
+                Response::forbidden('Hanya Bendahara yang dapat mencatat pencairan.');
+            }
+
+            // 3. Get Kegiatan & Cek Status
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+            
+            $currentApproval = $this->kegiatanModel->findCurrentApproval($kegiatanId);
+            if (!$currentApproval || $currentApproval['approval_level'] !== 'Bendahara-Cair') {
+                Response::error('Pencairan hanya bisa dilakukan saat alur persetujuan berada di level Bendahara-Cair.', 400);
+            }
+            
+            // 4. Cek Sisa Dana
+            $sisaDana = (float)($kegiatan['total_anggaran_disetujui'] ?? 0) - (float)($kegiatan['dana_dicairkan'] ?? 0);
+            if ($nominal > $sisaDana) {
+                Response::error('Nominal pencairan melebihi sisa dana yang tersedia. Sisa: ' . number_format($sisaDana, 0, ',', '.'), 400);
+            }
+
+            // 5. Simpan ke t_pencairan_dana
+            $this->pencairanModel->create([
+                'kegiatan_id' => $kegiatanId,
+                'jumlah_dicairkan' => $nominal,
+                'created_by' => $this->userData['user_id'],
+                'tanggal_pencairan' => date('Y-m-d'),
+                'keterangan' => 'Pencairan oleh Bendahara pada ' . date('d-m-Y')
+            ]);
+            
+
+            Response::success(['kegiatan_id' => $kegiatanId, 'dicairkan' => $nominal], 'Pencairan dana berhasil dicatat.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mencatat pencairan dana: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * POST /api/pencairan/pengajuan
      * Pengusul mengajukan pencairan
      */
     public function create()
@@ -298,7 +356,7 @@ class PencairanController extends Controller
         ]);
     }
 
-    private function getInput()
+    protected function getInput()
     {
         return json_decode(file_get_contents('php://input'), true);
     }

@@ -411,7 +411,7 @@ export function renderPencairanDanaPage(path, userRole) {
     try {
       const response = await fetch(`/api${endpoint}`, config);
       const data = await response.json();
-      if (data.status === false || data.status === "error") {
+      if (data.success === false) {
         throw new Error(data.message || "API request failed");
       }
       return data;

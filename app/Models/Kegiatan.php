@@ -160,10 +160,13 @@ class Kegiatan extends Model
     
     public function findById($id)
     {
-        $sql = "SELECT k.*, t.pengusul_user_id, t.status_id, t.nama_kegiatan,
-                       COALESCE((SELECT SUM(pd.jumlah_dicairkan) 
-                                 FROM t_pencairan_dana pd 
-                                 WHERE pd.kegiatan_id = k.kegiatan_id), 0) as dana_dicairkan
+        $sql = "SELECT 
+                    k.*, 
+                    t.pengusul_user_id, 
+                    t.status_id, 
+                    t.nama_kegiatan,
+                    (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_disetujui,
+                    (SELECT COALESCE(SUM(pd.jumlah_dicairkan), 0) FROM t_pencairan_dana pd WHERE pd.kegiatan_id = k.kegiatan_id) as dana_dicairkan
                 FROM {$this->table} k
                 JOIN t_kak t ON k.kak_id = t.kak_id
                 WHERE k.{$this->primaryKey} = ?";
