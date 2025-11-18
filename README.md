@@ -112,4 +112,4 @@ vendor/bin/phinx migrate -c phinx.php
 
 (Run Seed)
 vendor/bin/phinx seed:run -s nama seeder -c phinx.php
-vendor/bin/phinx seed:run -s MasterDataSeeder -c phinx.php
+vendor/bin/phinx seed:run -s MasterDataSeeder -c phinx.phpd

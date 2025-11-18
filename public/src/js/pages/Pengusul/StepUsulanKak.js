@@ -13,7 +13,7 @@ export function renderUsulanKakPage(path, userRole) {
 
         <!-- Step 1 -->
         <div class="progress-step-item flex items-center justify-center gap-3 px-4 cursor-pointer" data-main-step="1">
-          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg shadow-lg transition-all duration-300"
+          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300"
                style="background: #00BCD4; color: #FFFFFF; box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);">
             1
           </div>
@@ -24,7 +24,7 @@ export function renderUsulanKakPage(path, userRole) {
 
         <!-- Step 2 -->
         <div class="progress-step-item flex items-center justify-center gap-3 px-4 cursor-pointer" data-main-step="2">
-          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg shadow-lg transition-all duration-300"
+          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300"
                style="background: #E5E7EB; color: #6B7280;">
             2
           </div>
@@ -36,7 +36,7 @@ export function renderUsulanKakPage(path, userRole) {
 
         <!-- Step 3 -->
         <div class="progress-step-item flex items-center justify-center gap-3 px-4 cursor-pointer" data-main-step="3">
-          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg shadow-lg transition-all duration-300"
+          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300"
                style="background: #E5E7EB; color: #6B7280;">
             3
           </div>
@@ -54,23 +54,23 @@ export function renderUsulanKakPage(path, userRole) {
             <!-- Sidebar Menu -->
             <div class="flex flex-col gap-4 w-96">
               <button class="menu-button border-2 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3 active" data-menu="gambaran-umum" style="border-color: #00BCD4; background: rgba(0, 188, 212, 0.1);">
-                <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;">O</div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text">&#xff43;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Gambaran Umum</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="penerima-manfaat">
-                <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;">O</div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users">&#xf7cd;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Penerima Manfaat</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="strategi-pencapaian">
-                <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;">O</div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target">&#xeb35;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Strategi Pencapaian</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="indikator-kinerja">
-                <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;">O</div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar">&#xea59;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Indikator Kinerja</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="kurun-waktu">
-                <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;">O</div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar">&#xea53;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</div>
               </button>
             </div>
@@ -644,6 +644,12 @@ export function renderUsulanKakPage(path, userRole) {
 
   // Update Main Progress Step Display
   function updateMainStepDisplay() {
+    const iconsForSteps = {
+        1: { class: 'ti ti-file-text', entity: '&#xf7cd;' }, // KAK
+        2: { class: 'ti ti-chart-bar', entity: '&#xea59;' }, // IKU & RENSTRA
+        3: { class: 'ti ti-currency-dollar', entity: '&#xeb84;' } // RAB
+    };
+
     const progressSteps = document.querySelectorAll(".progress-step-item");
     progressSteps.forEach((step, index) => {
       const stepNum = index + 1;
@@ -656,7 +662,7 @@ export function renderUsulanKakPage(path, userRole) {
         circle.style.background = "#10B981";
         circle.style.color = "#FFFFFF";
         circle.style.boxShadow = "0 4px 12px rgba(16, 185, 129, 0.4)";
-        circle.innerHTML = "✓";
+        circle.innerHTML = '<i class="ti ti-check">&#xea5e;</i>';
         text.style.color = "#10B981";
         if (subtext) subtext.style.color = "#10B981";
       } else if (stepNum === mainStep) {
@@ -664,7 +670,7 @@ export function renderUsulanKakPage(path, userRole) {
         circle.style.background = "#00BCD4";
         circle.style.color = "#FFFFFF";
         circle.style.boxShadow = "0 4px 12px rgba(0, 188, 212, 0.4)";
-        circle.innerHTML = stepNum;
+        circle.innerHTML = `<i class="${iconsForSteps[stepNum].class}">${iconsForSteps[stepNum].entity}</i>`;
         text.style.color = "#00BCD4";
         if (subtext) subtext.style.color = "#00BCD4";
       } else {
@@ -672,7 +678,7 @@ export function renderUsulanKakPage(path, userRole) {
         circle.style.background = "#E5E7EB";
         circle.style.color = "#6B7280";
         circle.style.boxShadow = "none";
-        circle.innerHTML = stepNum;
+        circle.innerHTML = `<i class="${iconsForSteps[stepNum].class}">${iconsForSteps[stepNum].entity}</i>`;
         text.style.color = "#6B7280";
         if (subtext) subtext.style.color = "#9CA3AF";
       }

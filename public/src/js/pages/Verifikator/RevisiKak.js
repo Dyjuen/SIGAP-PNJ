@@ -2,198 +2,208 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-// Utility to render read-only fields/selects
 const READONLY_ATTR = 'readonly disabled';
 const READONLY_STYLE = 'border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default;';
 
 export function renderRevisiKakPage(usulanId, userRole) {
   const pageContent = `
     <style>
-      .section-card {
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        padding: 2rem;
-        margin-bottom: 1.5rem;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-      }
-      
-      .section-card:hover {
-        border-color: #E0F7FA;
-        box-shadow: 0 10px 15px -3px rgba(0, 188, 212, 0.1), 0 4px 6px -2px rgba(0, 188, 212, 0.05);
-      }
-      
-      .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid #F3F4F6;
-      }
-      
-      .section-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #00BCD4;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-      
-      .section-icon {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.25rem;
-      }
-      
-      .btn-comment {
-        position: relative;
-        padding: 0.75rem;
-        border-radius: 12px;
+      /* Comment button styling */
+      .comment-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 32px;
+        height: 32px;
         background: #E0F7FA;
         color: #00BCD4;
         border: 2px solid #B2EBF2;
-        transition: all 0.3s ease;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
       }
       
-      .btn-comment:hover {
+      .comment-icon:hover {
         background: #00BCD4;
         color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        transform: translateY(-50%) scale(1.1);
       }
       
-      .btn-comment.has-comment {
+      .comment-icon.has-comment {
         background: #FEE2E2;
         color: #EF4444;
         border-color: #FCA5A5;
         animation: pulse-comment 2s infinite;
       }
       
-      .btn-comment.has-comment:hover {
+      .comment-icon.has-comment:hover {
         background: #EF4444;
         color: white;
       }
       
       @keyframes pulse-comment {
         0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-        50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
       }
       
-      .comment-badge {
-        position: absolute;
-        top: -6px;
-        right: -6px;
-        background: #EF4444;
-        color: white;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        font-weight: bold;
-        border: 2px solid white;
+      .input-with-comment {
+        position: relative;
       }
       
-      .rab-section {
-        background: #FAFAFA;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+      .input-with-comment input,
+      .input-with-comment textarea,
+      .input-with-comment select {
+        padding-right: 52px !important;
       }
       
-      .rab-item-card {
-        background: white;
+      /* Row comment styling */
+      .row-with-comment {
+        position: relative;
+        padding: 1rem;
         border: 2px solid #E5E7EB;
         border-radius: 12px;
-        padding: 1.5rem;
         margin-bottom: 1rem;
         transition: all 0.3s ease;
+        background: white;
       }
       
-      .rab-item-card:hover {
+      .row-with-comment:hover {
         border-color: #00BCD4;
         box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
+        transform: translateY(-2px);
       }
       
-      .rab-item-card.has-comment {
-        border-color: #FCA5A5;
+      .row-with-comment.has-row-comment {
         background: #FEF2F2;
+        border-color: #FCA5A5;
       }
       
-      .btn-comment-item {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
+      .row-with-comment.has-row-comment:hover {
+        border-color: #EF4444;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+      }
+      
+      .row-comment-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
         background: #E0F7FA;
         color: #00BCD4;
         border: 2px solid #B2EBF2;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         transition: all 0.3s ease;
-        position: relative;
+        z-index: 10;
       }
       
-      .btn-comment-item:hover {
+      .row-comment-icon:hover {
         background: #00BCD4;
         color: white;
-        transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        transform: translateY(-50%) scale(1.1);
       }
       
-      .btn-comment-item.has-comment {
+      .row-comment-icon.has-comment {
         background: #FEE2E2;
         color: #EF4444;
         border-color: #FCA5A5;
+        animation: pulse-comment 2s infinite;
       }
       
-      .btn-comment-item.has-comment:hover {
+      .row-comment-icon.has-comment:hover {
         background: #EF4444;
         color: white;
       }
       
-      .page-header {
-        background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
-        color: white;
-        border-radius: 16px;
-        padding: 2.5rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 188, 212, 0.3);
+      .row-with-comment .input-with-comment input {
+        padding-right: 12px !important;
       }
       
-      .page-header h3 {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: white;
+      /* Progress Steps */
+      .progress-step-item {
+        cursor: default;
       }
       
-      .page-header p {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 1.05rem;
+      .progress-step-circle {
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
       }
       
-      .form-label-enhanced {
-        font-weight: 600;
-        color: #374151;
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
+      /* Menu buttons */
+      .menu-button {
+        transition: all 0.3s ease;
+      }
+      
+      .menu-button.active {
+        border-color: #00BCD4 !important;
+        background: rgba(0, 188, 212, 0.1) !important;
+      }
+      
+      /* Step content */
+      .step-content {
+        display: none;
+      }
+      
+      .step-content.active {
         display: block;
       }
       
+      .main-step-content {
+        display: none;
+      }
+      
+      .main-step-content.active {
+        display: block;
+      }
+      
+      /* Modal styling */
+      .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      
+      .modal-header {
+        border-bottom: 2px solid #F3F4F6;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%);
+        border-radius: 16px 16px 0 0;
+      }
+      
+      .modal-title {
+        color: #374151;
+        font-weight: 700;
+        font-size: 1.25rem;
+      }
+      
+      .modal-body {
+        padding: 2rem;
+      }
+      
+      .form-control {
+        border: 2px solid #E5E7EB;
+        border-radius: 12px;
+        padding: 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+      }
+      
+      .form-control:focus {
+        border-color: #00BCD4;
+        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+        outline: none;
+      }
+      
+      /* Action buttons */
       .action-buttons {
         background: white;
         border-radius: 16px;
@@ -203,7 +213,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-top: 4px solid #00BCD4;
+        border-top: 4px solid #EF4444;
       }
       
       .btn-primary-action {
@@ -217,16 +227,6 @@ export function renderRevisiKakPage(usulanId, userRole) {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-      }
-      
-      .btn-approve {
-        background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
-        color: white;
-      }
-      
-      .btn-approve:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
       }
       
       .btn-revise {
@@ -255,463 +255,551 @@ export function renderRevisiKakPage(usulanId, userRole) {
         color: #374151;
       }
       
-      .rab-category-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        background: white;
-        border-radius: 12px;
-        border-left: 4px solid #00BCD4;
-      }
-      
-      .rab-category-icon {
-        width: 36px;
-        height: 36px;
-        background: #E0F7FA;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #00BCD4;
-      }
-      
-      .rab-category-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #374151;
-      }
-      
-      .modal-content {
-        border-radius: 16px;
-        border: none;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-      }
-      
-      .modal-header {
-        border-bottom: 2px solid #F3F4F6;
-        padding: 1.5rem;
-        background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%);
-        border-radius: 16px 16px 0 0;
-      }
-      
-      .modal-title {
-        color: #374151;
-        font-weight: 700;
-        font-size: 1.25rem;
-      }
-      
-      .modal-body {
-        padding: 2rem;
-      }
-      
-      .modal-footer {
-        border-top: 2px solid #F3F4F6;
-        padding: 1.5rem;
-      }
-      
-      .form-control {
-        border: 2px solid #E5E7EB;
-        border-radius: 12px;
-        padding: 1rem;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-      }
-      
-      .form-control:focus {
-        border-color: #00BCD4;
-        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
-        outline: none;
-      }
-      
-      .comment-count-badge {
-        background: #EF4444;
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-left: 1rem;
-      }
-      
+      /* RAB Grid */
       .grid-rab {
         display: grid;
-        grid-template-columns: 2fr 1fr 2fr 1fr 1fr 2fr auto;
+        grid-template-columns: 2fr 1fr 2fr 1fr 1fr 2fr;
         gap: 1rem;
         align-items: end;
       }
+      
+      /* Comment count badge */
+      .comment-count {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      .comment-count i {
+        font-size: 1.5rem;
+      }
+      
+      .info-box {
+        padding: 1rem;
+        border-radius: 8px;
+        background: #EFF6FF;
+        border-left: 4px solid #3B82F6;
+        margin-top: 1rem;
+      }
+      
+      .info-box-text {
+        font-size: 0.875rem;
+        color: #1E40AF;
+      }
     </style>
 
-    <div class="usulan-kak-page">
-      <!-- Page Header -->
-      <div class="page-header">
-        <h3>Review Usulan KAK #${usulanId || '001'}</h3>
-        <p>Berikan catatan revisi per bagian dan per item RAB sebelum mengirim kembali ke pengusul</p>
-      </div>
-
-      <!-- Gambaran Umum Section -->
-      <div class="section-card">
-        <div class="section-header">
-          <div class="section-title">
-            <div class="section-icon">
-              <i class="ti ti-file-description">&#xf028;</i>
-            </div>
-            Gambaran Umum
-          </div>
-          <button type="button" class="btn-comment" data-section="gambaran-umum" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
-          </button>
-        </div>
-        
-        <div class="mb-6">
-          <label class="form-label-enhanced">Pengusul Kegiatan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Nama Pengusul (Contoh Data)">
-        </div>
-        
-        <div class="mb-6">
-          <label class="form-label-enhanced">Nama Kegiatan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Kegiatan Uji Coba (Contoh Data)">
-        </div>
-        
-        <div class="mb-6">
-          <label class="form-label-enhanced">Gambaran Umum Kegiatan</label>
-          <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${READONLY_STYLE}" ${READONLY_ATTR}>Ini adalah deskripsi panjang dari gambaran umum kegiatan. (Contoh Data)</textarea>
-        </div>
-      </div>
-
-      <!-- Penerima Manfaat Section -->
-      <div class="section-card">
-        <div class="section-header">
-          <div class="section-title">
-            <div class="section-icon">
-              <i class="ti ti-users">&#xebf2;</i>
-            </div>
-            Penerima Manfaat
-          </div>
-          <button type="button" class="btn-comment" data-section="penerima-manfaat" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
-          </button>
-        </div>
-        
-        <div class="mb-6">
-          <label class="form-label-enhanced">Sasaran Utama</label>
-          <div class="space-y-3">
-            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Mahasiswa Baru (Contoh Data)">
-            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Dosen Pembimbing (Contoh Data)">
+    <div class="kerangka-acuan-kerja-page">
+      <!-- Progress Steps -->
+      <div class="flex justify-center gap-24 mb-8 backdrop-blur-md p-6 rounded-xl shadow-lg" style="background: rgba(255, 255, 255, 0.8);">
+        <div class="progress-step-item flex items-center justify-center gap-3 px-4">
+          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #00BCD4; color: #FFFFFF;">1</div>
+          <div class="text-left">
+            <div class="progress-step-text text-sm font-semibold" style="color: #00BCD4;">Kerangka Acuan Kerja</div>
           </div>
         </div>
-        
-        <div class="mb-6">
-          <label class="form-label-enhanced">Manfaat</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Meningkatkan IPK (Contoh Data)">
-        </div>
-      </div>
-
-      <!-- Strategi Pencapaian Section -->
-      <div class="section-card">
-        <div class="section-header">
-          <div class="section-title">
-            <div class="section-icon">
-              <i class="ti ti-target">&#xeb35;</i>
-            </div>
-            Strategi Pencapaian
+        <div class="progress-step-item flex items-center justify-center gap-3 px-4">
+          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">2</div>
+          <div class="text-left">
+            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Indikator Kinerja Utama</div>
+            <div class="progress-step-subtext text-xs" style="color: #9CA3AF;">& RENSTRA</div>
           </div>
-          <button type="button" class="btn-comment" data-section="strategi-pencapaian" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
-          </button>
         </div>
-        
-        <div class="mb-6">
-          <label class="form-label-enhanced">Metode Pelaksanaan</label>
-          <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${READONLY_STYLE}" ${READONLY_ATTR}>Dilaksanakan secara daring melalui Zoom dan luring di gedung serbaguna. (Contoh Data)</textarea>
-        </div>
-        
-        <div class="mb-6">
-          <label class="form-label-enhanced">Tahapan Pelaksanaan</label>
-          <div class="space-y-3">
-            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Persiapan logistik (Contoh Data)">
-            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Pelaksanaan inti (Contoh Data)">
+        <div class="progress-step-item flex items-center justify-center gap-3 px-4">
+          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">3</div>
+          <div class="text-left">
+            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rincian Anggaran Biaya</div>
           </div>
         </div>
       </div>
 
-      <!-- Indikator Kinerja Section -->
-      <div class="section-card">
-        <div class="section-header">
-          <div class="section-title">
-            <div class="section-icon">
-              <i class="ti ti-chart-line">&#xea5c;</i>
+      <!-- Main Step 1: Kerangka Acuan Kerja -->
+      <div class="main-step-content active" id="main-step-1">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <div class="flex gap-8">
+            <!-- Sidebar Menu -->
+            <div class="flex flex-col gap-4 w-96">
+              <button class="menu-button border-2 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3 active" data-menu="gambaran-umum" style="border-color: #00BCD4; background: rgba(0, 188, 212, 0.1);">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text">&#xff43;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Gambaran Umum</div>
+              </button>
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="penerima-manfaat">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users">&#xf7cd;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Penerima Manfaat</div>
+              </button>
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="strategi-pencapaian">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target">&#xeb35;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Strategi Pencapaian</div>
+              </button>
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="indikator-kinerja">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar">&#xea59;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Indikator Kinerja</div>
+              </button>
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="kurun-waktu">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar">&#xea53;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</div>
+              </button>
             </div>
-            Indikator Kinerja
+
+            <!-- Main Form Area -->
+            <div class="flex-1 min-h-[500px]">
+              <div class="border border-gray-200 rounded-xl p-6">
+                <!-- Step 1: Gambaran Umum -->
+                <div class="step-content active" id="gambaran-umum">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Gambaran Umum</h4>
+                  
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Pengusul Kegiatan</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Nama Pengusul (Contoh Data)" data-field="pengusul">
+                      <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="pengusul" data-label="Pengusul Kegiatan">
+                        <i class="ti ti-message-circle-2">&#xeaed;</i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nama Kegiatan</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Kegiatan Uji Coba (Contoh Data)" data-field="namaKegiatan">
+                      <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="namaKegiatan" data-label="Nama Kegiatan">
+                        <i class="ti ti-message-circle-2">&#xeaed;</i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Gambaran Umum Kegiatan</label>
+                    <div class="input-with-comment">
+                      <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${READONLY_STYLE}" ${READONLY_ATTR} data-field="gambaranUmum">Ini adalah deskripsi panjang dari gambaran umum kegiatan. (Contoh Data)</textarea>
+                      <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="gambaranUmum" data-label="Gambaran Umum Kegiatan">
+                        <i class="ti ti-message-circle-2">&#xeaed;</i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 2: Penerima Manfaat -->
+                <div class="step-content" id="penerima-manfaat">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Penerima Manfaat</h4>
+                  
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
+                    <div id="sasaranUtamaContainer">
+                      <div class="row-with-comment" data-row="sasaran-0">
+                        <div class="input-with-comment" style="padding-right: 60px;">
+                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Mahasiswa Baru (Contoh Data)" data-field="sasaran-0">
+                        </div>
+                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="sasaran-0" data-label="Sasaran Utama #1">
+                          <i class="ti ti-message-circle-2">&#xeaed;</i>
+                        </button>
+                      </div>
+                      <div class="row-with-comment" data-row="sasaran-1">
+                        <div class="input-with-comment" style="padding-right: 60px;">
+                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Dosen Pembimbing (Contoh Data)" data-field="sasaran-1">
+                        </div>
+                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="sasaran-1" data-label="Sasaran Utama #2">
+                          <i class="ti ti-message-circle-2">&#xeaed;</i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
+                    <div id="manfaatContainer">
+                      <div class="row-with-comment" data-row="manfaat-0">
+                        <div class="input-with-comment" style="padding-right: 60px;">
+                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Meningkatkan IPK (Contoh Data)" data-field="manfaat-0">
+                        </div>
+                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="manfaat-0" data-label="Manfaat #1">
+                          <i class="ti ti-message-circle-2">&#xeaed;</i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 3: Strategi Pencapaian -->
+                <div class="step-content" id="strategi-pencapaian">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Strategi Pencapaian</h4>
+                  
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Metode Pelaksanaan</label>
+                    <div class="input-with-comment">
+                      <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${READONLY_STYLE}" ${READONLY_ATTR} data-field="metodePelaksanaan">Dilaksanakan secara daring melalui Zoom dan luring di gedung serbaguna. (Contoh Data)</textarea>
+                      <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="metodePelaksanaan" data-label="Metode Pelaksanaan">
+                        <i class="ti ti-message-circle-2">&#xeaed;</i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tahapan Pelaksanaan</label>
+                    <div id="tahapanPelaksanaanContainer">
+                      <div class="row-with-comment" data-row="tahapan-0">
+                        <div class="input-with-comment" style="padding-right: 60px;">
+                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Persiapan logistik (Contoh Data)" data-field="tahapan-0">
+                        </div>
+                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="tahapan-0" data-label="Tahapan Pelaksanaan #1">
+                          <i class="ti ti-message-circle-2">&#xeaed;</i>
+                        </button>
+                      </div>
+                      <div class="row-with-comment" data-row="tahapan-1">
+                        <div class="input-with-comment" style="padding-right: 60px;">
+                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Pelaksanaan inti (Contoh Data)" data-field="tahapan-1">
+                        </div>
+                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="tahapan-1" data-label="Tahapan Pelaksanaan #2">
+                          <i class="ti ti-message-circle-2">&#xeaed;</i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 4: Indikator Kinerja -->
+                <div class="step-content" id="indikator-kinerja">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja</h4>
+                  
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja</label>
+                    <div id="indikatorKinerjaContainer">
+                      <div class="row-with-comment" data-row="indikator-0">
+                        <div class="grid grid-cols-3 gap-4" style="padding-right: 60px;">
+                          <div>
+                            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
+                            <div class="input-with-comment">
+                              <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Maret" data-field="indikator-bulan-0">
+                            </div>
+                          </div>
+                          <div>
+                            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
+                            <div class="input-with-comment">
+                              <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="50% peserta hadir" data-field="indikator-desc-0">
+                            </div>
+                          </div>
+                          <div>
+                            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
+                            <div class="input-with-comment">
+                              <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="100 orang" data-field="indikator-target-0">
+                            </div>
+                          </div>
+                        </div>
+                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="indikator-0" data-label="Indikator Kinerja #1">
+                          <i class="ti ti-message-circle-2">&#xeaed;</i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 5: Kurun Waktu -->
+                <div class="step-content" id="kurun-waktu">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</h4>
+                  
+                  <div class="grid grid-cols-2 gap-6">
+                    <div class="mb-6">
+                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Mulai</label>
+                      <div class="input-with-comment">
+                        <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2025-03-11" data-field="tanggalMulai">
+                        <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="tanggalMulai" data-label="Tanggal Mulai">
+                          <i class="ti ti-message-circle-2">&#xeaed;</i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="mb-6">
+                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Selesai</label>
+                      <div class="input-with-comment">
+                        <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2025-03-15" data-field="tanggalSelesai">
+                        <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="tanggalSelesai" data-label="Tanggal Selesai">
+                          <i class="ti ti-message-circle-2">&#xeaed;</i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <button type="button" class="btn-comment" data-section="indikator-kinerja" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
-          </button>
-        </div>
-        
-        <div class="rab-item-card">
-          <div class="grid grid-cols-3 gap-4">
-            <div>
-              <label class="form-label-enhanced">Bulan</label>
-              <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Maret">
-            </div>
-            <div>
-              <label class="form-label-enhanced">Indikator Keberhasilan</label>
-              <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="50% peserta hadir">
-            </div>
-            <div>
-              <label class="form-label-enhanced">Target</label>
-              <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="100 orang">
-            </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between mt-8">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" id="btnBack">
+              <span>←</span> Back
+            </button>
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" id="btnNext">
+              Next <span>→</span>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Kurun Waktu Section -->
-      <div class="section-card">
-        <div class="section-header">
-          <div class="section-title">
-            <div class="section-icon">
-              <i class="ti ti-calendar">&#xea53;</i>
-            </div>
-            Kurun Waktu Pelaksanaan
-          </div>
-          <button type="button" class="btn-comment" data-section="kurun-waktu-pelaksanaan" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
-          </button>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-6">
-          <div>
-            <label class="form-label-enhanced">Tanggal Mulai</label>
-            <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2025-03-11">
-          </div>
-          <div>
-            <label class="form-label-enhanced">Tanggal Selesai</label>
-            <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2025-03-15">
-          </div>
-        </div>
-      </div>
-
-      <!-- IKU dan Renstra Section -->
-      <div class="section-card">
-        <div class="section-header">
-          <div class="section-title">
-            <div class="section-icon">
-              <i class="ti ti-trophy">&#xeb45;</i>
-            </div>
-            Indikator Kinerja Utama dan Renstra
-          </div>
-          <button type="button" class="btn-comment" data-section="iku-renstra" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
-          </button>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label-enhanced">Indikator Kinerja Utama</label>
-            <select class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR}>
-              <option>Indikator A (Contoh Data)</option>
-            </select>
-          </div>
-          <div>
-            <label class="form-label-enhanced">Nilai (%)</label>
-            <div class="flex gap-2 items-center">
-              <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="10">
-              <span class="px-3 py-3 text-sm font-semibold text-gray-600">%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RAB Section -->
-      <div class="section-card">
-        <div class="section-header">
-          <div class="section-title">
-            <div class="section-icon">
-              <i class="ti ti-receipt">&#xedfd;</i>
-            </div>
-            Rincian Anggaran Biaya
-          </div>
-          <button type="button" class="btn-comment" data-section="rab-global" onclick="openCommentModal(this)">
-            <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
-          </button>
-        </div>
-
-        <!-- Belanja Barang -->
-        <div class="rab-section">
-          <div class="rab-category-header">
-            <div class="rab-category-icon">
-              <i class="ti ti-package">&#xeaff;</i>
-            </div>
-            <div class="rab-category-title">Belanja Barang</div>
-          </div>
+      <!-- Main Step 2: IKU & Renstra -->
+      <div class="main-step-content" id="main-step-2">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama & Renstra</h4>
           
-          <div class="rab-item-card" data-item-id="bb-1">
-            <div class="grid-rab">
-              <div>
-                <label class="form-label-enhanced">Uraian</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm rab-item-uraian" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Kertas A4">
+          <div class="mb-8" id="ikuRenstraContainer">
+            <div class="row-with-comment" data-row="iku-0">
+              <div class="grid grid-cols-2 gap-4" style="padding-right: 60px;">
+                <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+                  <div class="input-with-comment">
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} data-field="iku-0">
+                      <option value="">Indikator A (Contoh Data)</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
+                  <div class="input-with-comment">
+                    <div class="flex gap-2 items-center">
+                      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="10" data-field="iku-nilai-0">
+                      <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label class="form-label-enhanced">Qty 1</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="10">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Satuan 1</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="rim">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Qty 2</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="1">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Satuan 2</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="kegiatan">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Harga Satuan</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="50.000">
-              </div>
-              <div class="flex items-end pb-3">
-                <button type="button" class="btn-comment-item" data-item-id="bb-1" onclick="openItemCommentModal(this)">
-                  <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
+              <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="iku-0" data-label="IKU & Nilai #1">
+                <i class="ti ti-message-circle-2">&#xeaed;</i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between mt-8">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" id="btnBackIku">
+              <span>←</span> Back
+            </button>
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" id="btnNextIku">
+              Next <span>→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Step 3: RAB -->
+      <div class="main-step-content" id="main-step-3">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rincian Anggaran Biaya</h4>
+          
+          <!-- Belanja Barang -->
+          <div class="mb-10">
+            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
+            <div id="belanjaBarangContainer">
+              <div class="row-with-comment" data-row="bb-0">
+                <div class="grid-rab" style="padding-right: 60px;">
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Kertas A4" data-field="bb-uraian-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="10" data-field="bb-qty1-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="rim" data-field="bb-satuan1-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="1" data-field="bb-qty2-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="kegiatan" data-field="bb-satuan2-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="50.000" data-field="bb-harga-0">
+                    </div>
+                  </div>
+                </div>
+                <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="bb-0" data-label="Belanja Barang #1">
+                  <i class="ti ti-message-circle-2">&#xeaed;</i>
                 </button>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Belanja Jasa -->
-        <div class="rab-section">
-          <div class="rab-category-header">
-            <div class="rab-category-icon">
-              <i class="ti ti-briefcase">&#xea46;</i>
-            </div>
-            <div class="rab-category-title">Belanja Jasa</div>
-          </div>
-          
-          <div class="rab-item-card" data-item-id="bj-1">
-            <div class="grid-rab">
-              <div>
-                <label class="form-label-enhanced">Uraian</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm rab-item-uraian" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Honorarium Pembicara">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Qty 1</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Satuan 1</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="orang">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Qty 2</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Satuan 2</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="jam">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Harga Satuan</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="200.000">
-              </div>
-              <div class="flex items-end pb-3">
-                <button type="button" class="btn-comment-item" data-item-id="bj-1" onclick="openItemCommentModal(this)">
-                  <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
+          <!-- Belanja Jasa -->
+          <div class="mb-10">
+            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
+            <div id="belanjaJasaContainer">
+              <div class="row-with-comment" data-row="bj-0">
+                <div class="grid-rab" style="padding-right: 60px;">
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Honorarium Pembicara" data-field="bj-uraian-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2" data-field="bj-qty1-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="orang" data-field="bj-satuan1-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2" data-field="bj-qty2-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="jam" data-field="bj-satuan2-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="200.000" data-field="bj-harga-0">
+                    </div>
+                  </div>
+                </div>
+                <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="bj-0" data-label="Belanja Jasa #1">
+                  <i class="ti ti-message-circle-2">&#xeaed;</i>
                 </button>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Belanja Perjalanan -->
-        <div class="rab-section">
-          <div class="rab-category-header">
-            <div class="rab-category-icon">
-              <i class="ti ti-plane">&#xeb6f;</i>
-            </div>
-            <div class="rab-category-title">Belanja Perjalanan</div>
-          </div>
-          
-          <div class="rab-item-card" data-item-id="bp-1">
-            <div class="grid-rab">
-              <div>
-                <label class="form-label-enhanced">Uraian</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm rab-item-uraian" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Transport Lokal">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Qty 1</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Satuan 1</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="orang">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Qty 2</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="3">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Satuan 2</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="hari">
-              </div>
-              <div>
-                <label class="form-label-enhanced">Harga Satuan</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="150.000">
-              </div>
-              <div class="flex items-end pb-3">
-                <button type="button" class="btn-comment-item" data-item-id="bp-1" onclick="openItemCommentModal(this)">
-                  <i class="ti ti-message-circle-2 text-xl">&#xeaed;</i>
+          <!-- Belanja Perjalanan -->
+          <div class="mb-10">
+            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
+            <div id="belanjaPerjalananContainer">
+              <div class="row-with-comment" data-row="bp-0">
+                <div class="grid-rab" style="padding-right: 60px;">
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Transport Lokal" data-field="bp-uraian-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2" data-field="bp-qty1-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="orang" data-field="bp-satuan1-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="3" data-field="bp-qty2-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="hari" data-field="bp-satuan2-0">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+                    <div class="input-with-comment">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="150.000" data-field="bp-harga-0">
+                    </div>
+                  </div>
+                </div>
+                <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="bp-0" data-label="Belanja Perjalanan #1">
+                  <i class="ti ti-message-circle-2">&#xeaed;</i>
                 </button>
               </div>
             </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between mt-8">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" id="btnBackRab">
+              <span>←</span> Back
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Action Buttons (Fixed at bottom) -->
       <div class="action-buttons">
         <button class="btn-back" onclick="window.history.back()">
           <i class="ti ti-arrow-left">&#xea19;</i> Kembali
         </button>
         <div class="flex gap-4">
-          <button class="btn-primary-action btn-revise" onclick="submitReview('REVISI')">
-            <i class="ti ti-x">&#xeb55;</i>
+          <button class="btn-primary-action btn-revise" onclick="submitReview()">
+            <i class="ti ti-send">&#xeb2a;</i>
             Kirim Revisi
-          </button>
-          <button class="btn-primary-action btn-approve" onclick="submitReview('SETUJU')">
-            <i class="ti ti-check">&#xea5e;</i>
-            Setujui Usulan
           </button>
         </div>
       </div>
+
+      <!-- Comment Count Badge -->
+      <div class="comment-count" id="commentCountBadge" style="display: none;">
+        <i class="ti ti-message-dots">&#xeaee;</i>
+        <span id="commentCountText">0 Catatan</span>
+      </div>
     </div>
 
-    <!-- Section Comment Modal -->
-    <div class="modal fade" id="commentModal" tabindex="-1" aria-hidden="true">
+    <!-- Field Comment Modal -->
+    <div class="modal fade" id="fieldCommentModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              Catatan Revisi untuk <span id="commentSectionTitle" style="color: #00BCD4; font-weight: 700;"></span>
+              Catatan Revisi untuk <span id="fieldCommentLabel" style="color: #00BCD4; font-weight: 700;"></span>
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <label class="form-label-enhanced mb-3">Tuliskan catatan revisi spesifik untuk bagian ini</label>
-            <textarea id="commentInput" class="form-control" rows="6" placeholder="Contoh: Gambaran umum kegiatan perlu lebih detail mengenai metodologi yang akan digunakan..."></textarea>
-            <div class="mt-3 text-sm text-gray-600">
-              <i class="ti ti-info-circle">&#xeac5;</i> Catatan akan dikirim ke pengusul untuk diperbaiki
+            <div class="mb-3">
+              <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai Saat Ini</label>
+              <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="currentFieldValue"></div>
+            </div>
+            <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
+            <textarea id="fieldCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi spesifik untuk field ini..."></textarea>
+            <div class="info-box">
+              <div class="info-box-text">
+                <i class="ti ti-info-circle">&#xeac5;</i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki usulan.
+              </div>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
-            <button type="button" class="btn btn-primary" onclick="saveSectionComment()">
+            <button type="button" class="btn btn-primary" onclick="saveFieldComment()">
               <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
             </button>
           </div>
@@ -719,28 +807,26 @@ export function renderRevisiKakPage(usulanId, userRole) {
       </div>
     </div>
 
-    <!-- Item Comment Modal -->
-    <div class="modal fade" id="itemCommentModal" tabindex="-1" aria-hidden="true">
+    <!-- Row Comment Modal -->
+    <div class="modal fade" id="rowCommentModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-               Catatan Revisi untuk Item: <span id="itemCommentTitle" style="color: #00BCD4; font-weight: 700;"></span>
+              Catatan Revisi untuk <span id="rowCommentLabel" style="color: #00BCD4; font-weight: 700;"></span>
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <label class="form-label-enhanced mb-3">Tuliskan catatan revisi spesifik untuk item RAB ini</label>
-            <textarea id="itemCommentInput" class="form-control" rows="6" placeholder="Contoh: Harga terlalu tinggi dari standar pasar. Harap disesuaikan dengan harga wajar..."></textarea>
-            <div class="mt-3 p-3 rounded-lg" style="background: #FEF3C7; border-left: 4px solid #F59E0B;">
-              <div class="text-sm" style="color: #92400E;">
-                <strong>Tips:</strong> Berikan alasan spesifik seperti:
-                <ul class="mt-2 ml-4">
-                  <li>Harga tidak sesuai standar</li>
-                  <li>Kuantitas tidak wajar</li>
-                  <li>Item tidak relevan dengan kegiatan</li>
-                  <li>Perlu justifikasi tambahan</li>
-                </ul>
+            <div class="mb-3">
+              <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai Saat Ini</label>
+              <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="currentRowValue"></div>
+            </div>
+            <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
+            <textarea id="rowCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi untuk baris ini..."></textarea>
+            <div class="info-box">
+              <div class="info-box-text">
+                <i class="ti ti-info-circle">&#xeac5;</i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki usulan.
               </div>
             </div>
           </div>
@@ -748,7 +834,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
-            <button type="button" class="btn btn-primary" onclick="saveItemComment()">
+            <button type="button" class="btn btn-primary" onclick="saveRowComment()">
               <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
             </button>
           </div>
@@ -760,273 +846,386 @@ export function renderRevisiKakPage(usulanId, userRole) {
   renderDashboardLayout(pageContent, userRole);
 
   // --- JavaScript Logic ---
-  let currentCommentSection = null;
-  let currentCommentItem = null;
-  let commentModalInstance = null;
-  let itemCommentModalInstance = null;
+  let mainStep = 1;
+  let currentStep = 1;
+  const totalSteps = 5;
+  const menuItems = ['gambaran-umum', 'penerima-manfaat', 'strategi-pencapaian', 'indikator-kinerja', 'kurun-waktu'];
+  
+  let fieldComments = {};
+  let rowComments = {};
+  let currentCommentField = null;
+  let currentCommentRow = null;
+  let fieldCommentModalInstance = null;
+  let rowCommentModalInstance = null;
 
-  const sectionTitles = {
-    'gambaran-umum': 'Gambaran Umum',
-    'penerima-manfaat': 'Penerima Manfaat',
-    'strategi-pencapaian': 'Strategi Pencapaian',
-    'indikator-kinerja': 'Indikator Kinerja',
-    'kurun-waktu-pelaksanaan': 'Kurun Waktu Pelaksanaan',
-    'iku-renstra': 'IKU dan Renstra',
-    'rab-global': 'Rincian Anggaran Biaya (Global)',
-  };
+  // Initialize
+  function init() {
+    updateMainStepDisplay();
+    updateStepDisplay();
+    attachEventListeners();
+    updateCommentCount();
+  }
 
-  const sectionComments = {};
-  const itemComments = {};
+  // Update Main Step Display
+  function updateMainStepDisplay() {
+    const progressSteps = document.querySelectorAll('.progress-step-item');
+    progressSteps.forEach((step, index) => {
+      const stepNum = index + 1;
+      const circle = step.querySelector('.progress-step-circle');
+      const text = step.querySelector('.progress-step-text');
+      const subtext = step.querySelector('.progress-step-subtext');
 
-  // --- Section Comment Functions ---
-  window.openCommentModal = function (btn) {
-    const sectionKey = btn.getAttribute("data-section");
-    currentCommentSection = sectionKey;
-
-    const titleEl = document.getElementById("commentSectionTitle");
-    const commentInput = document.getElementById("commentInput");
-
-    if (titleEl) titleEl.textContent = sectionTitles[sectionKey] || "Bagian";
-    commentInput.value = sectionComments[sectionKey] || "";
-
-    if (!commentModalInstance) {
-      if (typeof bootstrap !== "undefined") {
-        commentModalInstance = new bootstrap.Modal(document.getElementById("commentModal"));
+      if (stepNum < mainStep) {
+        circle.style.background = '#10B981';
+        circle.style.color = '#FFFFFF';
+        circle.innerHTML = '✓';
+        text.style.color = '#10B981';
+        if (subtext) subtext.style.color = '#10B981';
+      } else if (stepNum === mainStep) {
+        circle.style.background = '#00BCD4';
+        circle.style.color = '#FFFFFF';
+        circle.innerHTML = stepNum;
+        text.style.color = '#00BCD4';
+        if (subtext) subtext.style.color = '#00BCD4';
       } else {
-        console.error("Bootstrap 5 JS not found.");
+        circle.style.background = '#E5E7EB';
+        circle.style.color = '#6B7280';
+        circle.innerHTML = stepNum;
+        text.style.color = '#6B7280';
+        if (subtext) subtext.style.color = '#9CA3AF';
+      }
+    });
+
+    document.querySelectorAll('.main-step-content').forEach((content, index) => {
+      if (index + 1 === mainStep) {
+        content.classList.add('active');
+      } else {
+        content.classList.remove('active');
+      }
+    });
+  }
+
+  // Update Step Display
+  function updateStepDisplay() {
+    if (mainStep !== 1) return;
+
+    document.querySelectorAll('.menu-button').forEach((btn, index) => {
+      if (index + 1 === currentStep) {
+        btn.classList.add('active');
+        btn.style.borderColor = '#00BCD4';
+        btn.style.background = 'rgba(0, 188, 212, 0.1)';
+      } else {
+        btn.classList.remove('active');
+        btn.style.borderColor = '#E5E7EB';
+        btn.style.background = '';
+      }
+    });
+
+    document.querySelectorAll('.step-content').forEach((content, index) => {
+      if (index + 1 === currentStep) {
+        content.classList.add('active');
+      } else {
+        content.classList.remove('active');
+      }
+    });
+
+    const btnBack = document.getElementById('btnBack');
+    if (btnBack) {
+      btnBack.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Attach Event Listeners
+  function attachEventListeners() {
+    // Menu buttons
+    document.querySelectorAll('.menu-button').forEach((btn) => {
+      btn.addEventListener('click', function() {
+        const menuTarget = this.getAttribute('data-menu');
+        const menuIndex = menuItems.indexOf(menuTarget);
+        if (menuIndex !== -1) {
+          currentStep = menuIndex + 1;
+          updateStepDisplay();
+        }
+      });
+    });
+
+    // Navigation buttons
+    const btnBack = document.getElementById('btnBack');
+    if (btnBack) {
+      btnBack.addEventListener('click', () => {
+        if (currentStep > 1) {
+          currentStep--;
+          updateStepDisplay();
+        }
+      });
+    }
+
+    const btnNext = document.getElementById('btnNext');
+    if (btnNext) {
+      btnNext.addEventListener('click', () => {
+        if (currentStep < totalSteps) {
+          currentStep++;
+          updateStepDisplay();
+        } else {
+          mainStep = 2;
+          updateMainStepDisplay();
+        }
+      });
+    }
+
+    const btnBackIku = document.getElementById('btnBackIku');
+    if (btnBackIku) {
+      btnBackIku.addEventListener('click', () => {
+        mainStep = 1;
+        currentStep = totalSteps;
+        updateMainStepDisplay();
+        updateStepDisplay();
+      });
+    }
+
+    const btnNextIku = document.getElementById('btnNextIku');
+    if (btnNextIku) {
+      btnNextIku.addEventListener('click', () => {
+        mainStep = 3;
+        updateMainStepDisplay();
+      });
+    }
+
+    const btnBackRab = document.getElementById('btnBackRab');
+    if (btnBackRab) {
+      btnBackRab.addEventListener('click', () => {
+        mainStep = 2;
+        updateMainStepDisplay();
+      });
+    }
+  }
+
+  // Open Field Comment Modal
+  window.openFieldCommentModal = function(btn) {
+    const fieldKey = btn.getAttribute('data-field');
+    const fieldLabel = btn.getAttribute('data-label');
+    currentCommentField = fieldKey;
+
+    // Get current field value
+    const input = btn.closest('.input-with-comment').querySelector('input, textarea, select');
+    const currentValue = input ? input.value : '';
+
+    document.getElementById('fieldCommentLabel').textContent = fieldLabel;
+    document.getElementById('currentFieldValue').textContent = currentValue || '(Kosong)';
+    document.getElementById('fieldCommentInput').value = fieldComments[fieldKey] || '';
+
+    if (!fieldCommentModalInstance) {
+      if (typeof bootstrap !== 'undefined') {
+        fieldCommentModalInstance = new bootstrap.Modal(document.getElementById('fieldCommentModal'));
+      } else {
+        console.error('Bootstrap 5 JS not found.');
         return;
       }
     }
-    commentModalInstance.show();
+    fieldCommentModalInstance.show();
   };
 
-  window.saveSectionComment = function () {
-    const commentInput = document.getElementById("commentInput");
-    if (currentCommentSection) {
-      sectionComments[currentCommentSection] = commentInput.value.trim();
+  // Open Row Comment Modal
+  window.openRowCommentModal = function(btn) {
+    const rowKey = btn.getAttribute('data-row');
+    const rowLabel = btn.getAttribute('data-label');
+    currentCommentRow = rowKey;
 
-      const btn = document.querySelector(`.btn-comment[data-section="${currentCommentSection}"]`);
+    // Get current row values
+    const rowElement = btn.closest('.row-with-comment');
+    const inputs = rowElement.querySelectorAll('input, textarea, select');
+    let rowValues = [];
+    inputs.forEach(input => {
+      if (input.value) rowValues.push(input.value);
+    });
+    const currentValue = rowValues.join(' | ');
+
+    document.getElementById('rowCommentLabel').textContent = rowLabel;
+    document.getElementById('currentRowValue').textContent = currentValue || '(Kosong)';
+    document.getElementById('rowCommentInput').value = rowComments[rowKey] || '';
+
+    if (!rowCommentModalInstance) {
+      if (typeof bootstrap !== 'undefined') {
+        rowCommentModalInstance = new bootstrap.Modal(document.getElementById('rowCommentModal'));
+      } else {
+        console.error('Bootstrap 5 JS not found.');
+        return;
+      }
+    }
+    rowCommentModalInstance.show();
+  };
+
+  // Save Field Comment
+  window.saveFieldComment = function() {
+    const commentInput = document.getElementById('fieldCommentInput');
+    if (currentCommentField) {
+      const comment = commentInput.value.trim();
+      
+      if (comment) {
+        fieldComments[currentCommentField] = comment;
+      } else {
+        delete fieldComments[currentCommentField];
+      }
+
+      // Update button appearance
+      const btn = document.querySelector(`.comment-icon[data-field="${currentCommentField}"]`);
       if (btn) {
         const icon = btn.querySelector('i');
-        if (sectionComments[currentCommentSection]) {
+        if (comment) {
           btn.classList.add('has-comment');
-          icon.classList.remove('ti-message-circle-2');
-          icon.classList.add('ti-message-dots');
-          
-          // Add badge
-          let badge = btn.querySelector('.comment-badge');
-          if (!badge) {
-            badge = document.createElement('span');
-            badge.className = 'comment-badge';
-            badge.textContent = '!';
-            btn.appendChild(badge);
-          }
+          icon.innerHTML = '&#xeaee;'; // ti-message-dots
         } else {
           btn.classList.remove('has-comment');
-          icon.classList.remove('ti-message-dots');
-          icon.classList.add('ti-message-circle-2');
-          
-          // Remove badge
-          const badge = btn.querySelector('.comment-badge');
-          if (badge) badge.remove();
+          icon.innerHTML = '&#xeaed;'; // ti-message-circle-2
         }
       }
 
-      if (commentModalInstance) {
-        commentModalInstance.hide();
+      updateCommentCount();
+
+      if (fieldCommentModalInstance) {
+        fieldCommentModalInstance.hide();
       }
-      
-      // Show success message
+
       if (typeof Swal !== 'undefined') {
         Swal.fire({
           icon: 'success',
           title: 'Tersimpan!',
-          text: 'Catatan bagian berhasil disimpan',
+          text: comment ? 'Catatan berhasil disimpan' : 'Catatan dihapus',
           timer: 1500,
           showConfirmButton: false
         });
-      } else {
-        alert('Catatan bagian berhasil disimpan!');
       }
     }
   };
 
-  // --- Item Comment Functions ---
-  window.openItemCommentModal = function (btn) {
-    const itemId = btn.getAttribute("data-item-id");
-    currentCommentItem = itemId;
-
-    const itemCard = btn.closest('.rab-item-card');
-    const uraianInput = itemCard ? itemCard.querySelector('.rab-item-uraian') : null;
-    const uraianText = uraianInput ? uraianInput.value : `ID: ${itemId}`;
-
-    const titleEl = document.getElementById("itemCommentTitle");
-    const commentInput = document.getElementById("itemCommentInput");
-
-    if (titleEl) titleEl.textContent = uraianText;
-    commentInput.value = itemComments[itemId] || "";
-
-    if (!itemCommentModalInstance) {
-      if (typeof bootstrap !== "undefined") {
-        itemCommentModalInstance = new bootstrap.Modal(document.getElementById("itemCommentModal"));
-      } else {
-        console.error("Bootstrap 5 JS not found.");
-        return;
-      }
-    }
-    itemCommentModalInstance.show();
-  };
-
-  window.saveItemComment = function () {
-    const commentInput = document.getElementById("itemCommentInput");
-    if (currentCommentItem) {
-      itemComments[currentCommentItem] = commentInput.value.trim();
-
-      const btn = document.querySelector(`.btn-comment-item[data-item-id="${currentCommentItem}"]`);
-      const itemCard = btn ? btn.closest('.rab-item-card') : null;
+  // Save Row Comment
+  window.saveRowComment = function() {
+    const commentInput = document.getElementById('rowCommentInput');
+    if (currentCommentRow) {
+      const comment = commentInput.value.trim();
       
-      if (btn && itemCard) {
-        if (itemComments[currentCommentItem]) {
+      if (comment) {
+        rowComments[currentCommentRow] = comment;
+      } else {
+        delete rowComments[currentCommentRow];
+      }
+
+      // Update row and button appearance
+      const rowElement = document.querySelector(`.row-with-comment[data-row="${currentCommentRow}"]`);
+      const btn = document.querySelector(`.row-comment-icon[data-row="${currentCommentRow}"]`);
+      
+      if (rowElement && btn) {
+        const icon = btn.querySelector('i');
+        if (comment) {
+          rowElement.classList.add('has-row-comment');
           btn.classList.add('has-comment');
-          itemCard.classList.add('has-comment');
-          
-          const icon = btn.querySelector('i');
-          icon.classList.remove('ti-message-circle-2');
-          icon.classList.add('ti-message-dots');
-          
-          // Add badge
-          let badge = btn.querySelector('.comment-badge');
-          if (!badge) {
-            badge = document.createElement('span');
-            badge.className = 'comment-badge';
-            badge.textContent = '!';
-            btn.appendChild(badge);
-          }
+          icon.innerHTML = '&#xeaee;'; // ti-message-dots
         } else {
+          rowElement.classList.remove('has-row-comment');
           btn.classList.remove('has-comment');
-          itemCard.classList.remove('has-comment');
-          
-          const icon = btn.querySelector('i');
-          icon.classList.remove('ti-message-dots');
-          icon.classList.add('ti-message-circle-2');
-          
-          // Remove badge
-          const badge = btn.querySelector('.comment-badge');
-          if (badge) badge.remove();
+          icon.innerHTML = '&#xeaed;'; // ti-message-circle-2
         }
       }
 
-      if (itemCommentModalInstance) {
-        itemCommentModalInstance.hide();
+      updateCommentCount();
+
+      if (rowCommentModalInstance) {
+        rowCommentModalInstance.hide();
       }
-      
-      // Show success message
+
       if (typeof Swal !== 'undefined') {
         Swal.fire({
           icon: 'success',
           title: 'Tersimpan!',
-          text: 'Catatan item berhasil disimpan',
+          text: comment ? 'Catatan berhasil disimpan' : 'Catatan dihapus',
           timer: 1500,
           showConfirmButton: false
         });
-      } else {
-        alert('Catatan item berhasil disimpan!');
       }
     }
   };
 
-  // --- Submit Review Function ---
-  window.submitReview = function (action) {
-    if (action === 'SETUJU') {
+  // Update Comment Count
+  function updateCommentCount() {
+    const fieldCount = Object.keys(fieldComments).length;
+    const rowCount = Object.keys(rowComments).length;
+    const totalCount = fieldCount + rowCount;
+    
+    const badge = document.getElementById('commentCountBadge');
+    const countText = document.getElementById('commentCountText');
+    
+    if (totalCount > 0) {
+      badge.style.display = 'flex';
+      countText.textContent = `${totalCount} Catatan`;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  // Submit Review
+  window.submitReview = function() {
+    const fieldCount = Object.keys(fieldComments).length;
+    const rowCount = Object.keys(rowComments).length;
+    const totalCount = fieldCount + rowCount;
+
+    if (totalCount === 0) {
       if (typeof Swal !== 'undefined') {
         Swal.fire({
-          title: 'Setujui Usulan?',
-          text: 'Usulan akan diteruskan ke tahap selanjutnya',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#00BCD4',
-          cancelButtonColor: '#6B7280',
-          confirmButtonText: 'Ya, Setujui',
-          cancelButtonText: 'Batal'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            console.log('Mengirim status: Disetujui');
-            Swal.fire({
-              icon: 'success',
-              title: 'Berhasil!',
-              text: 'Usulan telah disetujui',
-              timer: 2000,
-              showConfirmButton: false
-            }).then(() => {
-              // window.location.href = '/verifikator/dashboard';
-            });
-          }
-        });
-      } else {
-        if (confirm('Setujui usulan ini?')) {
-          alert('Usulan disetujui!');
-        }
-      }
-    } else if (action === 'REVISI') {
-      const hasSectionComments = Object.values(sectionComments).some(c => c.length > 0);
-      const hasItemComments = Object.values(itemComments).some(c => c.length > 0);
-
-      if (!hasSectionComments && !hasItemComments) {
-        if (typeof Swal !== 'undefined') {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Perhatian!',
-            text: 'Harap berikan minimal satu catatan revisi sebelum mengirim',
-            confirmButtonColor: '#00BCD4'
-          });
-        } else {
-          alert('Harap berikan minimal satu catatan revisi sebelum mengirim');
-        }
-        return;
-      }
-
-      const totalComments = Object.keys(sectionComments).filter(k => sectionComments[k]).length + 
-                           Object.keys(itemComments).filter(k => itemComments[k]).length;
-
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          title: 'Kirim Revisi?',
-          html: `Anda memiliki <strong>${totalComments}</strong> catatan revisi.<br>Usulan akan dikembalikan ke pengusul untuk diperbaiki.`,
           icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#EF4444',
-          cancelButtonColor: '#6B7280',
-          confirmButtonText: 'Ya, Kirim Revisi',
-          cancelButtonText: 'Batal'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            console.log('Mengirim status: Direvisi');
-            console.log('Catatan Bagian:', sectionComments);
-            console.log('Catatan Item RAB:', itemComments);
-            
-            Swal.fire({
-              icon: 'success',
-              title: 'Terkirim!',
-              text: 'Catatan revisi telah dikirim ke pengusul',
-              timer: 2000,
-              showConfirmButton: false
-            }).then(() => {
-              // window.location.href = '/verifikator/dashboard';
-            });
-          }
+          title: 'Perhatian!',
+          text: 'Harap berikan minimal satu catatan revisi sebelum mengirim',
+          confirmButtonColor: '#EF4444'
         });
       } else {
-        if (confirm(`Kirim ${totalComments} catatan revisi?`)) {
-          console.log('Catatan Bagian:', sectionComments);
-          console.log('Catatan Item RAB:', itemComments);
-          alert('Catatan revisi terkirim! Cek console log.');
+        alert('Harap berikan minimal satu catatan revisi sebelum mengirim');
+      }
+      return;
+    }
+
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        title: 'Kirim Revisi?',
+        html: `Anda memiliki <strong>${totalCount}</strong> catatan revisi.<br>Usulan akan dikembalikan ke pengusul untuk diperbaiki.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Ya, Kirim Revisi',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log('Mengirim status: Direvisi');
+          console.log('Catatan Field:', fieldComments);
+          console.log('Catatan Baris:', rowComments);
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Terkirim!',
+            text: 'Catatan revisi telah dikirim ke pengusul',
+            timer: 2000,
+            showConfirmButton: false
+          });
         }
+      });
+    } else {
+      if (confirm(`Kirim ${totalCount} catatan revisi?`)) {
+        console.log('Catatan Field:', fieldComments);
+        console.log('Catatan Baris:', rowComments);
+        alert('Catatan revisi terkirim! Cek console log.');
       }
     }
   };
 
   // Initialize
+  init();
+
+  // Initialize Vuexy menu if available
   if (window.Helpers) {
     window.Helpers.init();
   }
 }
+
+// Export for ES6 module
+export default renderRevisiKakPage;
