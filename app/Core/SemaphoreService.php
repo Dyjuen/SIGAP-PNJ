@@ -32,6 +32,13 @@ class SemaphoreService
      */
     public function acquire(string $key, int $maxLocks): bool
     {
+        // If APCu extension is not loaded, bypass semaphore functionality.
+        if (!function_exists('apcu_inc')) {
+            // Log this event or notify admin in a production environment.
+            // For development, we bypass to allow functionality.
+            return true;
+        }
+
         if ($maxLocks <= 0) {
             return false;
         }
@@ -62,6 +69,11 @@ class SemaphoreService
      */
     public function release(string $key): void
     {
+        // If APCu extension is not loaded, there's nothing to release.
+        if (!function_exists('apcu_dec') || !function_exists('apcu_store')) {
+            return;
+        }
+
         $fullKey = self::KEY_PREFIX . $key;
         
         // Atomically decrement the counter.
