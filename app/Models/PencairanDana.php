@@ -7,60 +7,86 @@ use PDO;
 
 class PencairanDana extends Model
 {
-    protected $table = 't_pencairan_dana'; // This table does not exist, but the property is here for structure.
+    protected $table = 't_pencairan_dana';
     protected $primaryKey = 'pencairan_id';
 
     /**
-     * Get all pencairan by kegiatan_id
-     * NOTE: The table t_pencairan_dana does not exist. Returning an empty array.
+     * Mencatat transaksi pencairan dana baru oleh bendahara.
+     *
+     * @param array $data Data transaksi pencairan.
+     * @return integer ID dari data yang baru dimasukkan.
+     */
+    public function logTransaksi(array $data): int
+    {
+        $sql = "INSERT INTO {$this->table} 
+                (kegiatan_id, jumlah_dicairkan, keterangan, created_by, tanggal_pencairan)
+                VALUES 
+                (:kegiatan_id, :jumlah_dicairkan, :keterangan, :created_by, CURDATE())";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':kegiatan_id' => $data['kegiatan_id'],
+            ':jumlah_dicairkan' => $data['jumlah_dicairkan'],
+            ':keterangan' => $data['keterangan'],
+            ':created_by' => $data['created_by']
+        ]);
+        
+        return (int) $this->db->lastInsertId();
+    }
+
+    /**
+     * Mengambil semua histori pencairan dana untuk sebuah kegiatan.
+     *
+     * @param integer $kegiatanId ID kegiatan.
+     * @return array Daftar histori pencairan.
      */
     public function getByKegiatanId(int $kegiatanId): array
     {
-        // The table t_pencairan_dana does not exist based on user feedback.
-        // Returning an empty array to avoid crashing the application.
-        // The feature to list individual disbursements needs to be re-evaluated based on the correct schema.
-        return [];
+        $sql = "SELECT * FROM {$this->table} WHERE kegiatan_id = :kegiatan_id ORDER BY tanggal_pencairan DESC, created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['kegiatan_id' => $kegiatanId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Get total dana yang sudah dicairkan (approved)
-     * NOTE: This method is likely obsolete as it queries a non-existent table.
-     */
-    public function getTotalDicairkan(int $kegiatanId): float
-    {
-        // This function is not used by the corrected getSisaDana and relies on a non-existent table.
-        return 0.0;
-    }
-
-    /**
-     * Get sisa dana yang belum dicairkan
-     * This method is updated based on user's database schema description.
+     * Menghitung sisa dana yang belum dicairkan untuk sebuah kegiatan.
+     *
+     * @param integer $kegiatanId ID kegiatan.
+     * @return array Ringkasan dana.
      */
     public function getSisaDana(int $kegiatanId): array
     {
-        $sql = "SELECT 
-                    k.dana_dicairkan,
-                    (SELECT COALESCE(SUM(ta.jumlah_diusulkan), 0) 
-                     FROM t_telaah_anggaran ta 
-                     JOIN t_telaah t ON ta.telaah_id = t.telaah_id 
-                     WHERE t.telaah_id = k.telaah_id) as total_anggaran
-                FROM t_kegiatan k
-                WHERE k.kegiatan_id = :kegiatan_id";
-        
-        $stmt = $this->db->prepare($sql);
+        // Get kak_id from kegiatan_id
+        $stmt = $this->db->prepare("SELECT kak_id FROM t_kegiatan WHERE kegiatan_id = :kegiatan_id");
         $stmt->execute(['kegiatan_id' => $kegiatanId]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $kegiatan = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$result) {
-            return [
-                'total_anggaran' => 0,
-                'total_dicairkan' => 0,
-                'sisa_dana' => 0
-            ];
+        if (!$kegiatan) {
+            return ['total_anggaran' => 0, 'total_dicairkan' => 0, 'sisa_dana' => 0];
         }
+        $kakId = $kegiatan['kak_id'];
+
+        // 1. Get Total Anggaran from t_kak_anggaran
+        $sqlAnggaran = "SELECT COALESCE(SUM(jumlah_diusulkan), 0) as total_anggaran
+                        FROM t_kak_anggaran
+                        WHERE kak_id = :kak_id";
+
+        $stmtAnggaran = $this->db->prepare($sqlAnggaran);
+        $stmtAnggaran->execute(['kak_id' => $kakId]);
+        $resultAnggaran = $stmtAnggaran->fetch(PDO::FETCH_ASSOC);
+        $totalAnggaran = (float) ($resultAnggaran['total_anggaran'] ?? 0);
+
+        // 2. Get Total Dana Dicairkan from t_pencairan_dana
+        $sqlDicairkan = "SELECT COALESCE(SUM(jumlah_dicairkan), 0) as total_dicairkan
+                         FROM t_pencairan_dana
+                         WHERE kegiatan_id = :kegiatan_id";
         
-        $totalAnggaran = (float) ($result['total_anggaran'] ?? 0);
-        $totalDicairkan = (float) ($result['dana_dicairkan'] ?? 0);
+        $stmtDicairkan = $this->db->prepare($sqlDicairkan);
+        $stmtDicairkan->execute(['kegiatan_id' => $kegiatanId]);
+        $resultDicairkan = $stmtDicairkan->fetch(PDO::FETCH_ASSOC);
+        $totalDicairkan = (float) ($resultDicairkan['total_dicairkan'] ?? 0);
+
+        // 3. Calculate Sisa Dana
         $sisaDana = $totalAnggaran - $totalDicairkan;
         
         return [
@@ -68,93 +94,5 @@ class PencairanDana extends Model
             'total_dicairkan' => $totalDicairkan,
             'sisa_dana' => $sisaDana
         ];
-    }
-
-    /**
-     * Create pencairan baru
-     * NOTE: This method will fail as it tries to insert into a non-existent table.
-     */
-    public function createPencairan(array $data): int
-    {
-        // This will fail because t_pencairan_dana does not exist.
-        // The logic for creating a disbursement needs to be re-evaluated.
-        // For now, it will throw an exception which will be caught by the controller.
-        $sql = "INSERT INTO {$this->table} 
-                (kegiatan_id, approval_kegiatan_id, nominal_pencairan, keterangan, created_by, status)
-                VALUES 
-                (:kegiatan_id, :approval_kegiatan_id, :nominal_pencairan, :keterangan, :created_by, 'Diajukan')";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($data);
-        
-        return (int) $this->db->lastInsertId();
-    }
-
-    /**
-     * Approve pencairan
-     * NOTE: This method will fail as it tries to update a non-existent table.
-     */
-    public function approvePencairan(int $pencairanId, int $approvedBy, ?string $catatan = null): bool
-    {
-        // This will fail because t_pencairan_dana does not exist.
-        $sql = "UPDATE {$this->table} SET status = 'Disetujui' WHERE pencairan_id = :pencairan_id";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute(['pencairan_id' => $pencairanId]);
-    }
-
-    /**
-     * Reject pencairan
-     * NOTE: This method will fail as it tries to update a non-existent table.
-     */
-    public function rejectPencairan(int $pencairanId, int $approvedBy, string $catatan): bool
-    {
-        // This will fail because t_pencairan_dana does not exist.
-        $sql = "UPDATE {$this->table} SET status = 'Ditolak' WHERE pencairan_id = :pencairan_id";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute(['pencairan_id' => $pencairanId]);
-    }
-
-    /**
-     * Update dana_dicairkan di t_kegiatan
-     * NOTE: This method's logic is flawed as getTotalDicairkan is obsolete.
-     */
-    public function updateDanaDicairkan(int $kegiatanId): bool
-    {
-        // The logic here is flawed because getTotalDicairkan relies on a non-existent table.
-        // The process of updating t_kegiatan.dana_dicairkan should be handled differently.
-        // For now, this method will do nothing to prevent incorrect updates.
-        return true;
-    }
-
-    /**
-     * Check apakah semua dana sudah dicairkan
-     */
-    public function isSemuaDanaDicairkan(int $kegiatanId): bool
-    {
-        $sisaDana = $this->getSisaDana($kegiatanId);
-        return $sisaDana['sisa_dana'] <= 0;
-    }
-
-    /**
-     * Update tgl_batas_lpj (14 hari dari sekarang)
-     */
-    public function updateTglBatasLpj(int $kegiatanId): bool
-    {
-        $sql = "UPDATE t_kegiatan 
-                SET tgl_batas_lpj = DATE_ADD(CURRENT_DATE, INTERVAL 14 DAY)
-                WHERE kegiatan_id = :kegiatan_id";
-        
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute(['kegiatan_id' => $kegiatanId]);
-    }
-
-    /**
-     * Get pencairan by ID with details
-     * NOTE: This method will fail as it queries a non-existent table.
-     */
-    public function getDetailById(int $pencairanId): ?array
-    {
-        // This will fail because t_pencairan_dana does not exist.
-        return null;
     }
 }

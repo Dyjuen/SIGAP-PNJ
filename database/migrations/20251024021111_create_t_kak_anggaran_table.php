@@ -24,11 +24,23 @@ final class CreateTKakAnggaranTable extends AbstractMigration
               ->addColumn('jumlah_diusulkan', 'decimal', ['precision' => 15, 'scale' => 2, 'null' => true])
               ->addColumn('catatan_verifikator', 'text', ['null' => true])
 
+              ->addColumn('realisasi_volume1', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => true])
+              ->addColumn('realisasi_satuan1_id', 'integer', ['null' => true])
+              ->addColumn('realisasi_volume2', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => true])
+              ->addColumn('realisasi_satuan2_id', 'integer', ['null' => true])
+              ->addColumn('realisasi_volume3', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => true])
+              ->addColumn('realisasi_satuan3_id', 'integer', ['null' => true])
+              ->addColumn('realisasi_harga_satuan', 'decimal', ['precision' => 15, 'scale' => 2, 'null' => true])
+              ->addColumn('realisasi_jumlah', 'decimal', ['precision' => 15, 'scale' => 2, 'null' => true])
+
               ->addForeignKey('kak_id', 't_kak', 'kak_id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
               ->addForeignKey('satuan1_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
               ->addForeignKey('satuan2_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
               ->addForeignKey('satuan3_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
               ->addForeignKey('satuan_total_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
+              ->addForeignKey('realisasi_satuan1_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
+              ->addForeignKey('realisasi_satuan2_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
+              ->addForeignKey('realisasi_satuan3_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
               ->create();
     }
 }
