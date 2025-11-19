@@ -255,45 +255,73 @@ class Kegiatan extends Model
         ];
     }
 
-    public function createApprovalSteps(int $kegiatanId)
-    {
-        $approvalHierarchy = ['PPK', 'Wadir', 'Bendahara-Cair', 'Bendahara-LPJ'];
-        $sql = "INSERT INTO t_kegiatan_approval (kegiatan_id, status, approval_level) VALUES (?, ?, ?)";
-        
-        // Create steps based on the hierarchy
-        foreach ($approvalHierarchy as $index => $level) {
-            $status = ($index === 0) ? 'Aktif' : 'Menunggu';
-            $this->query($sql, [$kegiatanId, $status, $level]);
-        }
-    }
 
-    public function findAllApprovalsByKegiatanId(int $kegiatanId)
-    {
-        $sql = "SELECT * FROM t_kegiatan_approval WHERE kegiatan_id = ? ORDER BY approval_kegiatan_id ASC";
-        return $this->query($sql, [$kegiatanId])->fetchAll(PDO::FETCH_ASSOC);
-    }
-    
-    public function findCurrentApproval(int $kegiatanId)
+    //... sisa metode lainnya tetap sama
+
+    public function findCurrentApproval(int $kegiatanId): ?array
     {
         $sql = "SELECT * FROM t_kegiatan_approval 
-                WHERE kegiatan_id = ? AND status = 'Aktif' 
-                ORDER BY approval_kegiatan_id ASC LIMIT 1";
-        return $this->query($sql, [$kegiatanId])->fetch(PDO::FETCH_ASSOC);
+                WHERE kegiatan_id = :kegiatan_id AND status = 'Aktif'
+                LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['kegiatan_id' => $kegiatanId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
     }
 
-    public function updateApprovalStatus(int $approvalId, string $status, ?int $userId, ?string $catatan)
+    public function updateApprovalStatus(int $approvalId, string $status, ?int $userId, ?string $catatan): bool
     {
         $sql = "UPDATE t_kegiatan_approval 
-                SET status = ?, approver_user_id = ?, catatan = ?, updated_at = NOW()
-                WHERE approval_kegiatan_id = ?";
-        return $this->query($sql, [$status, $userId, $catatan, $approvalId]);
+                SET status = :status, approver_user_id = :user_id, catatan = :catatan, updated_at = NOW()
+                WHERE approval_kegiatan_id = :approval_id";
+        
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'status' => $status,
+            'user_id' => $userId,
+            'catatan' => $catatan,
+            'approval_id' => $approvalId
+        ]);
     }
 
-    public function findNextApproval(int $kegiatanId, int $currentApprovalId)
+    public function findNextApproval(int $kegiatanId, int $currentApprovalId): ?array
     {
-        $sql = "SELECT * FROM t_kegiatan_approval 
-                WHERE kegiatan_id = ? AND approval_kegiatan_id > ? 
-                ORDER BY approval_kegiatan_id ASC LIMIT 1";
-        return $this->query($sql, [$kegiatanId, $currentApprovalId])->fetch(PDO::FETCH_ASSOC);
+        $sql = "SELECT * FROM t_kegiatan_approval
+                WHERE kegiatan_id = :kegiatan_id 
+                AND approval_kegiatan_id > :current_approval_id
+                ORDER BY approval_kegiatan_id ASC
+                LIMIT 1";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'kegiatan_id' => $kegiatanId,
+            'current_approval_id' => $currentApprovalId
+        ]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
+    }
+
+    public function updateApproval(int $kegiatanId, array $data): bool
+    {
+        $sql = "INSERT INTO t_kegiatan_approval (kegiatan_id, approval_level, approver_user_id, status, catatan)
+                VALUES (:kegiatan_id, :approval_level, :approver_user_id, :status, :catatan)";
+        
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'kegiatan_id' => $kegiatanId,
+            'approval_level' => $data['approval_level'],
+            'approver_user_id' => $data['approver_user_id'],
+            'status' => $data['status'],
+            'catatan' => $data['catatan']
+        ]);
+    public function activateLpjApproval(int $kegiatanId): bool
+    {
+        $sql = "UPDATE t_kegiatan_approval 
+                SET status = 'Aktif', updated_at = NOW()
+                WHERE kegiatan_id = :kegiatan_id 
+                AND approval_level = 'Bendahara-LPJ'";
+        
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['kegiatan_id' => $kegiatanId]);
     }
 }

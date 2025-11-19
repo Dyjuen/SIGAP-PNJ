@@ -9,7 +9,7 @@ class PencairanValidator extends Validator
     /**
      * Validasi untuk pengajuan pencairan
      */
-    public static function validateCreate(array $data): array
+    public function validateCreate(array $data): array
     {
         $rules = [
             'kegiatan_id' => 'required|integer',
@@ -17,54 +17,46 @@ class PencairanValidator extends Validator
             'keterangan' => 'required|string|min:10|max:1000'
         ];
 
-        $messages = [
-            'kegiatan_id.required' => 'ID Kegiatan harus diisi',
-            'kegiatan_id.integer' => 'ID Kegiatan harus berupa angka',
-            'nominal_pencairan.required' => 'Nominal pencairan harus diisi',
-            'nominal_pencairan.numeric' => 'Nominal pencairan harus berupa angka',
-            'nominal_pencairan.min' => 'Nominal pencairan minimal Rp 1',
-            'keterangan.required' => 'Keterangan harus diisi',
-            'keterangan.string' => 'Keterangan harus berupa teks',
-            'keterangan.min' => 'Keterangan minimal 10 karakter',
-            'keterangan.max' => 'Keterangan maksimal 1000 karakter'
-        ];
+        // The parent validator does not use custom messages, so they are omitted here.
+        $isValid = $this->validate($data, $rules);
 
-        return self::validate($data, $rules, $messages);
+        return [
+            'valid' => $isValid,
+            'errors' => $this->getErrors()
+        ];
     }
 
     /**
      * Validasi untuk approval/reject pencairan
      */
-    public static function validateApproval(array $data): array
+    public function validateApproval(array $data): array
     {
         $rules = [
             'catatan_bendahara' => 'nullable|string|max:1000'
         ];
 
-        $messages = [
-            'catatan_bendahara.string' => 'Catatan bendahara harus berupa teks',
-            'catatan_bendahara.max' => 'Catatan bendahara maksimal 1000 karakter'
+        $isValid = $this->validate($data, $rules);
+        
+        return [
+            'valid' => $isValid,
+            'errors' => $this->getErrors()
         ];
-
-        return self::validate($data, $rules, $messages);
     }
 
     /**
      * Validasi untuk rejection (catatan wajib)
      */
-    public static function validateReject(array $data): array
+    public function validateReject(array $data): array
     {
         $rules = [
             'catatan_bendahara' => 'required|string|min:10|max:1000'
         ];
 
-        $messages = [
-            'catatan_bendahara.required' => 'Catatan penolakan harus diisi',
-            'catatan_bendahara.string' => 'Catatan harus berupa teks',
-            'catatan_bendahara.min' => 'Catatan minimal 10 karakter',
-            'catatan_bendahara.max' => 'Catatan maksimal 1000 karakter'
-        ];
+        $isValid = $this->validate($data, $rules);
 
-        return self::validate($data, $rules, $messages);
+        return [
+            'valid' => $isValid,
+            'errors' => $this->getErrors()
+        ];
     }
 }

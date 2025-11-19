@@ -11,10 +11,13 @@ final class CreateTKegiatanApprovalTable extends AbstractMigration
         $table = $this->table('t_kegiatan_approval', ['id' => false, 'primary_key' => ['approval_kegiatan_id']]);
         $table->addColumn('approval_kegiatan_id', 'integer', ['identity' => true])
               ->addColumn('kegiatan_id', 'integer')
-              ->addColumn('approval_level', 'string', ['limit' => 50])
-              ->addColumn('approver_user_id', 'integer', ['null' => true])
+              ->addColumn('approval_level', 'string', [ // NEW COLUMN
+                  'limit' => 50,
+                  'null' => false
+              ])
+              ->addColumn('approver_user_id', 'integer', ['null' => true]) // MODIFIED TO BE NULLABLE
               ->addColumn('status', 'enum', [
-                  'values' => ['Menunggu', 'Aktif', 'Disetujui', 'Revisi'],
+                  'values' => ['Menunggu', 'Aktif', 'Disetujui', 'Revisi'], // MODIFIED ENUM
                   'default' => 'Menunggu'
               ])
               ->addColumn('catatan', 'text', ['null' => true])
@@ -25,7 +28,7 @@ final class CreateTKegiatanApprovalTable extends AbstractMigration
                   'update' => 'CASCADE'
               ])
               ->addForeignKey('approver_user_id', 'm_users', 'user_id', [
-                  'delete' => 'RESTRICT',
+                  'delete' => 'SET_NULL', // Changed from RESTRICT due to nullability
                   'update' => 'CASCADE'
               ])
               ->create();

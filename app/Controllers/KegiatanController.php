@@ -137,20 +137,18 @@ class KegiatanController
         try {
             // This endpoint now expects multipart/form-data
             $kakId = $_POST['kak_id'] ?? null;
-            $penanggungJawab = $_POST['penanggung_jawab_manual'] ?? null;
-            $pelaksana = $_POST['pelaksana_manual'] ?? null;
             $suratPengantarFile = $_FILES['surat_pengantar'] ?? null;
 
             // --- 1. Basic Validation ---
-            if (!$kakId || !$penanggungJawab || !$pelaksana) {
-                Response::error('kak_id, penanggung_jawab_manual, and pelaksana_manual are required.', 400);
+            if (!$kakId) {
+                Response::error('kak_id harus diisi.', 400);
             }
             if (!$suratPengantarFile || $suratPengantarFile['error'] !== UPLOAD_ERR_OK) {
                 Response::error('File surat_pengantar harus diupload.', 400);
             }
 
             // --- 2. Find and Validate KAK ---
-            $kak = $this->kakModel->find($kakId);
+            $kak = $this->kakModel->findById($kakId);
             if (!$kak) {
                 Response::notFound('KAK tidak ditemukan.');
             }
@@ -181,15 +179,23 @@ class KegiatanController
             // --- 5. Create New Kegiatan with dynamic data ---
             $kegiatanData = [
                 'kak_id' => $kakId,
-                'surat_pengantar_path' => $uploadResult['file_path'],
+                'surat_pengantar_path' => $uploadResult['file_path'], // Save the file path
                 'tanggal_mulai_final' => $kak['tanggal_mulai'],
-                'penanggung_jawab_manual' => $penanggungJawab,
-                'pelaksana_manual' => $pelaksana
+                'penanggung_jawab_manual' => 'Ditentukan kemudian',
+                'pelaksana_manual' => 'Ditentukan kemudian'
             ];
             $kegiatanId = $this->kegiatanModel->create($kegiatanData);
 
             // --- 6. Create Initial Approval Flow ---
-            $this->kegiatanModel->createApprovalSteps($kegiatanId);
+            $approvalLevels = ['PPK', 'Wadir2', 'Bendahara-Cair', 'Bendahara-LPJ'];
+            foreach ($approvalLevels as $level) {
+                $this->kegiatanModel->updateApproval($kegiatanId, [
+                    'approval_level' => $level,
+                    'approver_user_id' => null,
+                    'status' => $level === 'PPK' ? 'Aktif' : 'Menunggu', // PPK is the first active step
+                    'catatan' => null
+                ]);
+            }
             
             // --- 7. Update KAK Status ---
             $this->kakModel->update($kakId, ['status_id' => 6]); // 6 = Proses Pencairan
@@ -528,7 +534,7 @@ class KegiatanController
 
             $allowedRoles = [
                 'PPK' => ['PPK', 'Admin'],
-                'Wadir' => ['Wadir', 'Admin'],
+                'Wadir2' => ['Wadir', 'Admin'],
                 'Bendahara-Cair' => ['Bendahara', 'Admin'],
                 'Bendahara-LPJ' => ['Bendahara', 'Admin'],
             ];
@@ -590,6 +596,8 @@ class KegiatanController
                 'catatan' => "Disetujui oleh {$expectedRole}." . ($catatan ? " Catatan: {$catatan}" : "")
             ]);
 
+            // --- END OF LPJ TIMER LOGIC (REMOVED) ---
+
             // 6. Activate Next Step or Finalize
             $nextApproval = $allApprovals[$activeIndex + 1] ?? null;
 
@@ -615,7 +623,8 @@ class KegiatanController
                 }
 
                 $db->commit();
-                $message = "Disetujui oleh {$expectedRole}. Menunggu persetujuan {$nextExpectedRole}.";
+
+                $message = "Disetujui oleh {$approvalLevel}. Menunggu persetujuan {$nextApproval['approval_level']}.";
                 Response::success(null, $message);
             
             } else {
@@ -883,111 +892,5 @@ class KegiatanController
         exit;
     }
 
-    /**
-     * Manually finalizes the disbursement process and starts the LPJ timer.
-     * To be called by the Treasurer ('Bendahara').
-     * 
-     * POST /api/kegiatan/{id}/selesaikan-pencairan
-     */
-    public function selesaikanPencairan()
-    {
-        $db = $this->kegiatanModel->getDb();
-        try {
-            $db->beginTransaction();
 
-            // 1. Get Input and Find Kegiatan
-            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-            preg_match('/\/kegiatan\/(\d+)\/selesaikan-pencairan$/', $uri, $matches);
-            $kegiatanId = $matches[1] ?? null;
-
-            if (!$kegiatanId) {
-                Response::error('Kegiatan ID tidak valid.', 400);
-            }
-
-            // 2. Authorization: Only Bendahara or Admin
-            if (!$this->hasRole('Bendahara') && !$this->hasRole('Admin')) {
-                Response::forbidden('Hanya Bendahara yang dapat menyelesaikan proses pencairan.');
-            }
-
-            // 3. Get and Validate Kegiatan
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
-            if (!$kegiatan) {
-                Response::notFound('Data kegiatan tidak ditemukan.');
-            }
-            
-            // 4. Find the Current Active Approval Step and verify its level
-            $currentApproval = $this->kegiatanModel->findCurrentApproval($kegiatanId);
-            if (!$currentApproval || $currentApproval['approval_level'] !== 'Bendahara-Cair') {
-                Response::error('Proses ini hanya bisa dilakukan saat alur persetujuan berada di level Bendahara-Cair.', 400);
-            }
-
-            // 5. Verify that funds have been disbursed
-            if (empty($kegiatan['dana_dicairkan']) || (float)$kegiatan['dana_dicairkan'] <= 0) {
-                Response::error("Dana harus dicairkan terlebih dahulu melalui fitur 'Pencairan Dana' sebelum menyelesaikan proses ini.", 422);
-            }
-
-            // 6. Core Logic: Update status, start timer, notify
-            $this->kegiatanModel->updateStatus($kegiatanId, 7); // 7 = Uang Muka Dicairkan
-            $lpjService = new LpjTimerService();
-            $lpjService->startLpjTimer($kegiatanId);
-
-            $this->notifikasiModel->create([
-                'penerima_user_id' => $kegiatan['pengusul_user_id'],
-                'pesan' => "Pencairan dana untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah selesai. Anda sekarang dapat mengajukan LPJ.",
-                'link_tujuan' => '/pengusul/kegiatan/' . $kegiatanId . '/lpj',
-            ]);
-            
-            // 7. Advance the approval flow
-            // Deactivate current step
-            $this->kegiatanModel->updateApprovalStatus($currentApproval['approval_kegiatan_id'], 'Disetujui', $this->userData['user_id'], 'Pencairan diselesaikan.');
-            
-            // Activate next step
-            $allApprovals = $this->kegiatanModel->findAllApprovalsByKegiatanId($kegiatanId);
-            $nextApproval = null;
-            $activeIndex = -1;
-            foreach($allApprovals as $index => $approval) {
-                if ($approval['approval_kegiatan_id'] == $currentApproval['approval_kegiatan_id']) {
-                    $activeIndex = $index;
-                    break;
-                }
-            }
-
-            if (isset($allApprovals[$activeIndex + 1])) {
-                 $nextApproval = $allApprovals[$activeIndex + 1];
-                 $this->kegiatanModel->updateApprovalStatus($nextApproval['approval_kegiatan_id'], 'Aktif', null, null);
-                 // Notify the next role if necessary
-            }
-
-            $db->commit();
-
-            Response::success(['lpj_timer_started' => true], 'Proses pencairan telah diselesaikan dan timer LPJ dimulai.');
-
-        } catch (\Exception $e) {
-            if ($db->inTransaction()) {
-                $db->rollBack();
-            }
-            Response::error('Gagal menyelesaikan proses pencairan: ' . $e->getMessage(), 500);
-        }
-    }
-
-    public function getDetail($id)
-    {
-        try {
-            $kegiatan = $this->kegiatanModel->getKegiatanForPDF($id);
-            if (!$kegiatan) {
-                Response::notFound('Kegiatan tidak ditemukan.');
-            }
-
-            // Authorization: Pengusul can only see their own activities.
-            if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
-                if ($kegiatan['pengusul_user_id'] != $this->userData['user_id']) {
-                    Response::forbidden('Anda tidak memiliki akses ke detail kegiatan ini.');
-                }
-            }
-
-            Response::success($kegiatan, 'Detail kegiatan berhasil diambil.');
-        } catch (\Exception $e) {
-            Response::error('Gagal mengambil detail kegiatan: ' . $e->getMessage(), 500);
-        }
-    }
 }
