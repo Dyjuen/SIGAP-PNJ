@@ -189,6 +189,9 @@ $router->get('/kak', 'KAKController@index');
 $router->post('/kak', 'KAKController@store');
 $router->get('/kak/{id}', 'KAKController@show');
 
+// PUT /api/kak/{id}/update - Update KAK
+$router->put('/kak/{id}/update', 'KAKController@update');
+
 // Aksi Pengusul
 $router->post('/kak/{id}/submit', 'KAKController@submitForVerification');
 $router->post('/kak/{id}/resubmit', 'KAKController@resubmitAfterRevision');

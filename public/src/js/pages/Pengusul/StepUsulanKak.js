@@ -3,6 +3,13 @@
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderUsulanKakPage(path, userRole) {
+  const pathSegments = path.split("/").filter((segment) => segment);
+  const kakId =
+    pathSegments.length > 2 && pathSegments[1] === "usulan-kak"
+      ? pathSegments[2]
+      : null;
+  const isEditMode = kakId !== null;
+
   const pageContent = `
     <!-- Add required CSS for daterangepicker in the head section -->
     <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
@@ -645,9 +652,9 @@ export function renderUsulanKakPage(path, userRole) {
   // Update Main Progress Step Display
   function updateMainStepDisplay() {
     const iconsForSteps = {
-        1: { class: 'ti ti-file-text', entity: '&#xf7cd;' }, // KAK
-        2: { class: 'ti ti-chart-bar', entity: '&#xea59;' }, // IKU & RENSTRA
-        3: { class: 'ti ti-currency-dollar', entity: '&#xeb84;' } // RAB
+      1: { class: "ti ti-file-text", entity: "&#xf7cd;" }, // KAK
+      2: { class: "ti ti-chart-bar", entity: "&#xea59;" }, // IKU & RENSTRA
+      3: { class: "ti ti-currency-dollar", entity: "&#xeb84;" }, // RAB
     };
 
     const progressSteps = document.querySelectorAll(".progress-step-item");
@@ -728,8 +735,11 @@ export function renderUsulanKakPage(path, userRole) {
     try {
       const response = await fetch(`/api${endpoint}`, config);
       const data = await response.json();
-      if (!response.ok || response.status !== 201) { // Check for successful HTTP status code
-        throw new Error(data.message || `API request failed with status ${response.status}`);
+      if (!response.ok) {
+        // Check for successful HTTP status code
+        throw new Error(
+          data.message || `API request failed with status ${response.status}`
+        );
       }
       return data;
     } catch (error) {
@@ -1455,6 +1465,380 @@ export function renderUsulanKakPage(path, userRole) {
     container.appendChild(newItem);
     populateSatuanDropdowns(); // Populate dropdowns for new item
   };
+
+  async function fetchAndPopulateKakData(id) {
+    try {
+      const response = await apiRequest(`/kak/${id}/data`);
+      const kakData = response.data;
+
+      console.log("Fetched KAK Data:", kakData);
+
+      // Populate Step 1: Gambaran Umum
+      if (kakData.nama_kegiatan) {
+        document.getElementById("namaKegiatan").value = kakData.nama_kegiatan;
+      }
+      if (kakData.deskripsi_kegiatan) {
+        document.getElementById("gambaranUmum").value =
+          kakData.deskripsi_kegiatan;
+      }
+
+      // Populate Step 2: Penerima Manfaat
+      if (kakData.manfaat && kakData.manfaat.length > 0) {
+        const sasaranContainer = document.getElementById(
+          "sasaranUtamaContainer"
+        );
+        const manfaatContainer = document.getElementById("manfaatContainer");
+
+        // Clear existing fields
+        sasaranContainer.innerHTML = "";
+        manfaatContainer.innerHTML = "";
+
+        kakData.manfaat.forEach((item, index) => {
+          // Add sasaran utama field
+          if (item.sasaran_utama) {
+            const sasaranDiv = createDynamicField(
+              item.sasaran_utama,
+              "removeField"
+            );
+            sasaranContainer.appendChild(sasaranDiv);
+          }
+
+          // Add manfaat field
+          if (item.manfaat) {
+            const manfaatDiv = createDynamicField(item.manfaat, "removeField");
+            manfaatContainer.appendChild(manfaatDiv);
+          }
+        });
+      }
+
+      // Populate Step 3: Strategi Pencapaian
+      if (kakData.metode_pelaksanaan) {
+        document.getElementById("metodePelaksanaan").value =
+          kakData.metode_pelaksanaan;
+      }
+
+      if (kakData.tahapan && kakData.tahapan.length > 0) {
+        const tahapanContainer = document.getElementById(
+          "tahapanPelaksanaanContainer"
+        );
+        tahapanContainer.innerHTML = "";
+
+        kakData.tahapan.forEach((item) => {
+          if (item.nama_tahapan) {
+            const tahapanDiv = createDynamicField(
+              item.nama_tahapan,
+              "removeField"
+            );
+            tahapanContainer.appendChild(tahapanDiv);
+          }
+        });
+      }
+
+      // Populate Step 4: Indikator Kinerja (using target data)
+      if (kakData.target && kakData.target.length > 0) {
+        const indikatorContainer = document.getElementById(
+          "indikatorKinerjaContainer"
+        );
+        indikatorContainer.innerHTML = "";
+
+        kakData.target.forEach((item) => {
+          const indikatorDiv = createIndikatorKinerjaField(
+            item.bulan_indikator || "",
+            item.deskripsi_target || "",
+            item.persentase_target || ""
+          );
+          indikatorContainer.appendChild(indikatorDiv);
+        });
+      }
+
+      // Populate Step 5: Kurun Waktu
+      if (kakData.tanggal_mulai && kakData.tanggal_selesai) {
+        if (typeof $ !== "undefined" && $.fn.daterangepicker) {
+          $("#kurunWaktu")
+            .data("daterangepicker")
+            .setStartDate(moment(kakData.tanggal_mulai));
+          $("#kurunWaktu")
+            .data("daterangepicker")
+            .setEndDate(moment(kakData.tanggal_selesai));
+        }
+      }
+
+      // Populate Main Step 2: IKU & Renstra
+      if (kakData.iku && kakData.iku.length > 0) {
+        const ikuContainer = document.getElementById("ikuRenstraContainer");
+        ikuContainer.innerHTML = "";
+
+        kakData.iku.forEach((item) => {
+          const ikuDiv = createIkuField(
+            item.iku_id || "",
+            item.persentase_target || ""
+          );
+          ikuContainer.appendChild(ikuDiv);
+        });
+
+        // Populate IKU dropdowns after creating fields
+        populateIkuDropdowns();
+      }
+
+      // Populate Main Step 3: RAB
+      if (kakData.anggaran && kakData.anggaran.length > 0) {
+        // Clear existing containers
+        document.getElementById("belanjaBarangContainer").innerHTML = "";
+        document.getElementById("belanjaJasaContainer").innerHTML = "";
+        document.getElementById("belanjaPerjalananContainer").innerHTML = "";
+
+        // You might need logic to categorize anggaran into Barang/Jasa/Perjalanan
+        // For now, assuming all goes to belanjaBarangContainer
+        kakData.anggaran.forEach((item) => {
+          const anggaranDiv = createAnggaranField(
+            item.uraian || "",
+            item.volume1 || 1,
+            item.satuan1_id || "",
+            item.volume2 || 1,
+            item.satuan2_id || "",
+            item.harga_satuan || 0
+          );
+          document
+            .getElementById("belanjaBarangContainer")
+            .appendChild(anggaranDiv);
+        });
+
+        // Populate satuan dropdowns
+        populateSatuanDropdowns();
+      }
+
+      showSuccess("Data berhasil dimuat untuk diedit");
+    } catch (error) {
+      console.error("Error fetching KAK data:", error);
+      showError(`Gagal memuat data: ${error.message}`);
+    }
+  }
+
+  function createDynamicField(value, removeFunction) {
+    const div = document.createElement("div");
+    div.className = "flex gap-4 items-start mb-4";
+    div.innerHTML = `
+      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
+        style="border-color: #E5E7EB; background: #FFFFFF;" 
+        onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
+        onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
+        placeholder="Input" value="${value}">
+      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" 
+        style="background: #EF4444; color: #FFFFFF;" 
+        onmouseover="this.style.background='#DC2626';" 
+        onmouseout="this.style.background='#EF4444';" 
+        onclick="${removeFunction}(this)">
+        <span class="text-xl font-bold">−</span>
+      </button>
+    `;
+    return div;
+  }
+
+  function createIndikatorKinerjaField(bulan, indikator, target) {
+    const div = document.createElement("div");
+    div.className = "flex items-end gap-4 mb-6";
+    div.innerHTML = `
+      <div class='w-full'>
+        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
+          style="border-color: #E5E7EB; background: #FFFFFF;" 
+          onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
+          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
+          placeholder="Input" value="${bulan}">
+      </div>
+      <div class='w-full'>
+        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
+          style="border-color: #E5E7EB; background: #FFFFFF;" 
+          onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
+          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
+          placeholder="Input" value="${indikator}">
+      </div>
+      <div class='w-full'>
+        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
+          style="border-color: #E5E7EB; background: #FFFFFF;" 
+          onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
+          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
+          placeholder="Input" value="${target}">
+      </div>
+      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" 
+        style="background: #EF4444; color: #FFFFFF;" 
+        onmouseover="this.style.background='#DC2626';" 
+        onmouseout="this.style.background='#EF4444';" 
+        onclick="removeField(this)">
+        <span class="text-xl font-bold">−</span>
+      </button>
+    `;
+    return div;
+  }
+
+  function createIkuField(ikuId, persentase) {
+    const div = document.createElement("div");
+    div.className =
+      "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
+    div.innerHTML = `
+      <div>
+        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
+          style="border-color: #E5E7EB; background: #FFFFFF;" 
+          onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
+          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+          <option value="">Input</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Persentase Target</label>
+        <div class="flex gap-2 items-center">
+          <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
+            style="border-color: #E5E7EB; background: #FFFFFF;" 
+            onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
+            onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
+            placeholder="Input" value="${persentase}">
+          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+        </div>
+      </div>
+      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" 
+        style="background: #EF4444; color: #FFFFFF;" 
+        onmouseover="this.style.background='#DC2626';" 
+        onmouseout="this.style.background='#EF4444';" 
+        onclick="removeIkuField(this)">
+        <span class="text-xl font-bold">−</span>
+      </button>
+    `;
+
+    // Set selected IKU after the element is created
+    setTimeout(() => {
+      const select = div.querySelector("select");
+      if (select && ikuId) {
+        select.value = ikuId;
+      }
+    }, 100);
+
+    return div;
+  }
+
+  function createAnggaranField(uraian, vol1, sat1, vol2, sat2, harga) {
+    const div = document.createElement("div");
+    div.className = "belanja-barang-item mb-8 p-6 rounded-lg";
+    div.innerHTML = `
+      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" value="${uraian}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+          <div class="relative">
+            <input type="number" min="1" value="${vol1}" class="w-full px-4 py-3 border-2 rounded-lg text-sm">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+          <div class="relative">
+            <input type="number" min="1" value="${vol2}" class="w-full px-4 py-3 border-2 rounded-lg text-sm">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" value="${harga}">
+        </div>
+        <div class="flex items-end pb-3">
+          <button type="button" onclick="removeBelanjaItem(this, 'belanjaBarangContainer')">−</button>
+        </div>
+      </div>
+    `;
+
+    // Set selected satuan after creation
+    setTimeout(() => {
+      const selects = div.querySelectorAll("select");
+      if (selects[0] && sat1) selects[0].value = sat1;
+      if (selects[1] && sat2) selects[1].value = sat2;
+    }, 100);
+
+    return div;
+  }
+
+  // ==============================================
+  // Update submit function for edit mode
+  // ==============================================
+  async function submitKakUpdate(data, kakId) {
+    return await apiRequest(`/kak/${kakId}/update`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Modify the init function to load data if in edit mode
+  function init() {
+    loadDateRangePicker();
+    updateMainStepDisplay();
+    updateStepDisplay();
+    attachEventListeners();
+    populateIkuDropdowns();
+    populateSatuanDropdowns();
+
+    // Load existing data if in edit mode
+    if (isEditMode && kakId) {
+      // Wait for daterangepicker to initialize first
+      setTimeout(() => {
+        fetchAndPopulateKakData(kakId);
+      }, 500);
+    }
+  }
+
+  // Update the submit button handler
+  const btnSubmitRab = document.getElementById("btnSubmitRab");
+  if (btnSubmitRab) {
+    btnSubmitRab.addEventListener("click", async () => {
+      btnSubmitRab.disabled = true;
+      btnSubmitRab.innerHTML =
+        'Submitting... <span class="spinner-border spinner-border-sm"></span>';
+
+      try {
+        const formData = collectFormData();
+        console.log("Submitting data:", formData);
+
+        let result;
+        if (isEditMode && kakId) {
+          // Update existing KAK
+          result = await submitKakUpdate(formData, kakId);
+          showSuccess("Usulan KAK berhasil diperbarui!");
+        } else {
+          // Create new KAK
+          result = await submitKak(formData);
+          showSuccess("Usulan KAK berhasil diajukan!");
+        }
+
+        // Redirect to monitoring page
+        window.location.hash = "#/pengusul/monitoring-usulan";
+      } catch (error) {
+        showError(`Error: ${error.message}`);
+        btnSubmitRab.disabled = false;
+        btnSubmitRab.innerHTML = "Submit";
+      }
+    });
+  }
 
   // Initialize
   init();
