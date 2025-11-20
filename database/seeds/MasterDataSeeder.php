@@ -144,6 +144,34 @@ class MasterDataSeeder extends AbstractSeed
                 'nama_lengkap' => 'Rina Wijayanti, S.Ak', 'email' => 'bendahara@pnj.ac.id', 'role_id' => 6
             ]
         ];
+
+        // ============================================
+        // KATEGORI BELANJA
+        // ============================================
+        $kategoriBelanja = [
+            [
+                'kode' => 'BRG',
+                'nama' => 'Belanja Barang',
+                'keterangan' => 'Belanja untuk pengadaan barang habis pakai, ATK, konsumsi, dll',
+                'urutan' => 1,
+                'is_active' => true
+            ],
+            [
+                'kode' => 'JSA',
+                'nama' => 'Belanja Jasa',
+                'keterangan' => 'Belanja untuk pembayaran jasa seperti honor narasumber, tenaga pendukung, dll',
+                'urutan' => 2,
+                'is_active' => true
+            ],
+            [
+                'kode' => 'PJL',
+                'nama' => 'Belanja Perjalanan',
+                'keterangan' => 'Belanja untuk transport, akomodasi, dan biaya perjalanan dinas',
+                'urutan' => 3,
+                'is_active' => true
+            ]
+        ];
+        $this->table('m_kategori_belanja')->insert($kategoriBelanja)->saveData();
         $this->table('m_users')->insert($users)->saveData();
 
         echo "✅ Master data seeded successfully!\n";

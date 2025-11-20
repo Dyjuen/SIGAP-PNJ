@@ -36,6 +36,21 @@ class KAKController
         $this->roleModel = new Role();
     }
 
+    // Tambahkan ini di dalam Class KAKController
+
+    public function getRefKategoriBelanja()
+    {
+        try {
+            // Mengambil data kategori yang aktif dan diurutkan sesuai kolom 'urutan'
+            $this->db->query("SELECT * FROM m_kategori_belanja WHERE is_active = 1 ORDER BY urutan ASC");
+            $rows = $this->db->resultSet();
+
+            return $this->responseSuccess($rows);
+        } catch (PDOException $e) {
+            return $this->responseError($e->getMessage());
+        }
+    }
+
     private function responseSuccess($data, $code = 200)
     {
         http_response_code($code);
@@ -55,7 +70,7 @@ class KAKController
         ]);
         exit;
     }
-    
+
     public function download()
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -178,17 +193,32 @@ class KAKController
                 return $this->responseError("Data tidak ditemukan", 404);
             }
 
+            // --- PERUBAHAN DI SINI ---
             $childTables = [
                 'manfaat'   => "SELECT * FROM t_kak_manfaat WHERE kak_id=:id",
                 'tahapan'   => "SELECT * FROM t_kak_tahapan WHERE kak_id=:id ORDER BY urutan ASC",
                 'target'    => "SELECT * FROM t_kak_target WHERE kak_id=:id",
                 'iku'       => "SELECT * FROM t_kak_iku WHERE kak_id=:id",
-                'anggaran'  => "SELECT * FROM t_kak_anggaran WHERE kak_id=:id",
+
+                // Update query anggaran untuk JOIN ke m_kategori_belanja dan m_satuan
+                'anggaran'  => "
+                    SELECT 
+                        a.*, 
+                        s.nama_satuan,
+                        kb.nama AS nama_kategori_belanja,
+                        kb.kode AS kode_kategori
+                    FROM t_kak_anggaran a
+                    LEFT JOIN m_satuan s ON s.satuan_id = a.satuan_id
+                    LEFT JOIN m_kategori_belanja kb ON kb.kategori_belanja_id = a.kategori_belanja_id
+                    WHERE a.kak_id=:id
+                ",
             ];
+            // -------------------------
 
             $data = [
                 "kak" => $kak
             ];
+
 
             foreach ($childTables as $key => $sql) {
                 $this->db->query($sql);
@@ -346,12 +376,20 @@ class KAKController
                     $v2 = !empty($r['volume2']) ? $r['volume2'] : 1;
                     $jumlah = $v1 * $v2 * $r['harga_satuan'];
 
+                    // Pastikan kategori_belanja_id ada dalam query INSERT
                     $this->db->query("
                         INSERT INTO t_kak_anggaran
-                        (kak_id, uraian, volume1, volume2, satuan_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
-                        VALUES (:id, :u, :v1, :v2, :sat, :h, :j, NULL)
+                        (kak_id, kategori_belanja_id, uraian, volume1, volume2, satuan_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
+                        VALUES (:id, :kat_id, :u, :v1, :v2, :sat, :h, :j, NULL)
                     ");
+                    
                     $this->db->bind(':id', $id);
+                    
+                    // Pastikan frontend mengirim key 'kategori_belanja_id'
+                    // Jika kosong, bisa diset NULL atau default (tergantung struktur tabel t_kak_anggaran)
+                    $katId = !empty($r['kategori_belanja_id']) ? $r['kategori_belanja_id'] : null; 
+                    $this->db->bind(':kat_id', $katId); 
+                    
                     $this->db->bind(':u', $r['uraian']);
                     $this->db->bind(':v1', $v1);
                     $this->db->bind(':v2', $v2);
