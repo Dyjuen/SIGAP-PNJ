@@ -19,6 +19,7 @@ use App\Models\Notifikasi;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Iku;
+use App\Validators\KAKValidator;
 use PDOException;
 
 class KAKController
@@ -125,6 +126,8 @@ class KAKController
     public function index()
     {
         try {
+            $status = $_GET['status'] ?? null;
+
             $sql = "
                 SELECT 
                     t.*, 
@@ -141,10 +144,24 @@ class KAKController
                 FROM t_kak t
                 LEFT JOIN m_users u ON u.user_id = t.pengusul_user_id
                 LEFT JOIN m_kegiatan_status s ON s.status_id = t.status_id
-                ORDER BY t.kak_id DESC
             ";
 
+            if ($status) {
+                $status_ids = explode(',', $status);
+                $placeholders = implode(',', array_fill(0, count($status_ids), '?'));
+                $sql .= " WHERE t.status_id IN ($placeholders)";
+            }
+
+            $sql .= " ORDER BY t.kak_id DESC";
+
             $this->db->query($sql);
+
+            if ($status) {
+                foreach ($status_ids as $k => $id) {
+                    $this->db->bind($k + 1, $id);
+                }
+            }
+
             $rows = $this->db->resultSet();
 
             Response::success($rows, 'Data KAK berhasil diambil.');
@@ -167,9 +184,22 @@ class KAKController
             $childTables = [
                 'manfaat'   => "SELECT * FROM t_kak_manfaat WHERE kak_id=:id",
                 'tahapan'   => "SELECT * FROM t_kak_tahapan WHERE kak_id=:id ORDER BY urutan ASC",
+                'indikator' => "SELECT * FROM t_kak_indikator WHERE kak_id=:id",
                 'target'    => "SELECT * FROM t_kak_target WHERE kak_id=:id",
-                'iku'       => "SELECT * FROM t_kak_iku WHERE kak_id=:id",
-                'anggaran'  => "SELECT * FROM t_kak_anggaran WHERE kak_id=:id",
+                'iku'       => "SELECT tki.*, mi.kode_iku, mi.nama_iku 
+                                    FROM t_kak_iku tki 
+                                    LEFT JOIN m_iku mi ON tki.iku_id = mi.iku_id 
+                                    WHERE tki.kak_id = :id",
+                'anggaran'  => "SELECT 
+                                        tka.*, 
+                                        s1.nama_satuan AS nama_satuan1,
+                                        s2.nama_satuan AS nama_satuan2,
+                                        s3.nama_satuan AS nama_satuan3
+                                    FROM t_kak_anggaran tka
+                                    LEFT JOIN m_satuan s1 ON tka.satuan1_id = s1.satuan_id
+                                    LEFT JOIN m_satuan s2 ON tka.satuan2_id = s2.satuan_id
+                                    LEFT JOIN m_satuan s3 ON tka.satuan3_id = s3.satuan_id
+                                    WHERE tka.kak_id = :id",
             ];
 
             $data = [
@@ -228,6 +258,11 @@ class KAKController
             $input = json_decode(file_get_contents('php://input'), true);
             if (!$input || !isset($input['kak'])) {
                 Response::badRequest("Format JSON tidak valid");
+            }
+
+            $validator = new KAKValidator();
+            if (!$validator->validateKAKData($input)) {
+                Response::validationError($validator->getErrors());
             }
 
             $k = $input['kak'];
@@ -324,21 +359,26 @@ class KAKController
 
             if (!empty($input['rab'])) {
                 foreach ($input['rab'] as $r) {
-                    $v1 = !empty($r['volume1']) ? $r['volume1'] : 1;
-                    $v2 = !empty($r['volume2']) ? $r['volume2'] : 1;
-                    $jumlah = $v1 * $v2 * $r['harga_satuan'];
+                    $v1 = !empty($r['volume1']) ? (float)$r['volume1'] : 1;
+                    $v2 = !empty($r['volume2']) ? (float)$r['volume2'] : 1;
+                    $v3 = !empty($r['volume3']) ? (float)$r['volume3'] : 1;
+                    $harga = (float)($r['harga_satuan'] ?? 0);
+                    $jumlah = $v1 * $v2 * $v3 * $harga;
 
                     $this->db->query("
                         INSERT INTO t_kak_anggaran
-                        (kak_id, uraian, volume1, volume2, satuan1_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
-                        VALUES (:id, :u, :v1, :v2, :sat, :h, :j, NULL)
+                        (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
+                        VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, NULL)
                     ");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':u', $r['uraian']);
                     $this->db->bind(':v1', $v1);
+                    $this->db->bind(':s1', $r['satuan1_id']);
                     $this->db->bind(':v2', $v2);
-                    $this->db->bind(':sat', $r['satuan_id']);
-                    $this->db->bind(':h', $r['harga_satuan']);
+                    $this->db->bind(':s2', $r['satuan2_id'] ?? null);
+                    $this->db->bind(':v3', $v3);
+                    $this->db->bind(':s3', $r['satuan3_id'] ?? null);
+                    $this->db->bind(':h', $harga);
                     $this->db->bind(':j', $jumlah);
                     $this->db->execute();
                 }
@@ -381,6 +421,11 @@ class KAKController
             $input = json_decode(file_get_contents('php://input'), true);
             if (!$input || !isset($input['kak'])) {
                 Response::badRequest("Format JSON tidak valid");
+            }
+
+            $validator = new KAKValidator();
+            if (!$validator->validateKAKData($input)) {
+                Response::validationError($validator->getErrors());
             }
         
             $k = $input['kak'];
@@ -485,21 +530,26 @@ class KAKController
         
             if (!empty($input['rab'])) {
                 foreach ($input['rab'] as $r) {
-                    $v1 = !empty($r['volume1']) ? $r['volume1'] : 1;
-                    $v2 = !empty($r['volume2']) ? $r['volume2'] : 1;
-                    $jumlah = $v1 * $v2 * $r['harga_satuan'];
-                
+                    $v1 = !empty($r['volume1']) ? (float)$r['volume1'] : 1;
+                    $v2 = !empty($r['volume2']) ? (float)$r['volume2'] : 1;
+                    $v3 = !empty($r['volume3']) ? (float)$r['volume3'] : 1;
+                    $harga = (float)($r['harga_satuan'] ?? 0);
+                    $jumlah = $v1 * $v2 * $v3 * $harga;
+
                     $this->db->query("
                         INSERT INTO t_kak_anggaran
-                        (kak_id, uraian, volume1, volume2, satuan1_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
-                        VALUES (:id, :u, :v1, :v2, :sat, :h, :j, NULL)
+                        (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
+                        VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, NULL)
                     ");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':u', $r['uraian']);
                     $this->db->bind(':v1', $v1);
+                    $this->db->bind(':s1', $r['satuan1_id']);
                     $this->db->bind(':v2', $v2);
-                    $this->db->bind(':sat', $r['satuan_id']);
-                    $this->db->bind(':h', $r['harga_satuan']);
+                    $this->db->bind(':s2', $r['satuan2_id'] ?? null);
+                    $this->db->bind(':v3', $v3);
+                    $this->db->bind(':s3', $r['satuan3_id'] ?? null);
+                    $this->db->bind(':h', $harga);
                     $this->db->bind(':j', $jumlah);
                     $this->db->execute();
                 }
@@ -959,10 +1009,10 @@ class KAKController
                 (kak_id, approver_user_id, status, catatan, created_at)
                 VALUES (:id, :usr, 'Ditolak', :ct, NOW())
             ");
-            $db->bind(':id', $id);
-            $db->bind(':usr', $this->userData['user_id']);
-            $db->bind(':ct', $catatan);
-            $db->execute();
+            $this->db->bind(':id', $id);
+            $this->db->bind(':usr', $this->userData['user_id']);
+            $this->db->bind(':ct', $catatan);
+            $this->db->execute();
 
             if (!empty($input['catatan_kak'])) {
                 foreach ($input['catatan_kak'] as $kol => $val) {
@@ -1018,6 +1068,61 @@ class KAKController
                 $this->db->rollBack();
             }
             Response::error('Gagal menolak KAK: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            if (!$this->userData) Response::unauthorized();
+
+            $db = $this->db;
+
+            $db->query("SELECT * FROM t_kak WHERE kak_id = :id");
+            $db->bind(':id', $id);
+            $data = $db->single();
+
+            if (!$data) Response::notFound("Data KAK tidak ditemukan.");
+
+            if ($data['pengusul_user_id'] != $this->userData['user_id'])
+                Response::forbidden("Anda tidak memiliki akses untuk menghapus KAK ini.");
+
+            // Only allow delete if status is Draft (1) or Ditolak (4)
+            if (!in_array($data['status_id'], [1, 4])) {
+                Response::error("Hanya KAK berstatus Draft atau Ditolak yang bisa dihapus.", 400);
+            }
+
+            $db->beginTransaction();
+
+            $childTables = [
+                't_kak_manfaat',
+                't_kak_tahapan',
+                't_kak_indikator',
+                't_kak_iku',
+                't_kak_target',
+                't_kak_anggaran',
+                't_kak_log_status',
+                't_kak_approval'
+            ];
+        
+            foreach ($childTables as $table) {
+                $db->query("DELETE FROM $table WHERE kak_id = :id");
+                $db->bind(':id', $id);
+                $db->execute();
+            }
+
+            $db->query("DELETE FROM t_kak WHERE kak_id = :id");
+            $db->bind(':id', $id);
+            $db->execute();
+
+            $db->commit();
+
+            Response::success(null, "KAK berhasil dihapus.");
+        } catch (\Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            Response::error('Gagal menghapus KAK: ' . $e->getMessage(), 500);
         }
     }
 }

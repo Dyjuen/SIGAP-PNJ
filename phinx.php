@@ -24,7 +24,7 @@ return
             'host' => $_ENV['DB_HOST'] ?? 'localhost',
             'name' => $_ENV['DB_NAME'] ?? 'sigap_pnj',
             'user' => $_ENV['DB_USER'] ?? 'root',
-            'pass' => $_ENV['DB_PASS'] ?? '',
+            'pass' => $_ENV['DB_PASS'] ?? 'rafifdwiarka180706.',
             'port' => $_ENV['DB_PORT'] ?? 3306,
             'charset' => 'utf8mb4',
         ]

@@ -192,6 +192,55 @@ export function renderInputLpjPage(path, userRole) {
     `;
   }
 
+  async function submitLpj(kegiatanId) {
+    const submitButton = document.getElementById('submitButton');
+    submitButton.disabled = true;
+    submitButton.innerHTML = 'Submitting...';
+
+    try {
+      const formData = collectLpjData();
+      await apiRequest(`/kegiatan/${kegiatanId}/lpj`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      showSuccess('LPJ berhasil disubmit.');
+      window.location.hash = '#/pengusul/pengajuan-lpj';
+    } catch (error) {
+      showError(error.message);
+    } finally {
+      submitButton.disabled = false;
+      submitButton.innerHTML = 'Submit LPJ <span>✓</span>';
+    }
+  }
+
+  function collectLpjData() {
+    const formData = new FormData();
+    const rabSections = document.querySelectorAll('.rab-section-item');
+
+    rabSections.forEach((section, index) => {
+      const inputs = section.querySelectorAll('input, select');
+      const realisasiGrid = section.querySelector('.grid.grid-cols-\[2fr_1fr_2fr_1fr_1fr_2fr_auto\]');
+      const fileInput = realisasiGrid.querySelector('input[type="file"]');
+
+      formData.append(`items[${index}][anggaran_id]`, state.kegiatan.anggaran_items[index].anggaran_id);
+      formData.append(`items[${index}][uraian]`, realisasiGrid.querySelector('input[type="text"]').value);
+      formData.append(`items[${index}][volume1]`, realisasiGrid.querySelectorAll('input[type="number"]')[0].value);
+      formData.append(`items[${index}][satuan1_id]`, realisasiGrid.querySelectorAll('select')[0].value);
+      formData.append(`items[${index}][volume2]`, realisasiGrid.querySelectorAll('input[type="number"]')[1].value);
+      formData.append(`items[${index}][satuan2_id]`, realisasiGrid.querySelectorAll('select')[1].value);
+      formData.append(`items[${index}][harga_satuan]`, realisasiGrid.querySelector('input[placeholder="Input harga"]').value.replace(/[^0-9]/g, ''));
+
+      if (fileInput.files.length > 0) {
+        for (let i = 0; i < fileInput.files.length; i++) {
+          formData.append(`items[${index}][files][]`, fileInput.files[i]);
+        }
+      }
+    });
+
+    return formData;
+  }
+
   // --- EVENT HANDLERS & INITIALIZATION ---
   window.handleFileUpload = function (input) {
     const files = Array.from(input.files);
@@ -225,8 +274,7 @@ export function renderInputLpjPage(path, userRole) {
     
     document.getElementById('backButton').addEventListener('click', () => window.history.back());
     document.getElementById('submitButton').addEventListener('click', () => {
-        // TODO: Implement submit logic
-        showInfo('Fungsi submit LPJ belum diimplementasikan.');
+        submitLpj(kegiatanId);
     });
   }
 

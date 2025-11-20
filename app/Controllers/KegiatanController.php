@@ -138,6 +138,8 @@ class KegiatanController
             // This endpoint now expects multipart/form-data
             $kakId = $_POST['kak_id'] ?? null;
             $suratPengantarFile = $_FILES['surat_pengantar'] ?? null;
+            $penanggungJawab = $_POST['penanggung_jawab_manual'] ?? null;
+            $pelaksana = $_POST['pelaksana_manual'] ?? null;
 
             // --- 1. Basic Validation ---
             if (!$kakId) {
@@ -146,9 +148,15 @@ class KegiatanController
             if (!$suratPengantarFile || $suratPengantarFile['error'] !== UPLOAD_ERR_OK) {
                 Response::error('File surat_pengantar harus diupload.', 400);
             }
+            if (empty($penanggungJawab)) {
+                Response::error('Penanggung jawab harus diisi.', 400);
+            }
+            if (empty($pelaksana)) {
+                Response::error('Pelaksana harus diisi.', 400);
+            }
 
             // --- 2. Find and Validate KAK ---
-            $kak = $this->kakModel->findById($kakId);
+            $kak = $this->kakModel->find($kakId);
             if (!$kak) {
                 Response::notFound('KAK tidak ditemukan.');
             }
@@ -181,8 +189,8 @@ class KegiatanController
                 'kak_id' => $kakId,
                 'surat_pengantar_path' => $uploadResult['file_path'], // Save the file path
                 'tanggal_mulai_final' => $kak['tanggal_mulai'],
-                'penanggung_jawab_manual' => 'Ditentukan kemudian',
-                'pelaksana_manual' => 'Ditentukan kemudian'
+                'penanggung_jawab_manual' => $penanggungJawab,
+                'pelaksana_manual' => $pelaksana
             ];
             $kegiatanId = $this->kegiatanModel->create($kegiatanData);
 

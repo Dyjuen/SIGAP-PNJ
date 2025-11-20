@@ -440,9 +440,8 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     tbody.innerHTML =
       '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
     try {
-      const response = await apiRequest("/kak");
-      // Client-side filtering to ensure only approved (status_id = 3) are shown
-      approvedTelaah = response.data.filter((item) => item.status_id === 3);
+      const response = await apiRequest("/kak?status=3");
+      approvedTelaah = response.data;
       renderTableRows(approvedTelaah);
     } catch (error) {
       tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;

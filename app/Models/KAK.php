@@ -51,7 +51,16 @@ class KAK extends Model {
                                     FROM t_kak_iku tki 
                                     LEFT JOIN m_iku mi ON tki.iku_id = mi.iku_id 
                                     WHERE tki.kak_id = ?",
-                    'anggaran'  => "SELECT * FROM t_kak_anggaran WHERE kak_id = ?",
+                    'anggaran'  => "SELECT 
+                                        tka.*, 
+                                        s1.nama_satuan AS nama_satuan1,
+                                        s2.nama_satuan AS nama_satuan2,
+                                        s3.nama_satuan AS nama_satuan3
+                                    FROM t_kak_anggaran tka
+                                    LEFT JOIN m_satuan s1 ON tka.satuan1_id = s1.satuan_id
+                                    LEFT JOIN m_satuan s2 ON tka.satuan2_id = s2.satuan_id
+                                    LEFT JOIN m_satuan s3 ON tka.satuan3_id = s3.satuan_id
+                                    WHERE tka.kak_id = ?",
                 ];
         
                 foreach ($childTables as $key => $childSql) {

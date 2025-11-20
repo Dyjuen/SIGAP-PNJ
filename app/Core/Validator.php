@@ -35,16 +35,23 @@ class Validator
      */
     protected function applyRule($field, $rule)
     {
-        // Parse rule dengan parameter (contoh: min:8, max:100)
         $params = [];
+        $ruleName = $rule; // Default to full rule string as name
+
         if (strpos($rule, ':') !== false) {
-            list($rule, $paramString) = explode(':', $rule, 2);
-            $params = explode(',', $paramString);
+            list($ruleName, $paramString) = explode(':', $rule, 2);
+
+            // Special handling for regex rule: the entire paramString is the pattern
+            if ($ruleName === 'regex') {
+                $params = [$paramString];
+            } else {
+                $params = explode(',', $paramString);
+            }
         }
 
         $value = $this->data[$field] ?? null;
 
-        switch ($rule) {
+        switch ($ruleName) {
             case 'required':
                 if (empty($value) && $value !== '0') {
                     $this->addError($field, ucfirst($field) . ' harus diisi.');

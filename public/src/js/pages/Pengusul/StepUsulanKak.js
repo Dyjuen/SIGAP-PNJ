@@ -89,10 +89,7 @@ export function renderUsulanKakPage(path, userRole) {
                 <div class="step-content active" id="gambaran-umum">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Gambaran Umum</h4>
                   
-                  <div class="mb-6">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Pengusul Kegiatan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input" id="pengusul">
-                  </div>
+
 
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nama Kegiatan</label>
@@ -649,6 +646,223 @@ export function renderUsulanKakPage(path, userRole) {
     "kurun-waktu",
   ];
 
+  // ==============================================
+  // VALIDATION FUNCTIONS
+  // ==============================================
+
+  if (typeof showSuccess !== 'function') {
+    window.showSuccess = function(message) {
+        alert('Success: ' + message);
+    }
+  }
+  if (typeof showError !== 'function') {
+      window.showError = function(message) {
+          alert('Error: ' + message);
+      }
+  }
+
+  function validateKAKStep(step) {
+    let isValid = true;
+    // Clear previous errors for the current step
+    document.querySelectorAll(`#main-step-1 .step-content.active .validation-error`).forEach(el => el.remove());
+    document.querySelectorAll(`#main-step-1 .step-content.active .is-invalid`).forEach(el => {
+        el.classList.remove('is-invalid');
+        el.style.borderColor = '#E5E7EB';
+    });
+  
+    const addError = (el, message) => {
+        isValid = false;
+        el.classList.add('is-invalid');
+        el.style.borderColor = '#EF4444';
+        const errorEl = document.createElement('p');
+        errorEl.className = 'validation-error text-red-500 text-sm mt-1';
+        errorEl.textContent = message;
+        el.parentElement.appendChild(errorEl);
+    };
+  
+    if (step === 1) { // Gambaran Umum
+        const namaKegiatan = document.getElementById('namaKegiatan');
+        if (!namaKegiatan.value) addError(namaKegiatan, 'Nama Kegiatan wajib diisi.');
+  
+        const gambaranUmum = document.getElementById('gambaranUmum');
+        if (!gambaranUmum.value) addError(gambaranUmum, 'Gambaran Umum Kegiatan wajib diisi.');
+  
+
+  
+    } else if (step === 2) { // Penerima Manfaat
+        const sasaranInputs = document.querySelectorAll('#sasaranUtamaContainer input');
+        sasaranInputs.forEach(input => {
+            if (!input.value) addError(input, 'Sasaran Utama wajib diisi.');
+        });
+        const manfaatInputs = document.querySelectorAll('#manfaatContainer input');
+        manfaatInputs.forEach(input => {
+            if (!input.value) addError(input, 'Manfaat wajib diisi.');
+        });
+        if (sasaranInputs.length === 0) {
+            showError('Harap tambahkan setidaknya satu Sasaran Utama.');
+            isValid = false;
+        }
+    } else if (step === 3) { // Strategi Pencapaian
+        const metodePelaksanaan = document.getElementById('metodePelaksanaan');
+        if (!metodePelaksanaan.value) addError(metodePelaksanaan, 'Metode Pelaksanaan wajib diisi.');
+  
+        const tahapanInputs = document.querySelectorAll('#tahapanPelaksanaanContainer input');
+        tahapanInputs.forEach(input => {
+            if (!input.value) addError(input, 'Tahapan Pelaksanaan wajib diisi.');
+        });
+        if (tahapanInputs.length === 0) {
+            showError('Harap tambahkan setidaknya satu Tahapan Pelaksanaan.');
+            isValid = false;
+        }
+    } else if (step === 4) { // Indikator Kinerja
+        const indikatorRows = document.querySelectorAll('#indikatorKinerjaContainer > div');
+        indikatorRows.forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            const bulan = inputs[0];
+            const deskripsi = inputs[1];
+            const persentase = inputs[2];
+            if (!bulan.value) addError(bulan, 'Bulan wajib diisi.');
+            if (!deskripsi.value) addError(deskripsi, 'Indikator Keberhasilan wajib diisi.');
+            if (!persentase.value) {
+                addError(persentase, 'Target wajib diisi.');
+            }
+        });
+        if (indikatorRows.length === 0) {
+            showError('Harap tambahkan setidaknya satu Indikator Kinerja.');
+            isValid = false;
+        }
+    } else if (step === 5) { // Kurun Waktu
+        const kurunWaktu = document.getElementById('kurunWaktu');
+        if (!kurunWaktu.value) addError(kurunWaktu, 'Kurun Waktu Pelaksanaan wajib diisi.');
+    }
+  
+    if (!isValid) {
+        showError('Silakan perbaiki kesalahan pada form sebelum melanjutkan.');
+    }
+  
+    return isValid;
+  }
+
+  function validateIkuStep() {
+      let isValid = true;
+      document.querySelectorAll('#main-step-2 .validation-error').forEach(el => el.remove());
+      document.querySelectorAll('#main-step-2 .is-invalid').forEach(el => {
+          el.classList.remove('is-invalid');
+          el.style.borderColor = '#E5E7EB';
+      });
+
+      const addError = (el, message) => {
+          isValid = false;
+          el.classList.add('is-invalid');
+          el.style.borderColor = '#EF4444';
+          const errorEl = document.createElement('p');
+          errorEl.className = 'validation-error text-red-500 text-sm mt-1';
+          errorEl.textContent = message;
+          el.parentElement.appendChild(errorEl);
+      };
+
+      const ikuRows = document.querySelectorAll('#ikuRenstraContainer .iku-item');
+      if (ikuRows.length > 0) {
+        ikuRows.forEach(row => {
+            const select = row.querySelector('select');
+            const input = row.querySelector('input');
+            if (!select.value) addError(select, 'IKU wajib dipilih.');
+            if (!input.value) {
+                addError(input, 'Target wajib diisi.');
+            }
+        });
+      }
+      
+      if (!isValid) {
+          showError('Silakan perbaiki kesalahan pada form sebelum melanjutkan.');
+      }
+
+      return isValid;
+  }
+
+  function validateRabStep() {
+    let isValid = true;
+    document.querySelectorAll('#main-step-3 .validation-error').forEach(el => el.remove());
+    document.querySelectorAll('#main-step-3 .is-invalid').forEach(el => {
+        el.classList.remove('is-invalid');
+        el.style.borderColor = '#E5E7EB';
+    });
+
+    const addError = (el, message) => {
+        isValid = false;
+        el.classList.add('is-invalid');
+        el.style.borderColor = '#EF4444';
+        const errorEl = document.createElement('p');
+        errorEl.className = 'validation-error text-red-500 text-sm mt-1';
+        errorEl.textContent = message;
+        el.parentElement.appendChild(errorEl);
+    };
+
+    const validateSection = (containerId) => {
+        const items = document.querySelectorAll(`#${containerId} .grid`);
+        items.forEach(item => {
+            const inputs = item.querySelectorAll('input, select');
+            const uraian = inputs[0];
+            const qty1 = inputs[1];
+            const satuan1 = inputs[2];
+            const harga = inputs[5];
+
+            // Only validate if any field in the row is filled
+            if (uraian.value || qty1.value !== '1' || satuan1.value || inputs[3].value !== '1' || inputs[4].value || harga.value) {
+              if (!uraian.value) addError(uraian, 'Uraian wajib diisi.');
+              if (!qty1.value) addError(qty1, 'Qty 1 wajib diisi.');
+              if (!satuan1.value) addError(satuan1, 'Satuan 1 wajib dipilih.');
+              if (!harga.value) addError(harga, 'Harga Satuan wajib diisi.');
+            }
+        });
+    };
+
+    validateSection('belanjaBarangContainer');
+    validateSection('belanjaJasaContainer');
+    validateSection('belanjaPerjalananContainer');
+    
+    if (!isValid) {
+        showError('Silakan perbaiki kesalahan pada form sebelum melanjutkan.');
+    }
+
+    return isValid;
+  }
+  
+  function validateAllSteps() {
+      const kakValid = [1, 2, 3, 4, 5].every(step => validateKAKStep(step));
+      const ikuValid = validateIkuStep();
+      const rabValid = validateRabStep();
+
+      if (!kakValid) {
+          mainStep = 1;
+          // Find first invalid step and go to it
+          for (let i = 1; i <= 5; i++) {
+              if (!validateKAKStep(i)) {
+                  currentStep = i;
+                  break;
+              }
+          }
+          updateMainStepDisplay();
+          updateStepDisplay();
+          showError('Terdapat kesalahan pada isian Kerangka Acuan Kerja.');
+          return false;
+      }
+      if (!ikuValid) {
+          mainStep = 2;
+          updateMainStepDisplay();
+          showError('Terdapat kesalahan pada isian IKU & Renstra.');
+          return false;
+      }
+      if (!rabValid) {
+          mainStep = 3;
+          updateMainStepDisplay();
+          showError('Terdapat kesalahan pada isian Rincian Anggaran Biaya.');
+          return false;
+      }
+
+      return true;
+  }
+
   // Update Main Progress Step Display
   function updateMainStepDisplay() {
     const iconsForSteps = {
@@ -793,68 +1007,61 @@ export function renderUsulanKakPage(path, userRole) {
     return combined;
   }
 
-  // Populate IKU dropdowns from dummy data
-  function populateIkuDropdowns() {
-    const dummyIkuData = [
-      {
-        iku_id: 1,
-        kode_iku: "IKU001",
-        nama_iku: "Peningkatan Kualitas Lulusan",
-      },
-      {
-        iku_id: 2,
-        kode_iku: "IKU002",
-        nama_iku: "Peningkatan Relevansi Penelitian",
-      },
-      {
-        iku_id: 3,
-        kode_iku: "IKU003",
-        nama_iku: "Peningkatan Tata Kelola Perguruan Tinggi",
-      },
-    ];
+  // Populate IKU dropdowns from API
+  async function populateIkuDropdowns() {
+    try {
+      const response = await apiRequest("/master/iku");
+      const ikuData = response.data;
 
-    const ikuSelects = document.querySelectorAll("#ikuRenstraContainer select");
-    ikuSelects.forEach((select) => {
-      const isPlaceholder =
-        select.options.length > 0 && select.options[0].value === "";
-      while (select.options.length > (isPlaceholder ? 1 : 0)) {
-        select.remove(isPlaceholder ? 1 : 0);
-      }
+      const ikuSelects = document.querySelectorAll(
+        "#ikuRenstraContainer select"
+      );
+      ikuSelects.forEach((select) => {
+        const isPlaceholder =
+          select.options.length > 0 && select.options[0].value === "";
+        while (select.options.length > (isPlaceholder ? 1 : 0)) {
+          select.remove(isPlaceholder ? 1 : 0);
+        }
 
-      dummyIkuData.forEach((iku) => {
-        const option = document.createElement("option");
-        option.value = iku.iku_id;
-        option.textContent = iku.nama_iku;
-        select.appendChild(option);
+        ikuData.forEach((iku) => {
+          const option = document.createElement("option");
+          option.value = iku.iku_id;
+          option.textContent = iku.nama_iku;
+          select.appendChild(option);
+        });
       });
-    });
+    } catch (error) {
+      console.error("Error populating IKU dropdowns:", error);
+      showError("Gagal memuat data IKU. Silakan coba lagi.");
+    }
   }
 
-  // Populate Satuan dropdowns from dummy data
-  function populateSatuanDropdowns() {
-    const dummySatuanData = [
-      { satuan_id: 1, nama_satuan: "Unit" },
-      { satuan_id: 2, nama_satuan: "Orang" },
-      { satuan_id: 3, nama_satuan: "Paket" },
-      { satuan_id: 4, nama_satuan: "Kegiatan" },
-      { satuan_id: 5, nama_satuan: "Jam" },
-    ];
+  
+  // Populate Satuan dropdowns from API
+  async function populateSatuanDropdowns() {
+    try {
+      const response = await apiRequest("/master/satuan");
+      const satuanData = response.data;
 
-    const satuanSelects = document.querySelectorAll(".satuan-select");
-    satuanSelects.forEach((select) => {
-      const isPlaceholder =
-        select.options.length > 0 && select.options[0].value === "";
-      while (select.options.length > (isPlaceholder ? 1 : 0)) {
-        select.remove(isPlaceholder ? 1 : 0);
-      }
+      const satuanSelects = document.querySelectorAll(".satuan-select");
+      satuanSelects.forEach((select) => {
+        const isPlaceholder =
+          select.options.length > 0 && select.options[0].value === "";
+        while (select.options.length > (isPlaceholder ? 1 : 0)) {
+          select.remove(isPlaceholder ? 1 : 0);
+        }
 
-      dummySatuanData.forEach((satuan) => {
-        const option = document.createElement("option");
-        option.value = satuan.satuan_id;
-        option.textContent = satuan.nama_satuan;
-        select.appendChild(option);
+        satuanData.forEach((satuan) => {
+          const option = document.createElement("option");
+          option.value = satuan.satuan_id;
+          option.textContent = satuan.nama_satuan;
+          select.appendChild(option);
+        });
       });
-    });
+    } catch (error) {
+      console.error("Error populating Satuan dropdowns:", error);
+      showError("Gagal memuat data Satuan. Silakan coba lagi.");
+    }
   }
 
   function collectFormData() {
@@ -910,7 +1117,7 @@ export function renderUsulanKakPage(path, userRole) {
           return {
             uraian: inputs[0].value,
             volume1: parseInt(inputs[1].value) || 1,
-            satuan_id: parseInt(inputs[2].value) || null, // Directly get satuan_id from select value
+            satuan1_id: parseInt(inputs[2].value) || null, // Directly get satuan_id from select value
             volume2: parseInt(inputs[3].value) || 1,
             satuan2_id: parseInt(inputs[4].value) || null, // Directly get satuan_id from select value
             harga_satuan: parseFloat(inputs[5].value) || 0,
@@ -986,35 +1193,6 @@ export function renderUsulanKakPage(path, userRole) {
 
   // Attach Event Listeners
   function attachEventListeners() {
-    // ... (existing event listeners for navigation)
-
-    // Submit button for Step 3 (RAB)
-    const btnSubmitRab = document.getElementById("btnSubmitRab");
-    if (btnSubmitRab) {
-      btnSubmitRab.addEventListener("click", async () => {
-        // Show loading state
-        btnSubmitRab.disabled = true;
-        btnSubmitRab.innerHTML =
-          'Submitting... <span class="spinner-border spinner-border-sm"></span>';
-
-        try {
-          const formData = collectFormData();
-          console.log("Submitting data:", formData);
-
-          const result = await submitKak(formData);
-
-          showSuccess("Usulan KAK berhasil diajukan!");
-          // Redirect to monitoring page
-          window.location.hash = "#/pengusul/monitoring-usulan";
-        } catch (error) {
-          showError(`Error: ${error.message}`);
-          // Re-enable button on error
-          btnSubmitRab.disabled = false;
-          btnSubmitRab.innerHTML = "Submit";
-        }
-      });
-    }
-
     // Progress step items - allow clicking to navigate
     document.querySelectorAll(".progress-step-item").forEach((step) => {
       step.addEventListener("click", function () {
@@ -1058,13 +1236,15 @@ export function renderUsulanKakPage(path, userRole) {
     const btnNext = document.getElementById("btnNext");
     if (btnNext) {
       btnNext.addEventListener("click", () => {
-        if (currentStep < totalSteps) {
-          currentStep++;
-          updateStepDisplay();
-        } else {
-          // Move to main step 2
-          mainStep = 2;
-          updateMainStepDisplay();
+        if (validateKAKStep(currentStep)) {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStepDisplay();
+            } else {
+                // Move to main step 2
+                mainStep = 2;
+                updateMainStepDisplay();
+            }
         }
       });
     }
@@ -1084,8 +1264,10 @@ export function renderUsulanKakPage(path, userRole) {
     const btnNextIku = document.getElementById("btnNextIku");
     if (btnNextIku) {
       btnNextIku.addEventListener("click", () => {
-        mainStep = 3;
-        updateMainStepDisplay();
+        if (validateIkuStep()) {
+            mainStep = 3;
+            updateMainStepDisplay();
+        }
       });
     }
 
@@ -1158,6 +1340,10 @@ export function renderUsulanKakPage(path, userRole) {
 
   window.addSasaranUtama = function () {
     const container = document.getElementById("sasaranUtamaContainer");
+
+    // Save current values
+    const currentValues = Array.from(container.querySelectorAll("input")).map(input => input.value);
+
     const newItem = document.createElement("div");
     newItem.className = "flex gap-4 items-start mb-4";
     newItem.innerHTML = `
@@ -1167,10 +1353,22 @@ export function renderUsulanKakPage(path, userRole) {
       </button>
     `;
     container.appendChild(newItem);
+
+    // Restore old values
+    const inputs = container.querySelectorAll("input");
+    currentValues.forEach((value, index) => {
+        if (inputs[index]) {
+            inputs[index].value = value;
+        }
+    });
   };
 
   window.addManfaat = function () {
     const container = document.getElementById("manfaatContainer");
+
+    // Save current values
+    const currentValues = Array.from(container.querySelectorAll("input")).map(input => input.value);
+
     const newItem = document.createElement("div");
     newItem.className = "flex gap-4 items-start mb-4";
     newItem.innerHTML = `
@@ -1180,10 +1378,22 @@ export function renderUsulanKakPage(path, userRole) {
       </button>
     `;
     container.appendChild(newItem);
+
+    // Restore old values
+    const inputs = container.querySelectorAll("input");
+    currentValues.forEach((value, index) => {
+        if (inputs[index]) {
+            inputs[index].value = value;
+        }
+    });
   };
 
   window.addTahapanPelaksanaan = function () {
     const container = document.getElementById("tahapanPelaksanaanContainer");
+    
+    // Save current values
+    const currentValues = Array.from(container.querySelectorAll("input")).map(input => input.value);
+
     const newItem = document.createElement("div");
     newItem.className = "flex gap-4 items-start mb-4";
     newItem.innerHTML = `
@@ -1193,26 +1403,30 @@ export function renderUsulanKakPage(path, userRole) {
       </button>
     `;
     container.appendChild(newItem);
+
+    // Restore old values
+    const inputs = container.querySelectorAll("input");
+    currentValues.forEach((value, index) => {
+        if (inputs[index]) {
+            inputs[index].value = value;
+        }
+    });
   };
 
   window.addIndikatorKinerja = function () {
-    // This function seems to be misplaced or incorrectly named,
-    // as it tries to remove an IKU item but is named addIndikatorKinerja.
-    // Assuming it's meant to add an indikator kinerja field, similar to others.
-    // For now, I'll comment out the original incorrect logic to avoid errors.
-    // The actual addIndikatorKinerja logic would likely be similar to addIkuField,
-    // but targetting #indikatorKinerjaContainer.
-
-    // const item = btn.closest(".iku-item"); // This refers to an IKU item
-    // const container = document.getElementById("ikuRenstraContainer"); // This refers to IKU container
-    // if (container.querySelectorAll(".iku-item").length > 1) {
-    //   item.remove();
-    // } else {
-    //   showError("Minimal harus ada 1 field!");
-    // }
-
-    // Corrected logic for adding Indikator Kinerja fields (Target data)
     const container = document.getElementById("indikatorKinerjaContainer");
+
+    // Save current values
+    const currentValues = [];
+    container.querySelectorAll(".flex.items-end.gap-4.mb-6").forEach(item => {
+        const inputs = item.querySelectorAll("input[type='text']");
+        currentValues.push({
+            bulan: inputs[0].value,
+            indikator: inputs[1].value,
+            target: inputs[2].value
+        });
+    });
+
     const newItem = document.createElement("div");
     newItem.className = "flex items-end gap-4 mb-6";
     newItem.innerHTML = `
@@ -1233,10 +1447,34 @@ export function renderUsulanKakPage(path, userRole) {
       </button>
     `;
     container.appendChild(newItem);
+
+    // Restore old values
+    const items = container.querySelectorAll(".flex.items-end.gap-4.mb-6");
+    currentValues.forEach((value, index) => {
+        if (items[index]) {
+            const inputs = items[index].querySelectorAll("input[type='text']");
+            inputs[0].value = value.bulan;
+            inputs[1].value = value.indikator;
+            inputs[2].value = value.target;
+        }
+    });
   };
 
   window.addIkuField = function () {
     const container = document.getElementById("ikuRenstraContainer");
+
+    // Save current values
+    const currentValues = [];
+    container.querySelectorAll(".iku-item").forEach(item => {
+        const select = item.querySelector("select");
+        const input = item.querySelector("input[type='text']");
+        currentValues.push({
+            iku_id: select.value,
+            persentase_target: input.value
+        });
+    });
+
+    // Add new empty field
     const newItem = document.createElement("div");
     newItem.className =
       "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
@@ -1259,7 +1497,18 @@ export function renderUsulanKakPage(path, userRole) {
             </button>
           `;
     container.appendChild(newItem);
-    populateIkuDropdowns(); // Populate dropdowns for new item
+    
+    // Repopulate and restore values
+    populateIkuDropdowns().then(() => {
+        container.querySelectorAll(".iku-item").forEach((item, index) => {
+            if (currentValues[index]) {
+                const select = item.querySelector("select");
+                const input = item.querySelector("input[type='text']");
+                select.value = currentValues[index].iku_id;
+                input.value = currentValues[index].persentase_target;
+            }
+        });
+    });
   };
   // Increment/Decrement value functions
   window.incrementValue = function (btn, step) {
@@ -1296,6 +1545,21 @@ export function renderUsulanKakPage(path, userRole) {
 
   window.addBelanjaBarang = function () {
     const container = document.getElementById("belanjaBarangContainer");
+
+    // Save current values
+    const currentValues = [];
+    container.querySelectorAll(".belanja-barang-item").forEach(item => {
+        const inputs = item.querySelectorAll("input, select");
+        currentValues.push({
+            uraian: inputs[0].value,
+            qty1: inputs[1].value,
+            satuan1: inputs[2].value,
+            qty2: inputs[3].value,
+            satuan2: inputs[4].value,
+            harga: inputs[5].value
+        });
+    });
+
     const newItem = document.createElement("div");
     newItem.className = "belanja-barang-item mb-8 p-6 rounded-lg";
     // Construct innerHTML dynamically for select elements
@@ -1349,7 +1613,22 @@ export function renderUsulanKakPage(path, userRole) {
       </div>
     `;
     container.appendChild(newItem);
-    populateSatuanDropdowns(); // Populate dropdowns for new item
+    
+    // Repopulate and restore values
+    populateSatuanDropdowns().then(() => {
+        const items = container.querySelectorAll(".belanja-barang-item");
+        currentValues.forEach((value, index) => {
+            if (items[index]) {
+                const inputs = items[index].querySelectorAll("input, select");
+                inputs[0].value = value.uraian;
+                inputs[1].value = value.qty1;
+                inputs[2].value = value.satuan1;
+                inputs[3].value = value.qty2;
+                inputs[4].value = value.satuan2;
+                inputs[5].value = value.harga;
+            }
+        });
+    });
   };
 
   window.addBelanjaJasa = function () {
@@ -1811,6 +2090,10 @@ export function renderUsulanKakPage(path, userRole) {
   const btnSubmitRab = document.getElementById("btnSubmitRab");
   if (btnSubmitRab) {
     btnSubmitRab.addEventListener("click", async () => {
+      if (!validateAllSteps()) {
+        return;
+      }
+
       btnSubmitRab.disabled = true;
       btnSubmitRab.innerHTML =
         'Submitting... <span class="spinner-border spinner-border-sm"></span>';
@@ -1830,8 +2113,10 @@ export function renderUsulanKakPage(path, userRole) {
           showSuccess("Usulan KAK berhasil diajukan!");
         }
 
-        // Redirect to monitoring page
-        window.location.hash = "#/pengusul/monitoring-usulan";
+        // Redirect after a short delay to allow user to see the message
+        setTimeout(() => {
+            window.location.pathname = "/pengusul/monitoring-usulan";
+        }, 1500);
       } catch (error) {
         showError(`Error: ${error.message}`);
         btnSubmitRab.disabled = false;

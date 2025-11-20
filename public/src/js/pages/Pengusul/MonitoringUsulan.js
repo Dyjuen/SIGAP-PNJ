@@ -172,19 +172,20 @@ export function renderMonitoringUsulanPage(path, userRole) {
     tbody.innerHTML =
       '<tr><td colspan="7" style="text-align: center;">Loading...</td></tr>';
 
+    let url = `/kak?status=1,2,5`;
+    if (state.searchQuery) {
+        url += `&search=${state.searchQuery}`;
+    }
+
     try {
-      const response = await apiRequest("/kak");
-      const allActivities = response.data;
-      const filteredActivities = allActivities.filter((activity) =>
-        [1, 2, 3, 4, 5].includes(activity.status_id)
-      );
-      state.activities = filteredActivities;
-      state.totalEntries = state.activities.length; // Update totalEntries based on filtered data
+      const response = await apiRequest(url);
+      state.activities = response.data;
+      state.totalEntries = state.activities.length;
       state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
       renderTableRows(state.activities);
       updatePagination();
     } catch (error) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Error: ${error.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
     }
   }
 
@@ -376,27 +377,31 @@ export function renderMonitoringUsulanPage(path, userRole) {
         });
       });
 
-    // Delete buttons
     document.querySelectorAll(".btn-delete").forEach((btn) => {
       btn.addEventListener("click", async function () {
         const activityId = this.getAttribute("data-id");
 
-        // Use SweetAlert2 confirmAction (from alerts.js)
         const confirmed = await confirmAction(
           "Yakin ingin menghapus?",
           `Kegiatan dengan ID ${activityId} akan dihapus secara permanen.`
         );
 
         if (confirmed) {
-          // Example: show info or perform actual delete
-          showSuccess(`Berhasil menghapus kegiatan ID: ${activityId}`);
+          try {
+            await apiRequest(`/kak/${activityId}`, { method: 'DELETE' });
+            showSuccess(`Berhasil menghapus kegiatan ID: ${activityId}`);
+            fetchKak(); // Refresh the table
+          } catch (error) {
+            showError(`Gagal menghapus kegiatan: ${error.message}`);
+          }
         }
       });
     });
 
     document.querySelectorAll(".btn-download").forEach((btn) => {
       btn.addEventListener("click", function () {
-        showInfo(`Download PDF kegiatan ID: ${this.getAttribute("data-id")}`);
+        const id = this.getAttribute("data-id");
+        window.open(`/api/kak/${id}`, '_blank');
       });
     });
 
