@@ -145,10 +145,13 @@ export function renderPengajuanLpjPage(path, userRole) {
       const remainingHours = diffHours % 24;
       const remainingMinutes = diffMinutes % 60;
       const remainingSeconds = diffSeconds % 60;
-      return { text: `Hari Ini (${remainingHours}j ${remainingMinutes}m ${remainingSeconds}d)`, colorClass: 'countdown-danger' };
+      const formattedTime = `${String(remainingHours).padStart(2, '0')}j ${String(remainingMinutes).padStart(2, '0')}m ${String(remainingSeconds).padStart(2, '0')}d`;
+      return { text: `Hari Ini (${formattedTime})`, colorClass: 'countdown-danger' };
     } else {
       const overdueDays = Math.abs(diffDays);
-      return { text: `Terlambat ${overdueDays} hari`, colorClass: 'countdown-danger' };
+      const overdueHours = Math.abs(diffHours % 24);
+      const overdueMinutes = Math.abs(diffMinutes % 60);
+      return { text: `Terlambat ${overdueDays} hari, ${overdueHours}j ${overdueMinutes}m`, colorClass: 'countdown-danger' };
     }
   }
 
@@ -210,7 +213,9 @@ export function renderPengajuanLpjPage(path, userRole) {
           <div>${item.tgl_batas_lpj ? new Date(item.tgl_batas_lpj).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : "-"}</div>
         </td>
         <td class="text-center">
-          <span id="countdown-${item.kegiatan_id}" class="${countdown.colorClass} font-semibold px-2 py-1 rounded-md text-sm">${countdown.text}</span>
+          <span id="countdown-${item.kegiatan_id}" class="${countdown.colorClass} font-semibold px-2 py-1 rounded-md text-sm">
+            <i class="bx bx-time me-1"></i>${countdown.text}
+          </span>
         </td>
         <td class="text-center">
           <span class="badge ${statusBadge.class}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${statusBadge.text}</span>
@@ -237,7 +242,7 @@ export function renderPengajuanLpjPage(path, userRole) {
         const countdownSpan = document.getElementById(`countdown-${item.kegiatan_id}`);
         if (countdownSpan) {
           const countdown = calculateCountdown(item.tgl_batas_lpj);
-          countdownSpan.textContent = countdown.text;
+          countdownSpan.innerHTML = `<i class="bx bx-time me-1"></i>${countdown.text}`;
           countdownSpan.className = `${countdown.colorClass} font-semibold px-2 py-1 rounded-md text-sm`;
         }
       });

@@ -189,6 +189,9 @@ $router->get('/kak', 'KAKController@index');
 $router->post('/kak', 'KAKController@store');
 $router->get('/kak/{id}', 'KAKController@show');
 
+// PUT /api/kak/{id}/update - Update KAK
+$router->put('/kak/{id}/update', 'KAKController@update');
+
 // Aksi Pengusul
 $router->post('/kak/{id}/submit', 'KAKController@submitForVerification');
 $router->post('/kak/{id}/resubmit', 'KAKController@resubmitAfterRevision');
@@ -217,7 +220,7 @@ $router->get('/kegiatan/{id}/catatan-ppk', 'KegiatanController@getCatatanPPK');
 // Fitur Tambahan
 $router->post('/kegiatan/{id}/cairkan', 'PencairanController@cairkanDana');
 $router->post('/kegiatan/{id}/duplicate', 'KegiatanController@duplicate');
-$router->post('/kegiatan/{id}/selesaikan-pencairan', 'KegiatanController@selesaikanPencairan');
+
 $router->get('/kegiatan/export/excel', 'KegiatanController@exportExcel');
 $router->get('/kegiatan/statistics/dashboard', 'KegiatanController@statistics');
 
@@ -234,13 +237,20 @@ $router->delete('/kegiatan/{id}/lampiran/{file_id}', 'LampiranController@delete'
 // PENCAIRAN DANA ROUTES
 // ============================================
 
-// GET /api/pencairan/kegiatan/{kegiatan_id} - List pencairan per kegiatan
+// GET /pencairan/kegiatan/{kegiatan_id} - List pencairan per kegiatan
 $router->get('/pencairan/kegiatan/{kegiatan_id}', 'PencairanController@index');
 
-// GET /api/pencairan/sisa-dana/{kegiatan_id} - Cek sisa dana
+// GET /pencairan/sisa-dana/{kegiatan_id} - Cek sisa dana
 $router->get('/pencairan/sisa-dana/{kegiatan_id}', 'PencairanController@getSisaDana');
 
-// This incorrect route has been removed.
+// POST /kegiatan/{kegiatan_id}/pencairan - Bendahara mencatat transaksi pencairan
+$router->post('/kegiatan/{kegiatan_id}/pencairan', 'PencairanController@logPencairan');
+
+// ============================================
+// LPJ (LAPORAN PERTANGGUNGJAWABAN) ROUTES
+// ============================================
+$router->post('/kegiatan/{kegiatan_id}/lpj', 'LpjController@submit');
+
 
 // ============================================
 // NOTIFICATION ROUTES

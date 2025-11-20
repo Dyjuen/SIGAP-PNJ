@@ -19,7 +19,6 @@ import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
 import { renderRevisiKakPage } from "./pages/Verifikator/RevisiKak.js";
 
 function getCurrentUserRole() {
-  // In a real app, this would be more secure, perhaps involving a token verification
   return localStorage.getItem("userRole") || "guest";
 }
 
@@ -42,6 +41,7 @@ const roleBasedRoutes = {
   },
   Pengusul: {
     "/dashboard": renderPengusulDashboardPage,
+    "/usulan-kak/": renderUsulanKakPage,
     "/usulan-kak": renderUsulanKakPage,
     "/monitoring-usulan": renderMonitoringUsulanPage,
     "/preview-kak": renderPreviewKakPage,
@@ -83,7 +83,7 @@ const roleBasedRoutes = {
 
 export function router() {
   const path = window.location.pathname;
-  const userRole = getCurrentUserRole(); // This will be 'Wadir' and now matches the key
+  const userRole = getCurrentUserRole();
 
   // Handle public routes first
   if (publicRoutes[path]) {
@@ -97,7 +97,7 @@ export function router() {
   if (pathSegments.length > 0) {
     const urlRoleSegment = pathSegments[0].toLowerCase();
 
-    // Find the role key from the URL, case-insensitively (e.g., 'Wadir' from 'wadir')
+    // Find the role key from the URL
     const roleFromUrl = Object.keys(roleBasedRoutes).find(
       (k) => k.toLowerCase() === urlRoleSegment
     );
@@ -108,28 +108,35 @@ export function router() {
       return;
     }
 
-    // 2. Security Check: direct comparison now works
+    // 2. Security Check
     if (userRole === "guest" || userRole !== roleFromUrl) {
       renderUnauthorizedPage();
       return;
     }
 
-    // 3. If authorized, find the best matching page using prefix matching for nesting
+    // 3. If authorized, find the best matching page
     const pagePath = "/" + pathSegments.slice(1).join("/");
     const roleRoutes = roleBasedRoutes[userRole];
 
+    // Check for exact match first
+    if (roleRoutes[pagePath]) {
+      roleRoutes[pagePath](path, userRole);
+      return;
+    }
+
+    // Check for prefix match (for routes with IDs)
     const matchedKey = Object.keys(roleRoutes)
       .sort((a, b) => b.length - a.length)
       .find((key) => pagePath.startsWith(key));
 
     if (matchedKey) {
       const handler = roleRoutes[matchedKey];
-      // Pass the path and the userRole to the page handler.
+      // Pass the full path and userRole to the page handler
       handler(path, userRole);
       return;
     }
   }
 
-  // If no route is matched after all checks, render the Not Found page
+  // If no route is matched, render Not Found page
   renderNotFoundPage(userRole);
 }

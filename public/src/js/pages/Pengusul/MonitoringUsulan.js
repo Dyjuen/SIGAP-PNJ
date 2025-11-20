@@ -371,7 +371,8 @@ export function renderMonitoringUsulanPage(path, userRole) {
       .querySelectorAll(".btn-edit-profile, .btn-revisi")
       .forEach((btn) => {
         btn.addEventListener("click", function () {
-          showInfo(`Edit kegiatan ID: ${this.getAttribute("data-id")}`);
+          const id = this.getAttribute("data-id");
+          window.location.pathname = `/pengusul/usulan-kak/${id}`;
         });
       });
 

@@ -286,12 +286,14 @@ class KAKController
             if (!empty($k['indikator_kinerja'])) {
                 foreach ($k['indikator_kinerja'] as $i) {
                     $this->db->query("
-                        INSERT INTO t_kak_indikator
-                        (kak_id, deskripsi_indikator)
-                        VALUES (:id, :d)
+                        INSERT INTO t_kak_target
+                        (kak_id, bulan_indikator, deskripsi_target, persentase_target)
+                        VALUES (:id, :bulan, :desk, :p)
                     ");
                     $this->db->bind(':id', $id);
-                    $this->db->bind(':d', $i['deskripsi_indikator'] ?? '');
+                    $this->db->bind(':bulan', $i['bulan_indikator']);
+                    $this->db->bind(':desk', $i['deskripsi_target']);
+                    $this->db->bind(':p', $i['persentase_target']);
                     $this->db->execute();
                 }
             }
@@ -316,21 +318,6 @@ class KAKController
                     $this->db->bind(':id', $id);
                     $this->db->bind(':iku', $iku['iku_id']);
                     $this->db->bind(':p', $iku['persentase_target']);
-                    $this->db->execute();
-                }
-            }
-
-            if (!empty($input['target'])) {
-                foreach ($input['target'] as $t) {
-                    $this->db->query("
-                        INSERT INTO t_kak_target
-                        (kak_id, deskripsi_target, bulan_indikator, persentase_target)
-                        VALUES (:id, :desk, :bulan, :p)
-                    ");
-                    $this->db->bind(':id', $id);
-                    $this->db->bind(':desk', $t['deskripsi_target']);
-                    $this->db->bind(':bulan', $t['bulan_indikator']);
-                    $this->db->bind(':p', $t['persentase_target']);
                     $this->db->execute();
                 }
             }
@@ -367,6 +354,166 @@ class KAKController
             // Log the detailed error message for debugging purposes (not directly sent to client)
             error_log('Gagal membuat draft KAK: ' . $e->getMessage());
             Response::serverError('Gagal membuat draft KAK. Silakan coba lagi nanti.'); // Generic message for client
+        }
+    }
+
+    public function update($id)
+    {
+        try {
+            if (!$this->userData) Response::unauthorized();
+            $pengusul = $this->userData['user_id'];
+        
+            // Check if KAK exists and belongs to user
+            $this->db->query("SELECT * FROM t_kak WHERE kak_id = :id AND pengusul_user_id = :user");
+            $this->db->bind(':id', $id);
+            $this->db->bind(':user', $pengusul);
+            $existingKak = $this->db->single();
+        
+            if (!$existingKak) {
+                Response::notFound("KAK tidak ditemukan atau Anda tidak memiliki akses.");
+            }
+        
+            // Only allow update if status is Draft (1), Ditolak (4), or Revisi (5)
+            if (!in_array($existingKak['status_id'], [1, 4, 5])) {
+                Response::error("KAK hanya dapat diupdate jika statusnya Draft, Ditolak, atau Revisi.", 400);
+            }
+        
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (!$input || !isset($input['kak'])) {
+                Response::badRequest("Format JSON tidak valid");
+            }
+        
+            $k = $input['kak'];
+        
+            $this->db->beginTransaction();
+        
+            // Update main KAK table
+            $sql = "
+                UPDATE t_kak 
+                SET nama_kegiatan = :nama,
+                    deskripsi_kegiatan = :desk,
+                    metode_pelaksanaan = :metode,
+                    kurun_waktu_pelaksanaan = :kurun,
+                    tanggal_mulai = :mulai,
+                    tanggal_selesai = :selesai,
+                    lokasi = :lokasi,
+                    updated_at = NOW()
+                WHERE kak_id = :id
+            ";
+        
+            $this->db->query($sql);
+            $this->db->bind(':nama', $k['nama_kegiatan']);
+            $this->db->bind(':desk', $k['deskripsi_kegiatan']);
+            $this->db->bind(':metode', $k['metode_pelaksanaan']);
+            $this->db->bind(':kurun', $k['kurun_waktu_pelaksanaan']);
+            $this->db->bind(':mulai', $k['tanggal_mulai']);
+            $this->db->bind(':selesai', $k['tanggal_selesai']);
+            $this->db->bind(':lokasi', $k['lokasi']);
+            $this->db->bind(':id', $id);
+            $this->db->execute();
+        
+            // Delete and re-insert child records
+            $childTables = [
+                't_kak_manfaat',
+                't_kak_tahapan',
+                't_kak_indikator',
+                't_kak_iku',
+                't_kak_target',
+                't_kak_anggaran'
+            ];
+        
+            foreach ($childTables as $table) {
+                $this->db->query("DELETE FROM $table WHERE kak_id = :id");
+                $this->db->bind(':id', $id);
+                $this->db->execute();
+            }
+        
+            // Re-insert data (same logic as store method)
+            if (!empty($k['penerima_manfaat'])) {
+                foreach ($k['penerima_manfaat'] as $m) {
+                    $this->db->query("
+                        INSERT INTO t_kak_manfaat (kak_id, manfaat, sasaran_utama)
+                        VALUES (:id, :m, :sas)
+                    ");
+                    $this->db->bind(':id', $id);
+                    $this->db->bind(':m', $m['manfaat']);
+                    $this->db->bind(':sas', $m['sasaran_utama']);
+                    $this->db->execute();
+                }
+            }
+        
+            if (!empty($k['tahapan_pelaksanaan'])) {
+                foreach ($k['tahapan_pelaksanaan'] as $t) {
+                    $this->db->query("
+                        INSERT INTO t_kak_tahapan (kak_id, nama_tahapan, urutan)
+                        VALUES (:id, :nama, :urut)
+                    ");
+                    $this->db->bind(':id', $id);
+                    $this->db->bind(':nama', $t['nama_tahapan']);
+                    $this->db->bind(':urut', $t['urutan']);
+                    $this->db->execute();
+                }
+            }
+        
+            if (!empty($k['indikator_kinerja'])) {
+                foreach ($k['indikator_kinerja'] as $i) {
+                    $this->db->query("
+                        INSERT INTO t_kak_target
+                        (kak_id, bulan_indikator, deskripsi_target, persentase_target)
+                        VALUES (:id, :bulan, :desk, :p)
+                    ");
+                    $this->db->bind(':id', $id);
+                    $this->db->bind(':bulan', $i['bulan_indikator']);
+                    $this->db->bind(':desk', $i['deskripsi_target']);
+                    $this->db->bind(':p', $i['persentase_target']);
+                    $this->db->execute();
+                }
+            }
+        
+            if (!empty($input['target_iku'])) {
+                foreach ($input['target_iku'] as $iku) {
+                    $this->db->query("
+                        INSERT INTO t_kak_iku (kak_id, iku_id, persentase_target)
+                        VALUES (:id, :iku, :p)
+                    ");
+                    $this->db->bind(':id', $id);
+                    $this->db->bind(':iku', $iku['iku_id']);
+                    $this->db->bind(':p', $iku['persentase_target']);
+                    $this->db->execute();
+                }
+            }
+        
+            if (!empty($input['rab'])) {
+                foreach ($input['rab'] as $r) {
+                    $v1 = !empty($r['volume1']) ? $r['volume1'] : 1;
+                    $v2 = !empty($r['volume2']) ? $r['volume2'] : 1;
+                    $jumlah = $v1 * $v2 * $r['harga_satuan'];
+                
+                    $this->db->query("
+                        INSERT INTO t_kak_anggaran
+                        (kak_id, uraian, volume1, volume2, satuan1_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
+                        VALUES (:id, :u, :v1, :v2, :sat, :h, :j, NULL)
+                    ");
+                    $this->db->bind(':id', $id);
+                    $this->db->bind(':u', $r['uraian']);
+                    $this->db->bind(':v1', $v1);
+                    $this->db->bind(':v2', $v2);
+                    $this->db->bind(':sat', $r['satuan_id']);
+                    $this->db->bind(':h', $r['harga_satuan']);
+                    $this->db->bind(':j', $jumlah);
+                    $this->db->execute();
+                }
+            }
+        
+            $this->db->commit();
+        
+            Response::success(["kak_id" => $id], "KAK berhasil diperbarui.");
+        } catch (\Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            error_log('Gagal memperbarui KAK: ' . $e->getMessage());
+            Response::serverError('Gagal memperbarui KAK. Silakan coba lagi nanti.');
         }
     }
 

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // ============================================================================
 // router.php — SIGAP-PNJ (Fix Binary Output & 403 issues + API Routes)
 // ============================================================================
@@ -92,7 +92,7 @@ if (file_exists($filePath) && is_file($filePath)) {
     // Header aman untuk file biner
     header('Content-Type: ' . $mime);
     header('Content-Length: ' . filesize($filePath));
-    header('Cache-Control: public, max-age=31536000');
+    header('Cache-Control: public, max-age=0'); // Changed from 31536000 to 0 for development
     header('Accept-Ranges: bytes');
 
     // Kirim file mentah

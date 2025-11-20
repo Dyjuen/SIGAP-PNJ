@@ -28,32 +28,12 @@ class KAK extends Model {
          * Data ini diformat agar kompatibel dengan kak-template.php.
          */
             public function getDataForKAK($kakId) {
-                // 1. Ambil data utama dari t_kak dan join ke tabel master
-                $sql = "
-                    SELECT
-                        t.kak_id,
-                        t.nama_kegiatan,
-                        t.deskripsi_kegiatan,
-                        t.tanggal_mulai,
-                        t.tanggal_selesai,
-                        t.lokasi,
-                                        u.nama_lengkap AS pengusul_nama,
-                                        ks.nama_status,
-                                        ma.nama_sumber_dana,
-                                        ma.kode_anggaran,
-                                        iku.kode_iku,
-                                        iku.nama_iku                    FROM t_kak t
-                    LEFT JOIN m_users u ON t.pengusul_user_id = u.user_id
-                    LEFT JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
-                    LEFT JOIN m_mata_anggaran ma ON t.mata_anggaran_id = ma.mata_anggaran_id
-                    LEFT JOIN (
-                        SELECT kak_id, MIN(iku_id) as iku_id
-                        FROM t_kak_iku
-                        GROUP BY kak_id
-                    ) ti ON t.kak_id = ti.kak_id
-                    LEFT JOIN m_iku iku ON ti.iku_id = iku.iku_id
-                    WHERE t.kak_id = ?
-                ";
+                // 1. Ambil data utama dari t_kak
+                $sql = "SELECT t.*, u.nama_lengkap AS pengusul_nama, ks.nama_status
+                        FROM t_kak t
+                        LEFT JOIN m_users u ON t.pengusul_user_id = u.user_id
+                        LEFT JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
+                        WHERE t.kak_id = ?";
                 
                 $kak = $this->query($sql, [$kakId])->fetch(\PDO::FETCH_ASSOC);
         
@@ -61,47 +41,24 @@ class KAK extends Model {
                     return false;
                 }
         
-                // 2. Ambil rincian anggaran dari t_kak_anggaran
-                                $sqlAnggaran = "
-                                    SELECT
-                                        ta.uraian,
-                                        ta.volume1 AS volume,
-                                        ta.harga_satuan,
-                                        ta.jumlah_diusulkan,
-                                        s.nama_satuan
-                                    FROM t_kak_anggaran ta
-                                    LEFT JOIN m_satuan s ON ta.satuan1_id = s.satuan_id
-                                    WHERE ta.kak_id = ?
-                                    ORDER BY ta.anggaran_id ASC
-                                ";
-                                $anggaranItems = $this->query($sqlAnggaran, [$kakId])->fetchAll(\PDO::FETCH_ASSOC);
-                                $kak['anggaran_items'] = $anggaranItems;
-                        
-                                // 3. Hitung total anggaran dari item
-                                $totalDiusulkan = 0;
-                                foreach ($anggaranItems as $item) {
-                                    $totalDiusulkan += $item['jumlah_diusulkan'];
-                                }
-                                $kak['total_anggaran_diusulkan'] = $totalDiusulkan;
-                                $kak['total_anggaran_disetujui'] = null; // Kolom ini tidak ada lagi
-                        
-                        
-        // 4. Ambil lampiran dari t_kegiatan_lampiran melalui t_kak_anggaran
-        $sqlLampiran = "
-            SELECT DISTINCT
-                kl.nama_file_asli,
-                kl.created_at,
-                kl.lampiran_id
-            FROM t_kegiatan_lampiran kl
-            INNER JOIN t_kak_anggaran ta ON kl.anggaran_id = ta.anggaran_id
-            WHERE ta.kak_id = ?
-            ORDER BY kl.lampiran_id ASC
-        ";
-
-        $lampiran = $this->query($sqlLampiran, [$kakId])->fetchAll(\PDO::FETCH_ASSOC);
-        $kak['lampiran'] = $lampiran;
-
-        // 5. Kembalikan data gabungan
-        return $kak;
-    }    }
+                // 2. Ambil data dari tabel anak
+                $childTables = [
+                    'manfaat'   => "SELECT * FROM t_kak_manfaat WHERE kak_id = ?",
+                    'tahapan'   => "SELECT * FROM t_kak_tahapan WHERE kak_id = ? ORDER BY urutan ASC",
+                    'indikator' => "SELECT * FROM t_kak_indikator WHERE kak_id = ?",
+                    'target'    => "SELECT * FROM t_kak_target WHERE kak_id = ?",
+                    'iku'       => "SELECT tki.*, mi.kode_iku, mi.nama_iku 
+                                    FROM t_kak_iku tki 
+                                    LEFT JOIN m_iku mi ON tki.iku_id = mi.iku_id 
+                                    WHERE tki.kak_id = ?",
+                    'anggaran'  => "SELECT * FROM t_kak_anggaran WHERE kak_id = ?",
+                ];
+        
+                foreach ($childTables as $key => $childSql) {
+                    $kak[$key] = $this->query($childSql, [$kakId])->fetchAll(\PDO::FETCH_ASSOC);
+                }
+                
+                // Kembalikan data gabungan
+                return $kak;
+            }    }
     
