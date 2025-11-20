@@ -1,0 +1,901 @@
+// frontend/src/pages/Pengusul/MonitoringKegiatan.js
+
+import { renderDashboardLayout } from "../../layout/AppLayout.js";
+
+export function renderMonitoringKegiatanPage(path, userRole) {
+  const pageContent = `
+    <style>
+      /* Clean background with image */
+      .monitoring-kegiatan-page {
+        background-image: url('/assets/img/backgrounds/BG.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      /* Info banner */
+      .info-banner {
+        background: white;
+        color: #64748b;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-left: 4px solid #03C9D7;
+      }
+
+      .info-icon {
+        color: #03C9D7;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+
+      /* Card container - Enhanced with rounded corners and proper padding */
+      .card-datatable {
+        background: white;
+        border-radius: 18px;
+        padding: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+      }
+      
+      .card-datatable .table {
+        border-radius: 18px;
+        overflow: hidden;
+      }
+
+      /* Table styling */
+      .table {
+        margin-bottom: 0;
+      }
+
+      .table thead tr th {
+        background: #f8fafb;
+        font-weight: 600;
+        color: #475569;
+        padding: 1rem 1rem;
+        font-size: 0.875rem;
+        border-bottom: 2px solid #e2e8f0;
+        white-space: nowrap;
+      }
+
+      /* Enhanced row hover effect with premium interaction */
+      .table tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        border-left: 4px solid transparent;
+      }
+
+      .table tbody tr:hover {
+        background-color: #f8fafc;
+        transform: translateY(-4px) scale(1.005);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        border-left-color: #03C9D7;
+        z-index: 10;
+      }
+
+      .table tbody tr td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border: none;
+      }
+
+      /* Checkbox styling */
+      .custom-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #03C9D7;
+      }
+
+      /* Index number */
+      .index-number {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.95rem;
+      }
+
+      /* Activity name */
+      .activity-name {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .activity-name-sub {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+
+      /* Bootstrap Progress Stepper */
+      .stepper-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        padding: 0.5rem 0;
+        min-width: 600px;
+      }
+
+      /* Stepper Item - Base */
+      .stepper-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+      }
+
+      /* Step Counter - Base */
+      .step-counter {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: #94a3b8;
+        transition: all 0.4s ease-out; /* Slower, smoother transition */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      /* Completed Step Enhancements */
+      .stepper-item.completed .step-counter {
+        background: linear-gradient(135deg, #03C9D7 0%, #02b3c4 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.4);
+        animation: stepIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; /* Use stepIn animation */
+      }
+      
+      /* Active Step Enhancements */
+      .stepper-item.active .step-counter {
+        /* Enhanced Ripple Effect */
+        background: linear-gradient(90deg, #F0F9FF 0%, #FFFFFF 50%, #F0F9FF 100%);
+        background-size: 200% 100%;
+        border: 3px solid #03C9D7;
+        color: #03C9D7;
+        box-shadow: 0 0 0 6px rgba(3, 201, 215, 0.15);
+        animation: activeRipple 2s ease-in-out infinite, activeRippleBackground 4s linear infinite; /* Combine with background anim */
+      }
+      
+      /* Remove the old 'completePulse' keyframes as 'stepIn' is replacing it */
+
+      /* Keep the existing 'activeRipple' keyframe */
+      @keyframes activeRipple {
+        0%, 100% { box-shadow: 0 0 0 6px rgba(3, 201, 215, 0.15); }
+        50% { box-shadow: 0 0 0 12px rgba(3, 201, 215, 0.3); } /* Larger ripple */
+      }
+
+      @keyframes stepIn {
+        0% { transform: scale(0.7); opacity: 0; filter: blur(5px); }
+        100% { transform: scale(1); opacity: 1; filter: blur(0); }
+      }
+
+      /* Enhanced Progress Bar Fill Effect */
+      @keyframes progressFill {
+        from { width: 0%; }
+        to { width: var(--progress-width, 100%); }
+      }
+
+      /* Linear gradient movement for the active ripple */
+      @keyframes activeRippleBackground {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .step-name {
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-top: 0.25rem;
+      }
+
+      .step-date {
+        text-align: center;
+        font-size: 0.7rem;
+        color: #cbd5e0;
+        margin-top: 0.15rem;
+      }
+
+      .stepper-item.completed .step-name,
+      .stepper-item.active .step-name {
+        color: #475569;
+      }
+
+      .stepper-item.completed .step-date {
+        color: #03C9D7;
+        font-weight: 600;
+      }
+
+      /* Bootstrap Progress Bar as Connector */
+      .progress-connector {
+        position: absolute;
+        top: 22px;
+        left: calc(50% + 22px);
+        width: calc(100% - 44px);
+        height: 4px;
+        z-index: 1;
+      }
+
+      .progress-connector .progress {
+        height: 100%;
+        background-color: #e2e8f0;
+        border-radius: 2px;
+        overflow: visible;
+      }
+
+      .progress-connector .progress-bar {
+        background: linear-gradient(90deg, #03C9D7 0%, #02b3c4 100%);
+        transition: width 0.6s ease-out;
+        border-radius: 2px;
+        position: relative;
+      }
+
+      /* Animated progress bar */
+      .progress-connector .progress-bar.animated {
+        animation: progressExpand 0.8s ease-out;
+      }
+
+      @keyframes progressExpand {
+        from { width: 0%; }
+      }
+
+      /* Last item - no connector */
+      .stepper-item:last-child .progress-connector {
+        display: none;
+      }
+
+      /* Status badge */
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .badge-overdue {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      .badge-on-track {
+        background: #d1fae5;
+        color: #059669;
+      }
+
+      /* Pagination */
+      .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        background: white;
+      }
+
+      .pagination-info {
+        color: #6B7280;
+        font-size: 14px;
+      }
+
+      .pagination {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .pagination .page-item {
+        display: inline-block;
+      }
+
+      .pagination .page-link {
+        min-width: 36px;
+        height: 36px;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid #E5E7EB;
+        background: white;
+        color: #374151;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+      }
+
+      .pagination .page-link:hover:not(.disabled) {
+        background: #F3F4F6;
+        border-color: #cbd5e0;
+      }
+
+      .pagination .page-item.active .page-link {
+        background: #03C9D7;
+        color: white;
+        border-color: #03C9D7;
+      }
+
+      .pagination .page-item.disabled .page-link {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #94a3b8;
+      }
+
+      .empty-state-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1rem;
+        opacity: 0.5;
+        color: #cbd5e0;
+      }
+
+      .empty-state h3 {
+        color: #64748b;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 1200px) {
+        .stepper-wrapper {
+          min-width: 500px;
+        }
+      }
+
+      @media (max-width: 992px) {
+        .monitoring-kegiatan-page {
+          padding: 1rem;
+        }
+
+        .card-datatable {
+          padding: 1rem;
+        }
+
+        .stepper-wrapper {
+          flex-direction: column;
+          gap: 1.5rem;
+          min-width: auto;
+        }
+
+        .progress-connector {
+          display: none;
+        }
+
+        .table tbody tr td {
+          padding: 1rem 0.5rem;
+        }
+
+        .table tbody tr:hover {
+          transform: translateY(-2px) scale(1.002);
+        }
+      }
+    </style>
+
+      <div class="card card-datatable table-responsive p-0">
+        <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
+          <thead>
+            <tr>
+              <th style="width: 50px; text-align: center;">
+                <input type="checkbox" class="form-check-input custom-checkbox" id="selectAll">
+              </th>
+              <th style="width: 60px;">No.</th>
+              <th style="min-width: 200px;">Nama Kegiatan</th>
+              <th style="text-align: center; min-width: 600px;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="monitoringTableBody">
+            <!-- Data will be populated by JavaScript -->
+          </tbody>
+        </table>
+        
+        <!-- Pagination -->
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Showing <span id="startEntry">1</span> to <span id="endEntry">10</span> of <span id="totalEntries">50</span> entries
+          </div>
+          <ul class="pagination" id="paginationButtons">
+            <!-- Pagination buttons will be generated by JavaScript -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
+
+  renderDashboardLayout(pageContent, userRole);
+
+  // ==============================================
+  // DUMMY DATA
+  // ==============================================
+  const dummyKegiatanData = [
+    {
+      kak_id: 1,
+      nama_kegiatan: "Pengadaan Alat Tulis Kantor",
+      status: 4,
+      dates: {
+        accWD2: "11/12/2025",
+        accPPK: "13/12/2025",
+        uangMuka: "17/12/2025",
+        lpj: "20/12/2025"
+      },
+      overdueDays: 0
+    },
+    {
+      kak_id: 2,
+      nama_kegiatan: "Renovasi Gedung Kantor Lantai 2",
+      status: 3,
+      dates: {
+        accWD2: "10/12/2025",
+        accPPK: "12/12/2025",
+        uangMuka: "16/12/2025",
+        lpj: null
+      },
+      overdueDays: 0
+    },
+    {
+      kak_id: 3,
+      nama_kegiatan: "Pelatihan SDM IT",
+      status: 2,
+      dates: {
+        accWD2: "11/12/2025",
+        accPPK: "13/12/2025",
+        uangMuka: null,
+        lpj: null
+      },
+      overdueDays: 0
+    },
+    {
+      kak_id: 4,
+      nama_kegiatan: "Pengembangan Sistem Informasi",
+      status: 1,
+      dates: {
+        accWD2: "11/12/2025",
+        accPPK: null,
+        uangMuka: null,
+        lpj: null
+      },
+      overdueDays: 0
+    },
+    {
+      kak_id: 5,
+      nama_kegiatan: "Pembelian Server Database",
+      status: 4,
+      dates: {
+        accWD2: "05/12/2025",
+        accPPK: "07/12/2025",
+        uangMuka: "10/12/2025",
+        lpj: "15/12/2025"
+      },
+      overdueDays: 11
+    },
+    {
+      kak_id: 6,
+      nama_kegiatan: "Kegiatan Sosialisasi Aplikasi",
+      status: 3,
+      dates: {
+        accWD2: "08/12/2025",
+        accPPK: "10/12/2025",
+        uangMuka: "14/12/2025",
+        lpj: null
+      },
+      overdueDays: 0
+    },
+    {
+      kak_id: 7,
+      nama_kegiatan: "Maintenance Jaringan LAN",
+      status: 2,
+      dates: {
+        accWD2: "09/12/2025",
+        accPPK: "11/12/2025",
+        uangMuka: null,
+        lpj: null
+      },
+      overdueDays: 0
+    },
+    {
+      kak_id: 8,
+      nama_kegiatan: "Upgrade Software Lisensi",
+      status: 4,
+      dates: {
+        accWD2: "01/12/2025",
+        accPPK: "03/12/2025",
+        uangMuka: "06/12/2025",
+        lpj: "12/12/2025"
+      },
+      overdueDays: 0
+    },
+    {
+      kak_id: 9,
+      nama_kegiatan: "Pengadaan Furniture Kantor",
+      status: 1,
+      dates: {
+        accWD2: "12/12/2025",
+        accPPK: null,
+        uangMuka: null,
+        lpj: null
+      },
+      overdueDays: 0
+    },
+    {
+      kak_id: 10,
+      nama_kegiatan: "Kegiatan Audit Internal",
+      status: 3,
+      dates: {
+        accWD2: "06/12/2025",
+        accPPK: "08/12/2025",
+        uangMuka: "11/12/2025",
+        lpj: null
+      },
+      overdueDays: 0
+    },
+    {
+      kak_id: 11,
+      nama_kegiatan: "Perbaikan AC Ruang Rapat",
+      status: 4,
+      dates: {
+        accWD2: "02/12/2025",
+        accPPK: "04/12/2025",
+        uangMuka: "07/12/2025",
+        lpj: "13/12/2025"
+      },
+      overdueDays: 3
+    },
+    {
+      kak_id: 12,
+      nama_kegiatan: "Pengadaan Laptop Untuk Staff",
+      status: 2,
+      dates: {
+        accWD2: "10/12/2025",
+        accPPK: "12/12/2025",
+        uangMuka: null,
+        lpj: null
+      },
+      overdueDays: 0
+    }
+  ];
+
+  // ==============================================
+  // STATE
+  // ==============================================
+  let state = {
+    activities: dummyKegiatanData,
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalEntries: dummyKegiatanData.length,
+    totalPages: Math.ceil(dummyKegiatanData.length / 10),
+    selectedItems: new Set()
+  };
+
+  // ==============================================
+  // HELPER FUNCTIONS
+  // ==============================================
+  function renderStepper(item) {
+    const steps = [
+      { number: "01", label: "Acc WD2", date: item.dates.accWD2 },
+      { number: "02", label: "Acc PPK", date: item.dates.accPPK },
+      { number: "03", label: "Uang Muka", date: item.dates.uangMuka },
+      { number: "04", label: "LPJ", date: item.dates.lpj }
+    ];
+
+    return `
+      <div class="stepper-wrapper">
+        ${steps.map((step, index) => {
+          const stepNumber = index + 1;
+          let stepClass = "pending";
+          let progressWidth = "0%";
+
+          if (stepNumber < item.status) {
+            stepClass = "completed";
+            progressWidth = "100%";
+          } else if (stepNumber === item.status) {
+            stepClass = "active";
+            progressWidth = "0%";
+          }
+
+          return `
+            <div class="stepper-item ${stepClass}">
+              <div class="step-counter">
+                ${stepClass === "completed" ? "✓" : step.number}
+              </div>
+              <div class="step-name">${step.label}</div>
+              <div class="step-date">${step.date || "-"}</div>
+              ${index < steps.length - 1 ? `
+                <div class="progress-connector">
+                  <div class="progress">
+                    <div class="progress-bar ${stepClass === 'completed' ? 'animated' : ''}" 
+                         role="progressbar" 
+                         style="width: ${progressWidth}" 
+                         aria-valuenow="${progressWidth === '100%' ? 100 : 0}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  function renderStatusBadge(item) {
+    if (item.status === 4 && item.overdueDays > 0) {
+      return `<span class="status-badge badge-overdue">${item.overdueDays} Hari</span>`;
+    }
+    return `<span class="status-badge badge-on-track">✓</span>`;
+  }
+
+  // ==============================================
+  // RENDER FUNCTIONS
+  // ==============================================
+  function renderTableRows() {
+    const tbody = document.getElementById("monitoringTableBody");
+    if (!tbody) return;
+
+    const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+    const endIndex = startIndex + state.itemsPerPage;
+    const paginatedData = state.activities.slice(startIndex, endIndex);
+
+    if (paginatedData.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4">
+            <div class="empty-state">
+              <svg class="empty-state-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <h3>Tidak ada data kegiatan</h3>
+              <p>Belum ada kegiatan yang terdaftar dalam sistem</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = "";
+
+    paginatedData.forEach((item, index) => {
+      const globalIndex = startIndex + index + 1;
+      const isChecked = state.selectedItems.has(item.kak_id);
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td style="text-align: center;">
+          <input 
+            type="checkbox" 
+            class="form-check-input custom-checkbox row-checkbox" 
+            data-id="${item.kak_id}"
+            ${isChecked ? "checked" : ""}
+          />
+        </td>
+        <td>
+          <span class="index-number">${globalIndex}</span>
+        </td>
+        <td>
+          <div class="activity-name">${item.nama_kegiatan}</div>
+          <div class="activity-name-sub">Pengusul</div>
+        </td>
+        <td>
+          ${renderStepper(item)}
+        </td>
+      `;
+
+      tbody.appendChild(row);
+    });
+
+    updatePaginationInfo();
+    attachEventListeners();
+  }
+
+  // ==============================================
+  // EVENT LISTENERS
+  // ==============================================
+  function attachEventListeners() {
+    const selectAll = document.getElementById("selectAll");
+    if (selectAll) {
+      selectAll.addEventListener("change", function () {
+        document
+          .querySelectorAll(".row-checkbox")
+          .forEach((cb) => {
+            cb.checked = this.checked;
+            const id = parseInt(cb.dataset.id);
+            if (this.checked) {
+              state.selectedItems.add(id);
+            } else {
+              state.selectedItems.delete(id);
+            }
+          });
+      });
+    }
+
+    document.querySelectorAll(".row-checkbox").forEach((checkbox) => {
+      checkbox.addEventListener("change", function() {
+        const id = parseInt(this.dataset.id);
+        if (this.checked) {
+          state.selectedItems.add(id);
+        } else {
+          state.selectedItems.delete(id);
+        }
+        updateSelectAll();
+      });
+    });
+  }
+
+  function updateSelectAll() {
+    const allCheckboxes = document.querySelectorAll(".row-checkbox");
+    const checkedCount = document.querySelectorAll(
+      ".row-checkbox:checked"
+    ).length;
+    const selectAll = document.getElementById("selectAll");
+
+    if (selectAll) {
+      selectAll.checked =
+        checkedCount > 0 && checkedCount === allCheckboxes.length;
+      selectAll.indeterminate =
+        checkedCount > 0 && checkedCount < allCheckboxes.length;
+    }
+  }
+
+  // ==============================================
+  // PAGINATION
+  // ==============================================
+  function setupPagination() {
+    const paginationContainer = document.getElementById("paginationButtons");
+    if (!paginationContainer) return;
+
+    paginationContainer.innerHTML = "";
+
+    const totalPages = state.totalPages;
+
+    // Previous buttons
+    const firstPageItem = document.createElement("li");
+    firstPageItem.className = `page-item ${state.currentPage === 1 ? "disabled" : ""}`;
+    firstPageItem.innerHTML = `<a class="page-link" href="#" id="btnFirstPage">«</a>`;
+    paginationContainer.appendChild(firstPageItem);
+
+    const prevPageItem = document.createElement("li");
+    prevPageItem.className = `page-item ${state.currentPage === 1 ? "disabled" : ""}`;
+    prevPageItem.innerHTML = `<a class="page-link" href="#" id="btnPrevPage">‹</a>`;
+    paginationContainer.appendChild(prevPageItem);
+
+    // Page number buttons
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, state.currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      const pageItem = document.createElement("li");
+      pageItem.className = `page-item ${i === state.currentPage ? "active" : ""}`;
+      pageItem.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+      paginationContainer.appendChild(pageItem);
+    }
+
+    // Next buttons
+    const nextPageItem = document.createElement("li");
+    nextPageItem.className = `page-item ${state.currentPage === totalPages ? "disabled" : ""}`;
+    nextPageItem.innerHTML = `<a class="page-link" href="#" id="btnNextPage">›</a>`;
+    paginationContainer.appendChild(nextPageItem);
+
+    const lastPageItem = document.createElement("li");
+    lastPageItem.className = `page-item ${state.currentPage === totalPages ? "disabled" : ""}`;
+    lastPageItem.innerHTML = `<a class="page-link" href="#" id="btnLastPage">»</a>`;
+    paginationContainer.appendChild(lastPageItem);
+
+    // Attach event listeners to pagination buttons
+    document.querySelectorAll(".pagination .page-link").forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const page = this.getAttribute("data-page");
+        if (page) {
+          changePage(parseInt(page));
+        }
+      });
+    });
+
+    const btnFirstPage = document.getElementById("btnFirstPage");
+    const btnPrevPage = document.getElementById("btnPrevPage");
+    const btnNextPage = document.getElementById("btnNextPage");
+    const btnLastPage = document.getElementById("btnLastPage");
+
+    if (btnFirstPage)
+      btnFirstPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        changePage(1);
+      });
+    if (btnPrevPage)
+      btnPrevPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(state.currentPage - 1);
+      });
+    if (btnNextPage)
+      btnNextPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < totalPages)
+          changePage(state.currentPage + 1);
+      });
+    if (btnLastPage)
+      btnLastPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        changePage(totalPages);
+      });
+  }
+
+  function changePage(page) {
+    if (page < 1 || page > state.totalPages) return;
+    state.currentPage = page;
+    renderTableRows();
+    setupPagination();
+  }
+
+  function updatePaginationInfo() {
+    const startEntry = (state.currentPage - 1) * state.itemsPerPage + 1;
+    const endEntry = Math.min(
+      state.currentPage * state.itemsPerPage,
+      state.totalEntries
+    );
+
+    const startEntryEl = document.getElementById("startEntry");
+    const endEntryEl = document.getElementById("endEntry");
+    const totalEntriesEl = document.getElementById("totalEntries");
+
+    if (startEntryEl) {
+      startEntryEl.textContent = state.totalEntries > 0 ? startEntry : 0;
+    }
+    if (endEntryEl) {
+      endEntryEl.textContent = endEntry;
+    }
+    if (totalEntriesEl) {
+      totalEntriesEl.textContent = state.totalEntries;
+    }
+  }
+
+  // ==============================================
+  // INITIALIZATION
+  // ==============================================
+  renderTableRows();
+  setupPagination();
+
+  if (window.Helpers) {
+    window.Helpers.init();
+  }
+}
