@@ -330,23 +330,23 @@ export function renderRevisiKakPage(usulanId, userRole) {
             <!-- Sidebar Menu -->
             <div class="flex flex-col gap-4 w-96">
               <button class="menu-button border-2 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3 active" data-menu="gambaran-umum" style="border-color: #00BCD4; background: rgba(0, 188, 212, 0.1);">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text">&#xff43;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text" style="font-size: 1rem; line-height: 1;">&#xff43;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Gambaran Umum</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="penerima-manfaat">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users">&#xf7cd;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users" style="font-size: 1rem; line-height: 1;">&#xf7cd;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Penerima Manfaat</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="strategi-pencapaian">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target">&#xeb35;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target" style="font-size: 1rem; line-height: 1;">&#xeb35;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Strategi Pencapaian</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="indikator-kinerja">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar">&#xea59;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar" style="font-size: 1rem; line-height: 1;">&#xea59;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Indikator Kinerja</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="kurun-waktu">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar">&#xea53;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar" style="font-size: 1rem; line-height: 1;">&#xea53;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</div>
               </button>
             </div>
@@ -759,7 +759,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
         </button>
         <div class="flex gap-4">
           <button class="btn-primary-action btn-revise" onclick="submitReview()">
-            <i class="ti ti-send">&#xeb2a;</i>
+            <i class="ti ti-send">&#xeae0;</i>
             Kirim Revisi
           </button>
         </div>
@@ -866,44 +866,71 @@ export function renderRevisiKakPage(usulanId, userRole) {
     updateCommentCount();
   }
 
-  // Update Main Step Display
-  function updateMainStepDisplay() {
-    const progressSteps = document.querySelectorAll('.progress-step-item');
+  // Update Main Progress Step Display
+function updateMainStepDisplay() {
+    // Definisi ikon untuk setiap langkah utama
+    const stepIcons = {
+        1: { class: 'ti ti-file-text', entity: '&#xef40;' }, // KAK
+        2: { class: 'ti ti-chart-bar', entity: '&#xea59;' }, // IKU & RENSTRA
+        3: { class: 'ti ti-currency-dollar', entity: '&#xeb84;' } // RAB
+    };
+
+    const progressSteps = document.querySelectorAll(".progress-step-item");
+    
     progressSteps.forEach((step, index) => {
       const stepNum = index + 1;
-      const circle = step.querySelector('.progress-step-circle');
-      const text = step.querySelector('.progress-step-text');
-      const subtext = step.querySelector('.progress-step-subtext');
+      const circle = step.querySelector(".progress-step-circle");
+      const text = step.querySelector(".progress-step-text");
+      const subtext = step.querySelector(".progress-step-subtext");
 
+      // Reset style dasar
+      circle.className = "progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300";
+      
       if (stepNum < mainStep) {
-        circle.style.background = '#10B981';
-        circle.style.color = '#FFFFFF';
-        circle.innerHTML = '✓';
-        text.style.color = '#10B981';
-        if (subtext) subtext.style.color = '#10B981';
+        // State: Selesai (Completed) -> Tampilkan Centang
+        circle.style.background = "#10B981"; // Hijau
+        circle.style.color = "#FFFFFF";
+        circle.style.boxShadow = "0 4px 12px rgba(16, 185, 129, 0.4)";
+        circle.innerHTML = '<i class="ti ti-check" style="font-size: 1.125rem; line-height: 1; display: flex; align-items: center; justify-content: center;">&#xea5e;</i>'; // Icon Check with entity
+        
+        text.style.color = "#10B981";
+        if (subtext) subtext.style.color = "#10B981";
+
       } else if (stepNum === mainStep) {
-        circle.style.background = '#00BCD4';
-        circle.style.color = '#FFFFFF';
-        circle.innerHTML = stepNum;
-        text.style.color = '#00BCD4';
-        if (subtext) subtext.style.color = '#00BCD4';
+        // State: Sedang Aktif (Active) -> Tampilkan Ikon Langkah
+        circle.style.background = "#00BCD4"; // Cyan
+        circle.style.color = "#FFFFFF";
+        circle.style.boxShadow = "0 4px 12px rgba(0, 188, 212, 0.4)";
+        // Fix: Gunakan entity dari object stepIcons dengan styling untuk center
+        circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem; line-height: 1; display: flex; align-items: center; justify-content: center;">${stepIcons[stepNum].entity}</i>`; 
+        
+        text.style.color = "#00BCD4";
+        if (subtext) subtext.style.color = "#00BCD4";
+
       } else {
-        circle.style.background = '#E5E7EB';
-        circle.style.color = '#6B7280';
-        circle.innerHTML = stepNum;
-        text.style.color = '#6B7280';
-        if (subtext) subtext.style.color = '#9CA3AF';
+        // State: Belum Aktif (Upcoming) -> Tampilkan Ikon Langkah (Abu-abu)
+        circle.style.background = "#E5E7EB"; // Abu-abu
+        circle.style.color = "#6B7280";
+        circle.style.boxShadow = "none";
+        // Fix: Gunakan entity dari object stepIcons dengan styling untuk center
+        circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem; line-height: 1; display: flex; align-items: center; justify-content: center;">${stepIcons[stepNum].entity}</i>`;
+        
+        text.style.color = "#6B7280";
+        if (subtext) subtext.style.color = "#9CA3AF";
       }
     });
 
-    document.querySelectorAll('.main-step-content').forEach((content, index) => {
-      if (index + 1 === mainStep) {
-        content.classList.add('active');
-      } else {
-        content.classList.remove('active');
-      }
-    });
-  }
+    // Show/hide main step content (Logika konten tetap sama)
+    document
+      .querySelectorAll(".main-step-content")
+      .forEach((content, index) => {
+        if (index + 1 === mainStep) {
+          content.classList.add("active");
+        } else {
+          content.classList.remove("active");
+        }
+      });
+}
 
   // Update Step Display
   function updateStepDisplay() {

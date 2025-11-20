@@ -54,23 +54,23 @@ export function renderUsulanKakPage(path, userRole) {
             <!-- Sidebar Menu -->
             <div class="flex flex-col gap-4 w-96">
               <button class="menu-button border-2 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3 active" data-menu="gambaran-umum" style="border-color: #00BCD4; background: rgba(0, 188, 212, 0.1);">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text">&#xff43;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text">&#xff43;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Gambaran Umum</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="penerima-manfaat">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users">&#xf7cd;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users">&#xf7cd;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Penerima Manfaat</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="strategi-pencapaian">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target">&#xeb35;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target">&#xeb35;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Strategi Pencapaian</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="indikator-kinerja">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar">&#xea59;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar">&#xea59;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Indikator Kinerja</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="kurun-waktu">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar">&#xea53;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar">&#xea53;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</div>
               </button>
             </div>
@@ -645,7 +645,7 @@ export function renderUsulanKakPage(path, userRole) {
   // Update Main Progress Step Display
   function updateMainStepDisplay() {
     const iconsForSteps = {
-        1: { class: 'ti ti-file-text', entity: '&#xf7cd;' }, // KAK
+        1: { class: 'ti ti-file-text', entity: '&#xef40;' }, // KAK
         2: { class: 'ti ti-chart-bar', entity: '&#xea59;' }, // IKU & RENSTRA
         3: { class: 'ti ti-currency-dollar', entity: '&#xeb84;' } // RAB
     };
