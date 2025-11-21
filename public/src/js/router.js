@@ -17,7 +17,7 @@ import { renderPengajuanLpjPage } from "./pages/Pengusul/PengajuanLpj.js";
 import { renderInputLpjPage } from "./pages/Pengusul/InputLpj.js";
 import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
 import { renderRevisiKakPage } from "./pages/Verifikator/RevisiKak.js";
-import { renderMonitoringKegiatanPage } from "./pages/Pengusul/MonitoringKegiatan.js";
+import { renderMonitoringKegiatanPage } from "./pages/shared/MonitoringKegiatan.js";
 import { renderRiwayatKAKPage } from "./pages/Pengusul/RiwayatKAK.js";
 
 function getCurrentUserRole() {
@@ -64,19 +64,20 @@ const roleBasedRoutes = {
   Wadir: {
     "/dashboard": renderWadirDashboardPage,
     "/verifikasi-kegiatan": renderWadirDashboardPage,
-    "/monitoring-kegiatan": renderNotFoundPage,
+    "/monitoring-kegiatan": renderMonitoringKegiatanPage,
     "/pengaturan": renderNotFoundPage,
   },
   PPK: {
     "/dashboard": renderPpkDashboardPage,
     "/setujui-kegiatan": renderPpkDashboardPage,
-    "/monitoring-kegiatan": renderNotFoundPage,
+    "/monitoring-kegiatan": renderMonitoringKegiatanPage,
     "/riwayat": renderNotFoundPage,
     "/pengaturan": renderNotFoundPage,
   },
   Bendahara: {
     "/dashboard": renderBendaharaDashboardPage,
     "/pencairan-dana": renderPencairanDanaPage,
+    "/monitoring-kegiatan": renderMonitoringKegiatanPage,
     "/daftar-lpj": renderNotFoundPage,
     "/riwayat": renderNotFoundPage,
     "/pengaturan": renderNotFoundPage,

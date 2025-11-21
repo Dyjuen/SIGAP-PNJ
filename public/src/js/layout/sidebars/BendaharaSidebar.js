@@ -25,6 +25,14 @@ export const bendaharaSidebar = `
         </a>
       </li>
 
+      <!-- Monitoring Kegiatan -->
+      <li class="menu-item">
+        <a href="/bendahara/monitoring-kegiatan" data-link class="menu-link">
+          <i class="menu-icon tf-icons ti ti-presentation-analytics">&#xea9a;</i>
+          <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
+        </a>
+      </li>
+
       <!-- Daftar LPJ -->
       <li class="menu-item">
         <a href="/bendahara/daftar-lpj" data-link class="menu-link">

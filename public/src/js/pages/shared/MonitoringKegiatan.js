@@ -434,13 +434,21 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
   renderDashboardLayout(pageContent, userRole);
 
+  const user = JSON.parse(localStorage.getItem('user'));
+
   // ==============================================
   // API Service
   // ==============================================
   const apiService = {
     getKegiatan: async (page = 1, per_page = 10) => {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/kegiatan?page=${page}&per_page=${per_page}`, {
+      let url = `/api/kegiatan?page=${page}&per_page=${per_page}`;
+
+      if (userRole.toLowerCase() === 'pengusul' && user && user.id) {
+        url += `&user_id=${user.id}`;
+      }
+
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
