@@ -6,6 +6,8 @@ const READONLY_ATTR = 'readonly disabled';
 const READONLY_STYLE = 'border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default;';
 
 export function renderRevisiKakPage(path, userRole) {
+  const isVerifikator = userRole.toLowerCase() === 'verifikator';
+  const isPengusul = userRole.toLowerCase() === 'pengusul';
   const pageContent = `
     <style>
       /* Comment button styling */
@@ -544,15 +546,31 @@ export function renderRevisiKakPage(path, userRole) {
 
       <!-- Action Buttons (Fixed at bottom) -->
       <div class="action-buttons">
-        <button class="btn-back" onclick="window.location.hash = '#/verifikator/dashboard'">
-          <i class="ti ti-arrow-left">&#xea19;</i> Kembali
-        </button>
-        <div class="flex gap-4">
-          <button class="btn-primary-action btn-revise" onclick="submitReview()">
-            <i class="ti ti-send">&#xeae0;</i>
-            Kirim Revisi
+        ${isVerifikator ? `
+          <button class="btn-back" onclick="window.location.hash = '#/verifikator/dashboard'">
+            <i class="ti ti-arrow-left">&#xea19;</i> Kembali
           </button>
-        </div>
+          <div class="flex gap-4">
+            <button class="btn-primary-action btn-revise" onclick="submitReview()">
+              <i class="ti ti-send">&#xeae0;</i>
+              Kirim Revisi
+            </button>
+          </div>
+        ` : isPengusul ? `
+          <button class="btn-back" onclick="window.location.hash = '#/pengusul/dashboard'">
+            <i class="ti ti-arrow-left">&#xea19;</i> Kembali
+          </button>
+          <div class="flex gap-4 items-center">
+            <input type="file" id="kakFile" class="hidden" accept=".pdf,.doc,.docx" />
+            <label for="kakFile" class="btn btn-primary-action" style="background: #00BCD4; color: white; cursor: pointer;">
+              <i class="ti ti-upload">&#xeb61;</i> Upload KAK Revisi
+            </label>
+            <button class="btn-primary-action btn-revise" onclick="resubmitKak()" id="btnResubmitKak" style="display: none;">
+              <i class="ti ti-send">&#xeae0;</i>
+              Kirim Ulang KAK
+            </button>
+          </div>
+        ` : ''}
       </div>
 
       <!-- Comment Count Badge -->
@@ -577,8 +595,14 @@ export function renderRevisiKakPage(path, userRole) {
               <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai Saat Ini</label>
               <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="currentFieldValue"></div>
             </div>
-            <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
-            <textarea id="fieldCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi spesifik untuk field ini..."></textarea>
+            <div id="fieldCommentInputContainer" style="${isPengusul ? 'display: none;' : ''}">
+              <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
+              <textarea id="fieldCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi spesifik untuk field ini..."></textarea>
+            </div>
+            <div id="fieldCommentDisplayContainer" style="${isVerifikator ? 'display: none;' : ''}">
+              <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Verifikator</label>
+              <div class="p-3 rounded-lg" style="background: #E0F7FA; color: #374151;" id="fieldCommentDisplayText"></div>
+            </div>
             <div class="info-box">
               <div class="info-box-text">
                 <i class="ti ti-info-circle">&#xeac5;</i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki usulan.
@@ -589,9 +613,11 @@ export function renderRevisiKakPage(path, userRole) {
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
-            <button type="button" class="btn btn-primary" onclick="saveFieldComment()">
-              <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
-            </button>
+            ${isVerifikator ? `
+              <button type="button" class="btn btn-primary" onclick="saveFieldComment()">
+                <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
+              </button>
+            ` : ''}
           </div>
         </div>
       </div>
@@ -612,8 +638,14 @@ export function renderRevisiKakPage(path, userRole) {
               <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai Saat Ini</label>
               <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="currentRowValue"></div>
             </div>
-            <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
-            <textarea id="rowCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi untuk baris ini..."></textarea>
+            <div id="rowCommentInputContainer" style="${isPengusul ? 'display: none;' : ''}">
+              <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
+              <textarea id="rowCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi untuk baris ini..."></textarea>
+            </div>
+            <div id="rowCommentDisplayContainer" style="${isVerifikator ? 'display: none;' : ''}">
+              <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Verifikator</label>
+              <div class="p-3 rounded-lg" style="background: #E0F7FA; color: #374151;" id="rowCommentDisplayText"></div>
+            </div>
             <div class="info-box">
               <div class="info-box-text">
                 <i class="ti ti-info-circle">&#xeac5;</i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki usulan.
@@ -624,9 +656,11 @@ export function renderRevisiKakPage(path, userRole) {
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
-            <button type="button" class="btn btn-primary" onclick="saveRowComment()">
-              <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
-            </button>
+            ${isVerifikator ? `
+              <button type="button" class="btn btn-primary" onclick="saveRowComment()">
+                <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
+              </button>
+            ` : ''}
           </div>
         </div>
       </div>
@@ -814,6 +848,32 @@ export function renderRevisiKakPage(path, userRole) {
           masterState.iku = ikuResponse.data;
           masterState.satuan = satuanResponse.data;
           const kakData = kakResponse.data;
+
+          // Populate fieldComments and rowComments from kakData
+          if (kakData.catatan_kak) {
+            fieldComments = kakData.catatan_kak;
+            for (const key in fieldComments) {
+                if (fieldComments.hasOwnProperty(key)) {
+                    updateCommentButton(`.comment-icon[data-field="${key.replace(/_/g, '-')}"]`, fieldComments[key]);
+                }
+            }
+          }
+          if (kakData.anak) {
+            for (const table in kakData.anak) {
+                if (kakData.anak.hasOwnProperty(table)) {
+                    if (!rowComments[table]) {
+                        rowComments[table] = {};
+                    }
+                    kakData.anak[table].forEach(item => {
+                        if (item.id && item.catatan_verifikator) {
+                            rowComments[table][item.id] = item.catatan_verifikator;
+                            updateCommentButton(`.row-with-comment[data-pk-value="${item.id}"] .row-comment-icon`, item.catatan_verifikator);
+                        }
+                    });
+                }
+            }
+          }
+          updateCommentCount();
   
           document.querySelector('[data-field="pengusul"]').value = kakData.user ? kakData.user.nama : 'N/A';
           document.querySelector('[data-field="namaKegiatan"]').value = kakData.nama_kegiatan || '';
@@ -886,6 +946,20 @@ export function renderRevisiKakPage(path, userRole) {
       attachEventListeners();
       updateCommentCount();
       fetchAndPopulateData(usulanId);
+
+      if (isPengusul) {
+        const kakFile = document.getElementById('kakFile');
+        const btnResubmitKak = document.getElementById('btnResubmitKak');
+        if (kakFile && btnResubmitKak) {
+          kakFile.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+              btnResubmitKak.style.display = 'block';
+            } else {
+              btnResubmitKak.style.display = 'none';
+            }
+          });
+        }
+      }
     }
   
   function updateMainStepDisplay() {
@@ -972,16 +1046,35 @@ export function renderRevisiKakPage(path, userRole) {
       const fieldKey = btn.getAttribute('data-field');
       const fieldLabel = btn.getAttribute('data-label');
       currentCommentTarget = { type: 'field', key: toSnakeCase(fieldKey) };
-  
+      const commentText = fieldComments[currentCommentTarget.key] || '';
+
+      const fieldCommentInputContainer = document.getElementById('fieldCommentInputContainer');
+      const fieldCommentInput = document.getElementById('fieldCommentInput');
+      const fieldCommentDisplayContainer = document.getElementById('fieldCommentDisplayContainer');
+      const fieldCommentDisplayText = document.getElementById('fieldCommentDisplayText');
+      const fieldCommentLabelEl = document.getElementById('fieldCommentLabel');
+      const currentFieldValueEl = document.getElementById('currentFieldValue');
+
+      fieldCommentLabelEl.textContent = fieldLabel;
       const input = btn.closest('.input-with-comment').querySelector('input, textarea');
-      document.getElementById('fieldCommentLabel').textContent = fieldLabel;
-      document.getElementById('currentFieldValue').textContent = (input ? input.value : '') || '(Kosong)';
-      document.getElementById('fieldCommentInput').value = fieldComments[currentCommentTarget.key] || '';
-  
+      currentFieldValueEl.textContent = (input ? input.value : '') || '(Kosong)';
+
+      if (isVerifikator) {
+        fieldCommentInputContainer.style.display = 'block';
+        fieldCommentDisplayContainer.style.display = 'none';
+        fieldCommentInput.value = commentText;
+      } else if (isPengusul) {
+        fieldCommentInputContainer.style.display = 'none';
+        fieldCommentDisplayContainer.style.display = 'block';
+        fieldCommentDisplayText.textContent = commentText || '(Tidak ada catatan)';
+      }
+      
       if (!fieldCommentModalInstance) {
         fieldCommentModalInstance = new bootstrap.Modal(document.getElementById('fieldCommentModal'));
       }
-      fieldCommentModalInstance.show();
+      if (isVerifikator || (isPengusul && commentText)) {
+        fieldCommentModalInstance.show();
+      }
     };
   
     window.openRowCommentModal = function(btn) {
@@ -991,19 +1084,37 @@ export function renderRevisiKakPage(path, userRole) {
           table: rowElement.dataset.rowType,
           pk: rowElement.dataset.pkValue
       };
-      
       const rowLabel = btn.getAttribute('data-label');
+      const commentText = (rowComments[currentCommentTarget.table] && rowComments[currentCommentTarget.table][currentCommentTarget.pk]) ? rowComments[currentCommentTarget.table][currentCommentTarget.pk] : '';
+
+      const rowCommentInputContainer = document.getElementById('rowCommentInputContainer');
+      const rowCommentInput = document.getElementById('rowCommentInput');
+      const rowCommentDisplayContainer = document.getElementById('rowCommentDisplayContainer');
+      const rowCommentDisplayText = document.getElementById('rowCommentDisplayText');
+      const rowCommentLabelEl = document.getElementById('rowCommentLabel');
+      const currentRowValueEl = document.getElementById('currentRowValue');
+
+      rowCommentLabelEl.textContent = rowLabel;
       const inputs = rowElement.querySelectorAll('input, textarea, select');
       let rowValues = Array.from(inputs).map(input => input.value).filter(Boolean);
-      
-      document.getElementById('rowCommentLabel').textContent = rowLabel;
-      document.getElementById('currentRowValue').textContent = rowValues.join(' | ') || '(Kosong)';
-      document.getElementById('rowCommentInput').value = (rowComments[currentCommentTarget.table] && rowComments[currentCommentTarget.table][currentCommentTarget.pk]) ? rowComments[currentCommentTarget.table][currentCommentTarget.pk] : '';
+      currentRowValueEl.textContent = rowValues.join(' | ') || '(Kosong)';
+
+      if (isVerifikator) {
+        rowCommentInputContainer.style.display = 'block';
+        rowCommentDisplayContainer.style.display = 'none';
+        rowCommentInput.value = commentText;
+      } else if (isPengusul) {
+        rowCommentInputContainer.style.display = 'none';
+        rowCommentDisplayContainer.style.display = 'block';
+        rowCommentDisplayText.textContent = commentText || '(Tidak ada catatan)';
+      }
   
       if (!rowCommentModalInstance) {
         rowCommentModalInstance = new bootstrap.Modal(document.getElementById('rowCommentModal'));
       }
-      rowCommentModalInstance.show();
+      if (isVerifikator || (isPengusul && commentText)) {
+        rowCommentModalInstance.show();
+      }
     };
   
     window.saveFieldComment = function() {
@@ -1112,6 +1223,51 @@ export function renderRevisiKakPage(path, userRole) {
   
           } catch (error) {
               Swal.fire('Gagal Mengirim', error.message, 'error');
+          }
+        }
+      });
+    };
+  
+    window.resubmitKak = async function() {
+      const kakFile = document.getElementById('kakFile');
+      if (!kakFile || !kakFile.files || kakFile.files.length === 0) {
+        Swal.fire('Error', 'Harap pilih file KAK revisi untuk diunggah.', 'error');
+        return;
+      }
+
+      const file = kakFile.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+
+      Swal.fire({
+        title: 'Kirim Ulang KAK?',
+        text: `Anda akan mengunggah file '${file.name}' sebagai revisi KAK.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#00BCD4',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Ya, Kirim Ulang',
+        cancelButtonText: 'Batal'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+              await apiRequest(`/kak/${usulanId}/resubmit`, {
+                  method: 'POST',
+                  body: formData
+              });
+  
+              await Swal.fire({
+                  icon: 'success',
+                  title: 'Berhasil!',
+                  text: 'KAK revisi berhasil diunggah dan dikirim ulang.',
+                  timer: 2000,
+                  showConfirmButton: false
+              });
+              
+              window.location.hash = '#/pengusul/dashboard';
+  
+          } catch (error) {
+              Swal.fire('Gagal Mengunggah', error.message, 'error');
           }
         }
       });

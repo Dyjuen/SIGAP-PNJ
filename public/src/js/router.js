@@ -16,7 +16,7 @@ import { renderMonitoringUsulanPage } from "./pages/Pengusul/MonitoringUsulan.js
 import { renderPengajuanLpjPage } from "./pages/Pengusul/PengajuanLpj.js";
 import { renderInputLpjPage } from "./pages/Pengusul/InputLpj.js";
 import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
-import { renderRevisiKakPage } from "./pages/Verifikator/RevisiKak.js";
+import { renderRevisiKakPage } from "./pages/shared/RevisiKak.js";
 import { renderMonitoringKegiatanPage } from "./pages/shared/MonitoringKegiatan.js";
 import { renderRiwayatKAKPage } from "./pages/Pengusul/RiwayatKAK.js";
 
@@ -52,6 +52,7 @@ const roleBasedRoutes = {
     "/pengajuan-lpj": renderPengajuanLpjPage,
     "/input-lpj": renderInputLpjPage,
     "/riwayat-kak": renderRiwayatKAKPage,
+    "/revisi-kak/": renderRevisiKakPage,
     "/pengaturan": renderNotFoundPage,
   },
   Verifikator: {
