@@ -261,6 +261,7 @@ class Kegiatan extends Model
             'status' => $data['status'],
             'catatan' => $data['catatan']
         ]);
+    }
     public function activateLpjApproval(int $kegiatanId): bool
     {
         $sql = "UPDATE t_kegiatan_approval 
