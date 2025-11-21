@@ -106,31 +106,23 @@ export function renderUsulanKakPage(path, userRole) {
                 <div class="step-content" id="penerima-manfaat">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Penerima Manfaat</h4>
                   
-                  <div class="mb-8">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-                    <div id="sasaranUtamaContainer">
-                      <div class="flex gap-4 items-start mb-4">
-                        <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                        <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-                          <span class="text-xl font-bold">−</span>
-                        </button>
+                  <div id="penerimaManfaatContainer">
+                    <!-- Dynamic rows will be inserted here -->
+                    <div class="penerima-manfaat-item flex gap-4 items-start mb-4">
+                      <div class="flex-1">
+                        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
+                        <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran">
                       </div>
-                    </div>
-                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addSasaranUtama()">Tambah</button>
-                  </div>
-
-                  <div class="mb-8">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
-                    <div id="manfaatContainer">
-                      <div class="flex gap-4 items-start mb-4">
-                        <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                        <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-                          <span class="text-xl font-bold">−</span>
-                        </button>
+                      <div class="flex-1">
+                        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
+                        <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat">
                       </div>
+                      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+                        <span class="text-xl font-bold">−</span>
+                      </button>
                     </div>
-                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addManfaat()">Tambah</button>
                   </div>
+                  <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addPenerimaManfaat()">Tambah Penerima Manfaat</button>
                 </div>
 
                 <!-- Step 3: Strategi Pencapaian -->
@@ -278,7 +270,7 @@ export function renderUsulanKakPage(path, userRole) {
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
             <div id="belanjaBarangContainer">
               <div class="belanja-barang-item mb-8 p-6 rounded-lg">
-                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -311,6 +303,22 @@ export function renderUsulanKakPage(path, userRole) {
                   </div>
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Input</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+                    <div class="relative">
+                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
                     <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
                       <option value="">Input</option>
                     </select>
@@ -335,7 +343,7 @@ export function renderUsulanKakPage(path, userRole) {
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
             <div id="belanjaJasaContainer">
               <div class="belanja-jasa-item mb-8 p-6 rounded-lg">
-                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -373,8 +381,24 @@ export function renderUsulanKakPage(path, userRole) {
                     </select>
                   </div>
                   <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+                    <div class="relative">
+                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Input</option>
+                    </select>
+                  </div>
+                  <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 44px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
                   </div>
                   <div class="flex items-end pb-3">
                     <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaJasaContainer')">
@@ -392,7 +416,7 @@ export function renderUsulanKakPage(path, userRole) {
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
             <div id="belanjaPerjalananContainer">
               <div class="belanja-perjalanan-item mb-8 p-6 rounded-lg">
-                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -425,6 +449,22 @@ export function renderUsulanKakPage(path, userRole) {
                   </div>
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Input</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+                    <div class="relative">
+                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
                     <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
                       <option value="">Input</option>
                     </select>
@@ -657,6 +697,7 @@ export function renderUsulanKakPage(path, userRole) {
   }
   if (typeof showError !== 'function') {
       window.showError = function(message) {
+          console.error("Detailed Error Object:", error); // <-- Add this line for debugging
           alert('Error: ' + message);
       }
   }
@@ -690,16 +731,15 @@ export function renderUsulanKakPage(path, userRole) {
 
   
     } else if (step === 2) { // Penerima Manfaat
-        const sasaranInputs = document.querySelectorAll('#sasaranUtamaContainer input');
-        sasaranInputs.forEach(input => {
-            if (!input.value) addError(input, 'Sasaran Utama wajib diisi.');
+        const penerimaRows = document.querySelectorAll('#penerimaManfaatContainer .penerima-manfaat-item');
+        penerimaRows.forEach(row => {
+            const sasaranInput = row.querySelector('.sasaran-utama-input');
+            const manfaatInput = row.querySelector('.manfaat-input');
+            if (!sasaranInput.value) addError(sasaranInput, 'Sasaran Utama wajib diisi.');
+            if (!manfaatInput.value) addError(manfaatInput, 'Manfaat wajib diisi.');
         });
-        const manfaatInputs = document.querySelectorAll('#manfaatContainer input');
-        manfaatInputs.forEach(input => {
-            if (!input.value) addError(input, 'Manfaat wajib diisi.');
-        });
-        if (sasaranInputs.length === 0) {
-            showError('Harap tambahkan setidaknya satu Sasaran Utama.');
+        if (penerimaRows.length === 0) {
+            showError('Harap tambahkan setidaknya satu Penerima Manfaat.');
             isValid = false;
         }
     } else if (step === 3) { // Strategi Pencapaian
@@ -805,13 +845,19 @@ export function renderUsulanKakPage(path, userRole) {
             const uraian = inputs[0];
             const qty1 = inputs[1];
             const satuan1 = inputs[2];
-            const harga = inputs[5];
+            const qty2 = inputs[3];
+            const satuan2 = inputs[4];
+            const qty3 = inputs[5];
+            const satuan3 = inputs[6];
+            const harga = inputs[7];
 
             // Only validate if any field in the row is filled
-            if (uraian.value || qty1.value !== '1' || satuan1.value || inputs[3].value !== '1' || inputs[4].value || harga.value) {
+            if (uraian.value || qty1.value !== '1' || satuan1.value || qty2.value !== '1' || satuan2.value || qty3.value !== '1' || satuan3.value || harga.value) {
               if (!uraian.value) addError(uraian, 'Uraian wajib diisi.');
               if (!qty1.value) addError(qty1, 'Qty 1 wajib diisi.');
               if (!satuan1.value) addError(satuan1, 'Satuan 1 wajib dipilih.');
+              // Qty 2 and Satuan 2 are optional based on existing UI, so no strict validation
+              // Qty 3 and Satuan 3 are optional based on existing UI, so no strict validation
               if (!harga.value) addError(harga, 'Harga Satuan wajib diisi.');
             }
         });
@@ -866,7 +912,7 @@ export function renderUsulanKakPage(path, userRole) {
   // Update Main Progress Step Display
   function updateMainStepDisplay() {
     const iconsForSteps = {
-      1: { class: "ti ti-file-text", entity: "&#xf7cd;" }, // KAK
+      1: { class: "ti ti-file-text", entity: "&#xef40;" }, // KAK
       2: { class: "ti ti-chart-bar", entity: "&#xea59;" }, // IKU & RENSTRA
       3: { class: "ti ti-currency-dollar", entity: "&#xeb84;" }, // RAB
     };
@@ -950,10 +996,10 @@ export function renderUsulanKakPage(path, userRole) {
       const response = await fetch(`/api${endpoint}`, config);
       const data = await response.json();
       if (!response.ok) {
-        // Check for successful HTTP status code
-        throw new Error(
-          data.message || `API request failed with status ${response.status}`
-        );
+        // Create a custom error object to include detailed errors
+        const error = new Error(data.message || `API request failed with status ${response.status}`);
+        error.details = data.errors || null; // Attach detailed errors
+        throw error;
       }
       return data;
     } catch (error) {
@@ -994,18 +1040,7 @@ export function renderUsulanKakPage(path, userRole) {
     }
   }
 
-  // Helper to combine separate sasaran and manfaat lists into one for backend
-  function combineSasaranManfaat(sasaranArray, manfaatArray) {
-    const combined = [];
-    const maxLength = Math.max(sasaranArray.length, manfaatArray.length);
-    for (let i = 0; i < maxLength; i++) {
-      combined.push({
-        sasaran_utama: sasaranArray[i] || "",
-        manfaat: manfaatArray[i] || "",
-      });
-    }
-    return combined;
-  }
+
 
   // Populate IKU dropdowns from API
   async function populateIkuDropdowns() {
@@ -1075,24 +1110,25 @@ export function renderUsulanKakPage(path, userRole) {
     };
 
     // Helper function to get values from complex dynamic rows for t_kak_target
-    const getTargetData = () => {
-      const container = document.getElementById("indikatorKinerjaContainer");
-      if (!container) return [];
-      const rows = container.querySelectorAll(".flex.items-end.gap-4");
-      return Array.from(rows)
-        .map((row) => ({
-          bulan_indikator: row.children[0].querySelector("input").value,
-          deskripsi_target: row.children[1].querySelector("input").value,
-          persentase_target:
-            parseFloat(row.children[2].querySelector("input").value) || 0,
-        }))
-        .filter(
-          (item) =>
-            item.bulan_indikator ||
-            item.deskripsi_target ||
-            item.persentase_target
-        );
-    };
+const getTargetData = () => {
+  const container = document.getElementById("indikatorKinerjaContainer");
+  if (!container) return [];
+  const rows = container.querySelectorAll(".flex.items-end.gap-4.mb-6");  // tambah .mb-6
+  return Array.from(rows)
+    .map((row) => {
+      const inputs = row.querySelectorAll("input");
+      return {
+        bulan_indikator: inputs[0]?.value || "",
+        deskripsi_target: inputs[1]?.value || "",
+        persentase_target: parseFloat(inputs[2]?.value) || 100,  // default 100
+      };
+    })
+    .filter(
+      (item) =>
+        item.bulan_indikator ||
+        item.deskripsi_target
+    );
+};
 
     const getIkuRenstraData = () => {
       const container = document.getElementById("ikuRenstraContainer");
@@ -1117,10 +1153,12 @@ export function renderUsulanKakPage(path, userRole) {
           return {
             uraian: inputs[0].value,
             volume1: parseInt(inputs[1].value) || 1,
-            satuan1_id: parseInt(inputs[2].value) || null, // Directly get satuan_id from select value
+            satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
             volume2: parseInt(inputs[3].value) || 1,
-            satuan2_id: parseInt(inputs[4].value) || null, // Directly get satuan_id from select value
-            harga_satuan: parseFloat(inputs[5].value) || 0,
+            satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
+            volume3: parseInt(inputs[5].value) || 1,
+            satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
+            harga_satuan: parseFloat(inputs[7].value) || 0,
           };
         })
         .filter((item) => item.uraian || item.harga_satuan);
@@ -1156,7 +1194,11 @@ export function renderUsulanKakPage(path, userRole) {
         lokasi: "PNJ Depok",
 
         // Assembled penerima_manfaat
-        penerima_manfaat: combineSasaranManfaat(sasaranUtamaList, manfaatList),
+        penerima_manfaat: Array.from(document.querySelectorAll('#penerimaManfaatContainer .penerima-manfaat-item')).map(row => ({
+          sasaran_utama: row.querySelector('.sasaran-utama-input').value,
+          manfaat: row.querySelector('.manfaat-input').value,
+        })).filter(item => item.sasaran_utama || item.manfaat),
+
 
         // Transformed tahapan_pelaksanaan
         tahapan_pelaksanaan: getDynamicListValues(
@@ -1338,54 +1380,24 @@ export function renderUsulanKakPage(path, userRole) {
     }
   };
 
-  window.addSasaranUtama = function () {
-    const container = document.getElementById("sasaranUtamaContainer");
-
-    // Save current values
-    const currentValues = Array.from(container.querySelectorAll("input")).map(input => input.value);
-
+  window.addPenerimaManfaat = function () {
+    const container = document.getElementById("penerimaManfaatContainer");
     const newItem = document.createElement("div");
-    newItem.className = "flex gap-4 items-start mb-4";
+    newItem.className = "penerima-manfaat-item flex gap-4 items-start mb-4";
     newItem.innerHTML = `
-      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
+      <div class="flex-1">
+        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
+        <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran">
+      </div>
+      <div class="flex-1">
+        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
+        <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat">
+      </div>
+      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
       </button>
     `;
     container.appendChild(newItem);
-
-    // Restore old values
-    const inputs = container.querySelectorAll("input");
-    currentValues.forEach((value, index) => {
-        if (inputs[index]) {
-            inputs[index].value = value;
-        }
-    });
-  };
-
-  window.addManfaat = function () {
-    const container = document.getElementById("manfaatContainer");
-
-    // Save current values
-    const currentValues = Array.from(container.querySelectorAll("input")).map(input => input.value);
-
-    const newItem = document.createElement("div");
-    newItem.className = "flex gap-4 items-start mb-4";
-    newItem.innerHTML = `
-      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-        <span class="text-xl font-bold">−</span>
-      </button>
-    `;
-    container.appendChild(newItem);
-
-    // Restore old values
-    const inputs = container.querySelectorAll("input");
-    currentValues.forEach((value, index) => {
-        if (inputs[index]) {
-            inputs[index].value = value;
-        }
-    });
   };
 
   window.addTahapanPelaksanaan = function () {
@@ -1564,7 +1576,7 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.className = "belanja-barang-item mb-8 p-6 rounded-lg";
     // Construct innerHTML dynamically for select elements
     newItem.innerHTML = `
-      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -1597,6 +1609,22 @@ export function renderUsulanKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+          <div class="relative">
+            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
             <option value="">Input</option>
           </select>
@@ -1636,7 +1664,7 @@ export function renderUsulanKakPage(path, userRole) {
     const newItem = document.createElement("div");
     newItem.className = "belanja-jasa-item mb-8 p-6 rounded-lg";
     newItem.innerHTML = `
-      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -1669,6 +1697,22 @@ export function renderUsulanKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+          <div class="relative">
+            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
             <option value="">Input</option>
           </select>
@@ -1693,7 +1737,7 @@ export function renderUsulanKakPage(path, userRole) {
     const newItem = document.createElement("div");
     newItem.className = "belanja-perjalanan-item mb-8 p-6 rounded-lg";
     newItem.innerHTML = `
-      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -1726,6 +1770,22 @@ export function renderUsulanKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+          <div class="relative">
+            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
             <option value="">Input</option>
           </select>
@@ -1763,30 +1823,28 @@ export function renderUsulanKakPage(path, userRole) {
 
       // Populate Step 2: Penerima Manfaat
       if (kakData.manfaat && kakData.manfaat.length > 0) {
-        const sasaranContainer = document.getElementById(
-          "sasaranUtamaContainer"
-        );
-        const manfaatContainer = document.getElementById("manfaatContainer");
+        const penerimaManfaatContainer = document.getElementById("penerimaManfaatContainer");
 
         // Clear existing fields
-        sasaranContainer.innerHTML = "";
-        manfaatContainer.innerHTML = "";
+        penerimaManfaatContainer.innerHTML = "";
 
-        kakData.manfaat.forEach((item, index) => {
-          // Add sasaran utama field
-          if (item.sasaran_utama) {
-            const sasaranDiv = createDynamicField(
-              item.sasaran_utama,
-              "removeField"
-            );
-            sasaranContainer.appendChild(sasaranDiv);
-          }
-
-          // Add manfaat field
-          if (item.manfaat) {
-            const manfaatDiv = createDynamicField(item.manfaat, "removeField");
-            manfaatContainer.appendChild(manfaatDiv);
-          }
+        kakData.manfaat.forEach((item) => {
+          const newItem = document.createElement("div");
+          newItem.className = "penerima-manfaat-item flex gap-4 items-start mb-4";
+          newItem.innerHTML = `
+            <div class="flex-1">
+              <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
+              <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran" value="${item.sasaran_utama || ''}">
+            </div>
+            <div class="flex-1">
+              <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
+              <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat" value="${item.manfaat || ''}">
+            </div>
+            <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+              <span class="text-xl font-bold">−</span>
+            </button>
+          `;
+          penerimaManfaatContainer.appendChild(newItem);
         });
       }
 
@@ -1875,6 +1933,8 @@ export function renderUsulanKakPage(path, userRole) {
             item.satuan1_id || "",
             item.volume2 || 1,
             item.satuan2_id || "",
+            item.volume3 || 1,
+            item.satuan3_id || "",
             item.harga_satuan || 0
           );
           document
@@ -1997,11 +2057,11 @@ export function renderUsulanKakPage(path, userRole) {
     return div;
   }
 
-  function createAnggaranField(uraian, vol1, sat1, vol2, sat2, harga) {
+  function createAnggaranField(uraian, vol1, sat1, vol2, sat2, vol3, sat3, harga) {
     const div = document.createElement("div");
     div.className = "belanja-barang-item mb-8 p-6 rounded-lg";
     div.innerHTML = `
-      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end">
+      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" value="${uraian}">
@@ -2039,6 +2099,22 @@ export function renderUsulanKakPage(path, userRole) {
           </select>
         </div>
         <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+          <div class="relative">
+            <input type="number" min="1" value="${vol3}" class="w-full px-4 py-3 border-2 rounded-lg text-sm">
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
+              <button type="button" onclick="incrementValue(this, 1)">▲</button>
+              <button type="button" onclick="decrementValue(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select">
+            <option value="">Input</option>
+          </select>
+        </div>
+        <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" value="${harga}">
         </div>
@@ -2053,6 +2129,7 @@ export function renderUsulanKakPage(path, userRole) {
       const selects = div.querySelectorAll("select");
       if (selects[0] && sat1) selects[0].value = sat1;
       if (selects[1] && sat2) selects[1].value = sat2;
+      if (selects[2] && sat3) selects[2].value = sat3;
     }, 100);
 
     return div;
@@ -2117,11 +2194,38 @@ export function renderUsulanKakPage(path, userRole) {
         setTimeout(() => {
             window.location.pathname = "/pengusul/monitoring-usulan";
         }, 1500);
-      } catch (error) {
-        showError(`Error: ${error.message}`);
-        btnSubmitRab.disabled = false;
-        btnSubmitRab.innerHTML = "Submit";
+} catch (error) {
+  let errorMessage = `Error: ${error.message}`;
+  if (error.details) {
+    errorMessage += "\n\nRincian Validasi:";
+    const formatErrors = (errors, indent = 0) => {
+      let detailMessage = '';
+      const prefix = '  '.repeat(indent);
+      for (const field in errors) {
+        const value = errors[field];
+        if (Array.isArray(value)) {
+          // Array of error messages
+          detailMessage += `${prefix}- ${field}: ${value.join(', ')}\n`;
+        } else if (typeof value === 'object' && value !== null) {
+          // Nested object - recurse
+          detailMessage += `${prefix}- ${field}:\n`;
+          detailMessage += formatErrors(value, indent + 1);
+        } else if (typeof value === 'string') {
+          // Single string message
+          detailMessage += `${prefix}- ${field}: ${value}\n`;
+        } else {
+          // Fallback: convert to string
+          detailMessage += `${prefix}- ${field}: ${JSON.stringify(value)}\n`;
+        }
       }
+      return detailMessage;
+    };
+    errorMessage += "\n" + formatErrors(error.details);
+  }
+  showError(errorMessage);
+  btnSubmitRab.disabled = false; // <-- juga perbaiki ini, seharusnya false bukan true
+  btnSubmitRab.innerHTML = "Submit";
+}
     });
   }
 

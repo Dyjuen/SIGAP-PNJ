@@ -267,6 +267,14 @@ $router->get('/dashboard/lpj', 'DashboardController@getLpj');
 $router->get('/dashboard/template', 'DashboardController@getTemplates');
 $router->get('/dashboard/video', 'DashboardController@getVideos');
 
+// ============================================
+// WADIR & REKTORAT ROUTES (Read-only)
+// ============================================
+$router->get('/wadir/summary', 'WadirController@getSummary', [new AuthMiddleware(), new RoleMiddleware(['Rektorat', 'PPK', 'Wadir'])]);
+$router->get('/wadir/kak', 'WadirController@getAllKak', [new AuthMiddleware(), new RoleMiddleware(['Rektorat', 'PPK', 'Wadir'])]);
+$router->get('/wadir/kegiatan', 'WadirController@getAllKegiatan', [new AuthMiddleware(), new RoleMiddleware(['Rektorat', 'PPK', 'Wadir'])]);
+$router->get('/wadir/pencairan', 'WadirController@getAllPencairan', [new AuthMiddleware(), new RoleMiddleware(['Rektorat', 'PPK', 'Wadir'])]);
+
 // =====================================================
 // 11. DISPATCH ROUTER & HANDLE 404
 // =====================================================

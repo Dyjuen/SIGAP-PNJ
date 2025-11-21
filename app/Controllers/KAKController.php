@@ -476,10 +476,7 @@ class KAKController
             // Re-insert data (same logic as store method)
             if (!empty($k['penerima_manfaat'])) {
                 foreach ($k['penerima_manfaat'] as $m) {
-                    $this->db->query("
-                        INSERT INTO t_kak_manfaat (kak_id, manfaat, sasaran_utama)
-                        VALUES (:id, :m, :sas)
-                    ");
+                    $this->db->query("INSERT INTO t_kak_manfaat (kak_id, manfaat, sasaran_utama) VALUES (:id, :m, :sas)");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':m', $m['manfaat']);
                     $this->db->bind(':sas', $m['sasaran_utama']);
@@ -489,10 +486,7 @@ class KAKController
         
             if (!empty($k['tahapan_pelaksanaan'])) {
                 foreach ($k['tahapan_pelaksanaan'] as $t) {
-                    $this->db->query("
-                        INSERT INTO t_kak_tahapan (kak_id, nama_tahapan, urutan)
-                        VALUES (:id, :nama, :urut)
-                    ");
+                    $this->db->query("INSERT INTO t_kak_tahapan (kak_id, nama_tahapan, urutan) VALUES (:id, :nama, :urut)");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':nama', $t['nama_tahapan']);
                     $this->db->bind(':urut', $t['urutan']);
@@ -502,11 +496,7 @@ class KAKController
         
             if (!empty($k['indikator_kinerja'])) {
                 foreach ($k['indikator_kinerja'] as $i) {
-                    $this->db->query("
-                        INSERT INTO t_kak_target
-                        (kak_id, bulan_indikator, deskripsi_target, persentase_target)
-                        VALUES (:id, :bulan, :desk, :p)
-                    ");
+                    $this->db->query("INSERT INTO t_kak_target (kak_id, bulan_indikator, deskripsi_target, persentase_target) VALUES (:id, :bulan, :desk, :p)");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':bulan', $i['bulan_indikator']);
                     $this->db->bind(':desk', $i['deskripsi_target']);
@@ -517,10 +507,7 @@ class KAKController
         
             if (!empty($input['target_iku'])) {
                 foreach ($input['target_iku'] as $iku) {
-                    $this->db->query("
-                        INSERT INTO t_kak_iku (kak_id, iku_id, persentase_target)
-                        VALUES (:id, :iku, :p)
-                    ");
+                    $this->db->query("INSERT INTO t_kak_iku (kak_id, iku_id, persentase_target) VALUES (:id, :iku, :p)");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':iku', $iku['iku_id']);
                     $this->db->bind(':p', $iku['persentase_target']);
@@ -536,11 +523,7 @@ class KAKController
                     $harga = (float)($r['harga_satuan'] ?? 0);
                     $jumlah = $v1 * $v2 * $v3 * $harga;
 
-                    $this->db->query("
-                        INSERT INTO t_kak_anggaran
-                        (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
-                        VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, NULL)
-                    ");
+                    $this->db->query("INSERT INTO t_kak_anggaran (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, catatan_verifikator) VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, NULL)");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':u', $r['uraian']);
                     $this->db->bind(':v1', $v1);
@@ -1107,8 +1090,8 @@ class KAKController
         
             foreach ($childTables as $table) {
                 $db->query("DELETE FROM $table WHERE kak_id = :id");
-                $db->bind(':id', $id);
-                $db->execute();
+                $this->db->bind(':id', $id);
+                $this->db->execute();
             }
 
             $db->query("DELETE FROM t_kak WHERE kak_id = :id");

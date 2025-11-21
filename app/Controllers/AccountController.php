@@ -43,6 +43,22 @@ class AccountController
     }
 
     /**
+     * Get all user profiles (Admin only)
+     *
+     * GET /api/admin/users
+     * Header: Authorization: Bearer <token>
+     */
+    public function getAllProfiles()
+    {
+        try {
+            $users = $this->userModel->getAllUsersWithRoles();
+            Response::success($users, 'Semua data profile berhasil diambil.');
+        } catch (\Exception $e) {
+            Response::serverError('Gagal mengambil data profiles: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Update user profile by ID (Admin only)
      * 
      * PUT /api/admin/users/{id}
