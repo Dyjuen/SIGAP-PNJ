@@ -200,6 +200,7 @@ export function renderPengusulDashboardPage(path, userRole) {
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         opacity: 0;
         animation: fadeInUp 0.6s ease-out forwards;
+        position: relative;
       }
 
       .card:nth-child(1) { animation-delay: 0.1s; }
@@ -208,12 +209,20 @@ export function renderPengusulDashboardPage(path, userRole) {
       .card:nth-child(4) { animation-delay: 0.4s; }
 
       .card:hover {
-        transform: translateY(-8px);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 32px rgba(0, 188, 212, 0.4);
       }
 
       .stat-card-active {
         position: relative;
-        overflow: hidden;
+        overflow: visible;
+        opacity: 0;
+        animation: fadeInUp 0.6s ease-out forwards;
+        animation-delay: 0.1s;
+      }
+
+      .stat-card-active:hover {
+        box-shadow: 0 15px 40px rgba(0, 188, 212, 0.5);
       }
 
       .stat-card-active::after {
@@ -227,6 +236,7 @@ export function renderPengusulDashboardPage(path, userRole) {
         animation: shimmer 3s infinite;
         pointer-events: none;
         z-index: 0;
+        animation-delay: 0.7s;
       }
 
       .stat-card-active .card-body {
@@ -234,8 +244,28 @@ export function renderPengusulDashboardPage(path, userRole) {
         z-index: 1;
       }
 
-      .stat-card-active:hover {
-        animation: glow 2s ease-in-out infinite;
+      .stat-card-inactive {
+        position: relative;
+        overflow: visible;
+        opacity: 0;
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+
+      .stat-card-inactive:nth-of-type(2) {
+        animation-delay: 0.2s;
+      }
+
+      .stat-card-inactive:nth-of-type(3) {
+        animation-delay: 0.3s;
+      }
+
+      .stat-card-inactive:hover {
+        box-shadow: 0 15px 40px rgba(0, 188, 212, 0.5);
+      }
+
+      .stat-card-inactive .card-body {
+        position: relative;
+        z-index: 1;
       }
 
       /* Number Counter Animation */
@@ -387,17 +417,17 @@ export function renderPengusulDashboardPage(path, userRole) {
       }
 
       /* Smooth transitions for all interactive elements */
-      * {
+      .pengusul-dashboard-page * {
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       /* Hover effects for links */
-      a {
+      .pengusul-dashboard-page a {
         position: relative;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      a::after {
+      .pengusul-dashboard-page a::after {
         content: '';
         position: absolute;
         bottom: -2px;
@@ -408,7 +438,7 @@ export function renderPengusulDashboardPage(path, userRole) {
         transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      a:hover::after {
+      .pengusul-dashboard-page a:hover::after {
         width: 100%;
       }
 
