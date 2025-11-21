@@ -58,7 +58,7 @@ const roleBasedRoutes = {
     "/monitoring-usulan": renderDashboardVerifikator,
     "/riwayat": renderNotFoundPage,
     "/pengaturan": renderNotFoundPage,
-    "/revisi-kak": renderRevisiKakPage,
+    "/revisi-kak/": renderRevisiKakPage,
   },
   Wadir: {
     "/dashboard": renderWadirDashboardPage,

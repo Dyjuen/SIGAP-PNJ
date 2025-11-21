@@ -255,6 +255,9 @@ export function renderLoginPage() {
         const user = response.data.user;
         const roles = user.roles || [];
 
+        // Save the token to localStorage
+        localStorage.setItem("token", response.data.token);
+
         // Store the user's primary role in localStorage
         if (roles.length > 0) {
           const primaryRole = roles[0];

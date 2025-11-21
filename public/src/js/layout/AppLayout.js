@@ -204,6 +204,40 @@ export function renderDashboardLayout(content, userRole) {
 
   // Fallback for the main mobile toggle if the full script isn't available
   initializeMenuToggle();
+
+  // Add logout event listener
+  const logoutBtn = document.getElementById("logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async function (e) {
+      e.preventDefault();
+
+      const token = localStorage.getItem("token");
+
+      try {
+        const response = await fetch("/api/auth/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok || response.status === 401) {
+          // Also clear if token is invalid/expired
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        } else {
+          console.error("Logout failed:", await response.json());
+          // Optionally, show an error message to the user
+        }
+      } catch (error) {
+        console.error("An error occurred during logout:", error);
+        // Clear token and redirect on network errors as well
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+    });
+  }
 }
 
 function initializeSidebar() {

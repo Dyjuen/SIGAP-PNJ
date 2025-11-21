@@ -1145,4 +1145,12 @@
               </a>
             </li>
           </ul>
+          <ul class="menu-inner py-1">
+            <li class="menu-item">
+              <a href="#" id="logout-btn" class="menu-link">
+                <i class="menu-icon icon-base ti tabler-logout"></i>
+                <div data-i18n="Logout">Logout</div>
+              </a>
+            </li>
+          </ul>
         </aside>

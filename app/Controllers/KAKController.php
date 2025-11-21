@@ -657,8 +657,8 @@ class KAKController
 
             if (!$data) Response::notFound("Data KAK tidak ditemukan.");
 
-            if ($data['status_id'] != 2)
-                Response::error("Hanya KAK berstatus 'Dalam Review' yang bisa direvisi.", 400);
+            if (!in_array($data['status_id'], [2, 5]))
+                Response::error("Hanya KAK berstatus 'Dalam Review' atau 'Revisi' yang bisa direvisi.", 400);
 
             $input = json_decode(file_get_contents("php://input"), true);
             if (!$input) Response::badRequest("Input JSON tidak valid.");

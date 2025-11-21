@@ -5,7 +5,7 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 const READONLY_ATTR = 'readonly disabled';
 const READONLY_STYLE = 'border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default;';
 
-export function renderRevisiKakPage(usulanId, userRole) {
+export function renderRevisiKakPage(path, userRole) {
   const pageContent = `
     <style>
       /* Comment button styling */
@@ -361,7 +361,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Pengusul Kegiatan</label>
                     <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Nama Pengusul (Contoh Data)" data-field="pengusul">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="" data-field="pengusul">
                       <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="pengusul" data-label="Pengusul Kegiatan">
                         <i class="ti ti-message-circle-2">&#xeaed;</i>
                       </button>
@@ -371,7 +371,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nama Kegiatan</label>
                     <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Kegiatan Uji Coba (Contoh Data)" data-field="namaKegiatan">
+                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="" data-field="namaKegiatan">
                       <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="namaKegiatan" data-label="Nama Kegiatan">
                         <i class="ti ti-message-circle-2">&#xeaed;</i>
                       </button>
@@ -381,7 +381,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Gambaran Umum Kegiatan</label>
                     <div class="input-with-comment">
-                      <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${READONLY_STYLE}" ${READONLY_ATTR} data-field="gambaranUmum">Ini adalah deskripsi panjang dari gambaran umum kegiatan. (Contoh Data)</textarea>
+                      <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${READONLY_STYLE}" ${READONLY_ATTR} data-field="gambaranUmum"></textarea>
                       <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="gambaranUmum" data-label="Gambaran Umum Kegiatan">
                         <i class="ti ti-message-circle-2">&#xeaed;</i>
                       </button>
@@ -396,36 +396,14 @@ export function renderRevisiKakPage(usulanId, userRole) {
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
                     <div id="sasaranUtamaContainer">
-                      <div class="row-with-comment" data-row="sasaran-0">
-                        <div class="input-with-comment" style="padding-right: 60px;">
-                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Mahasiswa Baru (Contoh Data)" data-field="sasaran-0">
-                        </div>
-                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="sasaran-0" data-label="Sasaran Utama #1">
-                          <i class="ti ti-message-circle-2">&#xeaed;</i>
-                        </button>
-                      </div>
-                      <div class="row-with-comment" data-row="sasaran-1">
-                        <div class="input-with-comment" style="padding-right: 60px;">
-                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Dosen Pembimbing (Contoh Data)" data-field="sasaran-1">
-                        </div>
-                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="sasaran-1" data-label="Sasaran Utama #2">
-                          <i class="ti ti-message-circle-2">&#xeaed;</i>
-                        </button>
-                      </div>
+                      <!-- Dynamic content will be injected here -->
                     </div>
                   </div>
 
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
                     <div id="manfaatContainer">
-                      <div class="row-with-comment" data-row="manfaat-0">
-                        <div class="input-with-comment" style="padding-right: 60px;">
-                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Meningkatkan IPK (Contoh Data)" data-field="manfaat-0">
-                        </div>
-                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="manfaat-0" data-label="Manfaat #1">
-                          <i class="ti ti-message-circle-2">&#xeaed;</i>
-                        </button>
-                      </div>
+                      <!-- Dynamic content will be injected here -->
                     </div>
                   </div>
                 </div>
@@ -437,7 +415,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Metode Pelaksanaan</label>
                     <div class="input-with-comment">
-                      <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${READONLY_STYLE}" ${READONLY_ATTR} data-field="metodePelaksanaan">Dilaksanakan secara daring melalui Zoom dan luring di gedung serbaguna. (Contoh Data)</textarea>
+                      <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${READONLY_STYLE}" ${READONLY_ATTR} data-field="metodePelaksanaan"></textarea>
                       <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="metodePelaksanaan" data-label="Metode Pelaksanaan">
                         <i class="ti ti-message-circle-2">&#xeaed;</i>
                       </button>
@@ -447,22 +425,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tahapan Pelaksanaan</label>
                     <div id="tahapanPelaksanaanContainer">
-                      <div class="row-with-comment" data-row="tahapan-0">
-                        <div class="input-with-comment" style="padding-right: 60px;">
-                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Persiapan logistik (Contoh Data)" data-field="tahapan-0">
-                        </div>
-                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="tahapan-0" data-label="Tahapan Pelaksanaan #1">
-                          <i class="ti ti-message-circle-2">&#xeaed;</i>
-                        </button>
-                      </div>
-                      <div class="row-with-comment" data-row="tahapan-1">
-                        <div class="input-with-comment" style="padding-right: 60px;">
-                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Pelaksanaan inti (Contoh Data)" data-field="tahapan-1">
-                        </div>
-                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="tahapan-1" data-label="Tahapan Pelaksanaan #2">
-                          <i class="ti ti-message-circle-2">&#xeaed;</i>
-                        </button>
-                      </div>
+                      <!-- Dynamic content will be injected here -->
                     </div>
                   </div>
                 </div>
@@ -474,31 +437,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja</label>
                     <div id="indikatorKinerjaContainer">
-                      <div class="row-with-comment" data-row="indikator-0">
-                        <div class="grid grid-cols-3 gap-4" style="padding-right: 60px;">
-                          <div>
-                            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-                            <div class="input-with-comment">
-                              <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Maret" data-field="indikator-bulan-0">
-                            </div>
-                          </div>
-                          <div>
-                            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-                            <div class="input-with-comment">
-                              <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="50% peserta hadir" data-field="indikator-desc-0">
-                            </div>
-                          </div>
-                          <div>
-                            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-                            <div class="input-with-comment">
-                              <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="100 orang" data-field="indikator-target-0">
-                            </div>
-                          </div>
-                        </div>
-                        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="indikator-0" data-label="Indikator Kinerja #1">
-                          <i class="ti ti-message-circle-2">&#xeaed;</i>
-                        </button>
-                      </div>
+                      <!-- Dynamic content will be injected here -->
                     </div>
                   </div>
                 </div>
@@ -511,7 +450,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
                     <div class="mb-6">
                       <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Mulai</label>
                       <div class="input-with-comment">
-                        <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2025-03-11" data-field="tanggalMulai">
+                        <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="" data-field="tanggalMulai">
                         <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="tanggalMulai" data-label="Tanggal Mulai">
                           <i class="ti ti-message-circle-2">&#xeaed;</i>
                         </button>
@@ -520,7 +459,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
                     <div class="mb-6">
                       <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Selesai</label>
                       <div class="input-with-comment">
-                        <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2025-03-15" data-field="tanggalSelesai">
+                        <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="" data-field="tanggalSelesai">
                         <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="tanggalSelesai" data-label="Tanggal Selesai">
                           <i class="ti ti-message-circle-2">&#xeaed;</i>
                         </button>
@@ -550,30 +489,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
           <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama & Renstra</h4>
           
           <div class="mb-8" id="ikuRenstraContainer">
-            <div class="row-with-comment" data-row="iku-0">
-              <div class="grid grid-cols-2 gap-4" style="padding-right: 60px;">
-                <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-                  <div class="input-with-comment">
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} data-field="iku-0">
-                      <option value="">Indikator A (Contoh Data)</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
-                  <div class="input-with-comment">
-                    <div class="flex gap-2 items-center">
-                      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="10" data-field="iku-nilai-0">
-                      <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="iku-0" data-label="IKU & Nilai #1">
-                <i class="ti ti-message-circle-2">&#xeaed;</i>
-              </button>
-            </div>
+            <!-- Dynamic content will be injected here -->
           </div>
 
           <!-- Navigation Buttons -->
@@ -597,49 +513,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
           <div class="mb-10">
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
             <div id="belanjaBarangContainer">
-              <div class="row-with-comment" data-row="bb-0">
-                <div class="grid-rab" style="padding-right: 60px;">
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Kertas A4" data-field="bb-uraian-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="10" data-field="bb-qty1-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="rim" data-field="bb-satuan1-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="1" data-field="bb-qty2-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="kegiatan" data-field="bb-satuan2-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="50.000" data-field="bb-harga-0">
-                    </div>
-                  </div>
-                </div>
-                <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="bb-0" data-label="Belanja Barang #1">
-                  <i class="ti ti-message-circle-2">&#xeaed;</i>
-                </button>
-              </div>
+              <!-- Dynamic content will be injected here -->
             </div>
           </div>
 
@@ -647,49 +521,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
           <div class="mb-10">
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
             <div id="belanjaJasaContainer">
-              <div class="row-with-comment" data-row="bj-0">
-                <div class="grid-rab" style="padding-right: 60px;">
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Honorarium Pembicara" data-field="bj-uraian-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2" data-field="bj-qty1-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="orang" data-field="bj-satuan1-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2" data-field="bj-qty2-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="jam" data-field="bj-satuan2-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="200.000" data-field="bj-harga-0">
-                    </div>
-                  </div>
-                </div>
-                <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="bj-0" data-label="Belanja Jasa #1">
-                  <i class="ti ti-message-circle-2">&#xeaed;</i>
-                </button>
-              </div>
+              <!-- Dynamic content will be injected here -->
             </div>
           </div>
 
@@ -697,49 +529,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
           <div class="mb-10">
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
             <div id="belanjaPerjalananContainer">
-              <div class="row-with-comment" data-row="bp-0">
-                <div class="grid-rab" style="padding-right: 60px;">
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="Transport Lokal" data-field="bp-uraian-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="2" data-field="bp-qty1-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="orang" data-field="bp-satuan1-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="3" data-field="bp-qty2-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="hari" data-field="bp-satuan2-0">
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="150.000" data-field="bp-harga-0">
-                    </div>
-                  </div>
-                </div>
-                <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-row="bp-0" data-label="Belanja Perjalanan #1">
-                  <i class="ti ti-message-circle-2">&#xeaed;</i>
-                </button>
-              </div>
+              <!-- Dynamic content will be injected here -->
             </div>
           </div>
 
@@ -754,7 +544,7 @@ export function renderRevisiKakPage(usulanId, userRole) {
 
       <!-- Action Buttons (Fixed at bottom) -->
       <div class="action-buttons">
-        <button class="btn-back" onclick="window.history.back()">
+        <button class="btn-back" onclick="window.location.hash = '#/verifikator/dashboard'">
           <i class="ti ti-arrow-left">&#xea19;</i> Kembali
         </button>
         <div class="flex gap-4">
@@ -845,373 +635,454 @@ export function renderRevisiKakPage(usulanId, userRole) {
 
   renderDashboardLayout(pageContent, userRole);
 
-  // --- JavaScript Logic ---
-  let mainStep = 1;
-  let currentStep = 1;
-  const totalSteps = 5;
-  const menuItems = ['gambaran-umum', 'penerima-manfaat', 'strategi-pencapaian', 'indikator-kinerja', 'kurun-waktu'];
   
-  let fieldComments = {};
-  let rowComments = {};
-  let currentCommentField = null;
-  let currentCommentRow = null;
-  let fieldCommentModalInstance = null;
-  let rowCommentModalInstance = null;
+    // --- JavaScript Logic ---
+    const pathSegments = path.split("/").filter(Boolean);
+    const usulanId = pathSegments.length > 2 ? pathSegments[pathSegments.length - 1] : null;
 
-  // Initialize
-  function init() {
-    updateMainStepDisplay();
-    updateStepDisplay();
-    attachEventListeners();
-    updateCommentCount();
-  }
+    let mainStep = 1;
+    let currentStep = 1;
+    const totalSteps = 5;
+    const menuItems = ['gambaran-umum', 'penerima-manfaat', 'strategi-pencapaian', 'indikator-kinerja', 'kurun-waktu'];
+    
+    // New structured comment state
+    let fieldComments = {}; // For t_kak table fields, e.g., { nama_kegiatan: "comment" }
+    let rowComments = {};   // For child table rows, e.g., { t_kak_manfaat: { 45: "comment" } }
 
-  // Update Main Progress Step Display
-function updateMainStepDisplay() {
-    // Definisi ikon untuk setiap langkah utama
-    const stepIcons = {
-        1: { class: 'ti ti-file-text', entity: '&#xef40;' }, // KAK
-        2: { class: 'ti ti-chart-bar', entity: '&#xea59;' }, // IKU & RENSTRA
-        3: { class: 'ti ti-currency-dollar', entity: '&#xeb84;' } // RAB
+    let currentCommentTarget = null; // { type: 'field'/'row', key: '...', table: '...', pk: '...' }
+
+    let fieldCommentModalInstance = null;
+    let rowCommentModalInstance = null;
+    
+    let masterState = {
+      iku: [],
+      satuan: []
     };
+  
+    // ==============================================
+    // API FUNCTIONS
+    // ==============================================
+    async function apiRequest(endpoint, options = {}) {
+        const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+        const headers = { ...options.headers, Authorization: `Bearer ${token}` };
+        if (!(options.body instanceof FormData)) {
+            headers["Content-Type"] = "application/json";
+        }
+        const config = { ...options, headers };
+        try {
+            const response = await fetch(`/api${endpoint}`, config);
+            const data = await response.json();
+            if (data.success === false) {
+                throw new Error(data.message || "API request failed");
+            }
+            return data;
+        } catch (error) {
+            console.error("API Request Error:", error);
+            if (typeof Swal !== 'undefined') {
+              Swal.fire({ icon: 'error', title: 'API Error', text: error.message });
+            }
+            throw error;
+        }
+    }
+  
+    // ==============================================
+    // HELPER & CREATION FUNCTIONS
+    // ==============================================
+    const toSnakeCase = str => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 
-    const progressSteps = document.querySelectorAll(".progress-step-item");
+    const formatCurrency = (amount) => {
+      if (!amount) return "Rp 0";
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    };
     
-    progressSteps.forEach((step, index) => {
-      const stepNum = index + 1;
-      const circle = step.querySelector(".progress-step-circle");
-      const text = step.querySelector(".progress-step-text");
-      const subtext = step.querySelector(".progress-step-subtext");
+    const getNameById = (id, list, idField, nameField) => {
+        const item = list.find(d => d[idField] == id);
+        return item ? item[nameField] : 'N/A';
+    };
+    
+    const createReadOnlyRow = (value, index, type, pkValue, pkName) => `
+      <div class="row-with-comment" data-row-type="${type}" data-pk-name="${pkName}" data-pk-value="${pkValue}">
+        <div class="input-with-comment" style="padding-right: 60px;">
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${value}">
+        </div>
+        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="${type.charAt(0).toUpperCase() + type.slice(1)} #${index + 1}">
+          <i class="ti ti-message-circle-2">&#xeaed;</i>
+        </button>
+      </div>
+    `;
 
-      // Reset style dasar
-      circle.className = "progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300";
-      
-      if (stepNum < mainStep) {
-        // State: Selesai (Completed) -> Tampilkan Centang
-        circle.style.background = "#10B981"; // Hijau
-        circle.style.color = "#FFFFFF";
-        circle.style.boxShadow = "0 4px 12px rgba(16, 185, 129, 0.4)";
-        circle.innerHTML = '<i class="ti ti-check" style="font-size: 1.125rem; line-height: 1; display: flex; align-items: center; justify-content: center;">&#xea5e;</i>'; // Icon Check with entity
-        
-        text.style.color = "#10B981";
-        if (subtext) subtext.style.color = "#10B981";
+    const createIndikatorKinerjaRow = (item, index) => `
+      <div class="row-with-comment" data-row-type="t_kak_target" data-pk-name="target_id" data-pk-value="${item.target_id}">
+        <div class="grid grid-cols-3 gap-4" style="padding-right: 60px;">
+          <div>
+            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
+            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.bulan_indikator || ''}">
+          </div>
+          <div>
+            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
+            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.deskripsi_target || ''}">
+          </div>
+          <div>
+            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
+            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.persentase_target || ''}">
+          </div>
+        </div>
+        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Indikator Kinerja #${index + 1}">
+          <i class="ti ti-message-circle-2">&#xeaed;</i>
+        </button>
+      </div>
+    `;
 
-      } else if (stepNum === mainStep) {
-        // State: Sedang Aktif (Active) -> Tampilkan Ikon Langkah
-        circle.style.background = "#00BCD4"; // Cyan
-        circle.style.color = "#FFFFFF";
-        circle.style.boxShadow = "0 4px 12px rgba(0, 188, 212, 0.4)";
-        // Fix: Gunakan entity dari object stepIcons dengan styling untuk center
-        circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem; line-height: 1; display: flex; align-items: center; justify-content: center;">${stepIcons[stepNum].entity}</i>`; 
-        
-        text.style.color = "#00BCD4";
-        if (subtext) subtext.style.color = "#00BCD4";
-
-      } else {
-        // State: Belum Aktif (Upcoming) -> Tampilkan Ikon Langkah (Abu-abu)
-        circle.style.background = "#E5E7EB"; // Abu-abu
-        circle.style.color = "#6B7280";
-        circle.style.boxShadow = "none";
-        // Fix: Gunakan entity dari object stepIcons dengan styling untuk center
-        circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem; line-height: 1; display: flex; align-items: center; justify-content: center;">${stepIcons[stepNum].entity}</i>`;
-        
-        text.style.color = "#6B7280";
-        if (subtext) subtext.style.color = "#9CA3AF";
+    const createIkuRow = (item, index) => `
+      <div class="row-with-comment" data-row-type="t_kak_iku" data-pk-name="kak_iku_id" data-pk-value="${item.kak_iku_id}">
+        <div class="grid grid-cols-2 gap-4" style="padding-right: 60px;">
+          <div>
+            <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${getNameById(item.iku_id, masterState.iku, 'iku_id', 'nama_iku')}">
+          </div>
+          <div>
+            <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
+            <div class="flex gap-2 items-center">
+              <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.persentase_target || '0'}">
+              <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+            </div>
+          </div>
+        </div>
+        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="IKU & Nilai #${index + 1}">
+          <i class="ti ti-message-circle-2">&#xeaed;</i>
+        </button>
+      </div>
+    `;
+    
+    const createRabRow = (item, index) => `
+      <div class="row-with-comment" data-row-type="t_kak_anggaran" data-pk-name="anggaran_id" data-pk-value="${item.anggaran_id}">
+          <div class="grid-rab" style="padding-right: 60px;">
+              <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.uraian || ''}">
+              </div>
+              <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.volume1 || '1'}">
+              </div>
+              <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${getNameById(item.satuan1_id, masterState.satuan, 'satuan_id', 'nama_satuan')}">
+              </div>
+              <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.volume2 || '1'}">
+              </div>
+              <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
+                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.satuan2_id ? getNameById(item.satuan2_id, masterState.satuan, 'satuan_id', 'nama_satuan') : ''}">
+              </div>
+              <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${formatCurrency(item.harga_satuan)}">
+              </div>
+          </div>
+          <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Anggaran #${index + 1}">
+              <i class="ti ti-message-circle-2">&#xeaed;</i>
+          </button>
+      </div>
+    `;
+  
+    // ==============================================
+    // DATA FETCH AND POPULATE
+    // ==============================================
+    async function fetchAndPopulateData(kakId) {
+      if (!kakId) {
+          Swal.fire('Error', 'ID Usulan tidak ditemukan di URL.', 'error');
+          return;
       }
-    });
+  
+      Swal.fire({
+          title: 'Memuat Data...',
+          text: 'Silakan tunggu sebentar.',
+          allowOutsideClick: false,
+          didOpen: () => { Swal.showLoading(); }
+      });
+  
+      try {
+          const [kakResponse, ikuResponse, satuanResponse] = await Promise.all([
+              apiRequest(`/kak/${kakId}/data`),
+              apiRequest('/master/iku'),
+              apiRequest('/master/satuan')
+          ]);
+  
+          masterState.iku = ikuResponse.data;
+          masterState.satuan = satuanResponse.data;
+          const kakData = kakResponse.data;
+  
+          document.querySelector('[data-field="pengusul"]').value = kakData.user ? kakData.user.nama : 'N/A';
+          document.querySelector('[data-field="namaKegiatan"]').value = kakData.nama_kegiatan || '';
+          document.querySelector('[data-field="gambaranUmum"]').value = kakData.deskripsi_kegiatan || '';
+          document.querySelector('[data-field="metodePelaksanaan"]').value = kakData.metode_pelaksanaan || '';
+          document.querySelector('[data-field="tanggalMulai"]').value = kakData.tanggal_mulai || '';
+          document.querySelector('[data-field="tanggalSelesai"]').value = kakData.tanggal_selesai || '';
+  
+          const sasaranContainer = document.getElementById('sasaranUtamaContainer');
+          const manfaatContainer = document.getElementById('manfaatContainer');
+          sasaranContainer.innerHTML = '';
+          manfaatContainer.innerHTML = '';
+          if (kakData.manfaat && kakData.manfaat.length > 0) {
+              kakData.manfaat.forEach((item, index) => {
+                  if(item.sasaran_utama) sasaranContainer.innerHTML += createReadOnlyRow(item.sasaran_utama, index, 't_kak_manfaat', item.manfaat_id, 'manfaat_id');
+                  if(item.manfaat) manfaatContainer.innerHTML += createReadOnlyRow(item.manfaat, index, 't_kak_manfaat', item.manfaat_id, 'manfaat_id');
+              });
+          }
+          
+          const tahapanContainer = document.getElementById('tahapanPelaksanaanContainer');
+          tahapanContainer.innerHTML = '';
+          if (kakData.tahapan && kakData.tahapan.length > 0) {
+              kakData.tahapan.forEach((item, index) => {
+                  tahapanContainer.innerHTML += createReadOnlyRow(item.nama_tahapan, index, 't_kak_tahapan', item.tahapan_id, 'tahapan_id');
+              });
+          }
+  
+          const indikatorContainer = document.getElementById('indikatorKinerjaContainer');
+          indikatorContainer.innerHTML = '';
+          if (kakData.target && kakData.target.length > 0) {
+              kakData.target.forEach((item, index) => {
+                  indikatorContainer.innerHTML += createIndikatorKinerjaRow(item, index);
+              });
+          }
+          
+          const ikuContainer = document.getElementById('ikuRenstraContainer');
+          ikuContainer.innerHTML = '';
+          if (kakData.iku && kakData.iku.length > 0) {
+              kakData.iku.forEach((item, index) => {
+                  ikuContainer.innerHTML += createIkuRow(item, index);
+              });
+          }
+  
+          const belanjaBarangContainer = document.getElementById('belanjaBarangContainer');
+          belanjaBarangContainer.innerHTML = '';
+          // This part needs to be adapted if there are different budget types
+          const belanjaJasaContainer = document.getElementById('belanjaJasaContainer');
+          belanjaJasaContainer.innerHTML = '';
+          const belanjaPerjalananContainer = document.getElementById('belanjaPerjalananContainer');
+          belanjaPerjalananContainer.innerHTML = '';
 
-    // Show/hide main step content (Logika konten tetap sama)
-    document
-      .querySelectorAll(".main-step-content")
-      .forEach((content, index) => {
-        if (index + 1 === mainStep) {
-          content.classList.add("active");
+          if (kakData.anggaran && kakData.anggaran.length > 0) {
+              kakData.anggaran.forEach((item, index) => {
+                   belanjaBarangContainer.innerHTML += createRabRow(item, index);
+              });
+          }
+          
+          Swal.close();
+  
+      } catch (error) {
+          Swal.fire('Gagal Memuat Data', error.message, 'error');
+      }
+    }
+  
+  
+    // Initialize
+    function init() {
+      updateMainStepDisplay();
+      updateStepDisplay();
+      attachEventListeners();
+      updateCommentCount();
+      fetchAndPopulateData(usulanId);
+    }
+  
+  function updateMainStepDisplay() {
+      const stepIcons = {
+          1: { class: 'ti ti-file-text', entity: '&#xef40;' },
+          2: { class: 'ti ti-chart-bar', entity: '&#xea59;' },
+          3: { class: 'ti ti-currency-dollar', entity: '&#xeb84;' }
+      };
+      document.querySelectorAll(".progress-step-item").forEach((step, index) => {
+        const stepNum = index + 1;
+        const circle = step.querySelector(".progress-step-circle");
+        const text = step.querySelector(".progress-step-text");
+        const subtext = step.querySelector(".progress-step-subtext");
+        circle.className = "progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300";
+        if (stepNum < mainStep) {
+          circle.style.background = "#10B981";
+          circle.style.color = "#FFFFFF";
+          circle.innerHTML = '<i class="ti ti-check" style="font-size: 1.125rem;">&#xea5e;</i>';
+          text.style.color = "#10B981";
+          if (subtext) subtext.style.color = "#10B981";
+        } else if (stepNum === mainStep) {
+          circle.style.background = "#00BCD4";
+          circle.style.color = "#FFFFFF";
+          circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem;">${stepIcons[stepNum].entity}</i>`; 
+          text.style.color = "#00BCD4";
+          if (subtext) subtext.style.color = "#00BCD4";
         } else {
-          content.classList.remove("active");
+          circle.style.background = "#E5E7EB";
+          circle.style.color = "#6B7280";
+          circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem;">${stepIcons[stepNum].entity}</i>`;
+          text.style.color = "#6B7280";
+          if (subtext) subtext.style.color = "#9CA3AF";
         }
       });
-}
-
-  // Update Step Display
-  function updateStepDisplay() {
-    if (mainStep !== 1) return;
-
-    document.querySelectorAll('.menu-button').forEach((btn, index) => {
-      if (index + 1 === currentStep) {
-        btn.classList.add('active');
-        btn.style.borderColor = '#00BCD4';
-        btn.style.background = 'rgba(0, 188, 212, 0.1)';
-      } else {
-        btn.classList.remove('active');
-        btn.style.borderColor = '#E5E7EB';
-        btn.style.background = '';
-      }
-    });
-
-    document.querySelectorAll('.step-content').forEach((content, index) => {
-      if (index + 1 === currentStep) {
-        content.classList.add('active');
-      } else {
-        content.classList.remove('active');
-      }
-    });
-
-    const btnBack = document.getElementById('btnBack');
-    if (btnBack) {
-      btnBack.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.querySelectorAll(".main-step-content").forEach((content, index) => {
+          content.classList.toggle("active", index + 1 === mainStep);
+      });
   }
-
-  // Attach Event Listeners
-  function attachEventListeners() {
-    // Menu buttons
-    document.querySelectorAll('.menu-button').forEach((btn) => {
-      btn.addEventListener('click', function() {
-        const menuTarget = this.getAttribute('data-menu');
-        const menuIndex = menuItems.indexOf(menuTarget);
-        if (menuIndex !== -1) {
-          currentStep = menuIndex + 1;
-          updateStepDisplay();
-        }
+  
+    function updateStepDisplay() {
+      if (mainStep !== 1) return;
+      document.querySelectorAll('.menu-button').forEach((btn, index) => {
+          const isActive = index + 1 === currentStep;
+          btn.classList.toggle('active', isActive);
+          btn.style.borderColor = isActive ? '#00BCD4' : '#E5E7EB';
+          btn.style.background = isActive ? 'rgba(0, 188, 212, 0.1)' : '';
       });
-    });
-
-    // Navigation buttons
-    const btnBack = document.getElementById('btnBack');
-    if (btnBack) {
-      btnBack.addEventListener('click', () => {
-        if (currentStep > 1) {
-          currentStep--;
-          updateStepDisplay();
-        }
+      document.querySelectorAll('#main-step-1 .step-content').forEach((content) => {
+          content.classList.toggle('active', content.id === menuItems[currentStep - 1]);
+      });
+      document.getElementById('btnBack').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  
+    function attachEventListeners() {
+      document.querySelectorAll('.menu-button').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const menuIndex = menuItems.indexOf(this.getAttribute('data-menu'));
+          if (menuIndex !== -1) {
+            currentStep = menuIndex + 1;
+            updateStepDisplay();
+          }
+        });
+      });
+      document.getElementById('btnBack').addEventListener('click', () => {
+          if (currentStep > 1) { currentStep--; updateStepDisplay(); }
+      });
+      document.getElementById('btnNext').addEventListener('click', () => {
+          if (currentStep < totalSteps) { currentStep++; updateStepDisplay(); } 
+          else { mainStep = 2; updateMainStepDisplay(); }
+      });
+      document.getElementById('btnBackIku').addEventListener('click', () => {
+          mainStep = 1; currentStep = totalSteps; updateMainStepDisplay(); updateStepDisplay();
+      });
+      document.getElementById('btnNextIku').addEventListener('click', () => {
+          mainStep = 3; updateMainStepDisplay();
+      });
+      document.getElementById('btnBackRab').addEventListener('click', () => {
+          mainStep = 2; updateMainStepDisplay();
       });
     }
-
-    const btnNext = document.getElementById('btnNext');
-    if (btnNext) {
-      btnNext.addEventListener('click', () => {
-        if (currentStep < totalSteps) {
-          currentStep++;
-          updateStepDisplay();
-        } else {
-          mainStep = 2;
-          updateMainStepDisplay();
-        }
-      });
-    }
-
-    const btnBackIku = document.getElementById('btnBackIku');
-    if (btnBackIku) {
-      btnBackIku.addEventListener('click', () => {
-        mainStep = 1;
-        currentStep = totalSteps;
-        updateMainStepDisplay();
-        updateStepDisplay();
-      });
-    }
-
-    const btnNextIku = document.getElementById('btnNextIku');
-    if (btnNextIku) {
-      btnNextIku.addEventListener('click', () => {
-        mainStep = 3;
-        updateMainStepDisplay();
-      });
-    }
-
-    const btnBackRab = document.getElementById('btnBackRab');
-    if (btnBackRab) {
-      btnBackRab.addEventListener('click', () => {
-        mainStep = 2;
-        updateMainStepDisplay();
-      });
-    }
-  }
-
-  // Open Field Comment Modal
-  window.openFieldCommentModal = function(btn) {
-    const fieldKey = btn.getAttribute('data-field');
-    const fieldLabel = btn.getAttribute('data-label');
-    currentCommentField = fieldKey;
-
-    // Get current field value
-    const input = btn.closest('.input-with-comment').querySelector('input, textarea, select');
-    const currentValue = input ? input.value : '';
-
-    document.getElementById('fieldCommentLabel').textContent = fieldLabel;
-    document.getElementById('currentFieldValue').textContent = currentValue || '(Kosong)';
-    document.getElementById('fieldCommentInput').value = fieldComments[fieldKey] || '';
-
-    if (!fieldCommentModalInstance) {
-      if (typeof bootstrap !== 'undefined') {
+  
+    window.openFieldCommentModal = function(btn) {
+      const fieldKey = btn.getAttribute('data-field');
+      const fieldLabel = btn.getAttribute('data-label');
+      currentCommentTarget = { type: 'field', key: toSnakeCase(fieldKey) };
+  
+      const input = btn.closest('.input-with-comment').querySelector('input, textarea');
+      document.getElementById('fieldCommentLabel').textContent = fieldLabel;
+      document.getElementById('currentFieldValue').textContent = (input ? input.value : '') || '(Kosong)';
+      document.getElementById('fieldCommentInput').value = fieldComments[currentCommentTarget.key] || '';
+  
+      if (!fieldCommentModalInstance) {
         fieldCommentModalInstance = new bootstrap.Modal(document.getElementById('fieldCommentModal'));
-      } else {
-        console.error('Bootstrap 5 JS not found.');
-        return;
       }
-    }
-    fieldCommentModalInstance.show();
-  };
-
-  // Open Row Comment Modal
-  window.openRowCommentModal = function(btn) {
-    const rowKey = btn.getAttribute('data-row');
-    const rowLabel = btn.getAttribute('data-label');
-    currentCommentRow = rowKey;
-
-    // Get current row values
-    const rowElement = btn.closest('.row-with-comment');
-    const inputs = rowElement.querySelectorAll('input, textarea, select');
-    let rowValues = [];
-    inputs.forEach(input => {
-      if (input.value) rowValues.push(input.value);
-    });
-    const currentValue = rowValues.join(' | ');
-
-    document.getElementById('rowCommentLabel').textContent = rowLabel;
-    document.getElementById('currentRowValue').textContent = currentValue || '(Kosong)';
-    document.getElementById('rowCommentInput').value = rowComments[rowKey] || '';
-
-    if (!rowCommentModalInstance) {
-      if (typeof bootstrap !== 'undefined') {
+      fieldCommentModalInstance.show();
+    };
+  
+    window.openRowCommentModal = function(btn) {
+      const rowElement = btn.closest('.row-with-comment');
+      currentCommentTarget = {
+          type: 'row',
+          table: rowElement.dataset.rowType,
+          pk: rowElement.dataset.pkValue
+      };
+      
+      const rowLabel = btn.getAttribute('data-label');
+      const inputs = rowElement.querySelectorAll('input, textarea, select');
+      let rowValues = Array.from(inputs).map(input => input.value).filter(Boolean);
+      
+      document.getElementById('rowCommentLabel').textContent = rowLabel;
+      document.getElementById('currentRowValue').textContent = rowValues.join(' | ') || '(Kosong)';
+      document.getElementById('rowCommentInput').value = (rowComments[currentCommentTarget.table] && rowComments[currentCommentTarget.table][currentCommentTarget.pk]) ? rowComments[currentCommentTarget.table][currentCommentTarget.pk] : '';
+  
+      if (!rowCommentModalInstance) {
         rowCommentModalInstance = new bootstrap.Modal(document.getElementById('rowCommentModal'));
+      }
+      rowCommentModalInstance.show();
+    };
+  
+    window.saveFieldComment = function() {
+      const comment = document.getElementById('fieldCommentInput').value.trim();
+      const { key } = currentCommentTarget;
+      if (comment) {
+        fieldComments[key] = comment;
       } else {
-        console.error('Bootstrap 5 JS not found.');
+        delete fieldComments[key];
+      }
+      updateCommentButton(`.comment-icon[data-field="${key.replace(/_/g, '-')}"]`, comment);
+      updateCommentCount();
+      fieldCommentModalInstance.hide();
+      Swal.fire({ icon: 'success', title: 'Tersimpan!', timer: 1500, showConfirmButton: false });
+    };
+  
+    window.saveRowComment = function() {
+      const comment = document.getElementById('rowCommentInput').value.trim();
+      const { table, pk } = currentCommentTarget;
+      if (!rowComments[table]) {
+        rowComments[table] = {};
+      }
+      if (comment) {
+        rowComments[table][pk] = comment;
+      } else {
+        delete rowComments[table][pk];
+      }
+      updateCommentButton(`.row-with-comment[data-pk-value="${pk}"] .row-comment-icon`, comment);
+      updateCommentCount();
+      rowCommentModalInstance.hide();
+      Swal.fire({ icon: 'success', title: 'Tersimpan!', timer: 1500, showConfirmButton: false });
+    };
+  
+    function updateCommentButton(selector, comment) {
+        const btn = document.querySelector(selector);
+        if(btn) {
+          const icon = btn.querySelector('i');
+          btn.classList.toggle('has-comment', !!comment);
+          icon.innerHTML = comment ? '&#xeaee;' : '&#xeaed;';
+          if(btn.parentElement.classList.contains('row-with-comment')) {
+              btn.parentElement.classList.toggle('has-row-comment', !!comment);
+          }
+        }
+    }
+  
+    function updateCommentCount() {
+      const fieldCount = Object.keys(fieldComments).length;
+      let rowCount = 0;
+      Object.values(rowComments).forEach(table => {
+          rowCount += Object.keys(table).length;
+      });
+      const totalCount = fieldCount + rowCount;
+      
+      const badge = document.getElementById('commentCountBadge');
+      badge.style.display = totalCount > 0 ? 'flex' : 'none';
+      document.getElementById('commentCountText').textContent = `${totalCount} Catatan`;
+    }
+  
+    window.submitReview = function() {
+      const totalCount = Object.keys(fieldComments).length + Object.values(rowComments).reduce((sum, table) => sum + Object.keys(table).length, 0);
+  
+      if (totalCount === 0) {
+        Swal.fire('Perhatian!', 'Harap berikan minimal satu catatan revisi sebelum mengirim.', 'warning');
         return;
       }
-    }
-    rowCommentModalInstance.show();
-  };
-
-  // Save Field Comment
-  window.saveFieldComment = function() {
-    const commentInput = document.getElementById('fieldCommentInput');
-    if (currentCommentField) {
-      const comment = commentInput.value.trim();
       
-      if (comment) {
-        fieldComments[currentCommentField] = comment;
-      } else {
-        delete fieldComments[currentCommentField];
+      const anakPayload = {};
+      for (const table in rowComments) {
+          anakPayload[table] = [];
+          for (const id in rowComments[table]) {
+              anakPayload[table].push({ id: id, catatan_verifikator: rowComments[table][id] });
+          }
       }
-
-      // Update button appearance
-      const btn = document.querySelector(`.comment-icon[data-field="${currentCommentField}"]`);
-      if (btn) {
-        const icon = btn.querySelector('i');
-        if (comment) {
-          btn.classList.add('has-comment');
-          icon.innerHTML = '&#xeaee;'; // ti-message-dots
-        } else {
-          btn.classList.remove('has-comment');
-          icon.innerHTML = '&#xeaed;'; // ti-message-circle-2
-        }
-      }
-
-      updateCommentCount();
-
-      if (fieldCommentModalInstance) {
-        fieldCommentModalInstance.hide();
-      }
-
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          icon: 'success',
-          title: 'Tersimpan!',
-          text: comment ? 'Catatan berhasil disimpan' : 'Catatan dihapus',
-          timer: 1500,
-          showConfirmButton: false
-        });
-      }
-    }
-  };
-
-  // Save Row Comment
-  window.saveRowComment = function() {
-    const commentInput = document.getElementById('rowCommentInput');
-    if (currentCommentRow) {
-      const comment = commentInput.value.trim();
-      
-      if (comment) {
-        rowComments[currentCommentRow] = comment;
-      } else {
-        delete rowComments[currentCommentRow];
-      }
-
-      // Update row and button appearance
-      const rowElement = document.querySelector(`.row-with-comment[data-row="${currentCommentRow}"]`);
-      const btn = document.querySelector(`.row-comment-icon[data-row="${currentCommentRow}"]`);
-      
-      if (rowElement && btn) {
-        const icon = btn.querySelector('i');
-        if (comment) {
-          rowElement.classList.add('has-row-comment');
-          btn.classList.add('has-comment');
-          icon.innerHTML = '&#xeaee;'; // ti-message-dots
-        } else {
-          rowElement.classList.remove('has-row-comment');
-          btn.classList.remove('has-comment');
-          icon.innerHTML = '&#xeaed;'; // ti-message-circle-2
-        }
-      }
-
-      updateCommentCount();
-
-      if (rowCommentModalInstance) {
-        rowCommentModalInstance.hide();
-      }
-
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          icon: 'success',
-          title: 'Tersimpan!',
-          text: comment ? 'Catatan berhasil disimpan' : 'Catatan dihapus',
-          timer: 1500,
-          showConfirmButton: false
-        });
-      }
-    }
-  };
-
-  // Update Comment Count
-  function updateCommentCount() {
-    const fieldCount = Object.keys(fieldComments).length;
-    const rowCount = Object.keys(rowComments).length;
-    const totalCount = fieldCount + rowCount;
-    
-    const badge = document.getElementById('commentCountBadge');
-    const countText = document.getElementById('commentCountText');
-    
-    if (totalCount > 0) {
-      badge.style.display = 'flex';
-      countText.textContent = `${totalCount} Catatan`;
-    } else {
-      badge.style.display = 'none';
-    }
-  }
-
-  // Submit Review
-  window.submitReview = function() {
-    const fieldCount = Object.keys(fieldComments).length;
-    const rowCount = Object.keys(rowComments).length;
-    const totalCount = fieldCount + rowCount;
-
-    if (totalCount === 0) {
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Perhatian!',
-          text: 'Harap berikan minimal satu catatan revisi sebelum mengirim',
-          confirmButtonColor: '#EF4444'
-        });
-      } else {
-        alert('Harap berikan minimal satu catatan revisi sebelum mengirim');
-      }
-      return;
-    }
-
-    if (typeof Swal !== 'undefined') {
+  
+      const payload = {
+          catatan_kak: fieldComments,
+          anak: anakPayload
+      };
+  
       Swal.fire({
         title: 'Kirim Revisi?',
         html: `Anda memiliki <strong>${totalCount}</strong> catatan revisi.<br>Usulan akan dikembalikan ke pengusul untuk diperbaiki.`,
@@ -1221,38 +1092,36 @@ function updateMainStepDisplay() {
         cancelButtonColor: '#6B7280',
         confirmButtonText: 'Ya, Kirim Revisi',
         cancelButtonText: 'Batal'
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
-          console.log('Mengirim status: Direvisi');
-          console.log('Catatan Field:', fieldComments);
-          console.log('Catatan Baris:', rowComments);
-          
-          Swal.fire({
-            icon: 'success',
-            title: 'Terkirim!',
-            text: 'Catatan revisi telah dikirim ke pengusul',
-            timer: 2000,
-            showConfirmButton: false
-          });
+          try {
+              await apiRequest(`/kak/${usulanId}/revise`, {
+                  method: 'POST',
+                  body: JSON.stringify(payload)
+              });
+  
+              await Swal.fire({
+                  icon: 'success',
+                  title: 'Terkirim!',
+                  text: 'Catatan revisi telah dikirim ke pengusul.',
+                  timer: 2000,
+                  showConfirmButton: false
+              });
+              
+              window.location.hash = '#/verifikator/dashboard';
+  
+          } catch (error) {
+              Swal.fire('Gagal Mengirim', error.message, 'error');
+          }
         }
       });
-    } else {
-      if (confirm(`Kirim ${totalCount} catatan revisi?`)) {
-        console.log('Catatan Field:', fieldComments);
-        console.log('Catatan Baris:', rowComments);
-        alert('Catatan revisi terkirim! Cek console log.');
-      }
+    };
+  
+    init();
+  
+    if (window.Helpers) {
+      window.Helpers.init();
     }
-  };
-
-  // Initialize
-  init();
-
-  // Initialize Vuexy menu if available
-  if (window.Helpers) {
-    window.Helpers.init();
-  }
 }
 
-// Export for ES6 module
 export default renderRevisiKakPage;
