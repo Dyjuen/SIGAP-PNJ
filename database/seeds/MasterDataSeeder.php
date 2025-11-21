@@ -32,7 +32,8 @@ class MasterDataSeeder extends AbstractSeed
             ['nama_role' => 'Pengusul'],
             ['nama_role' => 'PPK'],
             ['nama_role' => 'Wadir'],
-            ['nama_role' => 'Bendahara']
+            ['nama_role' => 'Bendahara'],
+            ['nama_role' => 'Rektorat']
         ];
         $this->table('m_roles')->insert($roles)->saveData();
 
@@ -142,8 +143,40 @@ class MasterDataSeeder extends AbstractSeed
             [
                 'username' => 'bendahara', 'password_hash' => password_hash('bendahara123', PASSWORD_BCRYPT),
                 'nama_lengkap' => 'Rina Wijayanti, S.Ak', 'email' => 'bendahara@pnj.ac.id', 'role_id' => 6
+            ],
+            [
+                'username' => 'rektorat', 'password_hash' => password_hash('rektorat123', PASSWORD_BCRYPT),
+                'nama_lengkap' => 'Rektorat PNJ', 'email' => 'rektorat@pnj.ac.id', 'role_id' => 7
             ]
         ];
+
+        // ============================================
+        // KATEGORI BELANJA
+        // ============================================
+        $kategoriBelanja = [
+            [
+                'kode' => 'BRG',
+                'nama' => 'Belanja Barang',
+                'keterangan' => 'Belanja untuk pengadaan barang habis pakai, ATK, konsumsi, dll',
+                'urutan' => 1,
+                'is_active' => true
+            ],
+            [
+                'kode' => 'JSA',
+                'nama' => 'Belanja Jasa',
+                'keterangan' => 'Belanja untuk pembayaran jasa seperti honor narasumber, tenaga pendukung, dll',
+                'urutan' => 2,
+                'is_active' => true
+            ],
+            [
+                'kode' => 'PJL',
+                'nama' => 'Belanja Perjalanan',
+                'keterangan' => 'Belanja untuk transport, akomodasi, dan biaya perjalanan dinas',
+                'urutan' => 3,
+                'is_active' => true
+            ]
+        ];
+        $this->table('m_kategori_belanja')->insert($kategoriBelanja)->saveData();
         $this->table('m_users')->insert($users)->saveData();
 
         echo "✅ Master data seeded successfully!\n";
@@ -156,5 +189,6 @@ class MasterDataSeeder extends AbstractSeed
         echo "   PPK:         username: ppk         password: ppk123\n";
         echo "   Wadir 2:     username: wadir2      password: wadir2123\n";
         echo "   Bendahara:   username: bendahara   password: bendahara123\n";
+        echo "   Rektorat:    username: rektorat    password: rektorat123\n";
     }
 }

@@ -39,10 +39,43 @@ class KAKController
         $this->notifikasiModel = new Notifikasi();
         $this->userModel = new User();
         $this->roleModel = new Role();
-        $this->ikuModel = new Iku();
-        $this->userData = AuthMiddleware::getAuthUser();
     }
-    
+
+    // Tambahkan ini di dalam Class KAKController
+
+    public function getRefKategoriBelanja()
+    {
+        try {
+            // Mengambil data kategori yang aktif dan diurutkan sesuai kolom 'urutan'
+            $this->db->query("SELECT * FROM m_kategori_belanja WHERE is_active = 1 ORDER BY urutan ASC");
+            $rows = $this->db->resultSet();
+
+            return $this->responseSuccess($rows);
+        } catch (PDOException $e) {
+            return $this->responseError($e->getMessage());
+        }
+    }
+
+    private function responseSuccess($data, $code = 200)
+    {
+        http_response_code($code);
+        echo json_encode([
+            "status" => "success",
+            "data" => $data
+        ]);
+        exit;
+    }
+
+    private function responseError($message, $code = 500)
+    {
+        http_response_code($code);
+        echo json_encode([
+            "status" => "error",
+            "message" => $message
+        ]);
+        exit;
+    }
+
     public function download()
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -181,30 +214,33 @@ class KAKController
                 Response::notFound("KAK tidak ditemukan.");
             }
 
+            // --- PERUBAHAN DI SINI ---
             $childTables = [
                 'manfaat'   => "SELECT * FROM t_kak_manfaat WHERE kak_id=:id",
                 'tahapan'   => "SELECT * FROM t_kak_tahapan WHERE kak_id=:id ORDER BY urutan ASC",
                 'indikator' => "SELECT * FROM t_kak_indikator WHERE kak_id=:id",
                 'target'    => "SELECT * FROM t_kak_target WHERE kak_id=:id",
-                'iku'       => "SELECT tki.*, mi.kode_iku, mi.nama_iku 
-                                    FROM t_kak_iku tki 
-                                    LEFT JOIN m_iku mi ON tki.iku_id = mi.iku_id 
-                                    WHERE tki.kak_id = :id",
-                'anggaran'  => "SELECT 
-                                        tka.*, 
-                                        s1.nama_satuan AS nama_satuan1,
-                                        s2.nama_satuan AS nama_satuan2,
-                                        s3.nama_satuan AS nama_satuan3
-                                    FROM t_kak_anggaran tka
-                                    LEFT JOIN m_satuan s1 ON tka.satuan1_id = s1.satuan_id
-                                    LEFT JOIN m_satuan s2 ON tka.satuan2_id = s2.satuan_id
-                                    LEFT JOIN m_satuan s3 ON tka.satuan3_id = s3.satuan_id
-                                    WHERE tka.kak_id = :id",
+                'iku'       => "SELECT * FROM t_kak_iku WHERE kak_id=:id",
+
+                // Update query anggaran untuk JOIN ke m_kategori_belanja dan m_satuan
+                'anggaran'  => "
+                    SELECT 
+                        a.*, 
+                        s.nama_satuan,
+                        kb.nama AS nama_kategori_belanja,
+                        kb.kode AS kode_kategori
+                    FROM t_kak_anggaran a
+                    LEFT JOIN m_satuan s ON s.satuan_id = a.satuan_id
+                    LEFT JOIN m_kategori_belanja kb ON kb.kategori_belanja_id = a.kategori_belanja_id
+                    WHERE a.kak_id=:id
+                ",
             ];
+            // -------------------------
 
             $data = [
                 "kak" => $kak
             ];
+
 
             foreach ($childTables as $key => $sql) {
                 $this->db->query($sql);
@@ -530,18 +566,24 @@ class KAKController
         
             if (!empty($input['rab'])) {
                 foreach ($input['rab'] as $r) {
-                    $v1 = !empty($r['volume1']) ? (float)$r['volume1'] : 1;
-                    $v2 = !empty($r['volume2']) ? (float)$r['volume2'] : 1;
-                    $v3 = !empty($r['volume3']) ? (float)$r['volume3'] : 1;
-                    $harga = (float)($r['harga_satuan'] ?? 0);
-                    $jumlah = $v1 * $v2 * $v3 * $harga;
+                    $v1 = !empty($r['volume1']) ? $r['volume1'] : 1;
+                    $v2 = !empty($r['volume2']) ? $r['volume2'] : 1;
+                    $jumlah = $v1 * $v2 * $r['harga_satuan'];
 
+                    // Pastikan kategori_belanja_id ada dalam query INSERT
                     $this->db->query("
                         INSERT INTO t_kak_anggaran
-                        (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
-                        VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, NULL)
+                        (kak_id, kategori_belanja_id, uraian, volume1, volume2, satuan_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
+                        VALUES (:id, :kat_id, :u, :v1, :v2, :sat, :h, :j, NULL)
                     ");
+                    
                     $this->db->bind(':id', $id);
+                    
+                    // Pastikan frontend mengirim key 'kategori_belanja_id'
+                    // Jika kosong, bisa diset NULL atau default (tergantung struktur tabel t_kak_anggaran)
+                    $katId = !empty($r['kategori_belanja_id']) ? $r['kategori_belanja_id'] : null; 
+                    $this->db->bind(':kat_id', $katId); 
+                    
                     $this->db->bind(':u', $r['uraian']);
                     $this->db->bind(':v1', $v1);
                     $this->db->bind(':s1', $r['satuan1_id']);
