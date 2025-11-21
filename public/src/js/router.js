@@ -18,6 +18,7 @@ import { renderInputLpjPage } from "./pages/Pengusul/InputLpj.js";
 import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
 import { renderRevisiKakPage } from "./pages/Verifikator/RevisiKak.js";
 import { renderMonitoringKegiatanPage } from "./pages/Pengusul/MonitoringKegiatan.js";
+import { renderRiwayatKAKPage } from "./pages/Pengusul/RiwayatKAK.js";
 
 function getCurrentUserRole() {
   return localStorage.getItem("userRole") || "guest";
@@ -50,7 +51,7 @@ const roleBasedRoutes = {
     "/monitoring-kegiatan": renderMonitoringKegiatanPage,
     "/pengajuan-lpj": renderPengajuanLpjPage,
     "/input-lpj": renderInputLpjPage,
-    "/riwayat": renderNotFoundPage,
+    "/riwayat-kak": renderRiwayatKAKPage,
     "/pengaturan": renderNotFoundPage,
   },
   Verifikator: {

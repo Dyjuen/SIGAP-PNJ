@@ -866,7 +866,7 @@ export function renderUsulanKakPage(path, userRole) {
   // Update Main Progress Step Display
   function updateMainStepDisplay() {
     const iconsForSteps = {
-      1: { class: "ti ti-file-text", entity: "&#xf7cd;" }, // KAK
+      1: { class: "ti ti-file-text", entity: "&#xef40;" }, // KAK
       2: { class: "ti ti-chart-bar", entity: "&#xea59;" }, // IKU & RENSTRA
       3: { class: "ti ti-currency-dollar", entity: "&#xeb84;" }, // RAB
     };
