@@ -1,6 +1,3 @@
-// ShaderBackground.js
-// WebGL Shader Background for Vanilla JavaScript
-
 class ShaderBackground {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
