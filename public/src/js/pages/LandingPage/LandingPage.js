@@ -202,14 +202,6 @@ export function renderLandingPage(userRole) {
         SIGAP PNJ memudahkan seluruh proses administrasi kegiatan<br class="hidden md:block">
         di kampus secara cepat, transparan, dan efisien.
       </p>
-      <a href="/login" class="hero-cta-btn inline-flex items-center bg-[#33C8DA] text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-[#2BA9B8] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1" data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="400">
-        <svg class="hero-cta-icon w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-          <path d="M21 12h-13l3 -3" />
-          <path d="M11 15l-3 -3" />
-        </svg>
-        <span class="whitespace-nowrap">Masuk Ke Aplikasi</span>
-      </a>
     </div>
 
     <!-- Dashboard Preview -->
@@ -543,8 +535,8 @@ export function renderLandingPage(userRole) {
                   </div>
 
                   <div class="flex items-center gap-3 bg-white rounded-lg p-4 shadow-sm">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                       </svg>
                     </div>

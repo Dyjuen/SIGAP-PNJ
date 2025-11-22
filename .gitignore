@@ -35,3 +35,5 @@ backup_*/
 /vendor
 
 /cache
+
+config/
