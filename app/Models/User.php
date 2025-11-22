@@ -84,6 +84,27 @@ class User
     }
 
     /**
+     * Find user by username and email
+     */
+    public function findByUsernameAndEmail($username, $email)
+    {
+        $this->db->query("
+            SELECT 
+                u.user_id, 
+                u.username, 
+                u.nama_lengkap, 
+                u.email
+            FROM 
+                m_users u
+            WHERE 
+                u.username = :username AND u.email = :email
+        ");
+        $this->db->bind(':username', $username);
+        $this->db->bind(':email', $email);
+        return $this->db->single();
+    }
+
+    /**
      * Get user with roles (untuk response API)
      */
     public function getUserWithRoles($userId)

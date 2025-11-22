@@ -1,5 +1,6 @@
 // frontend/src/router.js
 import { renderLoginPage } from "./pages/auth/LoginPage.js";
+import { renderForgotPasswordPage } from "./pages/auth/ForgotPasswordPage.js";
 import { renderLandingPage } from "./pages/LandingPage/LandingPage.js";
 import { renderPengusulDashboardPage } from "./pages/Pengusul/DashboardPage.js";
 import { renderUserManagementPage } from "./pages/Admin/UserManagementPage.js";
@@ -24,15 +25,18 @@ function getCurrentUserRole() {
   return localStorage.getItem("userRole") || "guest";
 }
 
+// Public routes - accessible without login
 const publicRoutes = {
   "/": renderLandingPage,
   "/login": renderLoginPage,
+  "/forgot-password": renderForgotPasswordPage,
 };
 
 const roleBasedRoutes = {
   guest: {
     "/": renderLandingPage,
     "/login": renderLoginPage,
+    "/forgot-password": renderForgotPasswordPage,
   },
   Admin: {
     "/dashboard": renderUserManagementPage,

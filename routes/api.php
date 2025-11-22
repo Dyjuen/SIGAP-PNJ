@@ -59,6 +59,13 @@ if ($method === 'POST' && $uri === '/auth/login') {
     exit;
 }
 
+// POST /api/auth/forgot-password
+if ($method === 'POST' && $uri === '/auth/forgot-password') {
+    $controller = new AuthController();
+    $controller->forgotPassword();
+    exit;
+}
+
 // =====================================================
 // 4. APPLY AUTH MIDDLEWARE FOR PROTECTED ROUTES
 // =====================================================

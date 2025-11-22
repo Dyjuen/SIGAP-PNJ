@@ -459,4 +459,27 @@ class MailService
             return false;
         }
     }
+
+    /**
+     * Send password reset email
+     */
+    public function sendPasswordResetEmail($user, $newPassword)
+    {
+        try {
+            $htmlBody = $this->mailer->renderTemplate('password-reset', [
+                'nama_user' => $user['nama_lengkap'],
+                'new_password' => $newPassword,
+                'login_link' => $this->baseUrl . '/login',
+            ]);
+
+            return $this->mailer->send(
+                $user['email'],
+                "🔑 Password Anda Telah Direset",
+                $htmlBody
+            );
+        } catch (\Exception $e) {
+            error_log("Error sending password reset email: " . $e->getMessage());
+            return false;
+        }
+    }
 }

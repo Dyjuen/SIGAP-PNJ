@@ -27,5 +27,5 @@ $emailContent = <<<HTML
 HTML;
 
 $subject = "⚠️ KAK Perlu Revisi";
-include '_base.php';
+require __DIR__ . '/_base.php';
 ?>

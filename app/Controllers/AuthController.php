@@ -548,4 +548,54 @@ class AuthController
             Response::error('Gagal refresh token: ' . $e->getMessage(), 500);
         }
     }
+    /**
+     * Forgot Password - Send new password to user
+     * 
+     * POST /api/auth/forgot-password
+     * Body: {username, email}
+     */
+    public function forgotPassword()
+    {
+        error_log("Executing AuthController::forgotPassword");
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            // Validate
+            if (empty($data['username']) || empty($data['email'])) {
+                Response::error('Username dan email harus diisi', 400);
+            }
+
+            if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                Response::error('Format email tidak valid', 400);
+            }
+
+            // Find user
+            $user = $this->userModel->findByUsernameAndEmail($data['username'], $data['email']);
+
+            if (!$user) {
+                // To prevent user enumeration, we give a generic success message
+                // but log the failure internally.
+                error_log("Forgot password attempt failed for username: {$data['username']} and email: {$data['email']}");
+                Response::success(null, 'Jika user dan email terdaftar, email reset password akan dikirimkan.');
+                return;
+            }
+
+            // Generate new random password
+            $newPassword = substr(bin2hex(random_bytes(16)), 0, 12); // 12-char random password
+
+            // Update password in database
+            $this->userModel->updatePassword($user['user_id'], $newPassword);
+
+            // Send email
+            $mailService = new \App\Services\MailService();
+            $mailService->sendPasswordResetEmail($user, $newPassword);
+
+            Response::success(null, 'Password baru telah dikirim ke email Anda. Silakan cek inbox atau folder spam.');
+
+        } catch (\Exception $e) {
+            error_log("Forgot Password Error: " . $e->getMessage());
+            // Generic error message for security
+            Response::error('Terjadi kesalahan pada server, silakan coba lagi nanti.', 500);
+        }
+    }
 }

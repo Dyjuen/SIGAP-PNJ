@@ -23,6 +23,10 @@ class Mailer
     private function setupMailer()
     {
         try {
+            // Enable verbose debug output
+            $this->mail->SMTPDebug = 2;
+            $this->mail->Debugoutput = 'error_log';
+            
             // Gunakan SMTP
             $this->mail->isSMTP();
             $this->mail->Host = $this->config['host'];
@@ -36,7 +40,9 @@ class Mailer
 
             // Set from address
             $this->mail->setFrom($this->config['from_email'], $this->config['from_name']);
+            error_log("PHPMailer Setup Complete. Host: {$this->config['host']}, Username: {$this->config['username']}");
         } catch (Exception $e) {
+            error_log("[PHPMailer Setup Error]: " . $e->getMessage());
             throw new Exception("Mailer setup error: " . $e->getMessage());
         }
     }
@@ -46,7 +52,7 @@ class Mailer
      */
     private function getConfig()
     {
-        return [
+        $config = [
             'host' => getenv('MAIL_HOST') ?: 'smtp.gmail.com',
             'port' => getenv('MAIL_PORT') ?: 587,
             'username' => getenv('MAIL_USERNAME') ?: 'sigap.pnj@gmail.com',
@@ -55,6 +61,8 @@ class Mailer
             'from_email' => getenv('MAIL_FROM_EMAIL') ?: 'noreply@pnj.ac.id',
             'from_name' => getenv('MAIL_FROM_NAME') ?: 'SIGAP PNJ',
         ];
+        error_log("Mailer Config Loaded: " . json_encode($config));
+        return $config;
     }
 
     /**
@@ -79,7 +87,7 @@ class Mailer
 
             return $this->mail->send();
         } catch (Exception $e) {
-            error_log("Mailer Error: " . $e->getMessage());
+            error_log("[PHPMailer Send Error]: " . $e->getMessage() . " ErrorInfo: " . $this->mail->ErrorInfo);
             throw new Exception("Email send failed: " . $e->getMessage());
         }
     }

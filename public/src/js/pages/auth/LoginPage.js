@@ -440,7 +440,7 @@ export function renderLoginPage() {
                                 <input type="checkbox" id="remember-me" class="custom-checkbox" checked>
                                 <span class="text-sm text-gray-700">Ingat Saya</span>
                             </label>
-                            <a href="#" class="text-sm link-text">
+                            <a href="/forgot-password" class="text-sm link-text">
                                 Lupa Password?
                             </a>
                         </div>
@@ -457,7 +457,7 @@ export function renderLoginPage() {
 
                     <!-- Optional: Additional Info -->
                     <p class="text-center text-sm text-gray-500 mt-6 animate-element animate-delay-1000">
-                        Sistem Informasi Gerbang Administrasi Pengajuan PNJ
+                        Sistem Informasi Pengelolaan Anggaran dan Pelaporan
                     </p>
                 </div>
             </div>
@@ -569,7 +569,7 @@ export function renderLoginPage() {
       } else {
         // Reload captcha on failed login from server
         document.getElementById("captcha-image").src =
-          "/api/captcha-new.php?t=" + new Date().getTime();
+          "/api/captcha?t=" + new Date().getTime();
         showError(response.message || "Login gagal!");
         setLoading(false);
       }
@@ -580,7 +580,7 @@ export function renderLoginPage() {
       showError(errorMessage);
       // Reload captcha on error
       document.getElementById("captcha-image").src =
-        "/api/captcha-new.php?t=" + new Date().getTime();
+        "/api/captcha?t=" + new Date().getTime();
       setLoading(false);
     }
   });
@@ -617,7 +617,7 @@ export function renderLoginPage() {
     reloadCaptchaButton.addEventListener("click", () => {
       // Append a timestamp to the src to prevent caching
       document.getElementById("captcha-image").src =
-        "/api/captcha-new.php?t=" + new Date().getTime();
+        "/api/captcha?t=" + new Date().getTime();
     });
   }
 

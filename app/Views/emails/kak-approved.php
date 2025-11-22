@@ -29,5 +29,5 @@ $emailContent = <<<HTML
 HTML;
 
 $subject = "✅ KAK Disetujui - Lanjutkan ke Kegiatan";
-include '_base.php';
+require __DIR__ . '/_base.php';
 ?>

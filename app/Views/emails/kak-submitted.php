@@ -29,5 +29,5 @@ $emailContent = <<<HTML
 HTML;
 
 $subject = "🔔 KAK Baru Membutuhkan Verifikasi";
-include '_base.php';
+require __DIR__ . '/_base.php';
 ?>

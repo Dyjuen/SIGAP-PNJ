@@ -28,5 +28,5 @@ $emailContent = <<<HTML
 HTML;
 
 $subject = "❌ KAK Ditolak";
-include '_base.php';
+require __DIR__ . '/_base.php';
 ?>

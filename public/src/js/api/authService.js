@@ -322,4 +322,32 @@ export const authService = {
     const roles = this.getUserRoles();
     return roles.includes(role);
   },
+
+  /**
+   * Forgot Password - Request password reset
+   * @param {Object} data - { username, email }
+   * @returns {Promise<Object>}
+   */
+  async forgotPassword(data) {
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Forgot password request failed');
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      throw error;
+    }
+  },
 };
