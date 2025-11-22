@@ -434,171 +434,112 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
   renderDashboardLayout(pageContent, userRole);
 
-  // ==============================================
-  // DUMMY DATA
-  // ==============================================
-  const dummyKegiatanData = [
-    {
-      kak_id: 1,
-      nama_kegiatan: "Pengadaan Alat Tulis Kantor",
-      status: 4,
-      dates: {
-        accWD2: "11/12/2025",
-        accPPK: "13/12/2025",
-        uangMuka: "17/12/2025",
-        lpj: "20/12/2025"
-      },
-      overdueDays: 0
-    },
-    {
-      kak_id: 2,
-      nama_kegiatan: "Renovasi Gedung Kantor Lantai 2",
-      status: 3,
-      dates: {
-        accWD2: "10/12/2025",
-        accPPK: "12/12/2025",
-        uangMuka: "16/12/2025",
-        lpj: null
-      },
-      overdueDays: 0
-    },
-    {
-      kak_id: 3,
-      nama_kegiatan: "Pelatihan SDM IT",
-      status: 2,
-      dates: {
-        accWD2: "11/12/2025",
-        accPPK: "13/12/2025",
-        uangMuka: null,
-        lpj: null
-      },
-      overdueDays: 0
-    },
-    {
-      kak_id: 4,
-      nama_kegiatan: "Pengembangan Sistem Informasi",
-      status: 1,
-      dates: {
-        accWD2: "11/12/2025",
-        accPPK: null,
-        uangMuka: null,
-        lpj: null
-      },
-      overdueDays: 0
-    },
-    {
-      kak_id: 5,
-      nama_kegiatan: "Pembelian Server Database",
-      status: 4,
-      dates: {
-        accWD2: "05/12/2025",
-        accPPK: "07/12/2025",
-        uangMuka: "10/12/2025",
-        lpj: "15/12/2025"
-      },
-      overdueDays: 11
-    },
-    {
-      kak_id: 6,
-      nama_kegiatan: "Kegiatan Sosialisasi Aplikasi",
-      status: 3,
-      dates: {
-        accWD2: "08/12/2025",
-        accPPK: "10/12/2025",
-        uangMuka: "14/12/2025",
-        lpj: null
-      },
-      overdueDays: 0
-    },
-    {
-      kak_id: 7,
-      nama_kegiatan: "Maintenance Jaringan LAN",
-      status: 2,
-      dates: {
-        accWD2: "09/12/2025",
-        accPPK: "11/12/2025",
-        uangMuka: null,
-        lpj: null
-      },
-      overdueDays: 0
-    },
-    {
-      kak_id: 8,
-      nama_kegiatan: "Upgrade Software Lisensi",
-      status: 4,
-      dates: {
-        accWD2: "01/12/2025",
-        accPPK: "03/12/2025",
-        uangMuka: "06/12/2025",
-        lpj: "12/12/2025"
-      },
-      overdueDays: 0
-    },
-    {
-      kak_id: 9,
-      nama_kegiatan: "Pengadaan Furniture Kantor",
-      status: 1,
-      dates: {
-        accWD2: "12/12/2025",
-        accPPK: null,
-        uangMuka: null,
-        lpj: null
-      },
-      overdueDays: 0
-    },
-    {
-      kak_id: 10,
-      nama_kegiatan: "Kegiatan Audit Internal",
-      status: 3,
-      dates: {
-        accWD2: "06/12/2025",
-        accPPK: "08/12/2025",
-        uangMuka: "11/12/2025",
-        lpj: null
-      },
-      overdueDays: 0
-    },
-    {
-      kak_id: 11,
-      nama_kegiatan: "Perbaikan AC Ruang Rapat",
-      status: 4,
-      dates: {
-        accWD2: "02/12/2025",
-        accPPK: "04/12/2025",
-        uangMuka: "07/12/2025",
-        lpj: "13/12/2025"
-      },
-      overdueDays: 3
-    },
-    {
-      kak_id: 12,
-      nama_kegiatan: "Pengadaan Laptop Untuk Staff",
-      status: 2,
-      dates: {
-        accWD2: "10/12/2025",
-        accPPK: "12/12/2025",
-        uangMuka: null,
-        lpj: null
-      },
-      overdueDays: 0
-    }
-  ];
+  const user = JSON.parse(localStorage.getItem('user'));
 
+  // ==============================================
+  // API Service
+  // ==============================================
+  const apiService = {
+    getKegiatan: async (page = 1, per_page = 10) => {
+      const token = localStorage.getItem('token');
+      let url = `/api/kegiatan?page=${page}&per_page=${per_page}`;
+
+      if (userRole.toLowerCase() === 'pengusul' && user && user.id) {
+        url += `&user_id=${user.id}`;
+      }
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Gagal mengambil data kegiatan.');
+      }
+      return response.json();
+    }
+  };
+  
   // ==============================================
   // STATE
   // ==============================================
   let state = {
-    activities: dummyKegiatanData,
+    activities: [],
     currentPage: 1,
     itemsPerPage: 10,
-    totalEntries: dummyKegiatanData.length,
-    totalPages: Math.ceil(dummyKegiatanData.length / 10),
-    selectedItems: new Set()
+    totalEntries: 0,
+    totalPages: 1,
+    selectedItems: new Set(),
+    isLoading: true,
+    error: null,
   };
 
   // ==============================================
   // HELPER FUNCTIONS
   // ==============================================
+    
+  function formatDate(dateString) {
+      if (!dateString) return "-";
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+  }
+
+  function transformApiData(apiData) {
+    // Ensure apiData is an array before mapping
+    if (!Array.isArray(apiData)) {
+      console.warn("apiData is not an array:", apiData);
+      return [];
+    }
+      
+    const approvalStepMapping = {
+      'Wadir2': { step: 1, dateKey: 'accWD2' },
+      'PPK': { step: 2, dateKey: 'accPPK' },
+      'Bendahara-Cair': { step: 3, dateKey: 'uangMuka' },
+      'Bendahara-LPJ': { step: 4, dateKey: 'lpj' }
+    };
+    
+    return apiData.map(item => {
+        const dates = { accWD2: null, accPPK: null, uangMuka: null, lpj: null };
+        const approvedSteps = [];
+
+        item.approvals.forEach(approval => {
+            if (approval.status === 'Disetujui' && approvalStepMapping[approval.approval_level]) {
+                const mapping = approvalStepMapping[approval.approval_level];
+                dates[mapping.dateKey] = formatDate(approval.updated_at);
+                approvedSteps.push(mapping.step);
+            }
+        });
+        
+        const maxApprovedStep = approvedSteps.length > 0 ? Math.max(...approvedSteps) : 0;
+        let currentStatus;
+
+        if (item.current_approval && item.current_approval.status === 'Aktif' && approvalStepMapping[item.current_approval.approval_level]) {
+            currentStatus = approvalStepMapping[item.current_approval.approval_level].step;
+        } else {
+            if (maxApprovedStep === 4) {
+                currentStatus = 5; // All steps are completed, so status is beyond the last step
+            } else {
+                currentStatus = maxApprovedStep + 1;
+            }
+        }
+
+        return {
+            kak_id: item.kak_id,
+            kegiatan_id: item.kegiatan_id,
+            nama_kegiatan: item.nama_kegiatan,
+            status: currentStatus,
+            dates: dates,
+            overdueDays: 0, // Placeholder
+        };
+    });
+  }
   function renderStepper(item) {
     const steps = [
       { number: "01", label: "Acc WD2", date: item.dates.accWD2 },
@@ -663,11 +604,17 @@ export function renderMonitoringKegiatanPage(path, userRole) {
     const tbody = document.getElementById("monitoringTableBody");
     if (!tbody) return;
 
-    const startIndex = (state.currentPage - 1) * state.itemsPerPage;
-    const endIndex = startIndex + state.itemsPerPage;
-    const paginatedData = state.activities.slice(startIndex, endIndex);
+    if (state.isLoading) {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>`;
+      return;
+    }
 
-    if (paginatedData.length === 0) {
+    if (state.error) {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">${state.error}</td></tr>`;
+      return;
+    }
+
+    if (state.activities.length === 0) {
       tbody.innerHTML = `
         <tr>
           <td colspan="4">
@@ -690,8 +637,8 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
     tbody.innerHTML = "";
 
-    paginatedData.forEach((item, index) => {
-      const globalIndex = startIndex + index + 1;
+    state.activities.forEach((item, index) => {
+        const globalIndex = (state.currentPage - 1) * state.itemsPerPage + index + 1;
       const isChecked = state.selectedItems.has(item.kak_id);
 
       const row = document.createElement("tr");
@@ -860,11 +807,26 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       });
   }
 
-  function changePage(page) {
-    if (page < 1 || page > state.totalPages) return;
-    state.currentPage = page;
-    renderTableRows();
-    setupPagination();
+  async function changePage(page) {
+    if (page < 1 || page > state.totalPages || page === state.currentPage) return;
+    
+    state.isLoading = true;
+    state.error = null;
+    renderTableRows(); // Show loader
+
+    try {
+        const result = await apiService.getKegiatan(page, state.itemsPerPage);
+        state.activities = transformApiData(result.data.data);
+        state.currentPage = result.pagination?.current_page || 1; // Safely access current_page
+        state.totalEntries = result.pagination?.total || 0;     // Safely access total
+        state.totalPages = result.pagination?.last_page || 1;   // Safely access last_page
+    } catch (error) {
+        state.error = error.message;
+    } finally {
+        state.isLoading = false;
+        renderTableRows();
+        setupPagination();
+    }
   }
 
   function updatePaginationInfo() {
@@ -892,10 +854,28 @@ export function renderMonitoringKegiatanPage(path, userRole) {
   // ==============================================
   // INITIALIZATION
   // ==============================================
-  renderTableRows();
-  setupPagination();
+  async function init() {
+    state.isLoading = true;
+    renderTableRows(); // Initial render with loader
 
-  if (window.Helpers) {
-    window.Helpers.init();
+    try {
+        const result = await apiService.getKegiatan(state.currentPage, state.itemsPerPage);
+        state.activities = transformApiData(result.data.data);
+        state.totalEntries = result.pagination?.total || 0;     // Safely access total
+        state.totalPages = result.pagination?.last_page || 1;   // Safely access last_page
+        state.currentPage = result.pagination?.current_page || 1; // Safely access current_page
+    } catch (e) {
+        state.error = e.message;
+    } finally {
+        state.isLoading = false;
+        renderTableRows();
+        setupPagination();
+    }
+
+    if (window.Helpers) {
+        window.Helpers.init();
+    }
   }
+
+  init();
 }

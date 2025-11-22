@@ -41,5 +41,13 @@ export const wadirSidebar = `
         </a>
       </li>
     </ul>
+    <ul class="menu-inner py-1">
+      <li class="menu-item">
+        <a href="/login" data-link class="menu-link" id="logout-btn">
+          <i class="menu-icon tf-icons ti ti-logout"></i>
+          <div data-i18n="Logout">Logout</div>
+        </a>
+      </li>
+    </ul>
   </aside>
 `;

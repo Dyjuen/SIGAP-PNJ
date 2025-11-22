@@ -595,7 +595,7 @@ export function renderDashboardVerifikator(path, userRole) {
       btn.addEventListener("click", () => {
         const kakId = btn.dataset.id;
         // Redirect to the revision page with the ID
-        window.location.pathname = `/verifikator/revisi-kak/${kakId}`;
+        window.location.href = `/verifikator/revisi-kak/${kakId}`;
       });
     });
 

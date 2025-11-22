@@ -25,6 +25,14 @@ export const bendaharaSidebar = `
         </a>
       </li>
 
+      <!-- Monitoring Kegiatan -->
+      <li class="menu-item">
+        <a href="/bendahara/monitoring-kegiatan" data-link class="menu-link">
+          <i class="menu-icon tf-icons ti ti-presentation-analytics">&#xea9a;</i>
+          <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
+        </a>
+      </li>
+
       <!-- Daftar LPJ -->
       <li class="menu-item">
         <a href="/bendahara/daftar-lpj" data-link class="menu-link">
@@ -46,6 +54,14 @@ export const bendaharaSidebar = `
         <a href="/bendahara/pengaturan" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-settings">&#xeb20;</i>
           <div data-i18n="Pengaturan">Pengaturan</div>
+        </a>
+      </li>
+    </ul>
+    <ul class="menu-inner py-1">
+      <li class="menu-item">
+        <a href="/login" data-link class="menu-link" id="logout-btn">
+          <i class="menu-icon tf-icons ti ti-logout"></i>
+          <div data-i18n="Logout">Logout</div>
         </a>
       </li>
     </ul>
