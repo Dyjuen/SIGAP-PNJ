@@ -304,11 +304,6 @@ export function renderForgotPasswordPage() {
                             Kirim Permintaan Reset Password
                         </button>
                     </form>
-
-                    <!-- Optional: Additional Info -->
-                    <p class="text-center text-xs text-gray-500 mt-6 animate-element animate-delay-900">
-                        Hubungi admin jika Anda mengalami kesulitan
-                    </p>
                 </div>
             </div>
         </div>

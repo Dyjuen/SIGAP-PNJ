@@ -457,7 +457,7 @@ export function renderLoginPage() {
 
                     <!-- Optional: Additional Info -->
                     <p class="text-center text-sm text-gray-500 mt-6 animate-element animate-delay-1000">
-                        Sistem Informasi Pengelolaan Anggaran dan Pelaporan
+                        Sistem Informasi Gerbang Administrasi Pengajuan PNJ
                     </p>
                 </div>
             </div>
