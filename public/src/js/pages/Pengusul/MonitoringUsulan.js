@@ -174,7 +174,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
     let url = `/kak?status=1,2,5`;
     if (state.searchQuery) {
-        url += `&search=${state.searchQuery}`;
+      url += `&search=${state.searchQuery}`;
     }
 
     try {
@@ -253,7 +253,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
           <button class="btn btn-sm btn-primary me-2 btn-ajukan" data-id="${id}" title="Ajukan untuk Verifikasi">
             ${statusId === 1 ? "Ajukan" : "Ajukan Ulang"}
           </button>
-          <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" title="Edit">
+          <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" data-status="${statusId}" title="Edit">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
           </button>
           <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus">
@@ -262,7 +262,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
         `;
       case 4: // Ditolak
         return `
-          <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" title="Edit">
+          <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" data-status="${statusId}" title="Edit">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
           </button>
           <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus">
@@ -368,14 +368,26 @@ export function renderMonitoringUsulanPage(path, userRole) {
       });
     });
 
-    document
-      .querySelectorAll(".btn-edit-profile, .btn-revisi")
-      .forEach((btn) => {
-        btn.addEventListener("click", function () {
-          const id = this.getAttribute("data-id");
+    document.querySelectorAll(".btn-edit-profile").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const id = this.getAttribute("data-id");
+        const status = this.getAttribute("data-status");
+
+        if (status === "5") {
+          // Status Revisi
+          window.location.href = `/pengusul/revisi-kak/${id}`;
+        } else {
           window.location.pathname = `/pengusul/usulan-kak/${id}`;
-        });
+        }
       });
+    });
+
+    document.querySelectorAll(".btn-revisi").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const id = this.getAttribute("data-id");
+        window.location.pathname = `/pengusul/usulan-kak/${id}`;
+      });
+    });
 
     document.querySelectorAll(".btn-delete").forEach((btn) => {
       btn.addEventListener("click", async function () {
@@ -388,7 +400,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
         if (confirmed) {
           try {
-            await apiRequest(`/kak/${activityId}`, { method: 'DELETE' });
+            await apiRequest(`/kak/${activityId}`, { method: "DELETE" });
             showSuccess(`Berhasil menghapus kegiatan ID: ${activityId}`);
             fetchKak(); // Refresh the table
           } catch (error) {
@@ -401,7 +413,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
     document.querySelectorAll(".btn-download").forEach((btn) => {
       btn.addEventListener("click", function () {
         const id = this.getAttribute("data-id");
-        window.open(`/api/kak/${id}`, '_blank');
+        window.open(`/api/kak/${id}`, "_blank");
       });
     });
 

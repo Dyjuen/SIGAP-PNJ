@@ -2,12 +2,13 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-const READONLY_ATTR = 'readonly disabled';
-const READONLY_STYLE = 'border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default;';
+const READONLY_ATTR = "readonly disabled";
+const READONLY_STYLE =
+  "border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default;";
 
 export function renderRevisiKakPage(path, userRole) {
-  const isVerifikator = userRole.toLowerCase() === 'verifikator';
-  const isPengusul = userRole.toLowerCase() === 'pengusul';
+  const isVerifikator = userRole.toLowerCase() === "verifikator";
+  const isPengusul = userRole.toLowerCase() === "pengusul";
   const pageContent = `
     <style>
       /* Comment button styling */
@@ -359,16 +360,6 @@ export function renderRevisiKakPage(path, userRole) {
                 <!-- Step 1: Gambaran Umum -->
                 <div class="step-content active" id="gambaran-umum">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Gambaran Umum</h4>
-                  
-                  <div class="mb-6">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Pengusul Kegiatan</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="" data-field="pengusul">
-                      <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="pengusul" data-label="Pengusul Kegiatan">
-                        <i class="ti ti-message-circle-2">&#xeaed;</i>
-                      </button>
-                    </div>
-                  </div>
 
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nama Kegiatan</label>
@@ -546,8 +537,10 @@ export function renderRevisiKakPage(path, userRole) {
 
       <!-- Action Buttons (Fixed at bottom) -->
       <div class="action-buttons">
-        ${isVerifikator ? `
-          <button class="btn-back" onclick="window.location.hash = '#/verifikator/dashboard'">
+        ${
+          isVerifikator
+            ? `
+          <button class="btn-back" onclick="window.location.href = '/#/verifikator/monitoring-usulan'">
             <i class="ti ti-arrow-left">&#xea19;</i> Kembali
           </button>
           <div class="flex gap-4">
@@ -556,21 +549,21 @@ export function renderRevisiKakPage(path, userRole) {
               Kirim Revisi
             </button>
           </div>
-        ` : isPengusul ? `
-          <button class="btn-back" onclick="window.location.hash = '#/pengusul/dashboard'">
+        `
+            : isPengusul
+            ? `
+          <button class="btn-back" onclick="window.location.href = '/#/pengusul/monitoring-usulan'">
             <i class="ti ti-arrow-left">&#xea19;</i> Kembali
           </button>
-          <div class="flex gap-4 items-center">
-            <input type="file" id="kakFile" class="hidden" accept=".pdf,.doc,.docx" />
-            <label for="kakFile" class="btn btn-primary-action" style="background: #00BCD4; color: white; cursor: pointer;">
-              <i class="ti ti-upload">&#xeb61;</i> Upload KAK Revisi
-            </label>
-            <button class="btn-primary-action btn-revise" onclick="resubmitKak()" id="btnResubmitKak" style="display: none;">
+          <div class="flex gap-4">
+            <button class="btn-primary-action btn-revise" onclick="submitRevisedKak()">
               <i class="ti ti-send">&#xeae0;</i>
-              Kirim Ulang KAK
+              Submit KAK Revisi
             </button>
           </div>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
 
       <!-- Comment Count Badge -->
@@ -595,11 +588,15 @@ export function renderRevisiKakPage(path, userRole) {
               <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai Saat Ini</label>
               <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="currentFieldValue"></div>
             </div>
-            <div id="fieldCommentInputContainer" style="${isPengusul ? 'display: none;' : ''}">
+            <div id="fieldCommentInputContainer" style="${
+              isPengusul ? "display: none;" : ""
+            }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
               <textarea id="fieldCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi spesifik untuk field ini..."></textarea>
             </div>
-            <div id="fieldCommentDisplayContainer" style="${isVerifikator ? 'display: none;' : ''}">
+            <div id="fieldCommentDisplayContainer" style="${
+              isVerifikator ? "display: none;" : ""
+            }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Verifikator</label>
               <div class="p-3 rounded-lg" style="background: #E0F7FA; color: #374151;" id="fieldCommentDisplayText"></div>
             </div>
@@ -613,11 +610,15 @@ export function renderRevisiKakPage(path, userRole) {
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
-            ${isVerifikator ? `
+            ${
+              isVerifikator
+                ? `
               <button type="button" class="btn btn-primary" onclick="saveFieldComment()">
                 <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
               </button>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
         </div>
       </div>
@@ -638,11 +639,15 @@ export function renderRevisiKakPage(path, userRole) {
               <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai Saat Ini</label>
               <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="currentRowValue"></div>
             </div>
-            <div id="rowCommentInputContainer" style="${isPengusul ? 'display: none;' : ''}">
+            <div id="rowCommentInputContainer" style="${
+              isPengusul ? "display: none;" : ""
+            }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
               <textarea id="rowCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi untuk baris ini..."></textarea>
             </div>
-            <div id="rowCommentDisplayContainer" style="${isVerifikator ? 'display: none;' : ''}">
+            <div id="rowCommentDisplayContainer" style="${
+              isVerifikator ? "display: none;" : ""
+            }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Verifikator</label>
               <div class="p-3 rounded-lg" style="background: #E0F7FA; color: #374151;" id="rowCommentDisplayText"></div>
             </div>
@@ -656,11 +661,15 @@ export function renderRevisiKakPage(path, userRole) {
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
-            ${isVerifikator ? `
+            ${
+              isVerifikator
+                ? `
               <button type="button" class="btn btn-primary" onclick="saveRowComment()">
                 <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
               </button>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
         </div>
       </div>
@@ -669,615 +678,1013 @@ export function renderRevisiKakPage(path, userRole) {
 
   renderDashboardLayout(pageContent, userRole);
 
-  
-    // --- JavaScript Logic ---
-    const pathSegments = path.split("/").filter(Boolean);
-    const usulanId = pathSegments.length > 2 ? pathSegments[pathSegments.length - 1] : null;
+  // --- JavaScript Logic ---
+  const pathSegments = path.split("/").filter(Boolean);
+  const usulanId =
+    pathSegments.length > 2 ? pathSegments[pathSegments.length - 1] : null;
 
-    let mainStep = 1;
-    let currentStep = 1;
-    const totalSteps = 5;
-    const menuItems = ['gambaran-umum', 'penerima-manfaat', 'strategi-pencapaian', 'indikator-kinerja', 'kurun-waktu'];
-    
-    // New structured comment state
-    let fieldComments = {}; // For t_kak table fields, e.g., { nama_kegiatan: "comment" }
-    let rowComments = {};   // For child table rows, e.g., { t_kak_manfaat: { 45: "comment" } }
+  // State untuk menyimpan data KAK yang sudah di-fetch
+  let kakDataState = null;
 
-    let currentCommentTarget = null; // { type: 'field'/'row', key: '...', table: '...', pk: '...' }
+  let mainStep = 1;
+  let currentStep = 1;
+  const totalSteps = 5;
+  const menuItems = [
+    "gambaran-umum",
+    "penerima-manfaat",
+    "strategi-pencapaian",
+    "indikator-kinerja",
+    "kurun-waktu",
+  ];
 
-    let fieldCommentModalInstance = null;
-    let rowCommentModalInstance = null;
-    
-    let masterState = {
-      iku: [],
-      satuan: []
-    };
-  
-    // ==============================================
-    // API FUNCTIONS
-    // ==============================================
-    async function apiRequest(endpoint, options = {}) {
-        const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
-        const headers = { ...options.headers, Authorization: `Bearer ${token}` };
-        if (!(options.body instanceof FormData)) {
-            headers["Content-Type"] = "application/json";
-        }
-        const config = { ...options, headers };
-        try {
-            const response = await fetch(`/api${endpoint}`, config);
-            const data = await response.json();
-            if (data.success === false) {
-                throw new Error(data.message || "API request failed");
-            }
-            return data;
-        } catch (error) {
-            console.error("API Request Error:", error);
-            if (typeof Swal !== 'undefined') {
-              Swal.fire({ icon: 'error', title: 'API Error', text: error.message });
-            }
-            throw error;
-        }
+  // New structured comment state
+  let fieldComments = {}; // For t_kak table fields
+  let rowComments = {}; // For child table rows
+
+  let currentCommentTarget = null;
+  let fieldCommentModalInstance = null;
+  let rowCommentModalInstance = null;
+
+  let masterState = {
+    iku: [],
+    satuan: [],
+  };
+
+  // ==============================================
+  // API FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
+    const headers = { ...options.headers, Authorization: `Bearer ${token}` };
+    if (!(options.body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
     }
-  
-    // ==============================================
-    // HELPER & CREATION FUNCTIONS
-    // ==============================================
-    const toSnakeCase = str => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-
-    const formatCurrency = (amount) => {
-      if (!amount) return "Rp 0";
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-    };
-    
-    const getNameById = (id, list, idField, nameField) => {
-        const item = list.find(d => d[idField] == id);
-        return item ? item[nameField] : 'N/A';
-    };
-    
-    const createReadOnlyRow = (value, index, type, pkValue, pkName) => `
-      <div class="row-with-comment" data-row-type="${type}" data-pk-name="${pkName}" data-pk-value="${pkValue}">
-        <div class="input-with-comment" style="padding-right: 60px;">
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${value}">
-        </div>
-        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="${type.charAt(0).toUpperCase() + type.slice(1)} #${index + 1}">
-          <i class="ti ti-message-circle-2">&#xeaed;</i>
-        </button>
-      </div>
-    `;
-
-    const createIndikatorKinerjaRow = (item, index) => `
-      <div class="row-with-comment" data-row-type="t_kak_target" data-pk-name="target_id" data-pk-value="${item.target_id}">
-        <div class="grid grid-cols-3 gap-4" style="padding-right: 60px;">
-          <div>
-            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.bulan_indikator || ''}">
-          </div>
-          <div>
-            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.deskripsi_target || ''}">
-          </div>
-          <div>
-            <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.persentase_target || ''}">
-          </div>
-        </div>
-        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Indikator Kinerja #${index + 1}">
-          <i class="ti ti-message-circle-2">&#xeaed;</i>
-        </button>
-      </div>
-    `;
-
-    const createIkuRow = (item, index) => `
-      <div class="row-with-comment" data-row-type="t_kak_iku" data-pk-name="kak_iku_id" data-pk-value="${item.kak_iku_id}">
-        <div class="grid grid-cols-2 gap-4" style="padding-right: 60px;">
-          <div>
-            <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-            <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${getNameById(item.iku_id, masterState.iku, 'iku_id', 'nama_iku')}">
-          </div>
-          <div>
-            <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
-            <div class="flex gap-2 items-center">
-              <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.persentase_target || '0'}">
-              <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-            </div>
-          </div>
-        </div>
-        <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="IKU & Nilai #${index + 1}">
-          <i class="ti ti-message-circle-2">&#xeaed;</i>
-        </button>
-      </div>
-    `;
-    
-    const createRabRow = (item, index) => `
-      <div class="row-with-comment" data-row-type="t_kak_anggaran" data-pk-name="anggaran_id" data-pk-value="${item.anggaran_id}">
-          <div class="grid-rab" style="padding-right: 60px;">
-              <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.uraian || ''}">
-              </div>
-              <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.volume1 || '1'}">
-              </div>
-              <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${getNameById(item.satuan1_id, masterState.satuan, 'satuan_id', 'nama_satuan')}">
-              </div>
-              <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.volume2 || '1'}">
-              </div>
-              <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
-                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${item.satuan2_id ? getNameById(item.satuan2_id, masterState.satuan, 'satuan_id', 'nama_satuan') : ''}">
-              </div>
-              <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-                  <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${formatCurrency(item.harga_satuan)}">
-              </div>
-          </div>
-          <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Anggaran #${index + 1}">
-              <i class="ti ti-message-circle-2">&#xeaed;</i>
-          </button>
-      </div>
-    `;
-  
-    // ==============================================
-    // DATA FETCH AND POPULATE
-    // ==============================================
-    async function fetchAndPopulateData(kakId) {
-      if (!kakId) {
-          Swal.fire('Error', 'ID Usulan tidak ditemukan di URL.', 'error');
-          return;
+    const config = { ...options, headers };
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (data.success === false) {
+        throw new Error(data.message || "API request failed");
       }
-  
-      Swal.fire({
-          title: 'Memuat Data...',
-          text: 'Silakan tunggu sebentar.',
-          allowOutsideClick: false,
-          didOpen: () => { Swal.showLoading(); }
-      });
-  
-      try {
-          const [kakResponse, ikuResponse, satuanResponse] = await Promise.all([
-              apiRequest(`/kak/${kakId}/data`),
-              apiRequest('/master/iku'),
-              apiRequest('/master/satuan')
-          ]);
-  
-          masterState.iku = ikuResponse.data;
-          masterState.satuan = satuanResponse.data;
-          const kakData = kakResponse.data;
-
-          // Populate fieldComments and rowComments from kakData
-          if (kakData.catatan_kak) {
-            fieldComments = kakData.catatan_kak;
-            for (const key in fieldComments) {
-                if (fieldComments.hasOwnProperty(key)) {
-                    updateCommentButton(`.comment-icon[data-field="${key.replace(/_/g, '-')}"]`, fieldComments[key]);
-                }
-            }
-          }
-          if (kakData.anak) {
-            for (const table in kakData.anak) {
-                if (kakData.anak.hasOwnProperty(table)) {
-                    if (!rowComments[table]) {
-                        rowComments[table] = {};
-                    }
-                    kakData.anak[table].forEach(item => {
-                        if (item.id && item.catatan_verifikator) {
-                            rowComments[table][item.id] = item.catatan_verifikator;
-                            updateCommentButton(`.row-with-comment[data-pk-value="${item.id}"] .row-comment-icon`, item.catatan_verifikator);
-                        }
-                    });
-                }
-            }
-          }
-          updateCommentCount();
-  
-          document.querySelector('[data-field="pengusul"]').value = kakData.user ? kakData.user.nama : 'N/A';
-          document.querySelector('[data-field="namaKegiatan"]').value = kakData.nama_kegiatan || '';
-          document.querySelector('[data-field="gambaranUmum"]').value = kakData.deskripsi_kegiatan || '';
-          document.querySelector('[data-field="metodePelaksanaan"]').value = kakData.metode_pelaksanaan || '';
-          document.querySelector('[data-field="tanggalMulai"]').value = kakData.tanggal_mulai || '';
-          document.querySelector('[data-field="tanggalSelesai"]').value = kakData.tanggal_selesai || '';
-  
-          const sasaranContainer = document.getElementById('sasaranUtamaContainer');
-          const manfaatContainer = document.getElementById('manfaatContainer');
-          sasaranContainer.innerHTML = '';
-          manfaatContainer.innerHTML = '';
-          if (kakData.manfaat && kakData.manfaat.length > 0) {
-              kakData.manfaat.forEach((item, index) => {
-                  if(item.sasaran_utama) sasaranContainer.innerHTML += createReadOnlyRow(item.sasaran_utama, index, 't_kak_manfaat', item.manfaat_id, 'manfaat_id');
-                  if(item.manfaat) manfaatContainer.innerHTML += createReadOnlyRow(item.manfaat, index, 't_kak_manfaat', item.manfaat_id, 'manfaat_id');
-              });
-          }
-          
-          const tahapanContainer = document.getElementById('tahapanPelaksanaanContainer');
-          tahapanContainer.innerHTML = '';
-          if (kakData.tahapan && kakData.tahapan.length > 0) {
-              kakData.tahapan.forEach((item, index) => {
-                  tahapanContainer.innerHTML += createReadOnlyRow(item.nama_tahapan, index, 't_kak_tahapan', item.tahapan_id, 'tahapan_id');
-              });
-          }
-  
-          const indikatorContainer = document.getElementById('indikatorKinerjaContainer');
-          indikatorContainer.innerHTML = '';
-          if (kakData.target && kakData.target.length > 0) {
-              kakData.target.forEach((item, index) => {
-                  indikatorContainer.innerHTML += createIndikatorKinerjaRow(item, index);
-              });
-          }
-          
-          const ikuContainer = document.getElementById('ikuRenstraContainer');
-          ikuContainer.innerHTML = '';
-          if (kakData.iku && kakData.iku.length > 0) {
-              kakData.iku.forEach((item, index) => {
-                  ikuContainer.innerHTML += createIkuRow(item, index);
-              });
-          }
-  
-          const belanjaBarangContainer = document.getElementById('belanjaBarangContainer');
-          belanjaBarangContainer.innerHTML = '';
-          // This part needs to be adapted if there are different budget types
-          const belanjaJasaContainer = document.getElementById('belanjaJasaContainer');
-          belanjaJasaContainer.innerHTML = '';
-          const belanjaPerjalananContainer = document.getElementById('belanjaPerjalananContainer');
-          belanjaPerjalananContainer.innerHTML = '';
-
-          if (kakData.anggaran && kakData.anggaran.length > 0) {
-              kakData.anggaran.forEach((item, index) => {
-                   belanjaBarangContainer.innerHTML += createRabRow(item, index);
-              });
-          }
-          
-          Swal.close();
-  
-      } catch (error) {
-          Swal.fire('Gagal Memuat Data', error.message, 'error');
+      return data;
+    } catch (error) {
+      console.error("API Request Error:", error);
+      if (typeof Swal !== "undefined") {
+        Swal.fire({ icon: "error", title: "API Error", text: error.message });
       }
+      throw error;
     }
-  
-  
-    // Initialize
-    function init() {
-      updateMainStepDisplay();
-      updateStepDisplay();
-      attachEventListeners();
-      updateCommentCount();
-      fetchAndPopulateData(usulanId);
+  }
 
-      if (isPengusul) {
-        const kakFile = document.getElementById('kakFile');
-        const btnResubmitKak = document.getElementById('btnResubmitKak');
-        if (kakFile && btnResubmitKak) {
-          kakFile.addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-              btnResubmitKak.style.display = 'block';
-            } else {
-              btnResubmitKak.style.display = 'none';
+  // ==============================================
+  // HELPER & CREATION FUNCTIONS
+  // ==============================================
+  const toSnakeCase = (str) =>
+    str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+  const formatCurrency = (amount) => {
+    if (!amount) return "Rp 0";
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const getNameById = (id, list, idField, nameField) => {
+    const item = list.find((d) => d[idField] == id);
+    return item ? item[nameField] : "N/A";
+  };
+
+  const createReadOnlyRow = (value, index, type, pkValue, pkName) => `
+    <div class="row-with-comment" data-row-type="${type}" data-pk-name="${pkName}" data-pk-value="${pkValue}">
+      <div class="input-with-comment" style="padding-right: 60px;">
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${value}">
+      </div>
+      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="${
+        type.charAt(0).toUpperCase() + type.slice(1)
+      } #${index + 1}">
+        <i class="ti ti-message-circle-2">&#xeaed;</i>
+      </button>
+    </div>
+  `;
+
+  const createIndikatorKinerjaRow = (item, index) => `
+    <div class="row-with-comment" data-row-type="t_kak_target" data-pk-name="target_id" data-pk-value="${
+      item.target_id
+    }">
+      <div class="grid grid-cols-3 gap-4" style="padding-right: 60px;">
+        <div>
+          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${
+    item.bulan_indikator || ""
+  }">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${
+    item.deskripsi_target || ""
+  }">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${
+    item.persentase_target || ""
+  }">
+        </div>
+      </div>
+      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Indikator Kinerja #${
+        index + 1
+      }">
+        <i class="ti ti-message-circle-2">&#xeaed;</i>
+      </button>
+    </div>
+  `;
+
+  const createIkuRow = (item, index) => `
+    <div class="row-with-comment" data-row-type="t_kak_iku" data-pk-name="kak_iku_id" data-pk-value="${
+      item.kak_iku_id || item.iku_id
+    }">
+      <div class="grid grid-cols-2 gap-4" style="padding-right: 60px;">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${getNameById(
+    item.iku_id,
+    masterState.iku,
+    "iku_id",
+    "nama_iku"
+  )}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
+          <div class="flex gap-2 items-center">
+            <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${
+    item.persentase_target || "0"
+  }">
+            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+          </div>
+        </div>
+      </div>
+      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="IKU & Nilai #${
+        index + 1
+      }">
+        <i class="ti ti-message-circle-2">&#xeaed;</i>
+      </button>
+    </div>
+  `;
+
+  const createRabRow = (item, index) => `
+    <div class="row-with-comment" data-row-type="t_kak_anggaran" data-pk-name="anggaran_id" data-pk-value="${
+      item.anggaran_id
+    }">
+      <div class="grid-rab" style="padding-right: 60px;">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${
+    item.uraian || ""
+  }">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${
+    item.volume1 || "1"
+  }">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${getNameById(
+    item.satuan1_id,
+    masterState.satuan,
+    "satuan_id",
+    "nama_satuan"
+  )}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${
+    item.volume2 || "1"
+  }">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${
+    item.satuan2_id
+      ? getNameById(
+          item.satuan2_id,
+          masterState.satuan,
+          "satuan_id",
+          "nama_satuan"
+        )
+      : ""
+  }">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${READONLY_STYLE}" ${READONLY_ATTR} value="${formatCurrency(
+    item.harga_satuan
+  )}">
+        </div>
+      </div>
+      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Anggaran #${
+        index + 1
+      }">
+        <i class="ti ti-message-circle-2">&#xeaed;</i>
+      </button>
+    </div>
+  `;
+
+  // ==============================================
+  // DATA FETCH AND POPULATE - FIXED VERSION
+  // ==============================================
+  async function fetchAndPopulateData(kakId) {
+    if (!kakId) {
+      Swal.fire("Error", "ID Usulan tidak ditemukan di URL.", "error");
+      return;
+    }
+
+    Swal.fire({
+      title: "Memuat Data...",
+      text: "Silakan tunggu sebentar.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    try {
+      const [kakResponse, ikuResponse, satuanResponse] = await Promise.all([
+        apiRequest(`/kak/${kakId}/data`),
+        apiRequest("/master/iku"),
+        apiRequest("/master/satuan"),
+      ]);
+
+      masterState.iku = ikuResponse.data;
+      masterState.satuan = satuanResponse.data;
+      const kakData = kakResponse.data;
+
+      // Simpan data KAK untuk digunakan saat submit
+      kakDataState = kakData;
+
+      // === FIX 1: Populate fieldComments dari root level kakData ===
+      // Backend mengirim catatan langsung di root level dengan prefix catatan_
+      const fieldMapping = {
+        catatan_nama_kegiatan: "namaKegiatan",
+        catatan_deskripsi_kegiatan: "gambaranUmum",
+        catatan_metode_pelaksanaan: "metodePelaksanaan",
+        catatan_tanggal_mulai: "tanggalMulai",
+        catatan_tanggal_selesai: "tanggalSelesai",
+      };
+
+      for (const [backendKey, frontendKey] of Object.entries(fieldMapping)) {
+        if (kakData[backendKey]) {
+          fieldComments[toSnakeCase(frontendKey)] = kakData[backendKey];
+          updateCommentButton(
+            `.comment-icon[data-field="${frontendKey}"]`,
+            kakData[backendKey]
+          );
+        }
+      }
+
+      // === FIX 2: Populate rowComments dari array child tables ===
+      // Backend mengirim array langsung (manfaat, tahapan, target, iku, anggaran)
+      const childTables = {
+        manfaat: {
+          array: kakData.manfaat,
+          idField: "manfaat_id",
+          tableName: "t_kak_manfaat",
+        },
+        tahapan: {
+          array: kakData.tahapan,
+          idField: "tahapan_id",
+          tableName: "t_kak_tahapan",
+        },
+        target: {
+          array: kakData.target,
+          idField: "target_id",
+          tableName: "t_kak_target",
+        },
+        iku: {
+          array: kakData.iku,
+          idField: "kak_iku_id",
+          tableName: "t_kak_iku",
+        },
+        anggaran: {
+          array: kakData.anggaran,
+          idField: "anggaran_id",
+          tableName: "t_kak_anggaran",
+        },
+      };
+
+      for (const [key, config] of Object.entries(childTables)) {
+        if (config.array && config.array.length > 0) {
+          if (!rowComments[config.tableName]) {
+            rowComments[config.tableName] = {};
+          }
+          config.array.forEach((item) => {
+            if (item[config.idField] && item.catatan_verifikator) {
+              const pkValue = item[config.idField];
+              rowComments[config.tableName][pkValue] = item.catatan_verifikator;
             }
           });
         }
       }
-    }
-  
-  function updateMainStepDisplay() {
-      const stepIcons = {
-          1: { class: 'ti ti-file-text', entity: '&#xef40;' },
-          2: { class: 'ti ti-chart-bar', entity: '&#xea59;' },
-          3: { class: 'ti ti-currency-dollar', entity: '&#xeb84;' }
-      };
-      document.querySelectorAll(".progress-step-item").forEach((step, index) => {
-        const stepNum = index + 1;
-        const circle = step.querySelector(".progress-step-circle");
-        const text = step.querySelector(".progress-step-text");
-        const subtext = step.querySelector(".progress-step-subtext");
-        circle.className = "progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300";
-        if (stepNum < mainStep) {
-          circle.style.background = "#10B981";
-          circle.style.color = "#FFFFFF";
-          circle.innerHTML = '<i class="ti ti-check" style="font-size: 1.125rem;">&#xea5e;</i>';
-          text.style.color = "#10B981";
-          if (subtext) subtext.style.color = "#10B981";
-        } else if (stepNum === mainStep) {
-          circle.style.background = "#00BCD4";
-          circle.style.color = "#FFFFFF";
-          circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem;">${stepIcons[stepNum].entity}</i>`; 
-          text.style.color = "#00BCD4";
-          if (subtext) subtext.style.color = "#00BCD4";
-        } else {
-          circle.style.background = "#E5E7EB";
-          circle.style.color = "#6B7280";
-          circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem;">${stepIcons[stepNum].entity}</i>`;
-          text.style.color = "#6B7280";
-          if (subtext) subtext.style.color = "#9CA3AF";
-        }
-      });
-      document.querySelectorAll(".main-step-content").forEach((content, index) => {
-          content.classList.toggle("active", index + 1 === mainStep);
-      });
-  }
-  
-    function updateStepDisplay() {
-      if (mainStep !== 1) return;
-      document.querySelectorAll('.menu-button').forEach((btn, index) => {
-          const isActive = index + 1 === currentStep;
-          btn.classList.toggle('active', isActive);
-          btn.style.borderColor = isActive ? '#00BCD4' : '#E5E7EB';
-          btn.style.background = isActive ? 'rgba(0, 188, 212, 0.1)' : '';
-      });
-      document.querySelectorAll('#main-step-1 .step-content').forEach((content) => {
-          content.classList.toggle('active', content.id === menuItems[currentStep - 1]);
-      });
-      document.getElementById('btnBack').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  
-    function attachEventListeners() {
-      document.querySelectorAll('.menu-button').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const menuIndex = menuItems.indexOf(this.getAttribute('data-menu'));
-          if (menuIndex !== -1) {
-            currentStep = menuIndex + 1;
-            updateStepDisplay();
+
+      updateCommentCount();
+
+      // Populate form fields
+      document.querySelector('[data-field="namaKegiatan"]').value =
+        kakData.nama_kegiatan || "";
+      document.querySelector('[data-field="gambaranUmum"]').value =
+        kakData.deskripsi_kegiatan || "";
+      document.querySelector('[data-field="metodePelaksanaan"]').value =
+        kakData.metode_pelaksanaan || "";
+      document.querySelector('[data-field="tanggalMulai"]').value =
+        kakData.tanggal_mulai || "";
+      document.querySelector('[data-field="tanggalSelesai"]').value =
+        kakData.tanggal_selesai || "";
+
+      // Populate Sasaran & Manfaat
+      const sasaranContainer = document.getElementById("sasaranUtamaContainer");
+      const manfaatContainer = document.getElementById("manfaatContainer");
+      sasaranContainer.innerHTML = "";
+      manfaatContainer.innerHTML = "";
+      if (kakData.manfaat && kakData.manfaat.length > 0) {
+        kakData.manfaat.forEach((item, index) => {
+          if (item.sasaran_utama) {
+            sasaranContainer.innerHTML += createReadOnlyRow(
+              item.sasaran_utama,
+              index,
+              "t_kak_manfaat",
+              item.manfaat_id,
+              "manfaat_id"
+            );
+          }
+          if (item.manfaat) {
+            manfaatContainer.innerHTML += createReadOnlyRow(
+              item.manfaat,
+              index,
+              "t_kak_manfaat",
+              item.manfaat_id,
+              "manfaat_id"
+            );
           }
         });
-      });
-      document.getElementById('btnBack').addEventListener('click', () => {
-          if (currentStep > 1) { currentStep--; updateStepDisplay(); }
-      });
-      document.getElementById('btnNext').addEventListener('click', () => {
-          if (currentStep < totalSteps) { currentStep++; updateStepDisplay(); } 
-          else { mainStep = 2; updateMainStepDisplay(); }
-      });
-      document.getElementById('btnBackIku').addEventListener('click', () => {
-          mainStep = 1; currentStep = totalSteps; updateMainStepDisplay(); updateStepDisplay();
-      });
-      document.getElementById('btnNextIku').addEventListener('click', () => {
-          mainStep = 3; updateMainStepDisplay();
-      });
-      document.getElementById('btnBackRab').addEventListener('click', () => {
-          mainStep = 2; updateMainStepDisplay();
-      });
+        // Update comment buttons after DOM rendered
+        kakData.manfaat.forEach((item) => {
+          if (item.catatan_verifikator) {
+            updateCommentButton(
+              `.row-with-comment[data-pk-value="${item.manfaat_id}"] .row-comment-icon`,
+              item.catatan_verifikator
+            );
+          }
+        });
+      }
+
+      // Populate Tahapan
+      const tahapanContainer = document.getElementById(
+        "tahapanPelaksanaanContainer"
+      );
+      tahapanContainer.innerHTML = "";
+      if (kakData.tahapan && kakData.tahapan.length > 0) {
+        kakData.tahapan.forEach((item, index) => {
+          tahapanContainer.innerHTML += createReadOnlyRow(
+            item.nama_tahapan,
+            index,
+            "t_kak_tahapan",
+            item.tahapan_id,
+            "tahapan_id"
+          );
+        });
+        kakData.tahapan.forEach((item) => {
+          if (item.catatan_verifikator) {
+            updateCommentButton(
+              `.row-with-comment[data-pk-value="${item.tahapan_id}"] .row-comment-icon`,
+              item.catatan_verifikator
+            );
+          }
+        });
+      }
+
+      // Populate Indikator Kinerja
+      const indikatorContainer = document.getElementById(
+        "indikatorKinerjaContainer"
+      );
+      indikatorContainer.innerHTML = "";
+      if (kakData.target && kakData.target.length > 0) {
+        kakData.target.forEach((item, index) => {
+          indikatorContainer.innerHTML += createIndikatorKinerjaRow(
+            item,
+            index
+          );
+        });
+        kakData.target.forEach((item) => {
+          if (item.catatan_verifikator) {
+            updateCommentButton(
+              `.row-with-comment[data-pk-value="${item.target_id}"] .row-comment-icon`,
+              item.catatan_verifikator
+            );
+          }
+        });
+      }
+
+      // Populate IKU
+      const ikuContainer = document.getElementById("ikuRenstraContainer");
+      ikuContainer.innerHTML = "";
+      if (kakData.iku && kakData.iku.length > 0) {
+        kakData.iku.forEach((item, index) => {
+          ikuContainer.innerHTML += createIkuRow(item, index);
+        });
+        // Update buttons after render, using kak_iku_id or fallback to iku_id
+        kakData.iku.forEach((item) => {
+          if (item.catatan_verifikator) {
+            const pkValue = item.kak_iku_id || item.iku_id;
+            updateCommentButton(
+              `.row-with-comment[data-pk-value="${pkValue}"] .row-comment-icon`,
+              item.catatan_verifikator
+            );
+          }
+        });
+      }
+
+      // Populate RAB
+      const belanjaBarangContainer = document.getElementById(
+        "belanjaBarangContainer"
+      );
+      belanjaBarangContainer.innerHTML = "";
+      const belanjaJasaContainer = document.getElementById(
+        "belanjaJasaContainer"
+      );
+      belanjaJasaContainer.innerHTML = "";
+      const belanjaPerjalananContainer = document.getElementById(
+        "belanjaPerjalananContainer"
+      );
+      belanjaPerjalananContainer.innerHTML = "";
+
+      if (kakData.anggaran && kakData.anggaran.length > 0) {
+        kakData.anggaran.forEach((item, index) => {
+          belanjaBarangContainer.innerHTML += createRabRow(item, index);
+        });
+        kakData.anggaran.forEach((item) => {
+          if (item.catatan_verifikator) {
+            updateCommentButton(
+              `.row-with-comment[data-pk-value="${item.anggaran_id}"] .row-comment-icon`,
+              item.catatan_verifikator
+            );
+          }
+        });
+      }
+
+      Swal.close();
+    } catch (error) {
+      Swal.fire("Gagal Memuat Data", error.message, "error");
     }
-  
-    window.openFieldCommentModal = function(btn) {
-      const fieldKey = btn.getAttribute('data-field');
-      const fieldLabel = btn.getAttribute('data-label');
-      currentCommentTarget = { type: 'field', key: toSnakeCase(fieldKey) };
-      const commentText = fieldComments[currentCommentTarget.key] || '';
+  }
 
-      const fieldCommentInputContainer = document.getElementById('fieldCommentInputContainer');
-      const fieldCommentInput = document.getElementById('fieldCommentInput');
-      const fieldCommentDisplayContainer = document.getElementById('fieldCommentDisplayContainer');
-      const fieldCommentDisplayText = document.getElementById('fieldCommentDisplayText');
-      const fieldCommentLabelEl = document.getElementById('fieldCommentLabel');
-      const currentFieldValueEl = document.getElementById('currentFieldValue');
+  // Initialize
+  function init() {
+    updateMainStepDisplay();
+    updateStepDisplay();
+    attachEventListeners();
+    updateCommentCount();
+    fetchAndPopulateData(usulanId);
+  }
 
-      fieldCommentLabelEl.textContent = fieldLabel;
-      const input = btn.closest('.input-with-comment').querySelector('input, textarea');
-      currentFieldValueEl.textContent = (input ? input.value : '') || '(Kosong)';
-
-      if (isVerifikator) {
-        fieldCommentInputContainer.style.display = 'block';
-        fieldCommentDisplayContainer.style.display = 'none';
-        fieldCommentInput.value = commentText;
-      } else if (isPengusul) {
-        fieldCommentInputContainer.style.display = 'none';
-        fieldCommentDisplayContainer.style.display = 'block';
-        fieldCommentDisplayText.textContent = commentText || '(Tidak ada catatan)';
-      }
-      
-      if (!fieldCommentModalInstance) {
-        fieldCommentModalInstance = new bootstrap.Modal(document.getElementById('fieldCommentModal'));
-      }
-      if (isVerifikator || (isPengusul && commentText)) {
-        fieldCommentModalInstance.show();
-      }
+  function updateMainStepDisplay() {
+    const stepIcons = {
+      1: { class: "ti ti-file-text", entity: "&#xef40;" },
+      2: { class: "ti ti-chart-bar", entity: "&#xea59;" },
+      3: { class: "ti ti-currency-dollar", entity: "&#xeb84;" },
     };
-  
-    window.openRowCommentModal = function(btn) {
-      const rowElement = btn.closest('.row-with-comment');
-      currentCommentTarget = {
-          type: 'row',
-          table: rowElement.dataset.rowType,
-          pk: rowElement.dataset.pkValue
-      };
-      const rowLabel = btn.getAttribute('data-label');
-      const commentText = (rowComments[currentCommentTarget.table] && rowComments[currentCommentTarget.table][currentCommentTarget.pk]) ? rowComments[currentCommentTarget.table][currentCommentTarget.pk] : '';
-
-      const rowCommentInputContainer = document.getElementById('rowCommentInputContainer');
-      const rowCommentInput = document.getElementById('rowCommentInput');
-      const rowCommentDisplayContainer = document.getElementById('rowCommentDisplayContainer');
-      const rowCommentDisplayText = document.getElementById('rowCommentDisplayText');
-      const rowCommentLabelEl = document.getElementById('rowCommentLabel');
-      const currentRowValueEl = document.getElementById('currentRowValue');
-
-      rowCommentLabelEl.textContent = rowLabel;
-      const inputs = rowElement.querySelectorAll('input, textarea, select');
-      let rowValues = Array.from(inputs).map(input => input.value).filter(Boolean);
-      currentRowValueEl.textContent = rowValues.join(' | ') || '(Kosong)';
-
-      if (isVerifikator) {
-        rowCommentInputContainer.style.display = 'block';
-        rowCommentDisplayContainer.style.display = 'none';
-        rowCommentInput.value = commentText;
-      } else if (isPengusul) {
-        rowCommentInputContainer.style.display = 'none';
-        rowCommentDisplayContainer.style.display = 'block';
-        rowCommentDisplayText.textContent = commentText || '(Tidak ada catatan)';
-      }
-  
-      if (!rowCommentModalInstance) {
-        rowCommentModalInstance = new bootstrap.Modal(document.getElementById('rowCommentModal'));
-      }
-      if (isVerifikator || (isPengusul && commentText)) {
-        rowCommentModalInstance.show();
-      }
-    };
-  
-    window.saveFieldComment = function() {
-      const comment = document.getElementById('fieldCommentInput').value.trim();
-      const { key } = currentCommentTarget;
-      if (comment) {
-        fieldComments[key] = comment;
+    document.querySelectorAll(".progress-step-item").forEach((step, index) => {
+      const stepNum = index + 1;
+      const circle = step.querySelector(".progress-step-circle");
+      const text = step.querySelector(".progress-step-text");
+      const subtext = step.querySelector(".progress-step-subtext");
+      circle.className =
+        "progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300";
+      if (stepNum < mainStep) {
+        circle.style.background = "#10B981";
+        circle.style.color = "#FFFFFF";
+        circle.innerHTML =
+          '<i class="ti ti-check" style="font-size: 1.125rem;">&#xea5e;</i>';
+        text.style.color = "#10B981";
+        if (subtext) subtext.style.color = "#10B981";
+      } else if (stepNum === mainStep) {
+        circle.style.background = "#00BCD4";
+        circle.style.color = "#FFFFFF";
+        circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem;">${stepIcons[stepNum].entity}</i>`;
+        text.style.color = "#00BCD4";
+        if (subtext) subtext.style.color = "#00BCD4";
       } else {
-        delete fieldComments[key];
+        circle.style.background = "#E5E7EB";
+        circle.style.color = "#6B7280";
+        circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem;">${stepIcons[stepNum].entity}</i>`;
+        text.style.color = "#6B7280";
+        if (subtext) subtext.style.color = "#9CA3AF";
       }
-      updateCommentButton(`.comment-icon[data-field="${key.replace(/_/g, '-')}"]`, comment);
-      updateCommentCount();
-      fieldCommentModalInstance.hide();
-      Swal.fire({ icon: 'success', title: 'Tersimpan!', timer: 1500, showConfirmButton: false });
-    };
-  
-    window.saveRowComment = function() {
-      const comment = document.getElementById('rowCommentInput').value.trim();
-      const { table, pk } = currentCommentTarget;
-      if (!rowComments[table]) {
-        rowComments[table] = {};
+    });
+    document
+      .querySelectorAll(".main-step-content")
+      .forEach((content, index) => {
+        content.classList.toggle("active", index + 1 === mainStep);
+      });
+  }
+
+  function updateStepDisplay() {
+    if (mainStep !== 1) return;
+    document.querySelectorAll(".menu-button").forEach((btn, index) => {
+      const isActive = index + 1 === currentStep;
+      btn.classList.toggle("active", isActive);
+      btn.style.borderColor = isActive ? "#00BCD4" : "#E5E7EB";
+      btn.style.background = isActive ? "rgba(0, 188, 212, 0.1)" : "";
+    });
+    document
+      .querySelectorAll("#main-step-1 .step-content")
+      .forEach((content) => {
+        content.classList.toggle(
+          "active",
+          content.id === menuItems[currentStep - 1]
+        );
+      });
+    document.getElementById("btnBack").style.visibility =
+      currentStep === 1 ? "hidden" : "visible";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function attachEventListeners() {
+    document.querySelectorAll(".menu-button").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const menuIndex = menuItems.indexOf(this.getAttribute("data-menu"));
+        if (menuIndex !== -1) {
+          currentStep = menuIndex + 1;
+          updateStepDisplay();
+        }
+      });
+    });
+    document.getElementById("btnBack").addEventListener("click", () => {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepDisplay();
       }
-      if (comment) {
-        rowComments[table][pk] = comment;
+    });
+    document.getElementById("btnNext").addEventListener("click", () => {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateStepDisplay();
       } else {
-        delete rowComments[table][pk];
+        mainStep = 2;
+        updateMainStepDisplay();
       }
-      updateCommentButton(`.row-with-comment[data-pk-value="${pk}"] .row-comment-icon`, comment);
-      updateCommentCount();
-      rowCommentModalInstance.hide();
-      Swal.fire({ icon: 'success', title: 'Tersimpan!', timer: 1500, showConfirmButton: false });
-    };
-  
-    function updateCommentButton(selector, comment) {
-        const btn = document.querySelector(selector);
-        if(btn) {
-          const icon = btn.querySelector('i');
-          btn.classList.toggle('has-comment', !!comment);
-          icon.innerHTML = comment ? '&#xeaee;' : '&#xeaed;';
-          if(btn.parentElement.classList.contains('row-with-comment')) {
-              btn.parentElement.classList.toggle('has-row-comment', !!comment);
-          }
-        }
-    }
-  
-    function updateCommentCount() {
-      const fieldCount = Object.keys(fieldComments).length;
-      let rowCount = 0;
-      Object.values(rowComments).forEach(table => {
-          rowCount += Object.keys(table).length;
-      });
-      const totalCount = fieldCount + rowCount;
-      
-      const badge = document.getElementById('commentCountBadge');
-      badge.style.display = totalCount > 0 ? 'flex' : 'none';
-      document.getElementById('commentCountText').textContent = `${totalCount} Catatan`;
-    }
-  
-    window.submitReview = function() {
-      const totalCount = Object.keys(fieldComments).length + Object.values(rowComments).reduce((sum, table) => sum + Object.keys(table).length, 0);
-  
-      if (totalCount === 0) {
-        Swal.fire('Perhatian!', 'Harap berikan minimal satu catatan revisi sebelum mengirim.', 'warning');
-        return;
-      }
-      
-      const anakPayload = {};
-      for (const table in rowComments) {
-          anakPayload[table] = [];
-          for (const id in rowComments[table]) {
-              anakPayload[table].push({ id: id, catatan_verifikator: rowComments[table][id] });
-          }
-      }
-  
-      const payload = {
-          catatan_kak: fieldComments,
-          anak: anakPayload
-      };
-  
-      Swal.fire({
-        title: 'Kirim Revisi?',
-        html: `Anda memiliki <strong>${totalCount}</strong> catatan revisi.<br>Usulan akan dikembalikan ke pengusul untuk diperbaiki.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#EF4444',
-        cancelButtonColor: '#6B7280',
-        confirmButtonText: 'Ya, Kirim Revisi',
-        cancelButtonText: 'Batal'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-              await apiRequest(`/kak/${usulanId}/revise`, {
-                  method: 'POST',
-                  body: JSON.stringify(payload)
-              });
-  
-              await Swal.fire({
-                  icon: 'success',
-                  title: 'Terkirim!',
-                  text: 'Catatan revisi telah dikirim ke pengusul.',
-                  timer: 2000,
-                  showConfirmButton: false
-              });
-              
-              window.location.hash = '#/verifikator/dashboard';
-  
-          } catch (error) {
-              Swal.fire('Gagal Mengirim', error.message, 'error');
-          }
-        }
-      });
-    };
-  
-    window.resubmitKak = async function() {
-      const kakFile = document.getElementById('kakFile');
-      if (!kakFile || !kakFile.files || kakFile.files.length === 0) {
-        Swal.fire('Error', 'Harap pilih file KAK revisi untuk diunggah.', 'error');
-        return;
-      }
+    });
+    document.getElementById("btnBackIku").addEventListener("click", () => {
+      mainStep = 1;
+      currentStep = totalSteps;
+      updateMainStepDisplay();
+      updateStepDisplay();
+    });
+    document.getElementById("btnNextIku").addEventListener("click", () => {
+      mainStep = 3;
+      updateMainStepDisplay();
+    });
+    document.getElementById("btnBackRab").addEventListener("click", () => {
+      mainStep = 2;
+      updateMainStepDisplay();
+    });
+  }
 
-      const file = kakFile.files[0];
-      const formData = new FormData();
-      formData.append('file', file);
+  window.openFieldCommentModal = function (btn) {
+    const fieldKey = btn.getAttribute("data-field");
+    const fieldLabel = btn.getAttribute("data-label");
+    currentCommentTarget = { type: "field", key: toSnakeCase(fieldKey) };
+    const commentText = fieldComments[currentCommentTarget.key] || "";
 
-      Swal.fire({
-        title: 'Kirim Ulang KAK?',
-        text: `Anda akan mengunggah file '${file.name}' sebagai revisi KAK.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#00BCD4',
-        cancelButtonColor: '#6B7280',
-        confirmButtonText: 'Ya, Kirim Ulang',
-        cancelButtonText: 'Batal'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-              await apiRequest(`/kak/${usulanId}/resubmit`, {
-                  method: 'POST',
-                  body: formData
-              });
-  
-              await Swal.fire({
-                  icon: 'success',
-                  title: 'Berhasil!',
-                  text: 'KAK revisi berhasil diunggah dan dikirim ulang.',
-                  timer: 2000,
-                  showConfirmButton: false
-              });
-              
-              window.location.hash = '#/pengusul/dashboard';
-  
-          } catch (error) {
-              Swal.fire('Gagal Mengunggah', error.message, 'error');
-          }
-        }
-      });
-    };
-  
-    init();
-  
-    if (window.Helpers) {
-      window.Helpers.init();
+    const fieldCommentInputContainer = document.getElementById(
+      "fieldCommentInputContainer"
+    );
+    const fieldCommentInput = document.getElementById("fieldCommentInput");
+    const fieldCommentDisplayContainer = document.getElementById(
+      "fieldCommentDisplayContainer"
+    );
+    const fieldCommentDisplayText = document.getElementById(
+      "fieldCommentDisplayText"
+    );
+    const fieldCommentLabelEl = document.getElementById("fieldCommentLabel");
+    const currentFieldValueEl = document.getElementById("currentFieldValue");
+
+    fieldCommentLabelEl.textContent = fieldLabel;
+    const input = btn
+      .closest(".input-with-comment")
+      .querySelector("input, textarea");
+    currentFieldValueEl.textContent = (input ? input.value : "") || "(Kosong)";
+
+    if (isVerifikator) {
+      fieldCommentInputContainer.style.display = "block";
+      fieldCommentDisplayContainer.style.display = "none";
+      fieldCommentInput.value = commentText;
+    } else if (isPengusul) {
+      fieldCommentInputContainer.style.display = "none";
+      fieldCommentDisplayContainer.style.display = "block";
+      fieldCommentDisplayText.textContent =
+        commentText || "(Tidak ada catatan)";
     }
+
+    if (!fieldCommentModalInstance) {
+      fieldCommentModalInstance = new bootstrap.Modal(
+        document.getElementById("fieldCommentModal")
+      );
+    }
+    if (isVerifikator || isPengusul) {
+      fieldCommentModalInstance.show();
+    }
+  };
+
+  window.openRowCommentModal = function (btn) {
+    const rowElement = btn.closest(".row-with-comment");
+    currentCommentTarget = {
+      type: "row",
+      table: rowElement.dataset.rowType,
+      pk: rowElement.dataset.pkValue,
+    };
+    const rowLabel = btn.getAttribute("data-label");
+    const commentText =
+      rowComments[currentCommentTarget.table] &&
+      rowComments[currentCommentTarget.table][currentCommentTarget.pk]
+        ? rowComments[currentCommentTarget.table][currentCommentTarget.pk]
+        : "";
+
+    const rowCommentInputContainer = document.getElementById(
+      "rowCommentInputContainer"
+    );
+    const rowCommentInput = document.getElementById("rowCommentInput");
+    const rowCommentDisplayContainer = document.getElementById(
+      "rowCommentDisplayContainer"
+    );
+    const rowCommentDisplayText = document.getElementById(
+      "rowCommentDisplayText"
+    );
+    const rowCommentLabelEl = document.getElementById("rowCommentLabel");
+    const currentRowValueEl = document.getElementById("currentRowValue");
+
+    rowCommentLabelEl.textContent = rowLabel;
+    const inputs = rowElement.querySelectorAll("input, textarea, select");
+    let rowValues = Array.from(inputs)
+      .map((input) => input.value)
+      .filter(Boolean);
+    currentRowValueEl.textContent = rowValues.join(" | ") || "(Kosong)";
+
+    if (isVerifikator) {
+      rowCommentInputContainer.style.display = "block";
+      rowCommentDisplayContainer.style.display = "none";
+      rowCommentInput.value = commentText;
+    } else if (isPengusul) {
+      rowCommentInputContainer.style.display = "none";
+      rowCommentDisplayContainer.style.display = "block";
+      rowCommentDisplayText.textContent = commentText || "(Tidak ada catatan)";
+    }
+
+    if (!rowCommentModalInstance) {
+      rowCommentModalInstance = new bootstrap.Modal(
+        document.getElementById("rowCommentModal")
+      );
+    }
+    if (isVerifikator || (isPengusul && commentText)) {
+      rowCommentModalInstance.show();
+    }
+  };
+
+  window.saveFieldComment = function () {
+    const comment = document.getElementById("fieldCommentInput").value.trim();
+    const { key } = currentCommentTarget;
+    if (comment) {
+      fieldComments[key] = comment;
+    } else {
+      delete fieldComments[key];
+    }
+
+    // Convert snake_case back to camelCase for selector
+    const camelCaseKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+    updateCommentButton(`.comment-icon[data-field="${camelCaseKey}"]`, comment);
+    updateCommentCount();
+    fieldCommentModalInstance.hide();
+    Swal.fire({
+      icon: "success",
+      title: "Tersimpan!",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+  };
+
+  window.saveRowComment = function () {
+    const comment = document.getElementById("rowCommentInput").value.trim();
+    const { table, pk } = currentCommentTarget;
+    if (!rowComments[table]) {
+      rowComments[table] = {};
+    }
+    if (comment) {
+      rowComments[table][pk] = comment;
+    } else {
+      delete rowComments[table][pk];
+    }
+    updateCommentButton(
+      `.row-with-comment[data-pk-value="${pk}"] .row-comment-icon`,
+      comment
+    );
+    updateCommentCount();
+    rowCommentModalInstance.hide();
+    Swal.fire({
+      icon: "success",
+      title: "Tersimpan!",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+  };
+
+  function updateCommentButton(selector, comment) {
+    const btn = document.querySelector(selector);
+    if (btn) {
+      const icon = btn.querySelector("i");
+      btn.classList.toggle("has-comment", !!comment);
+      icon.innerHTML = comment ? "&#xeaee;" : "&#xeaed;";
+      if (btn.parentElement.classList.contains("row-with-comment")) {
+        btn.parentElement.classList.toggle("has-row-comment", !!comment);
+      }
+    }
+  }
+
+  function updateCommentCount() {
+    const fieldCount = Object.keys(fieldComments).length;
+    let rowCount = 0;
+    Object.values(rowComments).forEach((table) => {
+      rowCount += Object.keys(table).length;
+    });
+    const totalCount = fieldCount + rowCount;
+
+    const badge = document.getElementById("commentCountBadge");
+    badge.style.display = totalCount > 0 ? "flex" : "none";
+    document.getElementById(
+      "commentCountText"
+    ).textContent = `${totalCount} Catatan`;
+  }
+
+  window.submitReview = function () {
+    const totalCount =
+      Object.keys(fieldComments).length +
+      Object.values(rowComments).reduce(
+        (sum, table) => sum + Object.keys(table).length,
+        0
+      );
+
+    if (totalCount === 0) {
+      Swal.fire(
+        "Perhatian!",
+        "Harap berikan minimal satu catatan revisi sebelum mengirim.",
+        "warning"
+      );
+      return;
+    }
+
+    // Convert fieldComments back to backend format (add catatan_ prefix)
+    const catatanKak = {};
+    for (const [key, value] of Object.entries(fieldComments)) {
+      // Map frontend key back to backend key
+      let backendKey = key;
+      if (key === "gambaran_umum") {
+        backendKey = "deskripsi_kegiatan";
+      }
+      catatanKak[`catatan_${backendKey}`] = value;
+    }
+
+    const anakPayload = {};
+    for (const table in rowComments) {
+      anakPayload[table] = [];
+      for (const id in rowComments[table]) {
+        anakPayload[table].push({
+          id: id,
+          catatan_verifikator: rowComments[table][id],
+        });
+      }
+    }
+
+    const payload = {
+      catatan_kak: catatanKak,
+      anak: anakPayload,
+    };
+
+    Swal.fire({
+      title: "Kirim Revisi?",
+      html: `Anda memiliki <strong>${totalCount}</strong> catatan revisi.<br>Usulan akan dikembalikan ke pengusul untuk diperbaiki.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#EF4444",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Ya, Kirim Revisi",
+      cancelButtonText: "Batal",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await apiRequest(`/kak/${usulanId}/revise`, {
+            method: "POST",
+            body: JSON.stringify(payload),
+          });
+
+          await Swal.fire({
+            icon: "success",
+            title: "Terkirim!",
+            text: "Catatan revisi telah dikirim ke pengusul.",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+
+          window.location.href = "/#/verifikator/monitoring-usulan";
+        } catch (error) {
+          Swal.fire("Gagal Mengirim", error.message, "error");
+        }
+      }
+    });
+  };
+
+  window.resubmitKak = async function () {
+    const kakFile = document.getElementById("kakFile");
+    if (!kakFile || !kakFile.files || kakFile.files.length === 0) {
+      Swal.fire(
+        "Error",
+        "Harap pilih file KAK revisi untuk diunggah.",
+        "error"
+      );
+      return;
+    }
+
+    const file = kakFile.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
+    Swal.fire({
+      title: "Kirim Ulang KAK?",
+      text: `Anda akan mengunggah file '${file.name}' sebagai revisi KAK.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Ya, Kirim Ulang",
+      cancelButtonText: "Batal",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await apiRequest(`/kak/${usulanId}/resubmit`, {
+            method: "POST",
+            body: formData,
+          });
+
+          await Swal.fire({
+            icon: "success",
+            title: "Berhasil!",
+            text: "KAK revisi berhasil diunggah dan dikirim ulang.",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+
+          window.location.href = "/pengusul/monitoring-usulan";
+        } catch (error) {
+          Swal.fire("Gagal Mengunggah", error.message, "error");
+        }
+      }
+    });
+  };
+
+  window.submitRevisedKak = async function () {
+    if (!kakDataState) {
+      Swal.fire(
+        "Error",
+        "Data KAK tidak tersedia. Silakan refresh halaman.",
+        "error"
+      );
+      return;
+    }
+
+    // Validasi bahwa ada catatan dari verifikator
+    const totalComments =
+      Object.keys(fieldComments).length +
+      Object.values(rowComments).reduce(
+        (sum, table) => sum + Object.keys(table).length,
+        0
+      );
+
+    if (totalComments === 0) {
+      Swal.fire("Info", "Tidak ada catatan revisi dari verifikator.", "info");
+      return;
+    }
+
+    Swal.fire({
+      title: "Submit KAK Revisi?",
+      html: `Anda akan mengirimkan ulang KAK yang telah diperbaiki sesuai <strong>${totalComments}</strong> catatan revisi.<br><br>Pastikan semua perbaikan sudah dilakukan dengan benar.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Ya, Submit KAK",
+      cancelButtonText: "Batal",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          // Prepare payload sesuai format backend
+          const payload = {
+            kak: {
+              nama_kegiatan: kakDataState.nama_kegiatan,
+              deskripsi_kegiatan: kakDataState.deskripsi_kegiatan,
+              metode_pelaksanaan: kakDataState.metode_pelaksanaan,
+              kurun_waktu_pelaksanaan: kakDataState.kurun_waktu_pelaksanaan,
+              tanggal_mulai: kakDataState.tanggal_mulai,
+              tanggal_selesai: kakDataState.tanggal_selesai,
+              lokasi: kakDataState.lokasi,
+              penerima_manfaat: [],
+              tahapan_pelaksanaan: [],
+              indikator_kinerja: [],
+            },
+            target_iku: [],
+            rab: [],
+          };
+
+          // Populate penerima_manfaat
+          if (kakDataState.manfaat && kakDataState.manfaat.length > 0) {
+            payload.kak.penerima_manfaat = kakDataState.manfaat.map((m) => ({
+              manfaat: m.manfaat,
+              sasaran_utama: m.sasaran_utama,
+            }));
+          }
+
+          // Populate tahapan_pelaksanaan
+          if (kakDataState.tahapan && kakDataState.tahapan.length > 0) {
+            payload.kak.tahapan_pelaksanaan = kakDataState.tahapan.map((t) => ({
+              nama_tahapan: t.nama_tahapan,
+              urutan: t.urutan,
+            }));
+          }
+
+          // Populate indikator_kinerja (dari target)
+          if (kakDataState.target && kakDataState.target.length > 0) {
+            payload.kak.indikator_kinerja = kakDataState.target.map((t) => ({
+              bulan_indikator: t.bulan_indikator,
+              deskripsi_target: t.deskripsi_target,
+              persentase_target: t.persentase_target,
+            }));
+          }
+
+          // Populate target_iku
+          if (kakDataState.iku && kakDataState.iku.length > 0) {
+            payload.target_iku = kakDataState.iku.map((iku) => ({
+              iku_id: iku.iku_id,
+              persentase_target: iku.persentase_target,
+            }));
+          }
+
+          // Populate rab
+          if (kakDataState.anggaran && kakDataState.anggaran.length > 0) {
+            payload.rab = kakDataState.anggaran.map((a) => ({
+              uraian: a.uraian,
+              volume1: a.volume1,
+              satuan1_id: a.satuan1_id,
+              volume2: a.volume2,
+              satuan2_id: a.satuan2_id,
+              volume3: a.volume3,
+              satuan3_id: a.satuan3_id,
+              harga_satuan: a.harga_satuan,
+            }));
+          }
+
+          // Step 1: Update the KAK data
+          await apiRequest(`/kak/${usulanId}/update`, {
+            method: "PUT",
+            body: JSON.stringify(payload),
+          });
+
+          // Step 2: Submit the updated KAK for verification
+          await apiRequest(`/kak/${usulanId}/submit`, {
+            method: "POST",
+          });
+
+          await Swal.fire({
+            icon: "success",
+            title: "Berhasil!",
+            text: "KAK revisi berhasil disubmit dan dikirim untuk verifikasi ulang.",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+
+          window.location.href = "/pengusul/monitoring-usulan";
+        } catch (error) {
+          Swal.fire("Gagal Submit", error.message, "error");
+        }
+      }
+    });
+  };
+
+  init();
+
+  if (window.Helpers) {
+    window.Helpers.init();
+  }
 }
 
 export default renderRevisiKakPage;
