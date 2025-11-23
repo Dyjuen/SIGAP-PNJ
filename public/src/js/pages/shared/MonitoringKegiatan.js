@@ -499,14 +499,14 @@ export function renderMonitoringKegiatanPage(path, userRole) {
     }
       
     const approvalStepMapping = {
-      'Wadir2': { step: 1, dateKey: 'accWD2' },
-      'PPK': { step: 2, dateKey: 'accPPK' },
+      'PPK': { step: 1, dateKey: 'accPPK' },
+      'Wadir2': { step: 2, dateKey: 'accWD2' },
       'Bendahara-Cair': { step: 3, dateKey: 'uangMuka' },
       'Bendahara-LPJ': { step: 4, dateKey: 'lpj' }
     };
     
     return apiData.map(item => {
-        const dates = { accWD2: null, accPPK: null, uangMuka: null, lpj: null };
+        const dates = { accPPK: null, accWD2: null, uangMuka: null, lpj: null };
         const approvedSteps = [];
 
         item.approvals.forEach(approval => {
@@ -542,8 +542,8 @@ export function renderMonitoringKegiatanPage(path, userRole) {
   }
   function renderStepper(item) {
     const steps = [
-      { number: "01", label: "Acc WD2", date: item.dates.accWD2 },
-      { number: "02", label: "Acc PPK", date: item.dates.accPPK },
+      { number: "01", label: "Acc PPK", date: item.dates.accPPK },
+      { number: "02", label: "Acc WD2", date: item.dates.accWD2 },
       { number: "03", label: "Uang Muka", date: item.dates.uangMuka },
       { number: "04", label: "LPJ", date: item.dates.lpj }
     ];
