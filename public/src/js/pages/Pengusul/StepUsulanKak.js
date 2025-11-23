@@ -5,7 +5,7 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderUsulanKakPage(path, userRole) {
   const pathSegments = path.split("/").filter((segment) => segment);
   const kakId =
-    pathSegments.length > 2 && pathSegments[1] === "usulan-kak"
+    pathSegments.length > 2 && pathSegments[1] === "usulan"
       ? pathSegments[2]
       : null;
   const isEditMode = kakId !== null;
@@ -158,7 +158,21 @@ export function renderUsulanKakPage(path, userRole) {
                       <div class="flex items-end gap-4 mb-6">
                         <div class='w-full'>
                           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+                          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                            <option value="">Pilih Bulan</option>
+                            <option value="Januari">Januari</option>
+                            <option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option>
+                            <option value="April">April</option>
+                            <option value="Mei">Mei</option>
+                            <option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option>
+                            <option value="Agustus">Agustus</option>
+                            <option value="September">September</option>
+                            <option value="Oktober">Oktober</option>
+                            <option value="November">November</option>
+                            <option value="Desember">Desember</option>
+                          </select>
                         </div>
                         <div class='w-full'>
                           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
@@ -757,7 +771,7 @@ export function renderUsulanKakPage(path, userRole) {
     } else if (step === 4) { // Indikator Kinerja
         const indikatorRows = document.querySelectorAll('#indikatorKinerjaContainer > div');
         indikatorRows.forEach(row => {
-            const inputs = row.querySelectorAll('input');
+            const inputs = row.querySelectorAll('input, select');
             const bulan = inputs[0];
             const deskripsi = inputs[1];
             const persentase = inputs[2];
@@ -1116,7 +1130,7 @@ const getTargetData = () => {
   const rows = container.querySelectorAll(".flex.items-end.gap-4.mb-6");  // tambah .mb-6
   return Array.from(rows)
     .map((row) => {
-      const inputs = row.querySelectorAll("input");
+      const inputs = row.querySelectorAll("input, select");
       return {
         bulan_indikator: inputs[0]?.value || "",
         deskripsi_target: inputs[1]?.value || "",
@@ -1444,7 +1458,21 @@ const getTargetData = () => {
     newItem.innerHTML = `
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+          <option value="">Pilih Bulan</option>
+          <option value="Januari">Januari</option>
+          <option value="Februari">Februari</option>
+          <option value="Maret">Maret</option>
+          <option value="April">April</option>
+          <option value="Mei">Mei</option>
+          <option value="Juni">Juni</option>
+          <option value="Juli">Juli</option>
+          <option value="Agustus">Agustus</option>
+          <option value="September">September</option>
+          <option value="Oktober">Oktober</option>
+          <option value="November">November</option>
+          <option value="Desember">Desember</option>
+        </select>
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
@@ -1979,11 +2007,24 @@ const getTargetData = () => {
     div.innerHTML = `
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
+        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
           style="border-color: #E5E7EB; background: #FFFFFF;" 
           onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
-          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
-          placeholder="Input" value="${bulan}">
+          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+          <option value="">Pilih Bulan</option>
+          <option value="Januari" ${bulan === 'Januari' ? 'selected' : ''}>Januari</option>
+          <option value="Februari" ${bulan === 'Februari' ? 'selected' : ''}>Februari</option>
+          <option value="Maret" ${bulan === 'Maret' ? 'selected' : ''}>Maret</option>
+          <option value="April" ${bulan === 'April' ? 'selected' : ''}>April</option>
+          <option value="Mei" ${bulan === 'Mei' ? 'selected' : ''}>Mei</option>
+          <option value="Juni" ${bulan === 'Juni' ? 'selected' : ''}>Juni</option>
+          <option value="Juli" ${bulan === 'Juli' ? 'selected' : ''}>Juli</option>
+          <option value="Agustus" ${bulan === 'Agustus' ? 'selected' : ''}>Agustus</option>
+          <option value="September" ${bulan === 'September' ? 'selected' : ''}>September</option>
+          <option value="Oktober" ${bulan === 'Oktober' ? 'selected' : ''}>Oktober</option>
+          <option value="November" ${bulan === 'November' ? 'selected' : ''}>November</option>
+          <option value="Desember" ${bulan === 'Desember' ? 'selected' : ''}>Desember</option>
+        </select>
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
@@ -2192,7 +2233,7 @@ const getTargetData = () => {
 
         // Redirect after a short delay to allow user to see the message
         setTimeout(() => {
-            window.location.pathname = "/pengusul/monitoring-usulan";
+            window.location.pathname = "/pengusul/usulan";
         }, 1500);
 } catch (error) {
   let errorMessage = `Error: ${error.message}`;

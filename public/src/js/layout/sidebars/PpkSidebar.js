@@ -19,7 +19,7 @@ export const ppkSidebar = `
     <ul class="menu-inner py-1">
       <!-- verif Kegiatan -->
       <li class="menu-item">
-        <a href="/ppk/setujui-kegiatan" data-link class="menu-link">
+        <a href="/ppk/kegiatan/approve" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-check">&#xea5e;</i>
           <div data-i18n="Setujui Kegiatan">Setujui Kegiatan</div>
         </a>
@@ -27,7 +27,7 @@ export const ppkSidebar = `
 
       <!-- Monitoring Kegiatan -->
       <li class="menu-item">
-        <a href="/ppk/monitoring-kegiatan" data-link class="menu-link">
+        <a href="/ppk/kegiatan/monitoring" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-presentation-analytics">&#xea9a;</i>
           <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
         </a>
@@ -35,7 +35,7 @@ export const ppkSidebar = `
 
       <!-- Riwayat -->
       <li class="menu-item">
-        <a href="/ppk/riwayat" data-link class="menu-link">
+        <a href="/ppk/kegiatan/riwayat" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-history">&#xebea;</i>
           <div data-i18n="Riwayat">Riwayat</div>
         </a>

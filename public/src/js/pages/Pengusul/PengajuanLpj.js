@@ -307,7 +307,7 @@ export function renderPengajuanLpjPage(path, userRole) {
     document.querySelectorAll("button[title='Upload LPJ']").forEach(btn => {
       btn.addEventListener("click", function() {
         const kegiatanId = this.dataset.id;
-        window.location.href = `/pengusul/input-lpj?kegiatan_id=${kegiatanId}`;
+        window.location.href = `/pengusul/kegiatan/lpj/new?kegiatan_id=${kegiatanId}`;
       });
     });
   }

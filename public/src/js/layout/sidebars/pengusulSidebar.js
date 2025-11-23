@@ -39,13 +39,13 @@ export const pengusulSidebar = `
         </a>
         <ul class="menu-submenu">
           <li class="menu-item">
-            <a href="/pengusul/usulan-kak" class="menu-link gap-2">
+            <a href="/pengusul/usulan/new" class="menu-link gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
               <div data-i18n="Usulkan Kegiatan">Usulkan Kegiatan</div>
             </a>
           </li>
           <li class="menu-item">
-            <a href="/pengusul/monitoring-usulan" class="menu-link gap-2">
+            <a href="/pengusul/usulan" class="menu-link gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
               <div data-i18n="Monitoring Usulan">Monitoring Usulan</div>
             </a>
@@ -61,19 +61,19 @@ export const pengusulSidebar = `
         </a>
         <ul class="menu-submenu">
           <li class="menu-item">
-            <a href="/pengusul/mengajukan-kegiatan" class="menu-link gap-2">
+            <a href="/pengusul/kegiatan/view" class="menu-link gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
               <div data-i18n="Mengajukan Kegiatan">Mengajukan Kegiatan</div>
             </a>
           </li>
           <li class="menu-item">
-            <a href="/pengusul/monitoring-kegiatan" class="menu-link gap-2">
+            <a href="/pengusul/kegiatan/monitoring" class="menu-link gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
               <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
             </a>
           </li>
           <li class="menu-item">
-            <a href="/pengusul/pengajuan-lpj" class="menu-link gap-2">
+            <a href="/pengusul/kegiatan/lpj" class="menu-link gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
               <div data-i18n="Pengajuan LPJ">Pengajuan LPJ</div>
             </a>

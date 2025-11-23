@@ -346,8 +346,10 @@ export function renderDashboardVerifikator(path, userRole) {
       // Fetch all relevant data at once
       const response = await apiRequest(`/kak`);
       state.allUsulan = response.data || [];
-      console.log("All proposals from API:", JSON.stringify(state.allUsulan, null, 2));
-
+      console.log(
+        "All proposals from API:",
+        JSON.stringify(state.allUsulan, null, 2)
+      );
 
       updateStats();
 
@@ -480,10 +482,7 @@ export function renderDashboardVerifikator(path, userRole) {
 
     paginatedData.forEach((usulan, index) => {
       const statusBadge = getStatusBadge(usulan.status_id);
-      const actionButtons = getActionButtons(
-        usulan.status_id,
-        usulan.kak_id
-      );
+      const actionButtons = getActionButtons(usulan.status_id, usulan.kak_id);
 
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -585,8 +584,11 @@ export function renderDashboardVerifikator(path, userRole) {
     document.querySelectorAll(".btn-approve").forEach((btn) => {
       btn.addEventListener("click", () => {
         const kakId = btn.dataset.id;
-        const usulanToApprove = state.allUsulan.find(u => u.kak_id == kakId);
-        console.log("Attempting to approve:", JSON.stringify(usulanToApprove, null, 2));
+        const usulanToApprove = state.allUsulan.find((u) => u.kak_id == kakId);
+        console.log(
+          "Attempting to approve:",
+          JSON.stringify(usulanToApprove, null, 2)
+        );
         handleAction(kakId, "approve");
       });
     });
@@ -595,7 +597,7 @@ export function renderDashboardVerifikator(path, userRole) {
       btn.addEventListener("click", () => {
         const kakId = btn.dataset.id;
         // Redirect to the revision page with the ID
-        window.location.href = `/verifikator/revisi-kak/${kakId}`;
+        window.location.href = `/verifikator/revisi/${kakId}`;
       });
     });
 

@@ -19,7 +19,7 @@ export const wadirSidebar = `
     <ul class="menu-inner py-1">
       <!-- Verifikasi Kegiatan -->
       <li class="menu-item">
-        <a href="/wadir/verifikasi-kegiatan" data-link class="menu-link">
+        <a href="/wadir/kegiatan/approve" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-check">&#xea5e;</i>
           <div data-i18n="Verifikasi Kegiatan">Verifikasi Kegiatan</div>
         </a>
@@ -27,7 +27,7 @@ export const wadirSidebar = `
 
       <!-- Monitoring Kegiatan -->
       <li class="menu-item">
-        <a href="/wadir/monitoring-kegiatan" data-link class="menu-link">
+        <a href="/wadir/kegiatan/monitoring" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-presentation-analytics">&#xea9a;</i>
           <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
         </a>

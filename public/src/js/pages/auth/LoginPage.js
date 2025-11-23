@@ -546,16 +546,16 @@ export function renderLoginPage() {
 
           switch (primaryRole) {
             case "Verifikator":
-              redirectPath = `/${rolePath}/monitoring-usulan`;
+              redirectPath = `/${rolePath}/usulan`;
               break;
             case "Wadir":
-              redirectPath = `/${rolePath}/verifikasi-kegiatan`;
+              redirectPath = `/${rolePath}/kegiatan/approve`;
               break;
             case "PPK":
-              redirectPath = `/${rolePath}/setujui-kegiatan`;
+              redirectPath = `/${rolePath}/kegiatan/approve`;
               break;
             case "Bendahara":
-              redirectPath = `/${rolePath}/pencairan-dana`;
+              redirectPath = `/${rolePath}/kegiatan/pencairan`;
               break;
           }
           window.location.pathname = redirectPath;

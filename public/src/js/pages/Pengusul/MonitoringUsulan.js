@@ -375,9 +375,9 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
         if (status === "5") {
           // Status Revisi
-          window.location.href = `/pengusul/revisi-kak/${id}`;
+          window.location.href = `/pengusul/usulan/revisi/${id}`;
         } else {
-          window.location.pathname = `/pengusul/usulan-kak/${id}`;
+          window.location.pathname = `/pengusul/usulan/${id}`;
         }
       });
     });
@@ -385,7 +385,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
     document.querySelectorAll(".btn-revisi").forEach((btn) => {
       btn.addEventListener("click", function () {
         const id = this.getAttribute("data-id");
-        window.location.pathname = `/pengusul/usulan-kak/${id}`;
+        window.location.pathname = `/pengusul/usulan/${id}`;
       });
     });
 
