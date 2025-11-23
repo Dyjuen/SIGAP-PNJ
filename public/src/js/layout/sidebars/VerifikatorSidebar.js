@@ -19,7 +19,7 @@ export const verifikatorSidebar = `
     <ul class="menu-inner py-1">
       <!-- Monitoring Usulan -->
       <li class="menu-item">
-        <a href="/verifikator/monitoring-usulan" data-link class="menu-link">
+        <a href="/verifikator/usulan" data-link class="menu-link">
           <i class="menu-icon tf-icons ti ti-file-search">&#xea9a;</i>
           <div data-i18n="Monitoring Usulan">Monitoring Usulan</div>
         </a>

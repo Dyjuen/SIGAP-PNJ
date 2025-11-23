@@ -1,0 +1,998 @@
+// frontend/src/pages/Pengusul/DummyInputReadOnly.js
+
+import { renderDashboardLayout } from "../../layout/AppLayout.js";
+
+export function renderDummyInputPage(path, userRole) {
+  const pageContent = `
+    <style>
+      /* Keyframe Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes fadeInRight {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      @keyframes bounceIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.3);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.05);
+        }
+        70% {
+          transform: scale(0.9);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      /* Progress Steps */
+      .progress-step-item {
+        cursor: pointer;
+        animation: fadeIn 0.6s ease-out;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      .progress-step-item:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+
+      .progress-step-item:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .progress-step-item:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      .progress-step-item:hover {
+        transform: translateY(-5px) scale(1.05);
+      }
+      
+      .progress-step-circle {
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .progress-step-item:hover .progress-step-circle {
+        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
+        transform: rotate(360deg);
+      }
+
+      .progress-step-circle.active-step {
+        animation: pulse 2s infinite;
+      }
+      
+      /* Menu buttons */
+      .menu-button {
+        transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), transparent);
+        transition: left 0.5s ease;
+      }
+
+      .menu-button:hover::before {
+        left: 100%;
+      }
+
+      .menu-button:hover {
+        transform: translateX(10px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+      }
+      
+      .menu-button.active {
+        border-color: #00BCD4 !important;
+        background: rgba(0, 188, 212, 0.1) !important;
+        animation: bounceIn 0.6s ease-out;
+      }
+
+      .menu-button .w-8 {
+        transition: all 0.7s ease;
+      }
+
+      .menu-button:hover .w-8 {
+        transform: rotate(360deg) scale(1.2);
+      }
+      
+      /* Step content */
+      .step-content {
+        display: none;
+      }
+      
+      .step-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease-out;
+      }
+      
+      .main-step-content {
+        display: none;
+      }
+      
+      .main-step-content.active {
+        display: block;
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      /* Card animations */
+      .bg-white.rounded-xl.shadow-lg {
+        animation: slideInUp 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      .bg-white.rounded-xl.shadow-lg:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-5px);
+      }
+      
+      /* RAB Grid */
+      .grid-rab {
+        display: grid;
+        grid-template-columns: 2fr 1fr 2fr 1fr 1fr 2fr;
+        gap: 1rem;
+        align-items: end;
+      }
+      
+      .row-item {
+        padding: 1rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        background: white;
+        animation: fadeInLeft 0.5s ease-out;
+        transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .row-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.1), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .row-item:hover::before {
+        left: 100%;
+      }
+
+      .row-item:hover {
+        border-color: #00BCD4;
+        box-shadow: 0 8px 16px rgba(0, 188, 212, 0.2);
+        transform: translateX(5px) scale(1.02);
+      }
+
+      .row-item:nth-child(odd) {
+        animation-delay: 0.1s;
+      }
+
+      .row-item:nth-child(even) {
+        animation-delay: 0.2s;
+      }
+
+      /* Input fields */
+      input[readonly], textarea[readonly], select[disabled] {
+        transition: all 0.7s ease;
+      }
+
+      input[readonly]:hover, textarea[readonly]:hover, select[disabled]:hover {
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
+        transform: scale(1.01);
+      }
+
+      /* Buttons */
+      button {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+      }
+
+      button:active::after {
+        width: 300px;
+        height: 300px;
+      }
+
+      button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 188, 212, 0.3);
+      }
+
+      button:active {
+        transform: translateY(-1px);
+      }
+
+      /* Labels */
+      label {
+        transition: all 0.7s ease;
+        display: inline-block;
+      }
+
+      label:hover {
+        transform: translateX(5px);
+        color: #00BCD4 !important;
+      }
+
+      /* Headers */
+      h4, h5 {
+        animation: fadeInDown 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      h4:hover, h5:hover {
+        transform: scale(1.05);
+        text-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
+      }
+
+      /* Backdrop */
+      .backdrop-blur-md {
+        animation: slideInDown 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      .backdrop-blur-md:hover {
+        backdrop-filter: blur(20px) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+      }
+
+      /* Loading shimmer effect */
+      .shimmer {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite;
+      }
+
+      /* Stagger animations for grid items */
+      .grid > * {
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      .grid > *:nth-child(1) { animation-delay: 0.1s; }
+      .grid > *:nth-child(2) { animation-delay: 0.2s; }
+      .grid > *:nth-child(3) { animation-delay: 0.3s; }
+      .grid > *:nth-child(4) { animation-delay: 0.4s; }
+      .grid > *:nth-child(5) { animation-delay: 0.5s; }
+      .grid > *:nth-child(6) { animation-delay: 0.6s; }
+
+      /* Smooth scroll */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Container animations */
+      .flex.gap-8 > * {
+        animation: fadeInRight 0.6s ease-out;
+      }
+
+      .flex.gap-8 > *:first-child {
+        animation: fadeInLeft 0.6s ease-out;
+      }
+
+      /* Icon animations */
+      .ti {
+        transition: all 0.3s ease;
+        display: inline-block;
+      }
+
+      button:hover .ti {
+        transform: scale(1.2) rotate(10deg);
+      }
+
+      /* Border animations */
+      .border {
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .border::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: #00BCD4;
+        transform: translateX(-50%);
+        transition: width 0.4s ease;
+      }
+
+      .border:hover::after {
+        width: 100%;
+      }
+    </style>
+
+    <div class="kerangka-acuan-kerja-page">
+      <!-- Progress Steps -->
+      <div class="flex justify-center gap-24 mb-8 backdrop-blur-md p-6 rounded-xl shadow-lg" style="background: rgba(255, 255, 255, 0.8);">
+        <div class="progress-step-item flex items-center justify-center gap-3 px-4" data-main-step="1">
+          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #00BCD4; color: #FFFFFF;">1</div>
+          <div class="text-left">
+            <div class="progress-step-text text-sm font-semibold" style="color: #00BCD4;">Kerangka Acuan Kerja</div>
+          </div>
+        </div>
+        <div class="progress-step-item flex items-center justify-center gap-3 px-4" data-main-step="2">
+          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">2</div>
+          <div class="text-left">
+            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Indikator Kinerja Utama</div>
+            <div class="progress-step-subtext text-xs" style="color: #9CA3AF;">& RENSTRA</div>
+          </div>
+        </div>
+        <div class="progress-step-item flex items-center justify-center gap-3 px-4" data-main-step="3">
+          <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">3</div>
+          <div class="text-left">
+            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rincian Anggaran Biaya</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Step 1: Kerangka Acuan Kerja -->
+      <div class="main-step-content active" id="main-step-1">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <div class="flex gap-8">
+            <!-- Sidebar Menu -->
+            <div class="flex flex-col gap-4 w-96">
+              <button class="menu-button border-2 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3 active" data-menu="gambaran-umum" style="border-color: #00BCD4; background: rgba(0, 188, 212, 0.1);">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text" style="font-size: 1rem; line-height: 1;">&#xef40;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Gambaran Umum</div>
+              </button>
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="penerima-manfaat">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users" style="font-size: 1rem; line-height: 1;">&#xf7cd;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Penerima Manfaat</div>
+              </button>
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="strategi-pencapaian">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target" style="font-size: 1rem; line-height: 1;">&#xeb35;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Strategi Pencapaian</div>
+              </button>
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="indikator-kinerja">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar" style="font-size: 1rem; line-height: 1;">&#xea59;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Indikator Kinerja</div>
+              </button>
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="kurun-waktu">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar" style="font-size: 1rem; line-height: 1;">&#xea53;</i></div>
+                <div class="font-semibold text-base" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</div>
+              </button>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="flex-1 min-h-[500px]">
+              <div class="border border-gray-200 rounded-xl p-6">
+                <!-- Step 1: Gambaran Umum -->
+                <div class="step-content active" id="gambaran-umum">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Gambaran Umum</h4>
+
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nama Kegiatan</label>
+                    <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="" data-field="namaKegiatan">
+                  </div>
+
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Gambaran Umum Kegiatan</label>
+                    <textarea readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="border-color: #E5E7EB; background: #F9FAFB;" data-field="gambaranUmum"></textarea>
+                  </div>
+                </div>
+
+                <!-- Step 2: Penerima Manfaat -->
+                <div class="step-content" id="penerima-manfaat">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Penerima Manfaat</h4>
+                  
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
+                    <div id="sasaranUtamaContainer">
+                      <!-- Dynamic content will be injected here -->
+                    </div>
+                  </div>
+
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
+                    <div id="manfaatContainer">
+                      <!-- Dynamic content will be injected here -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 3: Strategi Pencapaian -->
+                <div class="step-content" id="strategi-pencapaian">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Strategi Pencapaian</h4>
+                  
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Metode Pelaksanaan</label>
+                    <textarea readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="border-color: #E5E7EB; background: #F9FAFB;" data-field="metodePelaksanaan"></textarea>
+                  </div>
+
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tahapan Pelaksanaan</label>
+                    <div id="tahapanPelaksanaanContainer">
+                      <!-- Dynamic content will be injected here -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 4: Indikator Kinerja -->
+                <div class="step-content" id="indikator-kinerja">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja</h4>
+                  
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja</label>
+                    <div id="indikatorKinerjaContainer">
+                      <!-- Dynamic content will be injected here -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 5: Kurun Waktu -->
+                <div class="step-content" id="kurun-waktu">
+                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</h4>
+                  
+                  <div class="grid grid-cols-2 gap-6">
+                    <div class="mb-6">
+                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Mulai</label>
+                      <input type="date" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="" data-field="tanggalMulai">
+                    </div>
+                    <div class="mb-6">
+                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Selesai</label>
+                      <input type="date" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="" data-field="tanggalSelesai">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between mt-8">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" id="btnBack">
+              <span>←</span> Kembali
+            </button>
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" id="btnNext">
+              Lanjut <span>→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Step 2: IKU & Renstra -->
+      <div class="main-step-content" id="main-step-2">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama & Renstra</h4>
+          
+          <div class="mb-8" id="ikuRenstraContainer">
+            <!-- Dynamic content will be injected here -->
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between mt-8">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" id="btnBackIku">
+              <span>←</span> Kembali
+            </button>
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" id="btnNextIku">
+              Lanjut <span>→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Step 3: RAB -->
+      <div class="main-step-content" id="main-step-3">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rincian Anggaran Biaya</h4>
+          
+          <!-- Belanja Barang -->
+          <div class="mb-10">
+            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
+            <div id="belanjaBarangContainer">
+              <!-- Dynamic content will be injected here -->
+            </div>
+          </div>
+
+          <!-- Belanja Jasa -->
+          <div class="mb-10">
+            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
+            <div id="belanjaJasaContainer">
+              <!-- Dynamic content will be injected here -->
+            </div>
+          </div>
+
+          <!-- Belanja Perjalanan -->
+          <div class="mb-10">
+            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
+            <div id="belanjaPerjalananContainer">
+              <!-- Dynamic content will be injected here -->
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between mt-8">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" id="btnBackRab">
+              <span>←</span> Kembali
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  renderDashboardLayout(pageContent, userRole);
+
+  // --- JavaScript Logic ---
+  const pathSegments = path.split("/").filter(Boolean);
+  const kakId = pathSegments.length > 2 ? pathSegments[pathSegments.length - 1] : null;
+
+  let kakDataState = null;
+
+  let mainStep = 1;
+  let currentStep = 1;
+  const totalSteps = 5;
+  const menuItems = [
+    "gambaran-umum",
+    "penerima-manfaat",
+    "strategi-pencapaian",
+    "indikator-kinerja",
+    "kurun-waktu",
+  ];
+
+  let masterState = {
+    iku: [],
+    satuan: [],
+  };
+
+  // ==============================================
+  // API FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+    const headers = { ...options.headers, Authorization: `Bearer ${token}` };
+    if (!(options.body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
+    const config = { ...options, headers };
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (data.success === false) {
+        throw new Error(data.message || "API request failed");
+      }
+      return data;
+    } catch (error) {
+      console.error("API Request Error:", error);
+      if (typeof Swal !== "undefined") {
+        Swal.fire({ icon: "error", title: "API Error", text: error.message });
+      }
+      throw error;
+    }
+  }
+
+  // ==============================================
+  // HELPER & CREATION FUNCTIONS
+  // ==============================================
+  const formatCurrency = (amount) => {
+    if (!amount) return "Rp 0";
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const getNameById = (id, list, idField, nameField) => {
+    const item = list.find((d) => d[idField] == id);
+    return item ? item[nameField] : "N/A";
+  };
+
+  const createReadOnlyRow = (value) => `
+    <div class="row-item">
+      <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${value}">
+    </div>
+  `;
+
+  const createIndikatorKinerjaRow = (item) => `
+    <div class="row-item">
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.bulan_indikator || ""}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.deskripsi_target || ""}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.persentase_target || ""}">
+        </div>
+      </div>
+    </div>
+  `;
+
+  const createIkuRow = (item) => `
+    <div class="row-item">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${getNameById(item.iku_id, masterState.iku, "iku_id", "nama_iku")}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
+          <div class="flex gap-2 items-center">
+            <input type="text" readonly class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.persentase_target || "0"}">
+            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const createRabRow = (item) => `
+    <div class="row-item">
+      <div class="grid-rab">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.uraian || ""}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume1 || "1"}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${getNameById(item.satuan1_id, masterState.satuan, "satuan_id", "nama_satuan")}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume2 || "1"}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.satuan2_id ? getNameById(item.satuan2_id, masterState.satuan, "satuan_id", "nama_satuan") : ""}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${formatCurrency(item.harga_satuan)}">
+        </div>
+      </div>
+    </div>
+  `;
+
+  // ==============================================
+  // DATA FETCH AND POPULATE
+  // ==============================================
+  async function fetchAndPopulateData(kakId) {
+    if (!kakId) {
+      Swal.fire("Error", "ID Usulan tidak ditemukan di URL.", "error");
+      return;
+    }
+
+    Swal.fire({
+      title: "Memuat Data...",
+      text: "Silakan tunggu sebentar.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    try {
+      const [kakResponse, ikuResponse, satuanResponse] = await Promise.all([
+        apiRequest(`/kak/${kakId}/data`),
+        apiRequest("/master/iku"),
+        apiRequest("/master/satuan"),
+      ]);
+
+      masterState.iku = ikuResponse.data;
+      masterState.satuan = satuanResponse.data;
+      const kakData = kakResponse.data;
+      kakDataState = kakData;
+
+      // Populate form fields
+      document.querySelector('[data-field="namaKegiatan"]').value = kakData.nama_kegiatan || "";
+      document.querySelector('[data-field="gambaranUmum"]').value = kakData.deskripsi_kegiatan || "";
+      document.querySelector('[data-field="metodePelaksanaan"]').value = kakData.metode_pelaksanaan || "";
+      document.querySelector('[data-field="tanggalMulai"]').value = kakData.tanggal_mulai || "";
+      document.querySelector('[data-field="tanggalSelesai"]').value = kakData.tanggal_selesai || "";
+
+      // Populate Sasaran & Manfaat
+      const sasaranContainer = document.getElementById("sasaranUtamaContainer");
+      const manfaatContainer = document.getElementById("manfaatContainer");
+      sasaranContainer.innerHTML = "";
+      manfaatContainer.innerHTML = "";
+      if (kakData.manfaat && kakData.manfaat.length > 0) {
+        kakData.manfaat.forEach((item) => {
+          if (item.sasaran_utama) {
+            sasaranContainer.innerHTML += createReadOnlyRow(item.sasaran_utama);
+          }
+          if (item.manfaat) {
+            manfaatContainer.innerHTML += createReadOnlyRow(item.manfaat);
+          }
+        });
+      }
+
+      // Populate Tahapan
+      const tahapanContainer = document.getElementById("tahapanPelaksanaanContainer");
+      tahapanContainer.innerHTML = "";
+      if (kakData.tahapan && kakData.tahapan.length > 0) {
+        kakData.tahapan.forEach((item) => {
+          tahapanContainer.innerHTML += createReadOnlyRow(item.nama_tahapan);
+        });
+      }
+
+      // Populate Indikator Kinerja
+      const indikatorContainer = document.getElementById("indikatorKinerjaContainer");
+      indikatorContainer.innerHTML = "";
+      if (kakData.target && kakData.target.length > 0) {
+        kakData.target.forEach((item) => {
+          indikatorContainer.innerHTML += createIndikatorKinerjaRow(item);
+        });
+      }
+
+      // Populate IKU
+      const ikuContainer = document.getElementById("ikuRenstraContainer");
+      ikuContainer.innerHTML = "";
+      if (kakData.iku && kakData.iku.length > 0) {
+        kakData.iku.forEach((item) => {
+          ikuContainer.innerHTML += createIkuRow(item);
+        });
+      }
+
+      // Populate RAB
+      const belanjaBarangContainer = document.getElementById("belanjaBarangContainer");
+      belanjaBarangContainer.innerHTML = "";
+      const belanjaJasaContainer = document.getElementById("belanjaJasaContainer");
+      belanjaJasaContainer.innerHTML = "";
+      const belanjaPerjalananContainer = document.getElementById("belanjaPerjalananContainer");
+      belanjaPerjalananContainer.innerHTML = "";
+
+      if (kakData.anggaran && kakData.anggaran.length > 0) {
+        kakData.anggaran.forEach((item) => {
+          belanjaBarangContainer.innerHTML += createRabRow(item);
+        });
+      }
+
+      Swal.close();
+    } catch (error) {
+      Swal.fire("Gagal Memuat Data", error.message, "error");
+    }
+  }
+
+  // Initialize
+  function init() {
+    updateMainStepDisplay();
+    updateStepDisplay();
+    attachEventListeners();
+    fetchAndPopulateData(kakId);
+  }
+
+  function updateMainStepDisplay() {
+    const stepIcons = {
+      1: { class: "ti ti-file-text", entity: "&#xef40;" },
+      2: { class: "ti ti-chart-bar", entity: "&#xea59;" },
+      3: { class: "ti ti-currency-dollar", entity: "&#xeb84;" },
+    };
+    document.querySelectorAll(".progress-step-item").forEach((step, index) => {
+      const stepNum = index + 1;
+      const circle = step.querySelector(".progress-step-circle");
+      const text = step.querySelector(".progress-step-text");
+      const subtext = step.querySelector(".progress-step-subtext");
+      circle.className = "progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300";
+      if (stepNum < mainStep) {
+        circle.style.background = "#10B981";
+        circle.style.color = "#FFFFFF";
+        circle.innerHTML = '<i class="ti ti-check" style="font-size: 1.125rem;">&#xea5e;</i>';
+        text.style.color = "#10B981";
+        if (subtext) subtext.style.color = "#10B981";
+      } else if (stepNum === mainStep) {
+        circle.style.background = "#00BCD4";
+        circle.style.color = "#FFFFFF";
+        circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem;">${stepIcons[stepNum].entity}</i>`;
+        text.style.color = "#00BCD4";
+        if (subtext) subtext.style.color = "#00BCD4";
+      } else {
+        circle.style.background = "#E5E7EB";
+        circle.style.color = "#6B7280";
+        circle.innerHTML = `<i class="${stepIcons[stepNum].class}" style="font-size: 1.125rem;">${stepIcons[stepNum].entity}</i>`;
+        text.style.color = "#6B7280";
+        if (subtext) subtext.style.color = "#9CA3AF";
+      }
+    });
+    document.querySelectorAll(".main-step-content").forEach((content, index) => {
+      content.classList.toggle("active", index + 1 === mainStep);
+    });
+  }
+
+  function updateStepDisplay() {
+    if (mainStep !== 1) return;
+    document.querySelectorAll(".menu-button").forEach((btn, index) => {
+      const isActive = index + 1 === currentStep;
+      btn.classList.toggle("active", isActive);
+      btn.style.borderColor = isActive ? "#00BCD4" : "#E5E7EB";
+      btn.style.background = isActive ? "rgba(0, 188, 212, 0.1)" : "";
+    });
+    document.querySelectorAll("#main-step-1 .step-content").forEach((content) => {
+      content.classList.toggle("active", content.id === menuItems[currentStep - 1]);
+    });
+    document.getElementById("btnBack").style.visibility = currentStep === 1 ? "hidden" : "visible";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function attachEventListeners() {
+    // Progress step click
+    document.querySelectorAll(".progress-step-item").forEach((step) => {
+      step.addEventListener("click", function () {
+        const targetStep = parseInt(this.getAttribute("data-main-step"));
+        mainStep = targetStep;
+        if (mainStep === 1) {
+          currentStep = 1;
+        }
+        updateMainStepDisplay();
+        updateStepDisplay();
+      });
+    });
+
+    // Menu buttons
+    document.querySelectorAll(".menu-button").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const menuIndex = menuItems.indexOf(this.getAttribute("data-menu"));
+        if (menuIndex !== -1) {
+          currentStep = menuIndex + 1;
+          updateStepDisplay();
+        }
+      });
+    });
+
+    // Navigation buttons
+    document.getElementById("btnBack").addEventListener("click", () => {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepDisplay();
+      }
+    });
+
+    document.getElementById("btnNext").addEventListener("click", () => {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateStepDisplay();
+      } else {
+        mainStep = 2;
+        updateMainStepDisplay();
+      }
+    });
+
+    document.getElementById("btnBackIku").addEventListener("click", () => {
+      mainStep = 1;
+      currentStep = totalSteps;
+      updateMainStepDisplay();
+      updateStepDisplay();
+    });
+
+    document.getElementById("btnNextIku").addEventListener("click", () => {
+      mainStep = 3;
+      updateMainStepDisplay();
+    });
+
+    document.getElementById("btnBackRab").addEventListener("click", () => {
+      mainStep = 2;
+      updateMainStepDisplay();
+    });
+  }
+
+  init();
+
+  if (window.Helpers) {
+    window.Helpers.init();
+  }
+}
+
+export default renderDummyInputPage;

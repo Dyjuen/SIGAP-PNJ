@@ -650,6 +650,12 @@ class KAKController
 
             if (!empty($input['catatan_kak'])) {
                 foreach ($input['catatan_kak'] as $field => $note) {
+                    
+                    // FIX: Remap inconsistent frontend field name to correct DB column name
+                    if ($field === 'gambaran_umum') {
+                        $field = 'deskripsi_kegiatan';
+                    }
+
                     $col = "catatan_" . $field;
                     $db->query("UPDATE t_kak SET $col = :n WHERE kak_id=:id");
                     $db->bind(':n', $note);

@@ -5,7 +5,9 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderUsulanKakPage(path, userRole) {
   const pathSegments = path.split("/").filter((segment) => segment);
   const kakId =
-    pathSegments.length > 2 && pathSegments[1] === "usulan-kak"
+    pathSegments.length > 2 &&
+    pathSegments[1] === "usulan" &&
+    /^\d+$/.test(pathSegments[2]) // Check if the ID is a number
       ? pathSegments[2]
       : null;
   const isEditMode = kakId !== null;
@@ -158,7 +160,21 @@ export function renderUsulanKakPage(path, userRole) {
                       <div class="flex items-end gap-4 mb-6">
                         <div class='w-full'>
                           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+                          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                            <option value="">Pilih Bulan</option>
+                            <option value="Januari">Januari</option>
+                            <option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option>
+                            <option value="April">April</option>
+                            <option value="Mei">Mei</option>
+                            <option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option>
+                            <option value="Agustus">Agustus</option>
+                            <option value="September">September</option>
+                            <option value="Oktober">Oktober</option>
+                            <option value="November">November</option>
+                            <option value="Desember">Desember</option>
+                          </select>
                         </div>
                         <div class='w-full'>
                           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
@@ -690,223 +706,254 @@ export function renderUsulanKakPage(path, userRole) {
   // VALIDATION FUNCTIONS
   // ==============================================
 
-  if (typeof showSuccess !== 'function') {
-    window.showSuccess = function(message) {
-        alert('Success: ' + message);
-    }
+  if (typeof showSuccess !== "function") {
+    window.showSuccess = function (message) {
+      alert("Success: " + message);
+    };
   }
-  if (typeof showError !== 'function') {
-      window.showError = function(message) {
-          console.error("Detailed Error Object:", error); // <-- Add this line for debugging
-          alert('Error: ' + message);
-      }
+  if (typeof showError !== "function") {
+    window.showError = function (message) {
+      console.error("Detailed Error Object:", error); // <-- Add this line for debugging
+      alert("Error: " + message);
+    };
   }
 
   function validateKAKStep(step) {
     let isValid = true;
     // Clear previous errors for the current step
-    document.querySelectorAll(`#main-step-1 .step-content.active .validation-error`).forEach(el => el.remove());
-    document.querySelectorAll(`#main-step-1 .step-content.active .is-invalid`).forEach(el => {
-        el.classList.remove('is-invalid');
-        el.style.borderColor = '#E5E7EB';
-    });
-  
-    const addError = (el, message) => {
-        isValid = false;
-        el.classList.add('is-invalid');
-        el.style.borderColor = '#EF4444';
-        const errorEl = document.createElement('p');
-        errorEl.className = 'validation-error text-red-500 text-sm mt-1';
-        errorEl.textContent = message;
-        el.parentElement.appendChild(errorEl);
-    };
-  
-    if (step === 1) { // Gambaran Umum
-        const namaKegiatan = document.getElementById('namaKegiatan');
-        if (!namaKegiatan.value) addError(namaKegiatan, 'Nama Kegiatan wajib diisi.');
-  
-        const gambaranUmum = document.getElementById('gambaranUmum');
-        if (!gambaranUmum.value) addError(gambaranUmum, 'Gambaran Umum Kegiatan wajib diisi.');
-  
+    document
+      .querySelectorAll(`#main-step-1 .step-content.active .validation-error`)
+      .forEach((el) => el.remove());
+    document
+      .querySelectorAll(`#main-step-1 .step-content.active .is-invalid`)
+      .forEach((el) => {
+        el.classList.remove("is-invalid");
+        el.style.borderColor = "#E5E7EB";
+      });
 
-  
-    } else if (step === 2) { // Penerima Manfaat
-        const penerimaRows = document.querySelectorAll('#penerimaManfaatContainer .penerima-manfaat-item');
-        penerimaRows.forEach(row => {
-            const sasaranInput = row.querySelector('.sasaran-utama-input');
-            const manfaatInput = row.querySelector('.manfaat-input');
-            if (!sasaranInput.value) addError(sasaranInput, 'Sasaran Utama wajib diisi.');
-            if (!manfaatInput.value) addError(manfaatInput, 'Manfaat wajib diisi.');
-        });
-        if (penerimaRows.length === 0) {
-            showError('Harap tambahkan setidaknya satu Penerima Manfaat.');
-            isValid = false;
+    const addError = (el, message) => {
+      isValid = false;
+      el.classList.add("is-invalid");
+      el.style.borderColor = "#EF4444";
+      const errorEl = document.createElement("p");
+      errorEl.className = "validation-error text-red-500 text-sm mt-1";
+      errorEl.textContent = message;
+      el.parentElement.appendChild(errorEl);
+    };
+
+    if (step === 1) {
+      // Gambaran Umum
+      const namaKegiatan = document.getElementById("namaKegiatan");
+      if (!namaKegiatan.value)
+        addError(namaKegiatan, "Nama Kegiatan wajib diisi.");
+
+      const gambaranUmum = document.getElementById("gambaranUmum");
+      if (!gambaranUmum.value)
+        addError(gambaranUmum, "Gambaran Umum Kegiatan wajib diisi.");
+    } else if (step === 2) {
+      // Penerima Manfaat
+      const penerimaRows = document.querySelectorAll(
+        "#penerimaManfaatContainer .penerima-manfaat-item"
+      );
+      penerimaRows.forEach((row) => {
+        const sasaranInput = row.querySelector(".sasaran-utama-input");
+        const manfaatInput = row.querySelector(".manfaat-input");
+        if (!sasaranInput.value)
+          addError(sasaranInput, "Sasaran Utama wajib diisi.");
+        if (!manfaatInput.value) addError(manfaatInput, "Manfaat wajib diisi.");
+      });
+      if (penerimaRows.length === 0) {
+        showError("Harap tambahkan setidaknya satu Penerima Manfaat.");
+        isValid = false;
+      }
+    } else if (step === 3) {
+      // Strategi Pencapaian
+      const metodePelaksanaan = document.getElementById("metodePelaksanaan");
+      if (!metodePelaksanaan.value)
+        addError(metodePelaksanaan, "Metode Pelaksanaan wajib diisi.");
+
+      const tahapanInputs = document.querySelectorAll(
+        "#tahapanPelaksanaanContainer input"
+      );
+      tahapanInputs.forEach((input) => {
+        if (!input.value) addError(input, "Tahapan Pelaksanaan wajib diisi.");
+      });
+      if (tahapanInputs.length === 0) {
+        showError("Harap tambahkan setidaknya satu Tahapan Pelaksanaan.");
+        isValid = false;
+      }
+    } else if (step === 4) {
+      // Indikator Kinerja
+      const indikatorRows = document.querySelectorAll(
+        "#indikatorKinerjaContainer > div"
+      );
+      indikatorRows.forEach((row) => {
+        const inputs = row.querySelectorAll("input, select");
+        const bulan = inputs[0];
+        const deskripsi = inputs[1];
+        const persentase = inputs[2];
+        if (!bulan.value) addError(bulan, "Bulan wajib diisi.");
+        if (!deskripsi.value)
+          addError(deskripsi, "Indikator Keberhasilan wajib diisi.");
+        if (!persentase.value) {
+          addError(persentase, "Target wajib diisi.");
         }
-    } else if (step === 3) { // Strategi Pencapaian
-        const metodePelaksanaan = document.getElementById('metodePelaksanaan');
-        if (!metodePelaksanaan.value) addError(metodePelaksanaan, 'Metode Pelaksanaan wajib diisi.');
-  
-        const tahapanInputs = document.querySelectorAll('#tahapanPelaksanaanContainer input');
-        tahapanInputs.forEach(input => {
-            if (!input.value) addError(input, 'Tahapan Pelaksanaan wajib diisi.');
-        });
-        if (tahapanInputs.length === 0) {
-            showError('Harap tambahkan setidaknya satu Tahapan Pelaksanaan.');
-            isValid = false;
-        }
-    } else if (step === 4) { // Indikator Kinerja
-        const indikatorRows = document.querySelectorAll('#indikatorKinerjaContainer > div');
-        indikatorRows.forEach(row => {
-            const inputs = row.querySelectorAll('input');
-            const bulan = inputs[0];
-            const deskripsi = inputs[1];
-            const persentase = inputs[2];
-            if (!bulan.value) addError(bulan, 'Bulan wajib diisi.');
-            if (!deskripsi.value) addError(deskripsi, 'Indikator Keberhasilan wajib diisi.');
-            if (!persentase.value) {
-                addError(persentase, 'Target wajib diisi.');
-            }
-        });
-        if (indikatorRows.length === 0) {
-            showError('Harap tambahkan setidaknya satu Indikator Kinerja.');
-            isValid = false;
-        }
-    } else if (step === 5) { // Kurun Waktu
-        const kurunWaktu = document.getElementById('kurunWaktu');
-        if (!kurunWaktu.value) addError(kurunWaktu, 'Kurun Waktu Pelaksanaan wajib diisi.');
+      });
+      if (indikatorRows.length === 0) {
+        showError("Harap tambahkan setidaknya satu Indikator Kinerja.");
+        isValid = false;
+      }
+    } else if (step === 5) {
+      // Kurun Waktu
+      const kurunWaktu = document.getElementById("kurunWaktu");
+      if (!kurunWaktu.value)
+        addError(kurunWaktu, "Kurun Waktu Pelaksanaan wajib diisi.");
     }
-  
+
     if (!isValid) {
-        showError('Silakan perbaiki kesalahan pada form sebelum melanjutkan.');
+      showError("Silakan perbaiki kesalahan pada form sebelum melanjutkan.");
     }
-  
+
     return isValid;
   }
 
   function validateIkuStep() {
-      let isValid = true;
-      document.querySelectorAll('#main-step-2 .validation-error').forEach(el => el.remove());
-      document.querySelectorAll('#main-step-2 .is-invalid').forEach(el => {
-          el.classList.remove('is-invalid');
-          el.style.borderColor = '#E5E7EB';
-      });
-
-      const addError = (el, message) => {
-          isValid = false;
-          el.classList.add('is-invalid');
-          el.style.borderColor = '#EF4444';
-          const errorEl = document.createElement('p');
-          errorEl.className = 'validation-error text-red-500 text-sm mt-1';
-          errorEl.textContent = message;
-          el.parentElement.appendChild(errorEl);
-      };
-
-      const ikuRows = document.querySelectorAll('#ikuRenstraContainer .iku-item');
-      if (ikuRows.length > 0) {
-        ikuRows.forEach(row => {
-            const select = row.querySelector('select');
-            const input = row.querySelector('input');
-            if (!select.value) addError(select, 'IKU wajib dipilih.');
-            if (!input.value) {
-                addError(input, 'Target wajib diisi.');
-            }
-        });
-      }
-      
-      if (!isValid) {
-          showError('Silakan perbaiki kesalahan pada form sebelum melanjutkan.');
-      }
-
-      return isValid;
-  }
-
-  function validateRabStep() {
     let isValid = true;
-    document.querySelectorAll('#main-step-3 .validation-error').forEach(el => el.remove());
-    document.querySelectorAll('#main-step-3 .is-invalid').forEach(el => {
-        el.classList.remove('is-invalid');
-        el.style.borderColor = '#E5E7EB';
+    document
+      .querySelectorAll("#main-step-2 .validation-error")
+      .forEach((el) => el.remove());
+    document.querySelectorAll("#main-step-2 .is-invalid").forEach((el) => {
+      el.classList.remove("is-invalid");
+      el.style.borderColor = "#E5E7EB";
     });
 
     const addError = (el, message) => {
-        isValid = false;
-        el.classList.add('is-invalid');
-        el.style.borderColor = '#EF4444';
-        const errorEl = document.createElement('p');
-        errorEl.className = 'validation-error text-red-500 text-sm mt-1';
-        errorEl.textContent = message;
-        el.parentElement.appendChild(errorEl);
+      isValid = false;
+      el.classList.add("is-invalid");
+      el.style.borderColor = "#EF4444";
+      const errorEl = document.createElement("p");
+      errorEl.className = "validation-error text-red-500 text-sm mt-1";
+      errorEl.textContent = message;
+      el.parentElement.appendChild(errorEl);
     };
 
-    const validateSection = (containerId) => {
-        const items = document.querySelectorAll(`#${containerId} .grid`);
-        items.forEach(item => {
-            const inputs = item.querySelectorAll('input, select');
-            const uraian = inputs[0];
-            const qty1 = inputs[1];
-            const satuan1 = inputs[2];
-            const qty2 = inputs[3];
-            const satuan2 = inputs[4];
-            const qty3 = inputs[5];
-            const satuan3 = inputs[6];
-            const harga = inputs[7];
+    const ikuRows = document.querySelectorAll("#ikuRenstraContainer .iku-item");
+    if (ikuRows.length > 0) {
+      ikuRows.forEach((row) => {
+        const select = row.querySelector("select");
+        const input = row.querySelector("input");
+        if (!select.value) addError(select, "IKU wajib dipilih.");
+        if (!input.value) {
+          addError(input, "Target wajib diisi.");
+        }
+      });
+    }
 
-            // Only validate if any field in the row is filled
-            if (uraian.value || qty1.value !== '1' || satuan1.value || qty2.value !== '1' || satuan2.value || qty3.value !== '1' || satuan3.value || harga.value) {
-              if (!uraian.value) addError(uraian, 'Uraian wajib diisi.');
-              if (!qty1.value) addError(qty1, 'Qty 1 wajib diisi.');
-              if (!satuan1.value) addError(satuan1, 'Satuan 1 wajib dipilih.');
-              // Qty 2 and Satuan 2 are optional based on existing UI, so no strict validation
-              // Qty 3 and Satuan 3 are optional based on existing UI, so no strict validation
-              if (!harga.value) addError(harga, 'Harga Satuan wajib diisi.');
-            }
-        });
-    };
-
-    validateSection('belanjaBarangContainer');
-    validateSection('belanjaJasaContainer');
-    validateSection('belanjaPerjalananContainer');
-    
     if (!isValid) {
-        showError('Silakan perbaiki kesalahan pada form sebelum melanjutkan.');
+      showError("Silakan perbaiki kesalahan pada form sebelum melanjutkan.");
     }
 
     return isValid;
   }
-  
+
+  function validateRabStep() {
+    let isValid = true;
+    document
+      .querySelectorAll("#main-step-3 .validation-error")
+      .forEach((el) => el.remove());
+    document.querySelectorAll("#main-step-3 .is-invalid").forEach((el) => {
+      el.classList.remove("is-invalid");
+      el.style.borderColor = "#E5E7EB";
+    });
+
+    const addError = (el, message) => {
+      isValid = false;
+      el.classList.add("is-invalid");
+      el.style.borderColor = "#EF4444";
+      const errorEl = document.createElement("p");
+      errorEl.className = "validation-error text-red-500 text-sm mt-1";
+      errorEl.textContent = message;
+      el.parentElement.appendChild(errorEl);
+    };
+
+    const validateSection = (containerId) => {
+      const items = document.querySelectorAll(`#${containerId} .grid`);
+      items.forEach((item) => {
+        const inputs = item.querySelectorAll("input, select");
+        const uraian = inputs[0];
+        const qty1 = inputs[1];
+        const satuan1 = inputs[2];
+        const qty2 = inputs[3];
+        const satuan2 = inputs[4];
+        const qty3 = inputs[5];
+        const satuan3 = inputs[6];
+        const harga = inputs[7];
+
+        // Only validate if any field in the row is filled
+        if (
+          uraian.value ||
+          qty1.value !== "1" ||
+          satuan1.value ||
+          qty2.value !== "1" ||
+          satuan2.value ||
+          qty3.value !== "1" ||
+          satuan3.value ||
+          harga.value
+        ) {
+          if (!uraian.value) addError(uraian, "Uraian wajib diisi.");
+          if (!qty1.value) addError(qty1, "Qty 1 wajib diisi.");
+          if (!satuan1.value) addError(satuan1, "Satuan 1 wajib dipilih.");
+          // Qty 2 and Satuan 2 are optional based on existing UI, so no strict validation
+          // Qty 3 and Satuan 3 are optional based on existing UI, so no strict validation
+          if (!harga.value) addError(harga, "Harga Satuan wajib diisi.");
+        }
+      });
+    };
+
+    validateSection("belanjaBarangContainer");
+    validateSection("belanjaJasaContainer");
+    validateSection("belanjaPerjalananContainer");
+
+    if (!isValid) {
+      showError("Silakan perbaiki kesalahan pada form sebelum melanjutkan.");
+    }
+
+    return isValid;
+  }
+
   function validateAllSteps() {
-      const kakValid = [1, 2, 3, 4, 5].every(step => validateKAKStep(step));
-      const ikuValid = validateIkuStep();
-      const rabValid = validateRabStep();
+    const kakValid = [1, 2, 3, 4, 5].every((step) => validateKAKStep(step));
+    const ikuValid = validateIkuStep();
+    const rabValid = validateRabStep();
 
-      if (!kakValid) {
-          mainStep = 1;
-          // Find first invalid step and go to it
-          for (let i = 1; i <= 5; i++) {
-              if (!validateKAKStep(i)) {
-                  currentStep = i;
-                  break;
-              }
-          }
-          updateMainStepDisplay();
-          updateStepDisplay();
-          showError('Terdapat kesalahan pada isian Kerangka Acuan Kerja.');
-          return false;
+    if (!kakValid) {
+      mainStep = 1;
+      // Find first invalid step and go to it
+      for (let i = 1; i <= 5; i++) {
+        if (!validateKAKStep(i)) {
+          currentStep = i;
+          break;
+        }
       }
-      if (!ikuValid) {
-          mainStep = 2;
-          updateMainStepDisplay();
-          showError('Terdapat kesalahan pada isian IKU & Renstra.');
-          return false;
-      }
-      if (!rabValid) {
-          mainStep = 3;
-          updateMainStepDisplay();
-          showError('Terdapat kesalahan pada isian Rincian Anggaran Biaya.');
-          return false;
-      }
+      updateMainStepDisplay();
+      updateStepDisplay();
+      showError("Terdapat kesalahan pada isian Kerangka Acuan Kerja.");
+      return false;
+    }
+    if (!ikuValid) {
+      mainStep = 2;
+      updateMainStepDisplay();
+      showError("Terdapat kesalahan pada isian IKU & Renstra.");
+      return false;
+    }
+    if (!rabValid) {
+      mainStep = 3;
+      updateMainStepDisplay();
+      showError("Terdapat kesalahan pada isian Rincian Anggaran Biaya.");
+      return false;
+    }
 
-      return true;
+    return true;
   }
 
   // Update Main Progress Step Display
@@ -997,7 +1044,9 @@ export function renderUsulanKakPage(path, userRole) {
       const data = await response.json();
       if (!response.ok) {
         // Create a custom error object to include detailed errors
-        const error = new Error(data.message || `API request failed with status ${response.status}`);
+        const error = new Error(
+          data.message || `API request failed with status ${response.status}`
+        );
         error.details = data.errors || null; // Attach detailed errors
         throw error;
       }
@@ -1040,8 +1089,6 @@ export function renderUsulanKakPage(path, userRole) {
     }
   }
 
-
-
   // Populate IKU dropdowns from API
   async function populateIkuDropdowns() {
     try {
@@ -1071,7 +1118,6 @@ export function renderUsulanKakPage(path, userRole) {
     }
   }
 
-  
   // Populate Satuan dropdowns from API
   async function populateSatuanDropdowns() {
     try {
@@ -1110,25 +1156,21 @@ export function renderUsulanKakPage(path, userRole) {
     };
 
     // Helper function to get values from complex dynamic rows for t_kak_target
-const getTargetData = () => {
-  const container = document.getElementById("indikatorKinerjaContainer");
-  if (!container) return [];
-  const rows = container.querySelectorAll(".flex.items-end.gap-4.mb-6");  // tambah .mb-6
-  return Array.from(rows)
-    .map((row) => {
-      const inputs = row.querySelectorAll("input");
-      return {
-        bulan_indikator: inputs[0]?.value || "",
-        deskripsi_target: inputs[1]?.value || "",
-        persentase_target: parseFloat(inputs[2]?.value) || 100,  // default 100
-      };
-    })
-    .filter(
-      (item) =>
-        item.bulan_indikator ||
-        item.deskripsi_target
-    );
-};
+    const getTargetData = () => {
+      const container = document.getElementById("indikatorKinerjaContainer");
+      if (!container) return [];
+      const rows = container.querySelectorAll(".flex.items-end.gap-4.mb-6"); // tambah .mb-6
+      return Array.from(rows)
+        .map((row) => {
+          const inputs = row.querySelectorAll("input, select");
+          return {
+            bulan_indikator: inputs[0]?.value || "",
+            deskripsi_target: inputs[1]?.value || "",
+            persentase_target: parseFloat(inputs[2]?.value) || 100, // default 100
+          };
+        })
+        .filter((item) => item.bulan_indikator || item.deskripsi_target);
+    };
 
     const getIkuRenstraData = () => {
       const container = document.getElementById("ikuRenstraContainer");
@@ -1194,11 +1236,16 @@ const getTargetData = () => {
         lokasi: "PNJ Depok",
 
         // Assembled penerima_manfaat
-        penerima_manfaat: Array.from(document.querySelectorAll('#penerimaManfaatContainer .penerima-manfaat-item')).map(row => ({
-          sasaran_utama: row.querySelector('.sasaran-utama-input').value,
-          manfaat: row.querySelector('.manfaat-input').value,
-        })).filter(item => item.sasaran_utama || item.manfaat),
-
+        penerima_manfaat: Array.from(
+          document.querySelectorAll(
+            "#penerimaManfaatContainer .penerima-manfaat-item"
+          )
+        )
+          .map((row) => ({
+            sasaran_utama: row.querySelector(".sasaran-utama-input").value,
+            manfaat: row.querySelector(".manfaat-input").value,
+          }))
+          .filter((item) => item.sasaran_utama || item.manfaat),
 
         // Transformed tahapan_pelaksanaan
         tahapan_pelaksanaan: getDynamicListValues(
@@ -1279,14 +1326,14 @@ const getTargetData = () => {
     if (btnNext) {
       btnNext.addEventListener("click", () => {
         if (validateKAKStep(currentStep)) {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateStepDisplay();
-            } else {
-                // Move to main step 2
-                mainStep = 2;
-                updateMainStepDisplay();
-            }
+          if (currentStep < totalSteps) {
+            currentStep++;
+            updateStepDisplay();
+          } else {
+            // Move to main step 2
+            mainStep = 2;
+            updateMainStepDisplay();
+          }
         }
       });
     }
@@ -1307,8 +1354,8 @@ const getTargetData = () => {
     if (btnNextIku) {
       btnNextIku.addEventListener("click", () => {
         if (validateIkuStep()) {
-            mainStep = 3;
-            updateMainStepDisplay();
+          mainStep = 3;
+          updateMainStepDisplay();
         }
       });
     }
@@ -1402,9 +1449,11 @@ const getTargetData = () => {
 
   window.addTahapanPelaksanaan = function () {
     const container = document.getElementById("tahapanPelaksanaanContainer");
-    
+
     // Save current values
-    const currentValues = Array.from(container.querySelectorAll("input")).map(input => input.value);
+    const currentValues = Array.from(container.querySelectorAll("input")).map(
+      (input) => input.value
+    );
 
     const newItem = document.createElement("div");
     newItem.className = "flex gap-4 items-start mb-4";
@@ -1419,9 +1468,9 @@ const getTargetData = () => {
     // Restore old values
     const inputs = container.querySelectorAll("input");
     currentValues.forEach((value, index) => {
-        if (inputs[index]) {
-            inputs[index].value = value;
-        }
+      if (inputs[index]) {
+        inputs[index].value = value;
+      }
     });
   };
 
@@ -1430,13 +1479,13 @@ const getTargetData = () => {
 
     // Save current values
     const currentValues = [];
-    container.querySelectorAll(".flex.items-end.gap-4.mb-6").forEach(item => {
-        const inputs = item.querySelectorAll("input[type='text']");
-        currentValues.push({
-            bulan: inputs[0].value,
-            indikator: inputs[1].value,
-            target: inputs[2].value
-        });
+    container.querySelectorAll(".flex.items-end.gap-4.mb-6").forEach((item) => {
+      const inputs = item.querySelectorAll("input[type='text']");
+      currentValues.push({
+        bulan: inputs[0].value,
+        indikator: inputs[1].value,
+        target: inputs[2].value,
+      });
     });
 
     const newItem = document.createElement("div");
@@ -1444,7 +1493,21 @@ const getTargetData = () => {
     newItem.innerHTML = `
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+          <option value="">Pilih Bulan</option>
+          <option value="Januari">Januari</option>
+          <option value="Februari">Februari</option>
+          <option value="Maret">Maret</option>
+          <option value="April">April</option>
+          <option value="Mei">Mei</option>
+          <option value="Juni">Juni</option>
+          <option value="Juli">Juli</option>
+          <option value="Agustus">Agustus</option>
+          <option value="September">September</option>
+          <option value="Oktober">Oktober</option>
+          <option value="November">November</option>
+          <option value="Desember">Desember</option>
+        </select>
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
@@ -1463,12 +1526,12 @@ const getTargetData = () => {
     // Restore old values
     const items = container.querySelectorAll(".flex.items-end.gap-4.mb-6");
     currentValues.forEach((value, index) => {
-        if (items[index]) {
-            const inputs = items[index].querySelectorAll("input[type='text']");
-            inputs[0].value = value.bulan;
-            inputs[1].value = value.indikator;
-            inputs[2].value = value.target;
-        }
+      if (items[index]) {
+        const inputs = items[index].querySelectorAll("input[type='text']");
+        inputs[0].value = value.bulan;
+        inputs[1].value = value.indikator;
+        inputs[2].value = value.target;
+      }
     });
   };
 
@@ -1477,13 +1540,13 @@ const getTargetData = () => {
 
     // Save current values
     const currentValues = [];
-    container.querySelectorAll(".iku-item").forEach(item => {
-        const select = item.querySelector("select");
-        const input = item.querySelector("input[type='text']");
-        currentValues.push({
-            iku_id: select.value,
-            persentase_target: input.value
-        });
+    container.querySelectorAll(".iku-item").forEach((item) => {
+      const select = item.querySelector("select");
+      const input = item.querySelector("input[type='text']");
+      currentValues.push({
+        iku_id: select.value,
+        persentase_target: input.value,
+      });
     });
 
     // Add new empty field
@@ -1509,17 +1572,17 @@ const getTargetData = () => {
             </button>
           `;
     container.appendChild(newItem);
-    
+
     // Repopulate and restore values
     populateIkuDropdowns().then(() => {
-        container.querySelectorAll(".iku-item").forEach((item, index) => {
-            if (currentValues[index]) {
-                const select = item.querySelector("select");
-                const input = item.querySelector("input[type='text']");
-                select.value = currentValues[index].iku_id;
-                input.value = currentValues[index].persentase_target;
-            }
-        });
+      container.querySelectorAll(".iku-item").forEach((item, index) => {
+        if (currentValues[index]) {
+          const select = item.querySelector("select");
+          const input = item.querySelector("input[type='text']");
+          select.value = currentValues[index].iku_id;
+          input.value = currentValues[index].persentase_target;
+        }
+      });
     });
   };
   // Increment/Decrement value functions
@@ -1560,16 +1623,16 @@ const getTargetData = () => {
 
     // Save current values
     const currentValues = [];
-    container.querySelectorAll(".belanja-barang-item").forEach(item => {
-        const inputs = item.querySelectorAll("input, select");
-        currentValues.push({
-            uraian: inputs[0].value,
-            qty1: inputs[1].value,
-            satuan1: inputs[2].value,
-            qty2: inputs[3].value,
-            satuan2: inputs[4].value,
-            harga: inputs[5].value
-        });
+    container.querySelectorAll(".belanja-barang-item").forEach((item) => {
+      const inputs = item.querySelectorAll("input, select");
+      currentValues.push({
+        uraian: inputs[0].value,
+        qty1: inputs[1].value,
+        satuan1: inputs[2].value,
+        qty2: inputs[3].value,
+        satuan2: inputs[4].value,
+        harga: inputs[5].value,
+      });
     });
 
     const newItem = document.createElement("div");
@@ -1641,21 +1704,21 @@ const getTargetData = () => {
       </div>
     `;
     container.appendChild(newItem);
-    
+
     // Repopulate and restore values
     populateSatuanDropdowns().then(() => {
-        const items = container.querySelectorAll(".belanja-barang-item");
-        currentValues.forEach((value, index) => {
-            if (items[index]) {
-                const inputs = items[index].querySelectorAll("input, select");
-                inputs[0].value = value.uraian;
-                inputs[1].value = value.qty1;
-                inputs[2].value = value.satuan1;
-                inputs[3].value = value.qty2;
-                inputs[4].value = value.satuan2;
-                inputs[5].value = value.harga;
-            }
-        });
+      const items = container.querySelectorAll(".belanja-barang-item");
+      currentValues.forEach((value, index) => {
+        if (items[index]) {
+          const inputs = items[index].querySelectorAll("input, select");
+          inputs[0].value = value.uraian;
+          inputs[1].value = value.qty1;
+          inputs[2].value = value.satuan1;
+          inputs[3].value = value.qty2;
+          inputs[4].value = value.satuan2;
+          inputs[5].value = value.harga;
+        }
+      });
     });
   };
 
@@ -1823,22 +1886,29 @@ const getTargetData = () => {
 
       // Populate Step 2: Penerima Manfaat
       if (kakData.manfaat && kakData.manfaat.length > 0) {
-        const penerimaManfaatContainer = document.getElementById("penerimaManfaatContainer");
+        const penerimaManfaatContainer = document.getElementById(
+          "penerimaManfaatContainer"
+        );
 
         // Clear existing fields
         penerimaManfaatContainer.innerHTML = "";
 
         kakData.manfaat.forEach((item) => {
           const newItem = document.createElement("div");
-          newItem.className = "penerima-manfaat-item flex gap-4 items-start mb-4";
+          newItem.className =
+            "penerima-manfaat-item flex gap-4 items-start mb-4";
           newItem.innerHTML = `
             <div class="flex-1">
               <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-              <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran" value="${item.sasaran_utama || ''}">
+              <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran" value="${
+                item.sasaran_utama || ""
+              }">
             </div>
             <div class="flex-1">
               <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
-              <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat" value="${item.manfaat || ''}">
+              <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat" value="${
+                item.manfaat || ""
+              }">
             </div>
             <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
               <span class="text-xl font-bold">−</span>
@@ -1979,11 +2049,46 @@ const getTargetData = () => {
     div.innerHTML = `
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
+        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
           style="border-color: #E5E7EB; background: #FFFFFF;" 
           onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
-          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
-          placeholder="Input" value="${bulan}">
+          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+          <option value="">Pilih Bulan</option>
+          <option value="Januari" ${
+            bulan === "Januari" ? "selected" : ""
+          }>Januari</option>
+          <option value="Februari" ${
+            bulan === "Februari" ? "selected" : ""
+          }>Februari</option>
+          <option value="Maret" ${
+            bulan === "Maret" ? "selected" : ""
+          }>Maret</option>
+          <option value="April" ${
+            bulan === "April" ? "selected" : ""
+          }>April</option>
+          <option value="Mei" ${bulan === "Mei" ? "selected" : ""}>Mei</option>
+          <option value="Juni" ${
+            bulan === "Juni" ? "selected" : ""
+          }>Juni</option>
+          <option value="Juli" ${
+            bulan === "Juli" ? "selected" : ""
+          }>Juli</option>
+          <option value="Agustus" ${
+            bulan === "Agustus" ? "selected" : ""
+          }>Agustus</option>
+          <option value="September" ${
+            bulan === "September" ? "selected" : ""
+          }>September</option>
+          <option value="Oktober" ${
+            bulan === "Oktober" ? "selected" : ""
+          }>Oktober</option>
+          <option value="November" ${
+            bulan === "November" ? "selected" : ""
+          }>November</option>
+          <option value="Desember" ${
+            bulan === "Desember" ? "selected" : ""
+          }>Desember</option>
+        </select>
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
@@ -2057,7 +2162,16 @@ const getTargetData = () => {
     return div;
   }
 
-  function createAnggaranField(uraian, vol1, sat1, vol2, sat2, vol3, sat3, harga) {
+  function createAnggaranField(
+    uraian,
+    vol1,
+    sat1,
+    vol2,
+    sat2,
+    vol3,
+    sat3,
+    harga
+  ) {
     const div = document.createElement("div");
     div.className = "belanja-barang-item mb-8 p-6 rounded-lg";
     div.innerHTML = `
@@ -2192,40 +2306,42 @@ const getTargetData = () => {
 
         // Redirect after a short delay to allow user to see the message
         setTimeout(() => {
-            window.location.pathname = "/pengusul/monitoring-usulan";
+          window.location.pathname = "/pengusul/usulan";
         }, 1500);
-} catch (error) {
-  let errorMessage = `Error: ${error.message}`;
-  if (error.details) {
-    errorMessage += "\n\nRincian Validasi:";
-    const formatErrors = (errors, indent = 0) => {
-      let detailMessage = '';
-      const prefix = '  '.repeat(indent);
-      for (const field in errors) {
-        const value = errors[field];
-        if (Array.isArray(value)) {
-          // Array of error messages
-          detailMessage += `${prefix}- ${field}: ${value.join(', ')}\n`;
-        } else if (typeof value === 'object' && value !== null) {
-          // Nested object - recurse
-          detailMessage += `${prefix}- ${field}:\n`;
-          detailMessage += formatErrors(value, indent + 1);
-        } else if (typeof value === 'string') {
-          // Single string message
-          detailMessage += `${prefix}- ${field}: ${value}\n`;
-        } else {
-          // Fallback: convert to string
-          detailMessage += `${prefix}- ${field}: ${JSON.stringify(value)}\n`;
+      } catch (error) {
+        let errorMessage = `Error: ${error.message}`;
+        if (error.details) {
+          errorMessage += "\n\nRincian Validasi:";
+          const formatErrors = (errors, indent = 0) => {
+            let detailMessage = "";
+            const prefix = "  ".repeat(indent);
+            for (const field in errors) {
+              const value = errors[field];
+              if (Array.isArray(value)) {
+                // Array of error messages
+                detailMessage += `${prefix}- ${field}: ${value.join(", ")}\n`;
+              } else if (typeof value === "object" && value !== null) {
+                // Nested object - recurse
+                detailMessage += `${prefix}- ${field}:\n`;
+                detailMessage += formatErrors(value, indent + 1);
+              } else if (typeof value === "string") {
+                // Single string message
+                detailMessage += `${prefix}- ${field}: ${value}\n`;
+              } else {
+                // Fallback: convert to string
+                detailMessage += `${prefix}- ${field}: ${JSON.stringify(
+                  value
+                )}\n`;
+              }
+            }
+            return detailMessage;
+          };
+          errorMessage += "\n" + formatErrors(error.details);
         }
+        showError(errorMessage);
+        btnSubmitRab.disabled = false; // <-- juga perbaiki ini, seharusnya false bukan true
+        btnSubmitRab.innerHTML = "Submit";
       }
-      return detailMessage;
-    };
-    errorMessage += "\n" + formatErrors(error.details);
-  }
-  showError(errorMessage);
-  btnSubmitRab.disabled = false; // <-- juga perbaiki ini, seharusnya false bukan true
-  btnSubmitRab.innerHTML = "Submit";
-}
     });
   }
 

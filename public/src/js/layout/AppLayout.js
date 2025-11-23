@@ -9,7 +9,7 @@ import { bendaharaSidebar } from "./sidebars/BendaharaSidebar.js";
 
 // Header Component
 export const header = `
-  <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+  <nav class="layout-navbar container navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
       <!-- Search -->
@@ -249,7 +249,11 @@ function initializeSidebar() {
   // Set active state and open parent submenus
   const menuLinks = menu.querySelectorAll(".menu-link");
   menuLinks.forEach((link) => {
-    if (link.getAttribute("href") === currentPath) {
+    const href = link.getAttribute("href");
+    if (!href) return;
+
+    // Make the check more flexible: exact match or startsWith for nested routes
+    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
       const menuItem = link.closest(".menu-item");
       if (menuItem) {
         menuItem.classList.add("active");

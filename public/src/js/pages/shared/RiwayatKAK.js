@@ -283,17 +283,6 @@ export function renderRiwayatKAKPage(path, userRole) {
         box-shadow: 0 6px 16px rgba(3, 201, 215, 0.4);
       }
 
-      .btn-delete {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
-        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-      }
-
-      .btn-delete:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-      }
-
       /* Pagination */
       .pagination-container {
         display: flex;
@@ -677,14 +666,6 @@ export function renderRiwayatKAKPage(path, userRole) {
                 <line x1="12" y1="15" x2="12" y2="3"></line>
               </svg>
             </button>
-            <button class="btn-icon btn-delete" data-id="${item.id}" title="Hapus">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                <line x1="10" y1="11" x2="10" y2="17"></line>
-                <line x1="14" y1="11" x2="14" y2="17"></line>
-              </svg>
-            </button>
           </div>
         </td>
       `;
@@ -733,9 +714,7 @@ export function renderRiwayatKAKPage(path, userRole) {
       btn.addEventListener("click", function () {
         const id = this.getAttribute("data-id");
         console.log("Lihat KAK:", id);
-        if (window.showInfo) {
-          window.showInfo(`Melihat KAK ID: ${id}`);
-        }
+        window.navigateTo(`/${userRole}/riwayat/detail/${id}`);
       });
     });
 
@@ -745,23 +724,6 @@ export function renderRiwayatKAKPage(path, userRole) {
         console.log("Unduh KAK:", id);
         if (window.showSuccess) {
           window.showSuccess(`Mengunduh KAK ID: ${id}`);
-        }
-      });
-    });
-
-    document.querySelectorAll(".btn-delete").forEach((btn) => {
-      btn.addEventListener("click", async function () {
-        const id = this.getAttribute("data-id");
-        const confirmed = window.confirmAction ? 
-          await window.confirmAction(
-            "Yakin ingin menghapus?",
-            `KAK dengan ID ${id} akan dihapus secara permanen.`
-          ) : confirm("Yakin ingin menghapus KAK ini?");
-
-        if (confirmed) {
-          if (window.showSuccess) {
-            window.showSuccess(`Berhasil menghapus KAK ID: ${id}`);
-          }
         }
       });
     });

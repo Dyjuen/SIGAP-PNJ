@@ -122,7 +122,7 @@ export function renderWadirDashboardPage(path, userRole) {
       state.displayKegiatan = state.allKegiatan.filter(
         (k) =>
           k.current_approval &&
-          k.current_approval.approval_level === "Wadir" &&
+          k.current_approval.approval_level === "Wadir2" &&
           k.current_approval.status === "Aktif"
       );
 
@@ -196,9 +196,16 @@ export function renderWadirDashboardPage(path, userRole) {
 
       let notesContent;
       if (data && data.catatan) {
-        const formattedDate = new Date(data.updated_at).toLocaleDateString("id-ID", {
-          day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
+        const formattedDate = new Date(data.updated_at).toLocaleDateString(
+          "id-ID",
+          {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }
+        );
         notesContent = `
           <div style="text-align: left;">
             <p style="margin-bottom: 1rem;">${data.catatan}</p>
@@ -207,7 +214,8 @@ export function renderWadirDashboardPage(path, userRole) {
           </div>
         `;
       } else {
-        notesContent = "Tidak ada catatan yang ditemukan dari PPK untuk kegiatan ini.";
+        notesContent =
+          "Tidak ada catatan yang ditemukan dari PPK untuk kegiatan ini.";
       }
 
       Swal.fire({
@@ -217,7 +225,6 @@ export function renderWadirDashboardPage(path, userRole) {
         confirmButtonText: "Tutup",
         confirmButtonColor: "#00BCD4",
       });
-
     } catch (error) {
       showError(`Gagal mengambil catatan PPK: ${error.message}`);
     }
@@ -317,12 +324,12 @@ export function renderWadirDashboardPage(path, userRole) {
     const waitingCount = allData.filter(
       (k) =>
         k.current_approval &&
-        k.current_approval.approval_level === "Wadir" &&
+        k.current_approval.approval_level === "Wadir2" &&
         k.current_approval.status === "Aktif"
     ).length;
     const acceptedCount = allData.filter((k) => {
       const wadirApproval = k.approvals?.find(
-        (a) => a.approval_level === "Wadir"
+        (a) => a.approval_level === "Wadir2"
       );
       return wadirApproval && wadirApproval.status === "Disetujui";
     }).length;

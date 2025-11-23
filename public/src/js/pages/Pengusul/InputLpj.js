@@ -205,7 +205,7 @@ export function renderInputLpjPage(path, userRole) {
       });
 
       showSuccess('LPJ berhasil disubmit.');
-      window.location.hash = '#/pengusul/pengajuan-lpj';
+      window.location.hash = '#/pengusul/kegiatan/lpj';
     } catch (error) {
       showError(error.message);
     } finally {
