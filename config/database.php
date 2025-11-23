@@ -1,7 +1,14 @@
 <?php
 // config/database.php
 
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', 'rafifdwiarka180706.');
-define('DB_NAME', 'sigap_pnj');
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+// Load .env file from the project root
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
+
+
+define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
+define('DB_USER', $_ENV['DB_USER'] ?? 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? 'rafifdwiarka180706.');
+define('DB_NAME', $_ENV['DB_NAME'] ?? 'sigap_pnj');
