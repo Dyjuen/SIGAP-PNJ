@@ -63,6 +63,10 @@ class Kegiatan extends Model
             $whereSql .= " AND ks.nama_status = ?";
             $params[] = $filters['status'];
         }
+        if (!empty($filters['approval_level'])) {
+            $whereSql .= " AND active_approval.approval_level = ?";
+            $params[] = $filters['approval_level'];
+        }
 
         // Count total records - This also needs $baseSql and $whereSql
         $countSql = "SELECT COUNT(k.kegiatan_id) " . $baseSql . $whereSql;
@@ -73,6 +77,7 @@ class Kegiatan extends Model
         $mainSelect = "SELECT 
                         k.kegiatan_id,
                         k.pelaksana_manual,
+                        k.tgl_batas_lpj,
                         t.nama_kegiatan,
                         t.tanggal_mulai,
                         t.tanggal_selesai,

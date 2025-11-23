@@ -2,50 +2,30 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderDaftarLpjPage(userRole) {
+export function renderDaftarLpjPage(path, userRole) {
   const pageContent = `
+    <style>
+      .countdown-normal { color: #D97706; }
+      .countdown-danger { color: #be123c; }
+    </style>
     <div class="daftar-lpj-page">
       <!-- Statistics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <!-- Card Semua -->
-        <div class="stat-card stat-card-active rounded-xl shadow-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-xl" data-status="all">
-          <div class="flex flex-col">
-            <span class="text-sm font-medium opacity-90 mb-2">Usulan</span>
-            <h4 class="text-lg font-bold mb-1">Semua</h4>
-            <h1 class="text-5xl font-bold number-badge" id="count-all">0</h1>
-          </div>
+        <div class="stat-card stat-card-active rounded-xl shadow-lg p-6 cursor-pointer" data-status="all">
+          <h4 class="text-lg font-bold mb-1">Semua LPJ</h4>
+          <h1 class="text-5xl font-bold" id="count-all">0</h1>
         </div>
-        <!-- Card Menunggu -->
-        <div class="stat-card stat-card-inactive rounded-xl shadow-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-xl" data-status="Menunggu">
-          <div class="flex flex-col">
-            <span class="text-sm font-medium opacity-90 mb-2">Usulan</span>
-            <h4 class="text-lg font-bold mb-1">Menunggu</h4>
-            <h1 class="text-5xl font-bold number-badge" id="count-menunggu">0</h1>
-          </div>
+        <div class="stat-card stat-card-inactive rounded-xl shadow-lg p-6 cursor-pointer" data-status="Diajukan">
+          <h4 class="text-lg font-bold mb-1">Perlu Direview</h4>
+          <h1 class="text-5xl font-bold" id="count-diajukan">0</h1>
         </div>
-        <!-- Card Revisi -->
-        <div class="stat-card stat-card-inactive rounded-xl shadow-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-xl" data-status="Revisi">
-          <div class="flex flex-col">
-            <span class="text-sm font-medium opacity-70 mb-2">Usulan</span>
-            <h4 class="text-lg font-bold mb-1">Revisi</h4>
-            <h1 class="text-5xl font-bold number-badge" id="count-revisi">0</h1>
-          </div>
+        <div class="stat-card stat-card-inactive rounded-xl shadow-lg p-6 cursor-pointer" data-status="Direvisi">
+          <h4 class="text-lg font-bold mb-1">Perlu Direvisi</h4>
+          <h1 class="text-5xl font-bold" id="count-revisi">0</h1>
         </div>
-        <!-- Card Setor Fisik -->
-        <div class="stat-card stat-card-inactive rounded-xl shadow-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-xl" data-status="Setor Fisik">
-          <div class="flex flex-col">
-            <span class="text-sm font-medium opacity-70 mb-2">Usulan</span>
-            <h4 class="text-lg font-bold mb-1">Setor Fisik</h4>
-            <h1 class="text-5xl font-bold number-badge" id="count-setor-fisik">0</h1>
-          </div>
-        </div>
-        <!-- Card Menunggu LPJ -->
-        <div class="stat-card stat-card-inactive rounded-xl shadow-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-xl" data-status="Menunggu LPJ">
-          <div class="flex flex-col">
-            <span class="text-sm font-medium opacity-70 mb-2">Usulan</span>
-            <h4 class="text-lg font-bold mb-1">Menunggu LPJ</h4>
-            <h1 class="text-5xl font-bold number-badge" id="count-menunggu-lpj">0</h1>
-          </div>
+        <div class="stat-card stat-card-inactive rounded-xl shadow-lg p-6 cursor-pointer" data-status="Menunggu Penyerahan">
+          <h4 class="text-lg font-bold mb-1">Menunggu LPJ</h4>
+          <h1 class="text-5xl font-bold" id="count-menunggu">0</h1>
         </div>
       </div>
 
@@ -55,34 +35,18 @@ export function renderDaftarLpjPage(userRole) {
           <table class="table" id="lpjTable">
             <thead>
               <tr>
-                <th style="width: 50px;">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="selectAll">
-                  </div>
-                </th>
                 <th style="width: 80px;">No.</th>
-                <th>Nama Usulan Kegiatan</th>
+                <th>Nama Kegiatan</th>
                 <th>Pengusul</th>
-                <th>Tanggal Diajukan</th>
-                <th>Status</th>
-                <th style="width: 200px;">Aksi</th>
+                <th>Batas Waktu LPJ</th>
+                <th class="text-center">Hitung Mundur</th>
+                <th class="text-center">Status</th>
+                <th class="text-center" style="width: 220px;">Aksi</th>
               </tr>
             </thead>
             <tbody id="lpjTableBody">
-              <!-- Dummy rows will be replaced by dynamic data -->
             </tbody>
           </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="flex justify-between items-center mt-6">
-          <div class="text-sm" style="color: #6B7280;" id="paginationInfo">
-            Showing 1 to 10 of 50 entries
-          </div>
-          <nav>
-            <ul class="pagination mb-0" id="paginationContainer">
-            </ul>
-          </nav>
         </div>
       </div>
     </div>
@@ -93,110 +57,127 @@ export function renderDaftarLpjPage(userRole) {
 }
 
 function initializeDaftarLpj() {
-    const dummyData = [
-        { id: 1, nama_kegiatan: "LPJ Seminar Nasional AI", pengusul: "John Doe", tanggal_diajukan: "2025-11-01", status: "Menunggu" },
-        { id: 2, nama_kegiatan: "LPJ Workshop UI/UX", pengusul: "Jane Smith", tanggal_diajukan: "2025-11-02", status: "Revisi" },
-        { id: 3, nama_kegiatan: "LPJ Lomba Desain Grafis", pengusul: "Peter Jones", tanggal_diajukan: "2025-11-03", status: "Setor Fisik" },
-        { id: 4, nama_kegiatan: "LPJ Pameran Teknologi", pengusul: "Alice Williams", tanggal_diajukan: "2025-11-04", status: "Menunggu LPJ" },
-        { id: 5, nama_kegiatan: "LPJ Hackathon 2025", pengusul: "Bob Brown", tanggal_diajukan: "2025-11-05", status: "Revisi" },
-        { id: 6, nama_kegiatan: "LPJ Webinar Kewirausahaan", pengusul: "Charlie Davis", tanggal_diajukan: "2025-11-06", status: "Setor Fisik" },
-        { id: 7, nama_kegiatan: "LPJ Studi Banding", pengusul: "Diana Miller", tanggal_diajukan: "2025-11-07", status: "Menunggu" },
-        { id: 8, nama_kegiatan: "LPJ Bakti Sosial", pengusul: "Ethan Wilson", tanggal_diajukan: "2025-11-08", status: "Revisi" },
-        { id: 9, nama_kegiatan: "LPJ Pelatihan Software", pengusul: "Fiona Taylor", tanggal_diajukan: "2025-11-09", status: "Menunggu LPJ" },
-        { id: 10, nama_kegiatan: "LPJ Dies Natalis", pengusul: "George Moore", tanggal_diajukan: "2025-11-10", status: "Menunggu" },
-    ];
-
-    let state = {
-        kegiatan: dummyData,
-        filter: "all"
+    const state = {
+        kegiatan: [],
+        filteredKegiatan: [],
+        filter: "all",
+        countdownInterval: null,
     };
 
     const tbody = document.getElementById("lpjTableBody");
     const statCards = document.querySelectorAll("[data-status]");
 
+    async function apiRequest(endpoint, options = {}) {
+        const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+        const headers = { ...options.headers, Authorization: `Bearer ${token}` };
+        if (!(options.body instanceof FormData)) {
+            headers["Content-Type"] = "application/json";
+        }
+        const config = { ...options, headers };
+        try {
+            const response = await fetch(`/api${endpoint}`, config);
+            const data = await response.json();
+            if (data.success === false) {
+                throw new Error(data.message || "API request failed");
+            }
+            return data;
+        } catch (error) {
+            console.error("API Request Error:", error);
+            showError(error.message);
+            throw error;
+        }
+    }
+
+    async function fetchData() {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center">Loading...</td></tr>`;
+        try {
+            // Use the endpoint designed for fetching LPJ data
+            const response = await apiRequest("/dashboard/lpj");
+            state.kegiatan = response.data.data || [];
+            filterAndRender();
+            updateStats();
+            startCountdownTimers();
+        } catch (error) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
+        }
+    }
+
     function getStatusBadge(status) {
         const statusMap = {
-            "Menunggu": "bg-label-warning",
-            "Revisi": "bg-label-info",
-            "Setor Fisik": "bg-label-danger",
-            "Menunggu LPJ": "bg-label-secondary",
+            "Menunggu Penyerahan": "bg-label-secondary",
+            "Diajukan": "bg-label-warning",
+            "Direvisi": "bg-label-info",
+            "Selesai": "bg-label-success",
         };
         return statusMap[status] || "bg-label-dark";
     }
 
     function getActionButtons(status, id) {
         switch (status) {
-            case "Menunggu":
-            case "Revisi":
+            case "Diajukan": // This is when Bendahara needs to review
                 return `
-                  <div class="inline-flex gap-2">
-                    <button class="btn btn-sm px-4 py-2 rounded-lg font-semibold transition-all duration-300 inline-flex items-center gap-2" style="background: #8B5CF6; color: #FFFFFF; border: none;">
-                      <i class="ti ti-pencil">&#xeb7d;</i> Revisi
-                    </button>
-                    <button class="btn btn-sm px-4 py-2 rounded-lg font-semibold transition-all duration-300 inline-flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4; border: none;" onclick="window.location.href='/pengusul/usulan/${id}'">
-                      <i class="ti ti-arrow-right">&#xea3c;</i> Lanjutkan
-                    </button>
+                  <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-sm btn-info" data-action="revisi" data-id="${id}">Revisi</button>
+                    <button class="btn btn-sm btn-primary" data-action="setujui" data-id="${id}">Setujui</button>
                   </div>`;
-            case "Setor Fisik":
-                return `
-                  <div class="flex justify-center">
-                    <button class="btn btn-sm px-4 py-2 rounded-lg font-semibold transition-all duration-300 inline-flex items-center gap-2" style="background: #10B981; color: #FFFFFF; border: none;">
-                      <i class="ti ti-check">&#xea5e;</i> Selesai
-                    </button>
-                  </div>`;
-            case "Menunggu LPJ":
-                return `<span>-</span>`;
+            case "Menunggu Penyerahan":
+            case "Selesai":
+            case "Direvisi": // Action is on Pengusul side
             default:
-                return `<span>-</span>`;
+                return `<span class="text-muted">-</span>`;
+        }
+    }
+
+    function calculateCountdown(deadline) {
+        if (!deadline) return { text: '-', colorClass: '' };
+        
+        const now = new Date();
+        const deadlineDate = new Date(deadline);
+        const diffTime = deadlineDate - now;
+    
+        if (diffTime <= 0) {
+            return { text: `Terlambat`, colorClass: 'countdown-danger' };
+        }
+    
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+    
+        if (diffDays > 0) {
+          return { text: `${diffDays} hari lagi`, colorClass: 'countdown-normal' };
+        } else {
+          return { text: `${String(diffHours).padStart(2, '0')}j ${String(diffMinutes).padStart(2, '0')}m`, colorClass: 'countdown-danger' };
         }
     }
 
     function renderTableRows() {
-        const filteredData = state.filter === "all"
-            ? state.kegiatan
-            : state.kegiatan.filter(k => k.status === state.filter);
-
         tbody.innerHTML = "";
-        if (filteredData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center">Tidak ada data untuk status ini.</td></tr>`;
+        if (state.filteredKegiatan.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center">Tidak ada data untuk ditampilkan.</td></tr>`;
             return;
         }
 
-        filteredData.forEach((item, index) => {
+        state.filteredKegiatan.forEach((item, index) => {
             const row = document.createElement("tr");
-            const statusClass = getStatusBadge(item.status);
-            const actionButtons = getActionButtons(item.status, item.id);
+            const statusClass = getStatusBadge(item.status_lpj);
+            const actionButtons = getActionButtons(item.status_lpj, item.kegiatan_id);
+            const countdown = calculateCountdown(item.tgl_batas_lpj);
 
             row.innerHTML = `
+                <td>${index + 1}</td>
                 <td>
-                  <div class="form-check">
-                    <input class="form-check-input row-checkbox" type="checkbox">
-                  </div>
+                    <div>${item.nama_kegiatan}</div>
+                    <small class="text-muted">${item.pengusul_nama}</small>
                 </td>
-                <td>
-                  <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style="background: #F3F4F6; color: #374151;">${index + 1}</div>
+                <td>${item.pengusul_nama}</td>
+                <td>${item.tgl_batas_lpj ? new Date(item.tgl_batas_lpj).toLocaleDateString('id-ID') : '-'}</td>
+                <td class="text-center">
+                    <span id="countdown-${item.kegiatan_id}" class="${countdown.colorClass}">${countdown.text}</span>
                 </td>
-                <td>
-                  <div>
-                    <div class="font-semibold text-base" style="color: #374151;">${item.nama_kegiatan}</div>
-                    <small class="text-sm" style="color: #9CA3AF;">Pengusul</small>
-                  </div>
+                <td class="text-center">
+                    <span class="badge ${statusClass}">${item.status_lpj}</span>
                 </td>
-                <td>
-                  <div>
-                    <div class="font-semibold text-sm" style="color: #374151;">${item.pengusul}</div>
-                    <small class="text-xs" style="color: #9CA3AF;">himpunan /lain</small>
-                  </div>
-                </td>
-                <td>
-                  <span class="text-sm" style="color: #374151;">${item.tanggal_diajukan}</span>
-                </td>
-                <td>
-                  <span class="badge ${statusClass} rounded-lg px-3 py-2">${item.status}</span>
-                </td>
-                <td>
-                  ${actionButtons}
-                </td>
+                <td class="text-center">${actionButtons}</td>
             `;
             tbody.appendChild(row);
         });
@@ -204,24 +185,42 @@ function initializeDaftarLpj() {
 
     function updateStats() {
         document.getElementById('count-all').textContent = state.kegiatan.length;
-        document.getElementById('count-menunggu').textContent = state.kegiatan.filter(k => k.status === 'Menunggu').length;
-        document.getElementById('count-revisi').textContent = state.kegiatan.filter(k => k.status === 'Revisi').length;
-        document.getElementById('count-setor-fisik').textContent = state.kegiatan.filter(k => k.status === 'Setor Fisik').length;
-        document.getElementById('count-menunggu-lpj').textContent = state.kegiatan.filter(k => k.status === 'Menunggu LPJ').length;
+        document.getElementById('count-diajukan').textContent = state.kegiatan.filter(k => k.status_lpj === 'Diajukan').length;
+        document.getElementById('count-revisi').textContent = state.kegiatan.filter(k => k.status_lpj === 'Direvisi').length;
+        document.getElementById('count-menunggu').textContent = state.kegiatan.filter(k => k.status_lpj === 'Menunggu Penyerahan').length;
+    }
+
+    function filterAndRender() {
+        if (state.filter === 'all') {
+            state.filteredKegiatan = state.kegiatan;
+        } else {
+            state.filteredKegiatan = state.kegiatan.filter(k => k.status_lpj === state.filter);
+        }
+        renderTableRows();
+    }
+    
+    function startCountdownTimers() {
+        if (state.countdownInterval) clearInterval(state.countdownInterval);
+        state.countdownInterval = setInterval(() => {
+            state.kegiatan.forEach(item => {
+                const el = document.getElementById(`countdown-${item.kegiatan_id}`);
+                if (el) {
+                    const countdown = calculateCountdown(item.tgl_batas_lpj);
+                    el.textContent = countdown.text;
+                    el.className = `font-semibold ${countdown.colorClass}`;
+                }
+            });
+        }, 1000 * 60); // Update every minute
     }
 
     statCards.forEach((card) => {
         card.addEventListener("click", function () {
             state.filter = this.getAttribute("data-status");
-            
             statCards.forEach((c) => c.classList.replace('stat-card-active', 'stat-card-inactive'));
             this.classList.replace('stat-card-inactive', 'stat-card-active');
-
-            renderTableRows();
+            filterAndRender();
         });
     });
 
-    // Initial render
-    renderTableRows();
-    updateStats();
+    fetchData();
 }
