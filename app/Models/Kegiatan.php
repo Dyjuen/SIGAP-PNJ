@@ -18,6 +18,7 @@ class Kegiatan extends Model
                     JOIN m_users u ON t.pengusul_user_id = u.user_id
                     LEFT JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
                     LEFT JOIN t_kegiatan_approval active_approval ON k.kegiatan_id = active_approval.kegiatan_id AND active_approval.status = 'Aktif'
+                    LEFT JOIN t_kegiatan_approval ppk_approval ON k.kegiatan_id = ppk_approval.kegiatan_id AND ppk_approval.approval_level = 'PPK'
                     LEFT JOIN (
                         SELECT kegiatan_id, SUM(jumlah_dicairkan) as total_dicairkan
                         FROM t_pencairan_dana
@@ -71,11 +72,13 @@ class Kegiatan extends Model
         // Main query with direct join for active approval and disbursement sum
         $mainSelect = "SELECT 
                         k.kegiatan_id,
+                        k.pelaksana_manual,
                         t.nama_kegiatan,
                         t.tanggal_mulai,
                         t.tanggal_selesai,
                         t.lokasi,
                         t.created_at,
+                        ppk_approval.created_at as tanggal_diajukan_ppk,
                         u.nama_lengkap as pengusul_nama,
                         ks.nama_status,
                         ks.status_id,

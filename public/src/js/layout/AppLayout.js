@@ -249,7 +249,11 @@ function initializeSidebar() {
   // Set active state and open parent submenus
   const menuLinks = menu.querySelectorAll(".menu-link");
   menuLinks.forEach((link) => {
-    if (link.getAttribute("href") === currentPath) {
+    const href = link.getAttribute("href");
+    if (!href) return;
+
+    // Make the check more flexible: exact match or startsWith for nested routes
+    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
       const menuItem = link.closest(".menu-item");
       if (menuItem) {
         menuItem.classList.add("active");

@@ -474,6 +474,19 @@ export function renderPencairanDanaPage(path, userRole) {
       return;
     }
 
+    const kegiatan = state.allKegiatan.find(k => k.kegiatan_id == kegiatanId);
+    if (!kegiatan) {
+        showError("Kegiatan tidak ditemukan.");
+        return;
+    }
+
+    const totalDiminta = parseFloat(kegiatan.total_anggaran_diusulkan || 0);
+
+    if (nominal > totalDiminta) {
+        showError(`Nominal pencairan (${formatRupiah(nominal)}) melebihi total yang diminta (${formatRupiah(totalDiminta)}).`);
+        return;
+    }
+
     // Step 2 — Confirmation modal
     const confirmResult = await Swal.fire({
       title: "Konfirmasi Pencairan",
@@ -595,35 +608,28 @@ export function renderPencairanDanaPage(path, userRole) {
       startIndex + state.itemsPerPage
     );
 
-    paginatedData.forEach((item) => {
-      const statusClass = getStatusBadge(item.nama_status);
-
+    paginatedData.forEach((item, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox">
-        </td>
         <td>
-          <div class="number-badge">${item.kegiatan_id}</div>
+          <div class="number-badge">${startIndex + index + 1}</div>
         </td>
         <td>
           <div class="activity-title">${item.nama_kegiatan}</div>
-          <div class="activity-subtitle">${item.pengusul_nama}</div>
         </td>
         <td>
-          <div class="activity-title">${item.penanggung_jawab_manual || "N/A"}</div>
-          <div class="activity-subtitle">${item.pelaksana_manual || "N/A"}</div>
+          <div class="activity-title">${item.pelaksana_manual || "N/A"}</div>
         </td>
         <td>
           <span style="font-weight: 600; color: #374151;">${formatDate(
-            item.created_at
+            item.tanggal_diajukan_ppk
           )}</span>
         </td>
         <td style="text-align: center;">
-          <span class="badge ${statusClass}">${item.nama_status || "Menunggu"}</span>
+          ${formatRupiah(item.dana_dicairkan)}
         </td>
         <td style="text-align: center;">
-          ${formatRupiah(item.dana_dicairkan)}
+          ${formatRupiah(item.total_anggaran_diusulkan)}
         </td>
         <td style="text-align: center;">
           <button class="btn btn-sm btn-action btn-cairkan me-2" data-id="${
