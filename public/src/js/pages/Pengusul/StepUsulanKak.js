@@ -4,10 +4,8 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderUsulanKakPage(path, userRole) {
   const pathSegments = path.split("/").filter((segment) => segment);
-  const kakId =
-    pathSegments.length > 2 && pathSegments[1] === "usulan"
-      ? pathSegments[2]
-      : null;
+  const potentialId = pathSegments.length > 2 && pathSegments[1] === "usulan" ? pathSegments[2] : null;
+  const kakId = potentialId !== 'new' ? potentialId : null;
   const isEditMode = kakId !== null;
 
   const pageContent = `

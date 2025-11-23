@@ -533,7 +533,7 @@ class KegiatanController
             }
 
             // 3. Authorization Check using hardcoded hierarchy
-            $approvalHierarchy = ['PPK', 'Wadir', 'Bendahara-Cair', 'Bendahara-LPJ'];
+            $approvalHierarchy = ['PPK', 'Wadir2', 'Bendahara-Cair', 'Bendahara-LPJ'];
             $expectedRole = $approvalHierarchy[$activeIndex] ?? null;
 
             if (!$expectedRole) {
@@ -632,7 +632,7 @@ class KegiatanController
 
                 $db->commit();
 
-                $message = "Disetujui oleh {$approvalLevel}. Menunggu persetujuan {$nextApproval['approval_level']}.";
+                $message = "Disetujui oleh {$expectedRole}. Menunggu persetujuan {$nextApproval['approval_level']}.";
                 Response::success(null, $message);
             
             } else {

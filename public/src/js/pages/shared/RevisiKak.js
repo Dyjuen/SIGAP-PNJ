@@ -2,14 +2,14 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-
-
 export function renderRevisiKakPage(path, userRole) {
   const isVerifikator = userRole.toLowerCase() === "verifikator";
   const isPengusul = userRole.toLowerCase() === "pengusul";
 
   const inputAttr = isPengusul ? "" : "readonly disabled";
-  const inputStyle = isPengusul ? "" : "border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default;";
+  const inputStyle = isPengusul
+    ? ""
+    : "border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default;";
   const pageContent = `
     <style>
       /* Comment button styling */
@@ -779,15 +779,21 @@ export function renderRevisiKakPage(path, userRole) {
       <div class="grid grid-cols-3 gap-4" style="padding-right: 60px;">
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.bulan_indikator || ""}">
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
+    item.bulan_indikator || ""
+  }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.deskripsi_target || ""}">
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
+    item.deskripsi_target || ""
+  }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.persentase_target || ""}">
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
+    item.persentase_target || ""
+  }">
         </div>
       </div>
       <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Indikator Kinerja #${
@@ -815,7 +821,9 @@ export function renderRevisiKakPage(path, userRole) {
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
           <div class="flex gap-2 items-center">
-                        <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.persentase_target || "0"}">
+                        <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
+    item.persentase_target || "0"
+  }">
             <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
           </div>
         </div>
@@ -835,11 +843,15 @@ export function renderRevisiKakPage(path, userRole) {
       <div class="grid-rab" style="padding-right: 60px;">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.uraian || ""}">
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
+    item.uraian || ""
+  }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.volume1 || "1"}">
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
+    item.volume1 || "1"
+  }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
@@ -852,7 +864,9 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.volume2 || "1"}">
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
+    item.volume2 || "1"
+  }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
@@ -1659,7 +1673,7 @@ export function renderRevisiKakPage(path, userRole) {
             showConfirmButton: false,
           });
 
-          window.location.href = "/pengusul/monitoring-usulan";
+          window.location.href = "/pengusul/usulan";
         } catch (error) {
           Swal.fire("Gagal Submit", error.message, "error");
         }
