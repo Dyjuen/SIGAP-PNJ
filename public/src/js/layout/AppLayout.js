@@ -9,7 +9,7 @@ import { bendaharaSidebar } from "./sidebars/BendaharaSidebar.js";
 
 // Header Component
 export const header = `
-  <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+  <nav class="layout-navbar container navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
       <!-- Search -->
