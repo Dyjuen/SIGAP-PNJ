@@ -27,6 +27,7 @@ final class CreateTKakTable extends AbstractMigration
               ->addColumn('catatan_sasaran_utama', 'text', ['null' => true])
               ->addColumn('catatan_metode_pelaksanaan', 'text', ['null' => true])
               ->addColumn('catatan_lokasi', 'text', ['null' => true])
+              ->addColumn('catatan_tanggal', 'text', ['null' => true])
               ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
               ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP', 'update' => 'CURRENT_TIMESTAMP'])
               

@@ -18,6 +18,7 @@ class MasterDataSeeder extends AbstractSeed
         $this->execute('TRUNCATE TABLE m_satuan');
         $this->execute('TRUNCATE TABLE m_tipe_kegiatan');
         $this->execute('TRUNCATE TABLE m_kegiatan_status');
+        $this->execute('TRUNCATE TABLE m_kategori_belanja');
         $this->execute('TRUNCATE TABLE m_roles');
         
         // Re-enable foreign key checks
@@ -117,7 +118,35 @@ class MasterDataSeeder extends AbstractSeed
         $this->table('m_iku')->insert($iku)->saveData();
 
         // ============================================
-        // 7. USERS
+        // 7. KATEGORI BELANJA
+        // ============================================
+        $kategoriBelanja = [
+            [
+                'kode' => 'BRG',
+                'nama' => 'Belanja Barang',
+                'keterangan' => 'Belanja untuk pengadaan barang habis pakai, ATK, konsumsi, dll',
+                'urutan' => 1,
+                'is_active' => true
+            ],
+            [
+                'kode' => 'JSA',
+                'nama' => 'Belanja Jasa',
+                'keterangan' => 'Belanja untuk pembayaran jasa seperti honor narasumber, tenaga pendukung, dll',
+                'urutan' => 2,
+                'is_active' => true
+            ],
+            [
+                'kode' => 'PJL',
+                'nama' => 'Belanja Perjalanan',
+                'keterangan' => 'Belanja untuk transport, akomodasi, dan biaya perjalanan dinas',
+                'urutan' => 3,
+                'is_active' => true
+            ]
+        ];
+        $this->table('m_kategori_belanja')->insert($kategoriBelanja)->saveData();
+
+        // ============================================
+        // 8. USERS
         // ============================================
         $users = [
             [
@@ -149,38 +178,10 @@ class MasterDataSeeder extends AbstractSeed
                 'nama_lengkap' => 'Rektorat PNJ', 'email' => 'rektorat@pnj.ac.id', 'role_id' => 7
             ]
         ];
-
-        // ============================================
-        // KATEGORI BELANJA
-        // ============================================
-        $kategoriBelanja = [
-            [
-                'kode' => 'BRG',
-                'nama' => 'Belanja Barang',
-                'keterangan' => 'Belanja untuk pengadaan barang habis pakai, ATK, konsumsi, dll',
-                'urutan' => 1,
-                'is_active' => true
-            ],
-            [
-                'kode' => 'JSA',
-                'nama' => 'Belanja Jasa',
-                'keterangan' => 'Belanja untuk pembayaran jasa seperti honor narasumber, tenaga pendukung, dll',
-                'urutan' => 2,
-                'is_active' => true
-            ],
-            [
-                'kode' => 'PJL',
-                'nama' => 'Belanja Perjalanan',
-                'keterangan' => 'Belanja untuk transport, akomodasi, dan biaya perjalanan dinas',
-                'urutan' => 3,
-                'is_active' => true
-            ]
-        ];
-        $this->table('m_kategori_belanja')->insert($kategoriBelanja)->saveData();
         $this->table('m_users')->insert($users)->saveData();
 
         echo "✅ Master data seeded successfully!\n";
-        echo "   - Roles, Tipe Kegiatan, Status, Satuan, Mata Anggaran, IKU, Users\n";
+        echo "   - Roles, Tipe Kegiatan, Status, Satuan, Mata Anggaran, IKU, Kategori Belanja, Users\n";
         echo "\n";
         echo "🔑 Login Credentials:\n";
         echo "   Admin:       username: admin       password: admin123\n";

@@ -3,19 +3,6 @@
 * File include item demo only specific css only
 ******************************************************************************/
 
-.menu .app-brand.demo {
-  height: 64px;
-}
-
-.app-brand-logo.demo svg {
-  width: 34px;
-  height: 24px;
-}
-
-.app-brand-text.demo {
-  font-size: 1.375rem;
-}
-
 /* ! For .layout-navbar-fixed added fix padding top to .layout-page */
 /* Default navbar */
 .layout-navbar-fixed .layout-wrapper:not(.layout-without-menu) .layout-page {
