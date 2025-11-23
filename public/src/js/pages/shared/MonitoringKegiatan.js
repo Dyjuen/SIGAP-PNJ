@@ -13,6 +13,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         background-attachment: fixed;
         min-height: 100vh;
         padding: 2rem;
+        animation: fadeIn 0.4s ease-out;
       }
 
       /* Info banner */
@@ -28,6 +29,18 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         gap: 0.75rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         border-left: 4px solid #03C9D7;
+        animation: slideDown 0.5s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .info-icon {
@@ -44,6 +57,15 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         padding: 0;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         overflow: hidden;
+        animation: scaleIn 0.5s ease-out;
+        animation-delay: 0.1s;
+        animation-fill-mode: backwards;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+      }
+
+      .card-datatable:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
       }
       
       .card-datatable .table {
@@ -64,7 +86,13 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         font-size: 0.875rem;
         border-bottom: 2px solid #e2e8f0;
         white-space: nowrap;
+        animation: fadeIn 0.5s ease-out backwards;
       }
+
+      .table thead tr th:nth-child(1) { animation-delay: 0.2s; }
+      .table thead tr th:nth-child(2) { animation-delay: 0.25s; }
+      .table thead tr th:nth-child(3) { animation-delay: 0.3s; }
+      .table thead tr th:nth-child(4) { animation-delay: 0.35s; }
 
       /* Enhanced row hover effect with premium interaction */
       .table tbody tr {
@@ -72,14 +100,32 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         border-left: 4px solid transparent;
+        animation: slideInRight 0.5s ease-out backwards;
       }
+
+      .table tbody tr:nth-child(1) { animation-delay: 0.4s; }
+      .table tbody tr:nth-child(2) { animation-delay: 0.45s; }
+      .table tbody tr:nth-child(3) { animation-delay: 0.5s; }
+      .table tbody tr:nth-child(4) { animation-delay: 0.55s; }
+      .table tbody tr:nth-child(5) { animation-delay: 0.6s; }
 
       .table tbody tr:hover {
         background-color: #f8fafc;
-        transform: translateY(-4px) scale(1.005);
+        transform: translateX(4px) scale(1.005);
         box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         border-left-color: #03C9D7;
         z-index: 10;
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
 
       .table tbody tr td {
@@ -94,6 +140,20 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         height: 18px;
         cursor: pointer;
         accent-color: #03C9D7;
+        transition: transform 0.2s ease;
+      }
+
+      .custom-checkbox:hover {
+        transform: scale(1.15);
+      }
+
+      .custom-checkbox:checked {
+        animation: checkBounce 0.4s ease;
+      }
+
+      @keyframes checkBounce {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
       }
 
       /* Index number */
@@ -101,6 +161,13 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         font-weight: 600;
         color: #1e293b;
         font-size: 0.95rem;
+        display: inline-block;
+        transition: all 0.3s ease;
+      }
+
+      tr:hover .index-number {
+        color: #03C9D7;
+        transform: scale(1.1);
       }
 
       /* Activity name */
@@ -109,11 +176,21 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         color: #1e293b;
         font-size: 0.95rem;
         margin-bottom: 0.25rem;
+        transition: all 0.3s ease;
+      }
+
+      tr:hover .activity-name {
+        color: #03C9D7;
       }
 
       .activity-name-sub {
         font-size: 0.75rem;
         color: #94a3b8;
+        transition: color 0.3s ease;
+      }
+
+      tr:hover .activity-name-sub {
+        color: #64748b;
       }
 
       /* Bootstrap Progress Stepper */
@@ -133,7 +210,13 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         flex-direction: column;
         align-items: center;
         flex: 1;
+        animation: fadeIn 0.5s ease-out backwards;
       }
+
+      .stepper-item:nth-child(1) { animation-delay: 0.05s; }
+      .stepper-item:nth-child(2) { animation-delay: 0.1s; }
+      .stepper-item:nth-child(3) { animation-delay: 0.15s; }
+      .stepper-item:nth-child(4) { animation-delay: 0.2s; }
 
       /* Step Counter - Base */
       .step-counter {
@@ -150,53 +233,52 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         font-weight: 700;
         font-size: 0.875rem;
         color: #94a3b8;
-        transition: all 0.4s ease-out; /* Slower, smoother transition */
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        animation: fadeIn 0.5s ease-out backwards;
       }
       
       /* Completed Step Enhancements */
       .stepper-item.completed .step-counter {
         background: linear-gradient(135deg, #03C9D7 0%, #02b3c4 100%);
         color: white;
-        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.4);
-        animation: stepIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; /* Use stepIn animation */
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.3);
+        animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
       }
       
       /* Active Step Enhancements */
       .stepper-item.active .step-counter {
-        /* Enhanced Ripple Effect */
-        background: linear-gradient(90deg, #F0F9FF 0%, #FFFFFF 50%, #F0F9FF 100%);
-        background-size: 200% 100%;
+        background: white;
         border: 3px solid #03C9D7;
         color: #03C9D7;
-        box-shadow: 0 0 0 6px rgba(3, 201, 215, 0.15);
-        animation: activeRipple 2s ease-in-out infinite, activeRippleBackground 4s linear infinite; /* Combine with background anim */
+        box-shadow: 0 0 0 0 rgba(3, 201, 215, 0.4);
+        animation: pulse 2s ease-in-out infinite;
       }
       
-      /* Remove the old 'completePulse' keyframes as 'stepIn' is replacing it */
-
-      /* Keep the existing 'activeRipple' keyframe */
-      @keyframes activeRipple {
-        0%, 100% { box-shadow: 0 0 0 6px rgba(3, 201, 215, 0.15); }
-        50% { box-shadow: 0 0 0 12px rgba(3, 201, 215, 0.3); } /* Larger ripple */
+      /* Stepper Animations */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
-      @keyframes stepIn {
-        0% { transform: scale(0.7); opacity: 0; filter: blur(5px); }
-        100% { transform: scale(1); opacity: 1; filter: blur(0); }
+      @keyframes scaleIn {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
       }
 
-      /* Enhanced Progress Bar Fill Effect */
-      @keyframes progressFill {
-        from { width: 0%; }
-        to { width: var(--progress-width, 100%); }
-      }
-
-      /* Linear gradient movement for the active ripple */
-      @keyframes activeRippleBackground {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+      @keyframes pulse {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(3, 201, 215, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 6px rgba(3, 201, 215, 0.1);
+        }
       }
 
       .step-name {
@@ -205,6 +287,8 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         font-weight: 600;
         color: #94a3b8;
         margin-top: 0.25rem;
+        animation: fadeIn 0.6s ease-out backwards;
+        animation-delay: 0.15s;
       }
 
       .step-date {
@@ -212,11 +296,14 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         font-size: 0.7rem;
         color: #cbd5e0;
         margin-top: 0.15rem;
+        animation: fadeIn 0.6s ease-out backwards;
+        animation-delay: 0.25s;
       }
 
       .stepper-item.completed .step-name,
       .stepper-item.active .step-name {
         color: #475569;
+        font-weight: 700;
       }
 
       .stepper-item.completed .step-date {
@@ -243,18 +330,25 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
       .progress-connector .progress-bar {
         background: linear-gradient(90deg, #03C9D7 0%, #02b3c4 100%);
-        transition: width 0.6s ease-out;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         border-radius: 2px;
         position: relative;
+        overflow: hidden;
       }
 
-      /* Animated progress bar */
-      .progress-connector .progress-bar.animated {
-        animation: progressExpand 0.8s ease-out;
+      .progress-connector .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: shimmer 2s ease-in-out infinite;
       }
 
-      @keyframes progressExpand {
-        from { width: 0%; }
+      @keyframes shimmer {
+        to { left: 100%; }
       }
 
       /* Last item - no connector */
@@ -271,6 +365,26 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         border-radius: 20px;
         font-size: 0.75rem;
         font-weight: 600;
+        animation: bounceIn 0.6s ease-out backwards;
+        transition: transform 0.2s ease;
+      }
+
+      .status-badge:hover {
+        transform: scale(1.05);
+      }
+
+      @keyframes bounceIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.3);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
 
       .badge-overdue {
@@ -291,6 +405,9 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         padding: 1.5rem;
         border-top: 1px solid #f1f5f9;
         background: white;
+        animation: fadeIn 0.5s ease-out;
+        animation-delay: 0.7s;
+        animation-fill-mode: backwards;
       }
 
       .pagination-info {
@@ -321,7 +438,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         font-weight: 600;
         font-size: 0.875rem;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -330,13 +447,27 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
       .pagination .page-link:hover:not(.disabled) {
         background: #F3F4F6;
-        border-color: #cbd5e0;
+        border-color: #03C9D7;
+        color: #03C9D7;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.2);
       }
 
       .pagination .page-item.active .page-link {
         background: #03C9D7;
         color: white;
         border-color: #03C9D7;
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.3);
+        animation: activePagePulse 2s ease-in-out infinite;
+      }
+
+      @keyframes activePagePulse {
+        0%, 100% {
+          box-shadow: 0 4px 12px rgba(3, 201, 215, 0.3);
+        }
+        50% {
+          box-shadow: 0 4px 16px rgba(3, 201, 215, 0.5);
+        }
       }
 
       .pagination .page-item.disabled .page-link {
@@ -350,6 +481,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         text-align: center;
         padding: 3rem;
         color: #94a3b8;
+        animation: fadeIn 0.6s ease-out;
       }
 
       .empty-state-icon {
@@ -358,12 +490,21 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         margin: 0 auto 1rem;
         opacity: 0.5;
         color: #cbd5e0;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
       }
 
       .empty-state h3 {
         color: #64748b;
         font-weight: 600;
         margin-bottom: 0.5rem;
+        animation: fadeIn 0.6s ease-out;
+        animation-delay: 0.2s;
+        animation-fill-mode: backwards;
       }
 
       /* Responsive */

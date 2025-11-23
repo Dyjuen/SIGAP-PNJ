@@ -13,3 +13,9 @@ document.body.addEventListener('click', e => {
         router();
     }
 });
+
+// Global navigation function for programmatic navigation
+window.navigateTo = (url) => {
+    history.pushState(null, null, url);
+    router();
+};
