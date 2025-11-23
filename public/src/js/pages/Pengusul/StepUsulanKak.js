@@ -5,7 +5,9 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderUsulanKakPage(path, userRole) {
   const pathSegments = path.split("/").filter((segment) => segment);
   const kakId =
-    pathSegments.length > 2 && pathSegments[1] === "usulan"
+    pathSegments.length > 2 &&
+    pathSegments[1] === "usulan" &&
+    /^\d+$/.test(pathSegments[2]) // Check if the ID is a number
       ? pathSegments[2]
       : null;
   const isEditMode = kakId !== null;
