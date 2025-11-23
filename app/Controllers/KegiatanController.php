@@ -517,7 +517,7 @@ class KegiatanController
             }
 
             // 2. Find the Current Active Approval Step and its Index
-            $allApprovals = $this->kegiatanModel->findAllApprovalsByKegiatanId($kegiatanId);
+            $allApprovals = $this->kegiatanApprovalModel->findAllByKegiatanId($kegiatanId);
             $currentApproval = null;
             $activeIndex = -1;
             foreach ($allApprovals as $index => $approval) {

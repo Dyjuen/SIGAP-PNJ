@@ -33,4 +33,10 @@ class KegiatanApproval extends Model
         
         return $stmt->fetch();
     }
+
+    public function findAllByKegiatanId(int $kegiatanId)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE kegiatan_id = ? ORDER BY approval_kegiatan_id ASC";
+        return $this->query($sql, [$kegiatanId])->fetchAll();
+    }
 }

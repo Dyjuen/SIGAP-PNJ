@@ -352,16 +352,12 @@ export function renderPencairanDanaPage(path, userRole) {
         <table class="table" style="border-collapse: separate; border-spacing: 0 0.75rem;">
           <thead>
             <tr>
-              <th style="width: 50px; text-align: center;">
-                <input type="checkbox" class="form-check-input" id="selectAll">
-              </th>
               <th style="width: 80px;">No.</th>
               <th>Nama Usulan Kegiatan</th>
-              <th>Pengusul</th>
-              <th>Penanggung Jawab / Pelaksana</th>
+              <th>Pelaksana</th>
               <th>Tanggal Diajukan</th>
-              <th style="text-align: center;">Status</th>
-              <th style="text-align: center;">Dana Dicairkan</th>
+              <th style="text-align: center;">Uang Dicairkan</th>
+              <th style="text-align: center;">Uang Diminta</th>
               <th style="text-align: center;">Aksi</th>
             </tr>
           </thead>
