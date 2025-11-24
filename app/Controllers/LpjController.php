@@ -15,7 +15,7 @@ class LpjController extends Controller
     private $kegiatanModel;
     private $kakAnggaranModel;
     private $kegiatanLampiranModel;
-    private $user;
+    protected $user;
 
     public function __construct()
     {
@@ -23,7 +23,6 @@ class LpjController extends Controller
         $this->kegiatanModel = new Kegiatan();
         $this->kakAnggaranModel = new KAKAnggaran();
         $this->kegiatanLampiranModel = new KegiatanLampiran();
-        $this->user = AuthMiddleware::getAuthUser();
     }
 
     /**

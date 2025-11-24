@@ -214,6 +214,23 @@ export function renderInputLpjPage(path, userRole) {
     submitButton.innerHTML = 'Submitting...';
 
     try {
+      // Frontend validation for file uploads
+      const rabSections = document.querySelectorAll('.rab-section-item');
+      let allFilesUploaded = true;
+      for (const section of rabSections) {
+        const realisasiGrid = section.querySelector('.realisasi-grid');
+        const fileInput = realisasiGrid.querySelector('input[type="file"]');
+        if (fileInput.files.length === 0) {
+          allFilesUploaded = false;
+          showError('Harap unggah setidaknya satu file bukti untuk setiap item anggaran.');
+          break;
+        }
+      }
+
+      if (!allFilesUploaded) {
+        return; // Stop submission if validation fails
+      }
+
       const formData = collectLpjData();
       await apiRequest(`/kegiatan/${kegiatanId}/lpj`, {
         method: 'POST',
