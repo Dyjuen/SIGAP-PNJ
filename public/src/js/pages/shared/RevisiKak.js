@@ -262,7 +262,7 @@ export function renderRevisiKakPage(path, userRole) {
       /* RAB Grid */
       .grid-rab {
         display: grid;
-        grid-template-columns: 2fr 1fr 2fr 1fr 1fr 2fr;
+        grid-template-columns: 2.5fr 0.8fr 1.2fr 0.8fr 1.2fr 0.8fr 1.2fr 2.5fr;
         gap: 1rem;
         align-items: end;
       }
@@ -271,7 +271,8 @@ export function renderRevisiKakPage(path, userRole) {
       .comment-count {
         position: fixed;
         bottom: 2rem;
-        right: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
         background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
         color: white;
         padding: 1rem 1.5rem;
@@ -849,36 +850,61 @@ export function renderRevisiKakPage(path, userRole) {
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.volume1 || "1"
+    item.volume1 || "0"
   }">
         </div>
         <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${getNameById(
-    item.satuan1_id,
-    masterState.satuan,
-    "satuan_id",
-    "nama_satuan"
-  )}">
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" style="background: #FFFFFF; ${inputStyle}" ${inputAttr}>
+            <option value="">Pilih Satuan</option>
+            ${masterState.satuan
+              .map(
+                (s) =>
+                  `<option value="${s.satuan_id}" ${
+                    s.satuan_id == item.satuan1_id ? "selected" : ""
+                  }>${s.nama_satuan}</option>`
+              )
+              .join("")}
+          </select>
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.volume2 || "1"
+    item.volume2 || "0"
   }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" style="background: #FFFFFF; ${inputStyle}" ${inputAttr}>
+            <option value="">Pilih Satuan</option>
+            ${masterState.satuan
+              .map(
+                (s) =>
+                  `<option value="${s.satuan_id}" ${
+                    s.satuan_id == item.satuan2_id ? "selected" : ""
+                  }>${s.nama_satuan}</option>`
+              )
+              .join("")}
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.satuan2_id
-      ? getNameById(
-          item.satuan2_id,
-          masterState.satuan,
-          "satuan_id",
-          "nama_satuan"
-        )
-      : ""
+    item.volume3 || "0"
   }">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" style="background: #FFFFFF; ${inputStyle}" ${inputAttr}>
+            <option value="">Pilih Satuan</option>
+            ${masterState.satuan
+              .map(
+                (s) =>
+                  `<option value="${s.satuan_id}" ${
+                    s.satuan_id == item.satuan3_id ? "selected" : ""
+                  }>${s.nama_satuan}</option>`
+              )
+              .join("")}
+          </select>
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
