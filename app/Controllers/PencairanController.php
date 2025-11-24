@@ -109,10 +109,10 @@ class PencairanController extends Controller
 
 
             $sisaDana = $this->pencairanModel->getSisaDana($kegiatanId);
-            if ($jumlahDicairkan > $sisaDana['sisa_dana']) {
+            if ($nominalPencairan > $sisaDana['sisa_dana']) {
                 $errorData = [
                     'sisa_dana' => $sisaDana['sisa_dana'],
-                    'jumlah_dicairkan' => $jumlahDicairkan // Changed from nominal_diajukan
+                    'jumlah_dicairkan' => $nominalPencairan
                 ];
                 Response::error('Nominal pencairan melebihi sisa dana yang tersedia.', 400, $errorData);
             }
@@ -157,10 +157,12 @@ class PencairanController extends Controller
                 WHERE k.kegiatan_id = :kegiatan_id 
                 AND kak.pengusul_user_id = :user_id";
         
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['kegiatan_id' => $kegiatanId, 'user_id' => $this->user['user_id']]);
+        $this->db->query($sql);
+        $this->db->bind(':kegiatan_id', $kegiatanId);
+        $this->db->bind(':user_id', $this->user['user_id']);
         
-        return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
+        $result = $this->db->single();
+        return $result !== false;
     }
 
     private function isBendahara(): bool
@@ -182,9 +184,9 @@ class PencairanController extends Controller
                 AND approval_level = 'Bendahara-Cair'
                 LIMIT 1";
         
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['kegiatan_id' => $kegiatanId]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->db->query($sql);
+        $this->db->bind(':kegiatan_id', $kegiatanId);
+        $result = $this->db->single();
         
         return $result ?: null;
     }
