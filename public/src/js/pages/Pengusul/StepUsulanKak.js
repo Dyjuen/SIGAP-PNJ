@@ -2032,8 +2032,6 @@ export function renderUsulanKakPage(path, userRole) {
         // Populate satuan dropdowns
         populateSatuanDropdowns();
       }
-
-      showSuccess("Data berhasil dimuat untuk diedit");
     } catch (error) {
       console.error("Error fetching KAK data:", error);
       showError(`Gagal memuat data: ${error.message}`);
@@ -2318,7 +2316,7 @@ export function renderUsulanKakPage(path, userRole) {
         } else {
           // Create new KAK
           result = await submitKak(formData);
-          showSuccess("Usulan KAK berhasil diajukan!");
+          showSuccess("Usulan KAK berhasil disimpan!");
         }
 
         // Redirect after a short delay to allow user to see the message
