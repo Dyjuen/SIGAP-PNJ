@@ -259,6 +259,7 @@ $router->post('/kegiatan/{kegiatan_id}/pencairan', 'PencairanController@logPenca
 // LPJ (LAPORAN PERTANGGUNGJAWABAN) ROUTES
 // ============================================
 $router->post('/kegiatan/{kegiatan_id}/lpj', 'LpjController@submit');
+$router->post('/kegiatan/{kegiatan_id}/lpj/revise', 'LpjController@revise');
 
 
 // ============================================

@@ -57,170 +57,195 @@ export function renderDaftarLpjPage(path, userRole) {
 }
 
 function initializeDaftarLpj() {
-    const state = {
-        kegiatan: [],
-        filteredKegiatan: [],
-        filter: "all",
-        countdownInterval: null,
+  const state = {
+    kegiatan: [],
+    filteredKegiatan: [],
+    filter: "all",
+    countdownInterval: null,
+  };
+
+  const tbody = document.getElementById("lpjTableBody");
+  const statCards = document.querySelectorAll("[data-status]");
+
+  async function apiRequest(endpoint, options = {}) {
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
+    const headers = { ...options.headers, Authorization: `Bearer ${token}` };
+    if (!(options.body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
+    const config = { ...options, headers };
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (data.success === false) {
+        throw new Error(data.message || "API request failed");
+      }
+      return data;
+    } catch (error) {
+      console.error("API Request Error:", error);
+      showError(error.message);
+      throw error;
+    }
+  }
+
+  async function fetchData() {
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center">Loading...</td></tr>`;
+    try {
+      // Use the endpoint designed for fetching LPJ data
+      const response = await apiRequest("/dashboard/lpj");
+      state.kegiatan = response.data.data || [];
+      filterAndRender();
+      updateStats();
+      startCountdownTimers();
+    } catch (error) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
+    }
+  }
+
+  function getStatusBadge(status) {
+    const statusMap = {
+      "Menunggu Penyerahan": "bg-label-secondary",
+      Diajukan: "bg-label-warning",
+      Direvisi: "bg-label-info",
+      Selesai: "bg-label-success",
     };
+    return statusMap[status] || "bg-label-dark";
+  }
 
-    const tbody = document.getElementById("lpjTableBody");
-    const statCards = document.querySelectorAll("[data-status]");
-
-    async function apiRequest(endpoint, options = {}) {
-        const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
-        const headers = { ...options.headers, Authorization: `Bearer ${token}` };
-        if (!(options.body instanceof FormData)) {
-            headers["Content-Type"] = "application/json";
-        }
-        const config = { ...options, headers };
-        try {
-            const response = await fetch(`/api${endpoint}`, config);
-            const data = await response.json();
-            if (data.success === false) {
-                throw new Error(data.message || "API request failed");
-            }
-            return data;
-        } catch (error) {
-            console.error("API Request Error:", error);
-            showError(error.message);
-            throw error;
-        }
-    }
-
-    async function fetchData() {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center">Loading...</td></tr>`;
-        try {
-            // Use the endpoint designed for fetching LPJ data
-            const response = await apiRequest("/dashboard/lpj");
-            state.kegiatan = response.data.data || [];
-            filterAndRender();
-            updateStats();
-            startCountdownTimers();
-        } catch (error) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Gagal memuat data: ${error.message}</td></tr>`;
-        }
-    }
-
-    function getStatusBadge(status) {
-        const statusMap = {
-            "Menunggu Penyerahan": "bg-label-secondary",
-            "Diajukan": "bg-label-warning",
-            "Direvisi": "bg-label-info",
-            "Selesai": "bg-label-success",
-        };
-        return statusMap[status] || "bg-label-dark";
-    }
-
-    function getActionButtons(status, id) {
-        switch (status) {
-            case "Diajukan": // This is when Bendahara needs to review
-                return `
+  function getActionButtons(status, id) {
+    switch (status) {
+      case "Diajukan": // This is when Bendahara needs to review
+        return `
                   <div class="d-flex justify-content-center gap-2">
-                    <button class="btn btn-sm btn-info" data-action="revisi" data-id="${id}">Revisi</button>
+                    <a href="/bendahara/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-info">Revisi</a>
                     <button class="btn btn-sm btn-primary" data-action="setujui" data-id="${id}">Setujui</button>
                   </div>`;
-            case "Menunggu Penyerahan":
-            case "Selesai":
-            case "Direvisi": // Action is on Pengusul side
-            default:
-                return `<span class="text-muted">-</span>`;
-        }
+      case "Menunggu Penyerahan":
+      case "Selesai":
+      case "Direvisi": // Action is on Pengusul side
+      default:
+        return `<span class="text-muted">-</span>`;
+    }
+  }
+
+  function calculateCountdown(deadline) {
+    if (!deadline) return { text: "-", colorClass: "" };
+
+    const now = new Date();
+    const deadlineDate = new Date(deadline);
+    const diffTime = deadlineDate - now;
+
+    if (diffTime <= 0) {
+      return { text: `Terlambat`, colorClass: "countdown-danger" };
     }
 
-    function calculateCountdown(deadline) {
-        if (!deadline) return { text: '-', colorClass: '' };
-        
-        const now = new Date();
-        const deadlineDate = new Date(deadline);
-        const diffTime = deadlineDate - now;
-    
-        if (diffTime <= 0) {
-            return { text: `Terlambat`, colorClass: 'countdown-danger' };
-        }
-    
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
-    
-        if (diffDays > 0) {
-          return { text: `${diffDays} hari lagi`, colorClass: 'countdown-normal' };
-        } else {
-          return { text: `${String(diffHours).padStart(2, '0')}j ${String(diffMinutes).padStart(2, '0')}m`, colorClass: 'countdown-danger' };
-        }
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(
+      (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (diffDays > 0) {
+      return { text: `${diffDays} hari lagi`, colorClass: "countdown-normal" };
+    } else {
+      return {
+        text: `${String(diffHours).padStart(2, "0")}j ${String(
+          diffMinutes
+        ).padStart(2, "0")}m`,
+        colorClass: "countdown-danger",
+      };
+    }
+  }
+
+  function renderTableRows() {
+    tbody.innerHTML = "";
+    if (state.filteredKegiatan.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center">Tidak ada data untuk ditampilkan.</td></tr>`;
+      return;
     }
 
-    function renderTableRows() {
-        tbody.innerHTML = "";
-        if (state.filteredKegiatan.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center">Tidak ada data untuk ditampilkan.</td></tr>`;
-            return;
-        }
+    state.filteredKegiatan.forEach((item, index) => {
+      const row = document.createElement("tr");
+      const statusClass = getStatusBadge(item.status_lpj);
+      const actionButtons = getActionButtons(item.status_lpj, item.kegiatan_id);
+      const countdown = calculateCountdown(item.tgl_batas_lpj);
 
-        state.filteredKegiatan.forEach((item, index) => {
-            const row = document.createElement("tr");
-            const statusClass = getStatusBadge(item.status_lpj);
-            const actionButtons = getActionButtons(item.status_lpj, item.kegiatan_id);
-            const countdown = calculateCountdown(item.tgl_batas_lpj);
-
-            row.innerHTML = `
+      row.innerHTML = `
                 <td>${index + 1}</td>
                 <td>
                     <div>${item.nama_kegiatan}</div>
                     <small class="text-muted">${item.pengusul_nama}</small>
                 </td>
                 <td>${item.pengusul_nama}</td>
-                <td>${item.tgl_batas_lpj ? new Date(item.tgl_batas_lpj).toLocaleDateString('id-ID') : '-'}</td>
+                <td>${
+                  item.tgl_batas_lpj
+                    ? new Date(item.tgl_batas_lpj).toLocaleDateString("id-ID")
+                    : "-"
+                }</td>
                 <td class="text-center">
-                    <span id="countdown-${item.kegiatan_id}" class="${countdown.colorClass}">${countdown.text}</span>
+                    <span id="countdown-${item.kegiatan_id}" class="${
+        countdown.colorClass
+      }">${countdown.text}</span>
                 </td>
                 <td class="text-center">
                     <span class="badge ${statusClass}">${item.status_lpj}</span>
                 </td>
                 <td class="text-center">${actionButtons}</td>
             `;
-            tbody.appendChild(row);
-        });
-    }
-
-    function updateStats() {
-        document.getElementById('count-all').textContent = state.kegiatan.length;
-        document.getElementById('count-diajukan').textContent = state.kegiatan.filter(k => k.status_lpj === 'Diajukan').length;
-        document.getElementById('count-revisi').textContent = state.kegiatan.filter(k => k.status_lpj === 'Direvisi').length;
-        document.getElementById('count-menunggu').textContent = state.kegiatan.filter(k => k.status_lpj === 'Menunggu Penyerahan').length;
-    }
-
-    function filterAndRender() {
-        if (state.filter === 'all') {
-            state.filteredKegiatan = state.kegiatan;
-        } else {
-            state.filteredKegiatan = state.kegiatan.filter(k => k.status_lpj === state.filter);
-        }
-        renderTableRows();
-    }
-    
-    function startCountdownTimers() {
-        if (state.countdownInterval) clearInterval(state.countdownInterval);
-        state.countdownInterval = setInterval(() => {
-            state.kegiatan.forEach(item => {
-                const el = document.getElementById(`countdown-${item.kegiatan_id}`);
-                if (el) {
-                    const countdown = calculateCountdown(item.tgl_batas_lpj);
-                    el.textContent = countdown.text;
-                    el.className = `font-semibold ${countdown.colorClass}`;
-                }
-            });
-        }, 1000 * 60); // Update every minute
-    }
-
-    statCards.forEach((card) => {
-        card.addEventListener("click", function () {
-            state.filter = this.getAttribute("data-status");
-            statCards.forEach((c) => c.classList.replace('stat-card-active', 'stat-card-inactive'));
-            this.classList.replace('stat-card-inactive', 'stat-card-active');
-            filterAndRender();
-        });
+      tbody.appendChild(row);
     });
+  }
 
-    fetchData();
+  function updateStats() {
+    document.getElementById("count-all").textContent = state.kegiatan.length;
+    document.getElementById("count-diajukan").textContent =
+      state.kegiatan.filter((k) => k.status_lpj === "Diajukan").length;
+    document.getElementById("count-revisi").textContent = state.kegiatan.filter(
+      (k) => k.status_lpj === "Direvisi"
+    ).length;
+    document.getElementById("count-menunggu").textContent =
+      state.kegiatan.filter(
+        (k) => k.status_lpj === "Menunggu Penyerahan"
+      ).length;
+  }
+
+  function filterAndRender() {
+    if (state.filter === "all") {
+      state.filteredKegiatan = state.kegiatan;
+    } else {
+      state.filteredKegiatan = state.kegiatan.filter(
+        (k) => k.status_lpj === state.filter
+      );
+    }
+    renderTableRows();
+  }
+
+  function startCountdownTimers() {
+    if (state.countdownInterval) clearInterval(state.countdownInterval);
+    state.countdownInterval = setInterval(() => {
+      state.kegiatan.forEach((item) => {
+        const el = document.getElementById(`countdown-${item.kegiatan_id}`);
+        if (el) {
+          const countdown = calculateCountdown(item.tgl_batas_lpj);
+          el.textContent = countdown.text;
+          el.className = `font-semibold ${countdown.colorClass}`;
+        }
+      });
+    }, 1000 * 60); // Update every minute
+  }
+
+  statCards.forEach((card) => {
+    card.addEventListener("click", function () {
+      state.filter = this.getAttribute("data-status");
+      statCards.forEach((c) =>
+        c.classList.replace("stat-card-active", "stat-card-inactive")
+      );
+      this.classList.replace("stat-card-inactive", "stat-card-active");
+      filterAndRender();
+    });
+  });
+
+  fetchData();
 }

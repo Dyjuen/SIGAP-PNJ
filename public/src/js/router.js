@@ -22,6 +22,7 @@ import { renderMonitoringKegiatanPage } from "./pages/shared/MonitoringKegiatan.
 import { renderRiwayatKAKPage } from "./pages/shared/RiwayatKAK.js";
 import { renderDummyInputPage } from "./pages/Pengusul/DummyInputReadOnly.js";
 import { renderDaftarLpjPage } from "./pages/Bendahara/MonitorLpj.js";
+import { renderRevisiLpjPage } from "./pages/Bendahara/RevisiLpj.js";
 
 function getCurrentUserRole() {
   return localStorage.getItem("userRole") || "guest";
@@ -91,6 +92,7 @@ const roleBasedRoutes = {
     "/kegiatan/pencairan": renderPencairanDanaPage,
     "/kegiatan/monitoring": renderMonitoringKegiatanPage,
     "/kegiatan/lpj": renderDaftarLpjPage,
+    "/kegiatan/lpj/revisi/": renderRevisiLpjPage,
     "/riwayat": renderRiwayatKAKPage,
     "/riwayat/detail/": renderDummyInputPage,
     "/pengaturan": renderNotFoundPage,

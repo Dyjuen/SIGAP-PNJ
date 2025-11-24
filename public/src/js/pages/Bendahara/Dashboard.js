@@ -102,8 +102,8 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
       .table {
         margin-bottom: 0;
-        border-collapse: separate;
-        border-spacing: 0 0.5rem;
+        border-collapse: collapse;
+        width: 100%;
       }
 
       .table tbody tr {
@@ -113,19 +113,20 @@ export function renderBendaharaDashboardPage(path, userRole) {
         position: relative;
         background: white;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-        border-radius: 12px;
+      }
+
+      .table tbody tr td {
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
       }
 
       .table tbody tr td:first-child {
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
+        border-left: 12px solid transparent;
       }
 
       .table tbody tr td:last-child {
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
+        border-right: 12px solid transparent;
       }
-
       .table tbody tr::before {
         content: '';
         position: absolute;
@@ -264,6 +265,15 @@ export function renderBendaharaDashboardPage(path, userRole) {
       .pagination-container:hover {
         background: #f8fafb !important;
       }
+      
+      .table {
+        table-layout: fixed;
+        width: 100%;
+      }
+      
+      .stat-card-filter {
+        cursor: pointer;
+      }
     </style>
 
     <div class="bendahara-dashboard-page">
@@ -275,7 +285,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
       <!-- Stats Cards -->
       <div class="row g-4 mb-3">
         <div class="col-sm-6 col-xl-3">
-          <div class="card stat-card-active">
+          <div class="card stat-card-active stat-card-filter" data-filter="waiting">
             <div class="card-body">
               <div class="d-flex align-items-start justify-content-between">
                 <div class="content-left">
@@ -291,7 +301,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
           </div>
         </div>
         <div class="col-sm-6 col-xl-3">
-          <div class="card stat-card-inactive">
+          <div class="card stat-card-inactive stat-card-filter" data-filter="disbursed">
             <div class="card-body">
               <div class="d-flex align-items-start justify-content-between">
                 <div class="content-left">
@@ -322,7 +332,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
           </div>
         </div>
         <div class="col-sm-6 col-xl-3">
-          <div class="card stat-card-inactive">
+          <div class="card stat-card-inactive stat-card-filter" data-filter="lpj_submitted">
             <div class="card-body">
               <div class="d-flex align-items-start justify-content-between">
                 <div class="content-left">
@@ -360,9 +370,10 @@ export function renderBendaharaDashboardPage(path, userRole) {
                 <input type="checkbox" class="form-check-input" id="selectAll">
               </th>
               <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">ID</th>
-              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 200px;">Nama Kegiatan</th>
-              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 150px;">Pengusul</th>
-              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 150px;">Total Anggaran</th>
+              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 180px;">Nama Kegiatan</th>
+              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 180px;">Pengusul</th>
+              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 150px;">Uang Diminta</th>
+              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 150px;">Uang Dicairkan</th>
               <th style="text-align: center; background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 130px;">Status</th>
               <th style="text-align: center; background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; width: 140px;">Aksi</th>
             </tr>
@@ -391,7 +402,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
   let state = {
     allKegiatan: [],
     displayKegiatan: [],
-    currentFilter: 'all',
+    currentFilter: "all",
   };
 
   // ==============================================
@@ -422,7 +433,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
   async function fetchKegiatan() {
     const tbody = document.getElementById("disbursementTableBody");
     tbody.innerHTML =
-      '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+      '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
     try {
       const response = await apiRequest("/kegiatan");
       const kegiatanData = response.data.data
@@ -433,43 +444,56 @@ export function renderBendaharaDashboardPage(path, userRole) {
       applyFilter();
       updateStats(state.allKegiatan);
     } catch (error) {
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${error.message}</td></tr>`;
     }
   }
 
   function applyFilter() {
     const filter = state.currentFilter;
-    
-    if (filter === 'all') {
+
+    if (filter === "all") {
       // Show all approved activities (PPK + Wadir approved)
       state.displayKegiatan = state.allKegiatan.filter((k) => {
-        const ppkApproval = k.approvals?.find((a) => a.approval_level === "PPK");
-        const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir2");
+        const ppkApproval = k.approvals?.find(
+          (a) => a.approval_level === "PPK"
+        );
+        const wadirApproval = k.approvals?.find(
+          (a) => a.approval_level === "Wadir2"
+        );
         return (
           ppkApproval?.status === "Disetujui" &&
           wadirApproval?.status === "Disetujui"
         );
       });
-    } else if (filter === 'waiting') {
+    } else if (filter === "waiting") {
       // Approved but not yet disbursed
       state.displayKegiatan = state.allKegiatan.filter((k) => {
-        const ppkApproval = k.approvals?.find((a) => a.approval_level === "PPK");
-        const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir2");
+        const ppkApproval = k.approvals?.find(
+          (a) => a.approval_level === "PPK"
+        );
+        const wadirApproval = k.approvals?.find(
+          (a) => a.approval_level === "Wadir2"
+        );
         return (
           ppkApproval?.status === "Disetujui" &&
           wadirApproval?.status === "Disetujui" &&
           !k.disbursement_date
         );
       });
-    } else if (filter === 'disbursed') {
+    } else if (filter === "disbursed") {
       // Already disbursed
-      state.displayKegiatan = state.allKegiatan.filter((k) => k.disbursement_date);
-    } else if (filter === 'lpj_submitted') {
+      state.displayKegiatan = state.allKegiatan.filter(
+        (k) => k.disbursement_date
+      );
+    } else if (filter === "lpj_submitted") {
       // LPJ submitted, waiting for verification
-      state.displayKegiatan = state.allKegiatan.filter((k) => k.lpj_submitted_date && !k.lpj_verified_date);
+      state.displayKegiatan = state.allKegiatan.filter(
+        (k) => k.lpj_submitted_date && !k.lpj_verified_date
+      );
     }
 
     renderTableRows(state.displayKegiatan);
+    updateActiveFilterVisuals();
   }
 
   async function handleDisbursementAction(kegiatanId) {
@@ -479,7 +503,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
       html: `
         <div class="text-start">
           <label class="form-label">Tanggal Pencairan</label>
-          <input type="date" id="disbursementDate" class="form-control mb-3" value="${new Date().toISOString().split('T')[0]}">
+          <input type="date" id="disbursementDate" class="form-control mb-3" value="${
+            new Date().toISOString().split("T")[0]
+          }">
           <label class="form-label">Catatan (Opsional)</label>
           <textarea id="disbursementNotes" class="form-control" rows="3" placeholder="Catatan pencairan..."></textarea>
         </div>
@@ -491,8 +517,8 @@ export function renderBendaharaDashboardPage(path, userRole) {
       confirmButtonColor: "#00BCD4",
       preConfirm: () => {
         return {
-          date: document.getElementById('disbursementDate').value,
-          notes: document.getElementById('disbursementNotes').value,
+          date: document.getElementById("disbursementDate").value,
+          notes: document.getElementById("disbursementNotes").value,
         };
       },
     });
@@ -557,7 +583,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
               </tr>
               <tr>
                 <td><strong>Total Anggaran:</strong></td>
-                <td>${formatCurrency(kegiatan.total_anggaran || 0)}</td>
+                <td>${formatCurrency(
+                  kegiatan.total_anggaran_diusulkan || 0
+                )}</td>
               </tr>
               <tr>
                 <td><strong>Tanggal Pencairan:</strong></td>
@@ -565,7 +593,11 @@ export function renderBendaharaDashboardPage(path, userRole) {
               </tr>
               <tr>
                 <td><strong>Status:</strong></td>
-                <td>${kegiatan.disbursement_date ? '<span class="badge bg-success">Sudah Dicairkan</span>' : '<span class="badge bg-warning">Menunggu Pencairan</span>'}</td>
+                <td>${
+                  kegiatan.disbursement_date
+                    ? '<span class="badge bg-success">Sudah Dicairkan</span>'
+                    : '<span class="badge bg-warning">Menunggu Pencairan</span>'
+                }</td>
               </tr>
             </table>
           </div>
@@ -606,29 +638,31 @@ export function renderBendaharaDashboardPage(path, userRole) {
     tbody.innerHTML = "";
     if (!data || data.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="7" class="text-center">Tidak ada data kegiatan.</td></tr>';
+        '<tr><td colspan="8" class="text-center">Tidak ada data kegiatan.</td></tr>';
       updatePaginationInfo(0, 0, 0);
       return;
     }
-    
+
     // Update pagination info
     updatePaginationInfo(1, data.length, data.length);
 
     data.forEach((kegiatan) => {
       const row = document.createElement("tr");
-      
+
       let statusBadge = "";
       let actionButtons = "";
 
       if (kegiatan.disbursement_date) {
-        statusBadge = '<span class="badge bg-label-success" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Dicairkan</span>';
+        statusBadge =
+          '<span class="badge bg-label-success" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Dicairkan</span>';
         actionButtons = `
           <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Lihat Detail">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
           </button>
         `;
       } else {
-        statusBadge = '<span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>';
+        statusBadge =
+          '<span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>';
         actionButtons = `
           <button class="btn btn-sm me-2 btn-disburse" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Cairkan Dana">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-cash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="7" y="9" width="14" height="10" rx="2" /><circle cx="14" cy="14" r="2" /><path d="M17 9v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h2" /></svg>
@@ -644,17 +678,30 @@ export function renderBendaharaDashboardPage(path, userRole) {
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
         <td style="padding: 1rem; vertical-align: middle; border: none;">
-          <span class="number-badge" style="background: #e0f7fa; color: #00BCD4; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.875rem;">${kegiatan.kegiatan_id}</span>
+          <span class="number-badge" style="background: #e0f7fa; color: #00BCD4; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.875rem;">${
+            kegiatan.kegiatan_id
+          }</span>
         </td>
         <td style="padding: 1rem; vertical-align: middle; border: none;">
           <strong style="color: #1e293b;">${kegiatan.nama_kegiatan}</strong>
         </td>
         <td style="padding: 1rem; vertical-align: middle; border: none;">
-          <div style="color: #1e293b; font-weight: 600;">${kegiatan.pengusul_nama}</div>
-          <div class="text-muted" style="font-size: 0.8125rem; margin-top: 2px;">${kegiatan.pengusul_role || ""}</div>
+          <div style="color: #1e293b; font-weight: 600;">${
+            kegiatan.pelaksana_manual || "-"
+          }</div>
+          <div class="text-muted" style="font-size: 0.8125rem; margin-top: 2px;">${
+            kegiatan.pengusul_nama || ""
+          }</div>
         </td>
         <td style="padding: 1rem; vertical-align: middle; border: none;">
-          <strong style="color: #059669;">${formatCurrency(kegiatan.total_anggaran || 0)}</strong>
+          <strong style="color: #00BCD4;">${formatCurrency(
+            kegiatan.total_anggaran_diusulkan || 0
+          )}</strong>
+        </td>
+        <td style="padding: 1rem; vertical-align: middle; border: none;">
+          <strong style="color: #059669;">${formatCurrency(
+            kegiatan.dana_dicairkan || 0
+          )}</strong>
         </td>
         <td style="text-align: center; padding: 1rem; vertical-align: middle; border: none;">
           ${statusBadge}
@@ -686,6 +733,18 @@ export function renderBendaharaDashboardPage(path, userRole) {
       );
     });
 
+    document.querySelectorAll(".stat-card-filter").forEach((card) => {
+      card.addEventListener("click", () => {
+        const filterValue = card.dataset.filter;
+        if (state.currentFilter === filterValue) {
+          state.currentFilter = "all";
+        } else {
+          state.currentFilter = filterValue;
+        }
+        applyFilter();
+      });
+    });
+
     const filterSelect = document.getElementById("filterStatus");
     if (filterSelect) {
       filterSelect.addEventListener("change", (e) => {
@@ -695,11 +754,32 @@ export function renderBendaharaDashboardPage(path, userRole) {
     }
   }
 
+  function updateActiveFilterVisuals() {
+    const filterValue = state.currentFilter;
+
+    const filterSelect = document.getElementById("filterStatus");
+    if (filterSelect) {
+      filterSelect.value = filterValue;
+    }
+
+    document.querySelectorAll(".stat-card-filter").forEach((card) => {
+      if (card.dataset.filter === filterValue) {
+        card.classList.add("stat-card-active");
+        card.classList.remove("stat-card-inactive");
+      } else {
+        card.classList.remove("stat-card-active");
+        card.classList.add("stat-card-inactive");
+      }
+    });
+  }
+
   function updateStats(allData) {
     // Waiting for disbursement (approved by both PPK and Wadir, but not yet disbursed)
     const waitingCount = allData.filter((k) => {
       const ppkApproval = k.approvals?.find((a) => a.approval_level === "PPK");
-      const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir2");
+      const wadirApproval = k.approvals?.find(
+        (a) => a.approval_level === "Wadir2"
+      );
       return (
         ppkApproval?.status === "Disetujui" &&
         wadirApproval?.status === "Disetujui" &&
@@ -713,7 +793,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
     // Total disbursed amount
     const totalDisbursed = allData
       .filter((k) => k.disbursement_date)
-      .reduce((sum, k) => sum + (k.total_anggaran || 0), 0);
+      .reduce((sum, k) => sum + (k.dana_dicairkan || 0), 0);
 
     // LPJ submitted but not yet verified
     const lpjCount = allData.filter(
@@ -726,17 +806,18 @@ export function renderBendaharaDashboardPage(path, userRole) {
     const lpjEl = document.getElementById("lpjCount");
 
     if (waitingEl) {
-      waitingEl.setAttribute('data-target', waitingCount);
-      waitingEl.textContent = '0';
+      waitingEl.setAttribute("data-target", waitingCount);
+      waitingEl.textContent = "0";
     }
     if (disbursedEl) {
-      disbursedEl.setAttribute('data-target', disbursedCount);
-      disbursedEl.textContent = '0';
+      disbursedEl.setAttribute("data-target", disbursedCount);
+      disbursedEl.textContent = "0";
     }
-    if (totalDisbursedEl) totalDisbursedEl.textContent = formatCurrency(totalDisbursed);
+    if (totalDisbursedEl)
+      totalDisbursedEl.textContent = formatCurrency(totalDisbursed);
     if (lpjEl) {
-      lpjEl.setAttribute('data-target', lpjCount);
-      lpjEl.textContent = '0';
+      lpjEl.setAttribute("data-target", lpjCount);
+      lpjEl.textContent = "0";
     }
 
     // Trigger counter animations
@@ -778,7 +859,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
   // ANIMATION FUNCTIONS
   // ==============================================
   function animateCounter(element) {
-    const target = parseInt(element.getAttribute('data-target'));
+    const target = parseInt(element.getAttribute("data-target"));
     if (isNaN(target)) return;
     const duration = 2000;
     const increment = target / (duration / 16);
@@ -800,7 +881,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
   }
 
   function initCounters() {
-    const counters = document.querySelectorAll('.counter');
+    const counters = document.querySelectorAll(".counter");
     counters.forEach((counter, index) => {
       setTimeout(() => {
         animateCounter(counter);
@@ -812,7 +893,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
   // INITIALIZATION
   // ==============================================
   fetchKegiatan();
-  
+
   setTimeout(() => {
     initCounters();
   }, 100);

@@ -355,6 +355,7 @@ export function renderPencairanDanaPage(path, userRole) {
               <th style="width: 80px;">No.</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Pelaksana</th>
+              <th>Penanggung Jawab</th>
               <th>Tanggal Diajukan</th>
               <th style="text-align: center;">Uang Dicairkan</th>
               <th style="text-align: center;">Uang Diminta</th>
@@ -598,7 +599,7 @@ export function renderPencairanDanaPage(path, userRole) {
     tbody.innerHTML = "";
     if (!state.displayKegiatan || state.displayKegiatan.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="7" class="text-center">Tidak ada kegiatan yang menunggu pencairan dana.</td></tr>';
+        '<tr><td colspan="8" class="text-center">Tidak ada kegiatan yang menunggu pencairan dana.</td></tr>';
       return;
     }
 
@@ -619,6 +620,9 @@ export function renderPencairanDanaPage(path, userRole) {
         </td>
         <td>
           <div class="activity-title">${item.pelaksana_manual || "N/A"}</div>
+        </td>
+        <td>
+          <div class="activity-title">${item.penanggung_jawab_manual || "N/A"}</div>
         </td>
         <td>
           <span style="font-weight: 600; color: #374151;">${formatDate(

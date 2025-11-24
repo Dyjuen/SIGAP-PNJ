@@ -130,4 +130,70 @@ class LpjController extends Controller
             return Response::error('Gagal submit LPJ: ' . $e->getMessage(), 500);
         }
     }
+
+    /**
+     * Send an LPJ back for revision.
+     * POST /api/kegiatan/{kegiatan_id}/lpj/revise
+     */
+    public function revise($kegiatanId)
+    {
+        $db = $this->kegiatanModel->getDb();
+        
+        try {
+            // Authorization: Only Bendahara can revise an LPJ
+            if (!in_array('Bendahara', $this->user['roles'])) {
+                return Response::forbidden('Hanya Bendahara yang dapat merevisi LPJ.');
+            }
+
+            $kegiatanId = (int) $kegiatanId;
+            $data = json_decode(file_get_contents('php://input'), true);
+            $catatan = $data['catatan'] ?? null;
+
+            if (empty($catatan)) {
+                return Response::error('Catatan revisi tidak boleh kosong.', 422);
+            }
+
+            $db->beginTransaction();
+
+            // Find the Bendahara-LPJ approval record
+            $approvalModel = new \App\Models\KegiatanApproval();
+            $lpjApproval = $approvalModel->findOneBy([
+                'kegiatan_id' => $kegiatanId,
+                'approval_level' => 'Bendahara-LPJ'
+            ]);
+
+            if (!$lpjApproval) {
+                return Response::notFound('Alur persetujuan LPJ untuk kegiatan ini tidak ditemukan.');
+            }
+
+            // Update the approval status to 'Revisi'
+            $approvalModel->update($lpjApproval['approval_kegiatan_id'], [
+                'status' => 'Revisi',
+                'catatan' => $catatan,
+                'approver_user_id' => $this->user['user_id']
+            ]);
+
+            // Optional: Update the main kegiatan status if there's a specific "Revisi LPJ" status
+            // For now, we'll rely on the approval status.
+
+            // Notify the Pengusul
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            $notifikasiModel = new \App\Models\Notifikasi();
+            $notifikasiModel->create([
+                'penerima_user_id' => $kegiatan['pengusul_user_id'],
+                'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" perlu direvisi. Catatan: {$catatan}",
+                'link_tujuan' => "/pengusul/kegiatan/lpj/new?kegiatan_id=" . $kegiatanId,
+            ]);
+
+            $db->commit();
+
+            return Response::success(null, 'LPJ telah dikembalikan untuk revisi.');
+
+        } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            return Response::error('Gagal merevisi LPJ: ' . $e->getMessage(), 500);
+        }
+    }
 }
