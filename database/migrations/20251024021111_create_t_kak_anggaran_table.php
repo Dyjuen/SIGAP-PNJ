@@ -12,6 +12,7 @@ final class CreateTKakAnggaranTable extends AbstractMigration
         
         $table->addColumn('anggaran_id', 'integer', ['identity' => true])
               ->addColumn('kak_id', 'integer')
+              ->addColumn('kategori_belanja_id', 'integer')
               ->addColumn('uraian', 'string', ['limit' => 255])
               ->addColumn('volume1', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => true])
               ->addColumn('satuan1_id', 'integer', ['null' => true])
@@ -34,6 +35,7 @@ final class CreateTKakAnggaranTable extends AbstractMigration
               ->addColumn('realisasi_jumlah', 'decimal', ['precision' => 15, 'scale' => 2, 'null' => true])
 
               ->addForeignKey('kak_id', 't_kak', 'kak_id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+              ->addForeignKey('kategori_belanja_id', 'm_kategori_belanja', 'kategori_belanja_id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
               ->addForeignKey('satuan1_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
               ->addForeignKey('satuan2_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
               ->addForeignKey('satuan3_id', 'm_satuan', 'satuan_id', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
