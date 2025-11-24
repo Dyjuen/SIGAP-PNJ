@@ -123,6 +123,44 @@ class KegiatanController
     }
 
     /**
+     * Get kegiatan detail for LPJ input
+     * 
+     * GET /api/kegiatan/{id}/detail
+     */
+    public function getDetail()
+    {
+        try {
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/detail$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Get kegiatan detail
+            $kegiatan = $this->kegiatanModel->getKegiatanForPDF($kegiatanId);
+
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // Authorization: Pengusul hanya bisa lihat kegiatan sendiri
+            if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
+                if ($kegiatan['pengusul_user_id'] != $this->userData['user_id']) {
+                    Response::forbidden('Anda tidak memiliki akses ke kegiatan ini.');
+                }
+            }
+
+            Response::success($kegiatan, 'Detail kegiatan berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil detail kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
      * Create new kegiatan from an approved telaah, including surat pengantar upload.
      * 
      * POST /api/kegiatan
