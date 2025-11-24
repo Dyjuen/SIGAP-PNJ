@@ -432,9 +432,11 @@ export function renderPencairanDanaPage(path, userRole) {
     }
 
     const totalDiminta = parseFloat(kegiatan.total_anggaran_diusulkan || 0);
+    const sudahDicairkan = parseFloat(kegiatan.dana_dicairkan || 0);
+    const sisaDana = totalDiminta - sudahDicairkan;
 
-    if (nominal > totalDiminta) {
-        showError(`Nominal pencairan (${formatRupiah(nominal)}) melebihi total yang diminta (${formatRupiah(totalDiminta)}).`);
+    if (nominal > sisaDana) {
+        showError(`Nominal pencairan (${formatRupiah(nominal)}) melebihi sisa dana yang tersedia (${formatRupiah(sisaDana)}).`);
         return;
     }
 
