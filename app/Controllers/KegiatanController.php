@@ -762,7 +762,7 @@ class KegiatanController
 
             // 8. Log status change
             $this->logStatusModel->create([
-                'kak_id' => $kegiatan['kak_id'],
+                'kegiatan_id' => $kegiatanId,
                 'status_id_lama' => $kegiatan['status_id'],
                 'status_id_baru' => 8, // Menunggu LPJ
                 'actor_user_id' => $this->userData['user_id'],
