@@ -929,8 +929,7 @@ class KAKController
                 'catatan_deskripsi_kegiatan',
                 'catatan_sasaran_utama',
                 'catatan_metode_pelaksanaan',
-                'catatan_lokasi',
-                'catatan_tanggal'
+                'catatan_lokasi'
             ];
 
             foreach ($fields as $f) {
@@ -953,10 +952,7 @@ class KAKController
                 $db->execute();
             }
 
-            // Clear catatan_manfaat dan catatan_sasaran_utama untuk t_kak_manfaat
-            $db->query("UPDATE t_kak_manfaat SET catatan_manfaat=NULL, catatan_sasaran_utama=NULL WHERE kak_id=:id");
-            $db->bind(':id', $id);
-            $db->execute();
+
 
             $db->commit();
 
