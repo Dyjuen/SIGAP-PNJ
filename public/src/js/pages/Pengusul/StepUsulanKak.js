@@ -285,8 +285,8 @@ export function renderUsulanKakPage(path, userRole) {
           <div class="mb-10">
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
             <div id="belanjaBarangContainer">
-              <div class="belanja-barang-item mb-8 p-6 rounded-lg">
-                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
+              <div class="belanja-barang-item dynamic-field-item mb-8 p-6 rounded-lg">
+                <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -344,22 +344,22 @@ export function renderUsulanKakPage(path, userRole) {
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
                   </div>
                   <div class="flex items-end pb-3">
-                    <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaBarangContainer')">
+                    <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
                       <span class="text-xl font-bold">−</span>
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-            <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaBarang()">Tambah Item Barang</button>
+            <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaBarang()">Tambah Item Barang</button>
           </div>
 
           <!-- Belanja Jasa Section -->
           <div class="mb-10">
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
             <div id="belanjaJasaContainer">
-              <div class="belanja-jasa-item mb-8 p-6 rounded-lg">
-                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
+              <div class="belanja-jasa-item dynamic-field-item mb-8 p-6 rounded-lg">
+                <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -417,22 +417,22 @@ export function renderUsulanKakPage(path, userRole) {
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 44px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
                   </div>
                   <div class="flex items-end pb-3">
-                    <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaJasaContainer')">
+                    <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
                       <span class="text-xl font-bold">−</span>
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-            <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaJasa()">Tambah Item Barang</button>
+            <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaJasa()">Tambah Item Barang</button>
           </div>
 
           <!-- Belanja Perjalanan Section -->
           <div class="mb-10">
             <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
             <div id="belanjaPerjalananContainer">
-              <div class="belanja-perjalanan-item mb-8 p-6 rounded-lg">
-                <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
+              <div class="belanja-perjalanan-item dynamic-field-item mb-8 p-6 rounded-lg">
+                <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
                   <div>
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -490,14 +490,14 @@ export function renderUsulanKakPage(path, userRole) {
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
                   </div>
                   <div class="flex items-end pb-3">
-                    <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaPerjalananContainer')">
+                    <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
                       <span class="text-xl font-bold">−</span>
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-            <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaPerjalanan()">Tambah Item Barang</button>
+            <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaPerjalanan()">Tambah Item Barang</button>
           </div>
           
           <!-- Navigation Buttons -->
@@ -895,11 +895,6 @@ export function renderUsulanKakPage(path, userRole) {
     document
       .querySelectorAll("#main-step-2 .validation-error")
       .forEach((el) => el.remove());
-    document.querySelectorAll("#main-step-2 .is-invalid").forEach((el) => {
-      el.classList.remove("is-invalid");
-      el.style.borderColor = "#E5E7EB";
-    });
-
     const addError = (el, message) => {
       isValid = false;
       el.classList.add("is-invalid");
@@ -907,7 +902,11 @@ export function renderUsulanKakPage(path, userRole) {
       const errorEl = document.createElement("p");
       errorEl.className = "validation-error text-red-500 text-sm mt-1";
       errorEl.textContent = message;
-      el.parentElement.appendChild(errorEl);
+      if (el.type === 'text' && el.parentElement.classList.contains('flex')) {
+        el.parentElement.parentElement.appendChild(errorEl);
+      } else {
+        el.parentElement.appendChild(errorEl);
+      }
     };
 
     const ikuRows = document.querySelectorAll("#ikuRenstraContainer .iku-item");
@@ -1624,19 +1623,6 @@ export function renderUsulanKakPage(path, userRole) {
     }
   };
 
-  // Belanja item functions
-  window.removeBelanjaItem = function (btn, containerId) {
-    const item = btn.closest(
-      ".belanja-barang-item, .belanja-jasa-item, .belanja-perjalanan-item"
-    );
-    const container = document.getElementById(containerId);
-    if (container.children.length > 1) {
-      item.remove();
-    } else {
-      showError("Minimal harus ada 1 item!");
-    }
-  };
-
   window.addBelanjaBarang = function () {
     const container = document.getElementById("belanjaBarangContainer");
 
@@ -1655,10 +1641,10 @@ export function renderUsulanKakPage(path, userRole) {
     });
 
     const newItem = document.createElement("div");
-    newItem.className = "belanja-barang-item mb-8 p-6 rounded-lg";
+    newItem.className = "belanja-barang-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg";
     // Construct innerHTML dynamically for select elements
     newItem.innerHTML = `
-      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
+      <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -1716,13 +1702,17 @@ export function renderUsulanKakPage(path, userRole) {
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
         </div>
         <div class="flex items-end pb-3">
-          <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaBarangContainer')">
+          <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
             <span class="text-xl font-bold">−</span>
           </button>
         </div>
       </div>
     `;
     container.appendChild(newItem);
+    updateRemoveButtonVisibility(container);
+    newItem.addEventListener('animationend', () => {
+        newItem.classList.remove('new-item-animation');
+    });
 
     // Repopulate and restore values
     populateSatuanDropdowns().then(() => {
@@ -1744,9 +1734,9 @@ export function renderUsulanKakPage(path, userRole) {
   window.addBelanjaJasa = function () {
     const container = document.getElementById("belanjaJasaContainer");
     const newItem = document.createElement("div");
-    newItem.className = "belanja-jasa-item mb-8 p-6 rounded-lg";
+    newItem.className = "belanja-jasa-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg";
     newItem.innerHTML = `
-      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
+      <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -1804,22 +1794,26 @@ export function renderUsulanKakPage(path, userRole) {
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
         </div>
         <div class="flex items-end pb-3">
-          <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaJasaContainer')">
+          <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
             <span class="text-xl font-bold">−</span>
           </button>
         </div>
       </div>
     `;
     container.appendChild(newItem);
+    updateRemoveButtonVisibility(container);
+    newItem.addEventListener('animationend', () => {
+        newItem.classList.remove('new-item-animation');
+    });
     populateSatuanDropdowns(); // Populate dropdowns for new item
   };
 
   window.addBelanjaPerjalanan = function () {
     const container = document.getElementById("belanjaPerjalananContainer");
     const newItem = document.createElement("div");
-    newItem.className = "belanja-perjalanan-item mb-8 p-6 rounded-lg";
+    newItem.className = "belanja-perjalanan-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg";
     newItem.innerHTML = `
-      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
+      <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
@@ -1877,13 +1871,17 @@ export function renderUsulanKakPage(path, userRole) {
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
         </div>
         <div class="flex items-end pb-3">
-          <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeBelanjaItem(this, 'belanjaPerjalananContainer')">
+          <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
             <span class="text-xl font-bold">−</span>
           </button>
         </div>
       </div>
     `;
     container.appendChild(newItem);
+    updateRemoveButtonVisibility(container);
+    newItem.addEventListener('animationend', () => {
+        newItem.classList.remove('new-item-animation');
+    });
     populateSatuanDropdowns(); // Populate dropdowns for new item
   };
 
