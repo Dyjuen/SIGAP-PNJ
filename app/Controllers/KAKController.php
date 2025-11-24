@@ -20,7 +20,6 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Iku;
 use App\Validators\KAKValidator;
-use PDOException;
 
 class KAKController
 {
@@ -41,6 +40,19 @@ class KAKController
         $this->roleModel = new Role();
         $this->ikuModel = new Iku();
         $this->userData = AuthMiddleware::getAuthUser();
+    }
+
+    public function getRefKategoriBelanja()
+    {
+        try {
+            // Mengambil data kategori yang aktif dan diurutkan sesuai kolom 'urutan'
+            $this->db->query("SELECT * FROM m_kategori_belanja WHERE is_active = 1 ORDER BY urutan ASC");
+            $rows = $this->db->resultSet();
+
+            Response::success($rows);
+        } catch (PDOException $e) {
+            Response::error($e->getMessage());
+        }
     }
     
     public function download()
@@ -164,9 +176,9 @@ class KAKController
 
             $rows = $this->db->resultSet();
 
-            Response::success($rows, 'Data KAK berhasil diambil.');
+            return $this->responseSuccess($rows);
         } catch (PDOException $e) {
-            Response::error('Gagal mengambil data KAK: ' . $e->getMessage(), 500);
+            return $this->responseError('Gagal mengambil data KAK: ' . $e->getMessage());
         }
     }
 
@@ -184,24 +196,24 @@ class KAKController
             $childTables = [
                 'manfaat'   => "SELECT * FROM t_kak_manfaat WHERE kak_id=:id",
                 'tahapan'   => "SELECT * FROM t_kak_tahapan WHERE kak_id=:id ORDER BY urutan ASC",
-                'indikator' => "SELECT * FROM t_kak_indikator WHERE kak_id=:id",
-                'target'    => "SELECT * FROM t_kak_target WHERE kak_id=:id",
-                'iku'       => "SELECT tki.*, mi.kode_iku, mi.nama_iku 
-                                    FROM t_kak_iku tki 
-                                    LEFT JOIN m_iku mi ON tki.iku_id = mi.iku_id 
-                                    WHERE tki.kak_id = :id",
-                'anggaran'  => "SELECT 
-                                        tka.*, 
-                                        s1.nama_satuan AS nama_satuan1,
-                                        s2.nama_satuan AS nama_satuan2,
-                                        s3.nama_satuan AS nama_satuan3
-                                    FROM t_kak_anggaran tka
-                                    LEFT JOIN m_satuan s1 ON tka.satuan1_id = s1.satuan_id
-                                    LEFT JOIN m_satuan s2 ON tka.satuan2_id = s2.satuan_id
-                                    LEFT JOIN m_satuan s3 ON tka.satuan3_id = s3.satuan_id
-                                    WHERE tka.kak_id = :id",
-            ];
-
+                            'indikator' => "SELECT * FROM t_kak_indikator WHERE kak_id=:id",
+                            'target'    => "SELECT * FROM t_kak_target WHERE kak_id=:id",
+                            'iku'       => "SELECT tki.*, mi.kode_iku, mi.nama_iku 
+                                                FROM t_kak_iku tki 
+                                                LEFT JOIN m_iku mi ON tki.iku_id = mi.iku_id 
+                                                WHERE tki.kak_id = :id",
+                            'anggaran'  => "
+                                SELECT 
+                                    a.*, 
+                                    s.nama_satuan,
+                                    kb.nama AS nama_kategori_belanja,
+                                    kb.kode AS kode_kategori
+                                FROM t_kak_anggaran a
+                                LEFT JOIN m_satuan s ON a.satuan_id = s.satuan_id
+                                LEFT JOIN m_kategori_belanja kb ON kb.kategori_belanja_id = a.kategori_belanja_id
+                                WHERE a.kak_id=:id
+                            ",
+                        ];
             $data = [
                 "kak" => $kak
             ];
