@@ -14,7 +14,7 @@ class PencairanValidator extends Validator
         $rules = [
             'kegiatan_id' => 'required|integer',
             'nominal_pencairan' => 'required|numeric|min:1',
-            'keterangan' => 'required|string|min:10|max:1000'
+            'keterangan' => 'nullable|string|max:1000'
         ];
 
         // The parent validator does not use custom messages, so they are omitted here.

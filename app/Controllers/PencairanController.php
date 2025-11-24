@@ -165,12 +165,14 @@ class PencairanController extends Controller
 
     private function isBendahara(): bool
     {
-        return in_array('Bendahara', $this->userData['roles'] ?? []);
+        $roles = array_map('strtolower', $this->user['roles'] ?? []);
+        return in_array('bendahara', $roles);
     }
 
     private function isAdmin(): bool
     {
-        return in_array('Admin', $this->userData['roles'] ?? []);
+        $roles = array_map('strtolower', $this->user['roles'] ?? []);
+        return in_array('admin', $roles);
     }
 
     private function getApprovalBendaharaCair(int $kegiatanId): ?array
