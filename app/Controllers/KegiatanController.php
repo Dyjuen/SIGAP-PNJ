@@ -153,7 +153,24 @@ class KegiatanController
                 }
             }
 
-            Response::success($kegiatan, 'Detail kegiatan berhasil diambil.');
+            // Restructure data for frontend and add debug info
+            $anggaranItems = $kegiatan['anggaran_items'] ?? [];
+            $lpjData = [
+                'anggaran_items' => $anggaranItems,
+                'status' => !empty($kegiatan['lpj_submitted_at']) ? 'submitted' : 'new'
+            ];
+            unset($kegiatan['anggaran_items']);
+
+            $responseData = [
+                'kegiatan' => $kegiatan,
+                'lpj' => $lpjData,
+                '_debug' => [
+                    'kak_id_queried' => $kegiatan['kak_id'],
+                    'anggaran_items_found' => count($anggaranItems)
+                ]
+            ];
+
+            Response::success($responseData, 'Detail kegiatan berhasil diambil.');
 
         } catch (\Exception $e) {
             Response::error('Gagal mengambil detail kegiatan: ' . $e->getMessage(), 500);

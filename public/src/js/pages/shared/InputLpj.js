@@ -7,12 +7,6 @@ export function renderInputLpjPage(path, userRole) {
   const isBendahara = userRole.toLowerCase() === "bendahara";
 
   // Bendahara sees read-only inputs. Pengusul can edit if status is 'Perlu Revisi' or new.
-  const isReadOnly = isBendahara;
-  const inputAttr = isReadOnly ? "readonly disabled" : "";
-  const inputStyle = isReadOnly
-    ? "border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default;"
-    : "";
-
   const pageContent = `
     <style>
       /* Comment styles from RevisiKak.js */
@@ -246,7 +240,7 @@ export function renderInputLpjPage(path, userRole) {
       const response = await apiRequest(`/kegiatan/${id}/detail`);
       state.kegiatan = response.data.kegiatan;
       state.lpjData = response.data.lpj; // This can be null
-      state.status = response.data.status || "new";
+      state.status = response.data.lpj.status || "new";
 
       // Populate comments
       if (state.lpjData && state.lpjData.realisasi) {
@@ -275,47 +269,55 @@ export function renderInputLpjPage(path, userRole) {
   // --- RENDER FUNCTIONS ---
   function renderRABSections() {
     const container = document.getElementById("rabSectionsContainer");
-    if (!container || !state.kegiatan || !state.kegiatan.anggaran_items) {
+    if (!container || !state.lpjData || !state.lpjData.anggaran_items || state.lpjData.anggaran_items.length === 0) {
       container.innerHTML = `<div class="text-center text-red-500 p-8">Tidak ada item anggaran untuk ditampilkan.</div>`;
       return;
     }
 
+    // Group items by category
+    const groupedItems = state.lpjData.anggaran_items.reduce((acc, item) => {
+      const category = item.nama_kategori || 'Lain-lain';
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(item);
+      return acc;
+    }, {});
+
     container.innerHTML = ""; // Clear loader
 
-    state.kegiatan.anggaran_items.forEach((item, index) => {
-      const section = document.createElement("div");
-      // Add comment-related classes
-      const comment = rowComments[item.anggaran_id];
-      section.className = `row-with-comment ${
-        comment ? "has-row-comment" : ""
-      }`;
-      section.dataset.rowType = "t_kegiatan_anggaran_realisasi";
-      section.dataset.pkValue = item.anggaran_id;
+    // Render items for each category
+    for (const category in groupedItems) {
+      const categoryTitle = document.createElement('h4');
+      categoryTitle.className = 'text-xl font-semibold mb-4 mt-6 text-gray-700';
+      categoryTitle.textContent = category;
+      container.appendChild(categoryTitle);
 
-      section.innerHTML = getSectionHTML(item, index);
-      container.appendChild(section);
-      updateCommentButton(
-        `.row-with-comment[data-pk-value="${item.anggaran_id}"] .row-comment-icon`,
-        comment
-      );
-    });
+      groupedItems[category].forEach((item, index) => {
+        const section = document.createElement("div");
+        // Add comment-related classes
+        const comment = rowComments[item.anggaran_id];
+        section.className = `row-with-comment ${
+          comment ? "has-row-comment" : ""
+        }`;
+        section.dataset.rowType = "t_kegiatan_anggaran_realisasi";
+        section.dataset.pkValue = item.anggaran_id;
 
-    // Format currency inputs after rendering
-    document.querySelectorAll(".harga-satuan-input").forEach((input) => {
-      input.addEventListener("input", (e) => {
-        let value = e.target.value.replace(/[^0-9]/g, "");
-        e.target.dataset.realValue = value; // Store raw number
-        e.target.value = formatCurrency(value);
+        section.innerHTML = getSectionHTML(item, index);
+        container.appendChild(section);
+        updateCommentButton(
+          `.row-with-comment[data-pk-value="${item.anggaran_id}"] .row-comment-icon`,
+          comment
+        );
       });
-      // Initial format
-      let initialValue = input.value.replace(/[^0-9]/g, "");
-      input.dataset.realValue = initialValue;
-      input.value = formatCurrency(initialValue);
-    });
+    }
+
+    // Currency formatting is now handled directly in getSectionHTML
   }
 
   function getSatuanOptions(selectedValue) {
-    return state.satuan
+    const defaultOption = `<option value="" ${selectedValue == null || selectedValue === '' ? "selected" : ""}></option>`;
+    return defaultOption + state.satuan
       .map(
         (s) =>
           `<option value="${s.satuan_id}" ${
@@ -332,6 +334,11 @@ export function renderInputLpjPage(path, userRole) {
       ) || {};
     const rabHargaFormatted = formatCurrency(item.harga_satuan);
     const realisasiHargaFormatted = formatCurrency(realisasiItem.harga_satuan);
+
+    const normalInputStyle = "border-color: #E5E7EB; background: white;";
+    const disabledInputStyle = "border-color: #C0C0C0 !important; background: #E9E9E9 !important; cursor: not-allowed;";
+    const inputAttr = isBendahara ? "readonly disabled" : "";
+    const currentInputStyle = isBendahara ? disabledInputStyle : normalInputStyle;
 
     return `
       ${
@@ -353,16 +360,28 @@ export function renderInputLpjPage(path, userRole) {
       <div class="mb-6">
         <h5 class="mb-4 font-bold text-lg" style="color: #374151;">Rencana Anggaran Biaya (KAK)</h5>
         <div class="grid grid-cols-12 gap-4 items-end mb-4">
-          <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+          <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${
             item.uraian || ""
           }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Qty</label><input type="number" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${
             item.volume1 || ""
           }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Satuan</label><select disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;">${getSatuanOptions(
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}">${getSatuanOptions(
             item.satuan1_id
           )}</select></div>
-          <div class="col-span-2"><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;" value="${rabHargaFormatted}"></div>
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${
+            item.volume2 || ""
+          }"></div>
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}">${getSatuanOptions(
+            item.satuan2_id
+          )}</select></div>
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${
+            item.volume3 || ""
+          }"></div>
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}">${getSatuanOptions(
+            item.satuan3_id
+          )}</select></div>
+          <div class="col-span-2"><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${rabHargaFormatted}"></div>
         </div>
       </div>
 
@@ -370,27 +389,40 @@ export function renderInputLpjPage(path, userRole) {
       <div>
         <h5 class="mb-4 font-bold text-lg" style="color: #00BCD4;">Realisasi Pertanggungjawaban (LPJ)</h5>
         <div class="grid grid-cols-12 gap-4 items-end mb-4 realisasi-grid">
-          <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" value="${
+          <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
       realisasiItem.uraian || item.uraian || ""
     }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Qty</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" value="${
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
       realisasiItem.volume1 || item.volume1 || ""
     }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Satuan</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}">${getSatuanOptions(
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}">${getSatuanOptions(
       realisasiItem.satuan1_id || item.satuan1_id
     )}</select></div>
-          <div class="col-span-2"><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm harga-satuan-input" style="${inputStyle}" value="${
-      realisasiItem.harga_satuan || item.harga_satuan || ""
+          
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
+      realisasiItem.volume2 || item.volume2 || ""
     }"></div>
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}">${getSatuanOptions(
+      realisasiItem.satuan2_id || item.satuan2_id
+    )}</select></div>
+          
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
+      realisasiItem.volume3 || item.volume3 || ""
+    }"></div>
+          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}">${getSatuanOptions(
+      realisasiItem.satuan3_id || item.satuan3_id
+    )}</select></div>
+
+          <div class="col-span-2"><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${formatCurrency(item.realisasi_harga_satuan || item.harga_satuan || "")}"></div>
           
           ${
             isPengusul
               ? `
-          <div class="flex items-end">
+          <div class="col-span-1 flex items-end">
             <label class="cursor-pointer">
-              <input type="file" multiple class="hidden" onchange="window.handleFileUpload(this)">
-              <div class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 border-0" style="background: #00BCD4; color: #FFFFFF;">
-                <i class="ti ti-upload"></i>
+              <input type="file" multiple class="hidden" onchange="window.handleFileUpload(this)" data-anggaran-id="${item.anggaran_id}">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-105 border-0" style="background: #00BCD4; color: #FFFFFF;">
+                <i class="ti ti-upload text-xl"></i>
               </div>
             </label>
           </div>`
@@ -533,8 +565,16 @@ export function renderInputLpjPage(path, userRole) {
       const realisasiGrid = section.querySelector(".realisasi-grid");
 
       const uraian = realisasiGrid.querySelector('input[type="text"]').value;
-      const volume1 = realisasiGrid.querySelector('input[type="number"]').value;
-      const satuan1_id = realisasiGrid.querySelector("select").value;
+      const numberInputs = realisasiGrid.querySelectorAll('input[type="number"]');
+      const selectInputs = realisasiGrid.querySelectorAll('select');
+
+      const volume1 = numberInputs[0] ? numberInputs[0].value : '';
+      const satuan1_id = selectInputs[0] ? selectInputs[0].value : '';
+      const volume2 = numberInputs[1] ? numberInputs[1].value : '';
+      const satuan2_id = selectInputs[1] ? selectInputs[1].value : '';
+      const volume3 = numberInputs[2] ? numberInputs[2].value : '';
+      const satuan3_id = selectInputs[2] ? selectInputs[2].value : '';
+
       const harga_satuan_input = realisasiGrid.querySelector(
         ".harga-satuan-input"
       );
@@ -545,6 +585,10 @@ export function renderInputLpjPage(path, userRole) {
       formData.append(`realisasi[${anggaranId}][uraian]`, uraian);
       formData.append(`realisasi[${anggaranId}][volume1]`, volume1);
       formData.append(`realisasi[${anggaranId}][satuan1_id]`, satuan1_id);
+      formData.append(`realisasi[${anggaranId}][volume2]`, volume2);
+      formData.append(`realisasi[${anggaranId}][satuan2_id]`, satuan2_id);
+      formData.append(`realisasi[${anggaranId}][volume3]`, volume3);
+      formData.append(`realisasi[${anggaranId}][satuan3_id]`, satuan3_id);
       formData.append(`realisasi[${anggaranId}][harga_satuan]`, harga_satuan);
 
       const fileInput = section.querySelector('input[type="file"]');

@@ -161,7 +161,11 @@ class Kegiatan extends Model
         
         $kegiatan = $this->query($sql, [$kegiatanId])->fetch(PDO::FETCH_ASSOC);
         if ($kegiatan) {
-            $kegiatan['anggaran_items'] = $this->query("SELECT * FROM t_kak_anggaran WHERE kak_id = ?", [$kegiatan['kak_id']])->fetchAll(PDO::FETCH_ASSOC);
+            $sqlAnggaran = "SELECT ka.*, kb.nama as nama_kategori
+                            FROM t_kak_anggaran ka
+                            LEFT JOIN m_kategori_belanja kb ON ka.kategori_belanja_id = kb.kategori_belanja_id
+                            WHERE ka.kak_id = ?";
+            $kegiatan['anggaran_items'] = $this->query($sqlAnggaran, [$kegiatan['kak_id']])->fetchAll(PDO::FETCH_ASSOC);
         }
         return $kegiatan;
     }
