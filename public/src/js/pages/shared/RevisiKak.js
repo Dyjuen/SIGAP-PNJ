@@ -262,7 +262,7 @@ export function renderRevisiKakPage(path, userRole) {
       /* RAB Grid */
       .grid-rab {
         display: grid;
-        grid-template-columns: 2.5fr 0.8fr 1.2fr 0.8fr 1.2fr 0.8fr 1.2fr 2.5fr;
+        grid-template-columns: 2.5fr 0.8fr 1.2fr 0.8fr 1.2fr 0.8fr 1.2fr 2.5fr 1.2fr 0.8fr 1.2fr 2.5fr;
         gap: 1rem;
         align-items: end;
       }
@@ -301,6 +301,614 @@ export function renderRevisiKakPage(path, userRole) {
       .info-box-text {
         font-size: 0.875rem;
         color: #1E40AF;
+      }
+
+      /* ====== ANIMATION SYSTEM FROM DUMMYINPUTREADONLY ====== */
+      
+      /* Keyframe Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes fadeInRight {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      /* Progress Steps Enhanced */
+      .progress-step-item {
+        cursor: pointer;
+        animation: fadeIn 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      .progress-step-item:hover {
+        transform: translateY(-3px); 
+      }
+      
+      .progress-step-circle {
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
+        transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);        
+      }
+
+      .progress-step-item:hover .progress-step-circle {
+        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
+        transform: rotate(360deg);
+      }
+      
+      /* Menu buttons - SMOOTH ROTATION LIKE STEPPER! */
+      .menu-button {
+        transition: all 0.4s ease-in-out;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .menu-button:hover::before {
+        left: 100%;
+      }
+
+      .menu-button:hover {
+        transform: translateY(-3px); 
+      }
+
+      .menu-button.active {
+        border-color: #00BCD4 !important;
+        background: rgba(0, 188, 212, 0.1) !important;
+      }
+
+      /* ICON ROTATION - SAME AS STEPPER CIRCLE! */
+      .menu-button .w-8 {
+        transition: all 0.8s cubic-bezier(0.050, 0.600, 0.165, 1.025);
+      }
+
+      .menu-button:hover .w-8 {
+        transform: rotate(360deg);
+      }
+
+      /* IMPORTANT: DISABLE transform for icon inside menu button! */
+      .menu-button .w-8 .ti {
+        transition: none !important;
+        transform: none !important;
+      }
+
+      .menu-button:hover .w-8 .ti {
+        transform: none !important;
+        /* Icon rotates with parent (.w-8), not independently! */
+      }
+
+      /* Text transition */
+      .menu-button .font-semibold {
+        transition: color 0.3s ease;
+      }
+
+      .menu-button:hover .font-semibold {
+        color: #00ACC1;
+      }
+      
+      /* Step content */
+      .step-content {
+        display: none;
+      }
+      
+      .step-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      /* Card animations */
+      .bg-white.rounded-xl.shadow-lg {
+        animation: slideInUp 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      .bg-white.rounded-xl.shadow-lg:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-5px);
+      }
+      
+      /* Row item animations */
+      .row-item {
+        animation: fadeInLeft 0.5s ease-out;
+        transition: all 0.8s cubic-bezier(0.050, 0.600, 0.165, 1.025);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .row-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.1), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .row-item:hover::before {
+        left: 100%;
+      }
+
+      .row-item:hover {
+        transform: translateX(5px) scale(1.02);
+      }
+
+      .row-item:nth-child(odd) {
+        animation-delay: 0.1s;
+      }
+
+      .row-item:nth-child(even) {
+        animation-delay: 0.2s;
+      }
+
+      /* Input fields */
+      input[readonly], textarea[readonly], select[disabled] {
+        transition: all 0.7s ease;
+      }
+
+      input[readonly]:hover, textarea[readonly]:hover, select[disabled]:hover {
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
+        transform: scale(1.01);
+      }
+
+      /* Enhanced button animations */
+      button {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+      }
+
+      button:active::after {
+        width: 300px;
+        height: 300px;
+      }
+
+      button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 188, 212, 0.3);
+      }
+
+      button:active {
+        transform: translateY(-1px);
+      }
+
+      /* Labels */
+      label {
+        transition: all 0.7s ease;
+        display: inline-block;
+      }
+
+      /* Headers */
+      h4, h5 {
+        animation: fadeInDown 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      /* Backdrop */
+      .backdrop-blur-md {
+        animation: slideInDown 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      .backdrop-blur-md:hover {
+        backdrop-filter: blur(20px) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+      }
+
+      /* Loading shimmer effect */
+      .shimmer {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite;
+      }
+
+      /* Stagger animations for grid items */
+      .grid > * {
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      .grid > *:nth-child(1) { animation-delay: 0.1s; }
+      .grid > *:nth-child(2) { animation-delay: 0.2s; }
+      .grid > *:nth-child(3) { animation-delay: 0.3s; }
+      .grid > *:nth-child(4) { animation-delay: 0.4s; }
+      .grid > *:nth-child(5) { animation-delay: 0.5s; }
+      .grid > *:nth-child(6) { animation-delay: 0.6s; }
+
+      /* Smooth scroll */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Container animations */
+      .flex.gap-8 > * {
+        animation: fadeInRight 0.6s ease-out;
+      }
+
+      .flex.gap-8 > *:first-child {
+        animation: fadeInLeft 0.6s ease-out;
+      }
+
+      /* Icon animations */
+      .ti {
+        transition: all 0.3s ease;
+        display: inline-block;
+      }
+
+      button:hover .ti {
+        transform: scale(1.2) rotate(10deg);
+      }
+
+      /* ====== BORDER DRAWING ANIMATION - SUPER SMOOTH VERSION ====== */
+      .border-hover-draw {
+        position: relative;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Subtle pop-up effect on hover */
+      .border-hover-draw:hover {
+        transform: translateY(-4px) scale(1.01);
+      }
+
+      .border-hover-draw::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        padding: 2px;
+        background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        
+        /* Default state: hidden at center-bottom */
+        clip-path: polygon(
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%
+        );
+        
+        /* Smooth reverse animation by default */
+        animation: borderDrawReverse 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      }
+
+      /* Forward animation on hover - SUPER SMOOTH */
+      .border-hover-draw:hover::before {
+        animation: borderDrawForward 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      }
+
+      /* ====== FORWARD ANIMATION (Mouse IN) ====== */
+      /* Bottom → Left/Right → Top */
+      @keyframes borderDrawForward {
+        0% {
+          /* Start: center-bottom point */
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+        
+        30% {
+          /* Bottom line expands smoothly left-right */
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+        
+        70% {
+          /* Left & right borders rise together to top (SMOOTH!) */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+        
+        100% {
+          /* Complete: full border with slight overshoot */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+      }
+
+      /* ====== REVERSE ANIMATION (Mouse OUT) ====== */
+      /* Top → Left/Right → Bottom */
+      @keyframes borderDrawReverse {
+        0% {
+          /* Start: full border */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+        
+        30% {
+          /* Top line & left-right borders collapse smoothly */
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+        
+        70% {
+          /* Bottom line starts shrinking to center */
+          clip-path: polygon(
+            25% 100%, 25% 100%, 
+            25% 100%, 50% 100%, 
+            50% 100%, 75% 100%, 
+            75% 100%, 75% 100%
+          );
+        }
+        
+        100% {
+          /* End: disappears at center-bottom */
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+      }
+
+      /* Bonus: Input subtle lift + shadow + glow on hover */
+      .border-hover-draw:hover input[readonly],
+      .border-hover-draw:hover textarea[readonly] {
+        border-color: rgba(0, 188, 212, 0.4) !important;
+        box-shadow: 
+          0 8px 24px rgba(0, 188, 212, 0.12),
+          0 0 0 1px rgba(0, 188, 212, 0.1);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* ====== MAIN STEP CONTENT - Border Drawing + Pop-Up ====== */
+      .main-step-content {
+        display: none;
+        position: relative;
+      }
+
+      .main-step-content.active {
+        display: block;
+        animation: 
+          fadeIn 0.6s ease-out,
+          popUpEntry 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Wrapper for border animation */
+      .main-step-content.active > .bg-white {
+        position: relative;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Border drawing effect (smoother to match .border-hover-draw) */
+      .main-step-content.active > .bg-white::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 16px;
+        padding: 2px;
+        background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0;
+
+        /* Default hidden (center-bottom) */
+        clip-path: polygon(
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%
+        );
+
+        /* Smoother animation + slightly longer for natural page load feel */
+        animation: 
+          mainStepBorderDraw 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.15s forwards,
+          borderFadeIn 0.35s ease-out 0.15s forwards;
+      }
+
+      /* Pop-up subtle on hover */
+      .main-step-content.active > .bg-white:hover {
+        transform: translateY(-6px) scale(1.005);
+      }
+
+      .main-step-content.active > .bg-white:hover::before {
+        opacity: 1;
+      }
+
+      /* Pop-up entry animation */
+      @keyframes popUpEntry {
+        0% {
+          opacity: 0;
+          transform: translateY(30px) scale(0.95);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Border drawing for main step */
+      @keyframes mainStepBorderDraw {
+        /* 0%: hidden center-bottom */
+        0% {
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+
+        /* 20%: bottom expands smoothly left-right */
+        20% {
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+
+        /* 45%: sides start rising (soft corner formation) */
+        45% {
+          clip-path: polygon(
+            0% 100%, 0% 65%, 
+            0% 65%, 50% 65%, 
+            50% 65%, 100% 65%, 
+            100% 65%, 100% 100%
+          );
+        }
+
+        /* 75%: sides rise higher (near final) */
+        75% {
+          clip-path: polygon(
+            0% 100%, 0% 30%, 
+            0% 30%, 50% 30%, 
+            50% 30%, 100% 30%, 
+            100% 30%, 100% 100%
+          );
+        }
+
+        /* 100%: complete border */
+        100% {
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+      }
+
+      /* Border fade in */
+      @keyframes borderFadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 0.8;
+        }
       }
     </style>
 
@@ -358,7 +966,7 @@ export function renderRevisiKakPage(path, userRole) {
 
             <!-- Main Form Area -->
             <div class="flex-1 min-h-[500px]">
-              <div class="border border-gray-200 rounded-xl p-6">
+              <div class="border border-gray-200 rounded-xl p-6 border-hover-draw">
                 <!-- Step 1: Gambaran Umum -->
                 <div class="step-content active" id="gambaran-umum">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Gambaran Umum</h4>
