@@ -8,6 +8,69 @@ export function renderMonitoringUsulanPage(path, userRole) {
       /* Import existing CSS styles - assuming they're in a global stylesheet */
       /* Only add page-specific styles that don't exist yet */
       
+      /* Header Section with Button */
+      .page-header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 0 0.5rem;
+      }
+      
+      .btn-ajukan-usulan {
+        background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(5, 156, 216, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .btn-ajukan-usulan::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+      
+      .btn-ajukan-usulan:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(5, 156, 216, 0.4);
+      }
+      
+      .btn-ajukan-usulan:hover::before {
+        width: 300px;
+        height: 300px;
+      }
+      
+      .btn-ajukan-usulan:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(5, 156, 216, 0.3);
+      }
+      
+      .btn-ajukan-usulan svg {
+        transition: transform 0.3s ease;
+      }
+      
+      .btn-ajukan-usulan:hover svg {
+        transform: translateX(3px);
+      }
+      
       /* Pagination - specific to this page */
       .pagination-container {
         display: flex;
@@ -69,6 +132,20 @@ export function renderMonitoringUsulanPage(path, userRole) {
     </style>
 
     <div class="monitoring-usulan-page">
+      <!-- Header Section -->
+      <div class="page-header-section">
+        <div>
+          <h4 style="margin: 0; color: #1e293b; font-weight: 600;">Monitoring Usulan</h4>
+          <p style="margin: 0; color: #64748b; font-size: 14px;">Kelola dan pantau status usulan kegiatan Anda</p>
+        </div>
+        <button class="btn-ajukan-usulan" id="btnAjukanUsulan">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Ajukan Usulan
+        </button>
+      </div>
+      
       <!-- Main Table Card -->
       <div class="card card-datatable table-responsive p-0">
         <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
@@ -348,6 +425,14 @@ export function renderMonitoringUsulanPage(path, userRole) {
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
+    // Button Ajukan Usulan
+    const btnAjukanUsulan = document.getElementById("btnAjukanUsulan");
+    if (btnAjukanUsulan) {
+      btnAjukanUsulan.addEventListener("click", function () {
+        window.location.pathname = "/pengusul/usulan/new";
+      });
+    }
+    
     const selectAll = document.getElementById("selectAll");
     if (selectAll) {
       selectAll.addEventListener("change", function () {
