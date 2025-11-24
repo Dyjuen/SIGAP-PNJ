@@ -392,9 +392,9 @@ export const wadirSidebar = `
     height: 54px;
     min-width: 54px;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     color: #64748b;
     background: transparent;
     transition: all 0.2s ease;
@@ -406,15 +406,49 @@ export const wadirSidebar = `
     display: block;
   }
 
+  .menu-icon i {
+    font-size: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    opacity: 0.5 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transition: all 0.2s ease;
+  }
+
   .menu-link:hover .menu-icon {
     color: #00bcd4;
-    transform: scale(1.1);
+    transform: scale(1.05);
+  }
+
+  .menu-link:hover .menu-icon i {
+    opacity: 1 !important;
+  }
+
+  #layout-menu.sidebar-expanded-js .menu-icon i {
+    opacity: 1 !important;
   }
 
   .menu-link.active .menu-icon,
   .menu-item.active > .menu-link .menu-icon {
-    background: #00bcd4;
-    color: white;
+    background: #00bcd4 !important;
+    color: white !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .menu-link.active .menu-icon i,
+  .menu-item.active > .menu-link .menu-icon i {
+    opacity: 1 !important;
+    font-size: 30px !important;
+    transform: scale(1) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .menu-link.active:hover .menu-icon,
@@ -756,10 +790,7 @@ export const wadirSidebar = `
     <li class="menu-item">
       <a href="/wadir/dashboard" class="menu-link" data-tooltip="Dashboard">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
+          <i class="ti ti-home">&#xecde;</i>
         </span>
         <span class="menu-text">Dashboard</span>
       </a>
@@ -769,9 +800,7 @@ export const wadirSidebar = `
     <li class="menu-item">
       <a href="/wadir/kegiatan/approve" class="menu-link" data-tooltip="Verifikasi Kegiatan">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
+          <i class="ti ti-circle-check">&#xea67;</i>
         </span>
         <span class="menu-text">Verifikasi Kegiatan</span>
       </a>
@@ -781,11 +810,7 @@ export const wadirSidebar = `
     <li class="menu-item">
       <a href="/wadir/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
-            <rect x="9" y="3" width="6" height="4" rx="2"></rect>
-            <path d="M9 12h6M9 16h6"></path>
-          </svg>
+          <i class="ti ti-eye">&#xea9a;</i>
         </span>
         <span class="menu-text">Monitoring Kegiatan</span>
       </a>
@@ -818,11 +843,7 @@ export const wadirSidebar = `
   <div class="logout-section">
     <a href="#" class="menu-link" id="logout-btn" data-tooltip="Logout">
       <span class="menu-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-          <polyline points="16 17 21 12 16 7"></polyline>
-          <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
+        <i class="ti ti-logout">&#xeba8;</i>
       </span>
       <span class="menu-text">Logout</span>
     </a>

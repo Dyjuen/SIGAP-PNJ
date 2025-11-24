@@ -82,7 +82,11 @@ export function renderBendaharaDashboardPage(path, userRole) {
         animation-delay: 0.4s;
       }
 
-      .stat-card-active:hover,
+      .stat-card-active:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 188, 212, 0.5) !important;
+      }
+
       .stat-card-inactive:hover {
         transform: translateY(-10px) scale(1.02);
         box-shadow: 0 15px 40px rgba(0, 188, 212, 0.35);
@@ -116,16 +120,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
       }
 
       .table tbody tr td {
-        border-top: 8px solid transparent;
-        border-bottom: 8px solid transparent;
-      }
-
-      .table tbody tr td:first-child {
-        border-left: 12px solid transparent;
-      }
-
-      .table tbody tr td:last-child {
-        border-right: 12px solid transparent;
+        padding: 1rem !important;
+        vertical-align: middle !important;
+        border: none !important;
       }
       .table tbody tr::before {
         content: '';
@@ -267,8 +264,26 @@ export function renderBendaharaDashboardPage(path, userRole) {
       }
       
       .table {
-        table-layout: fixed;
         width: 100%;
+        border-collapse: collapse !important;
+      }
+      
+      .table thead th {
+        padding: 1rem !important;
+        vertical-align: middle !important;
+      }
+      
+      .table tbody tr {
+        margin-bottom: 8px;
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+      }
+      
+      .table thead, .table tbody {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
       }
       
       .stat-card-filter {
@@ -285,15 +300,15 @@ export function renderBendaharaDashboardPage(path, userRole) {
       <!-- Stats Cards -->
       <div class="row g-4 mb-3">
         <div class="col-sm-6 col-xl-3">
-          <div class="card stat-card-active stat-card-filter" data-filter="waiting">
+          <div class="card stat-card-active stat-card-filter" data-filter="waiting" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%) !important; color: white !important; border: none !important;">
             <div class="card-body">
               <div class="d-flex align-items-start justify-content-between">
                 <div class="content-left">
-                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Pencairan</span>
-                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Menunggu</h4>
+                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; color: white !important;">Pencairan</span>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600; color: white !important;">Menunggu</h4>
                   <div class="d-flex align-items-end mt-2">
-                    <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="waitingCount" data-target="0">0</h1>
-                    <small style="font-size: 15px; font-weight: 500; opacity: 0.9;">Kegiatan</small>
+                    <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px; color: white !important;" id="waitingCount" data-target="0">0</h1>
+                    <small style="font-size: 15px; font-weight: 500; color: white !important;">Kegiatan</small>
                   </div>
                 </div>
               </div>
@@ -366,16 +381,16 @@ export function renderBendaharaDashboardPage(path, userRole) {
         <table class="table">
           <thead>
             <tr>
-              <th style="width: 50px; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">
+              <th style="width: 5%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">
                 <input type="checkbox" class="form-check-input" id="selectAll">
               </th>
-              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">ID</th>
-              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 180px;">Nama Kegiatan</th>
-              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 180px;">Pengusul</th>
-              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 150px;">Uang Diminta</th>
-              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 150px;">Uang Dicairkan</th>
-              <th style="text-align: center; background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 130px;">Status</th>
-              <th style="text-align: center; background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; width: 140px;">Aksi</th>
+              <th style="width: 6%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">ID</th>
+              <th style="width: 22%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Nama Kegiatan</th>
+              <th style="width: 18%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>
+              <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Diminta</th>
+              <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Dicairkan</th>
+              <th style="width: 11%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Status</th>
+              <th style="width: 10%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Aksi</th>
             </tr>
           </thead>
           <tbody id="disbursementTableBody">
@@ -674,18 +689,18 @@ export function renderBendaharaDashboardPage(path, userRole) {
       }
 
       row.innerHTML = `
-        <td style="text-align: center; padding: 1rem; vertical-align: middle; border: none;">
+        <td style="width: 5%; text-align: center;">
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
-        <td style="padding: 1rem; vertical-align: middle; border: none;">
+        <td style="width: 6%;">
           <span class="number-badge" style="background: #e0f7fa; color: #00BCD4; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.875rem;">${
             kegiatan.kegiatan_id
           }</span>
         </td>
-        <td style="padding: 1rem; vertical-align: middle; border: none;">
+        <td style="width: 22%;">
           <strong style="color: #1e293b;">${kegiatan.nama_kegiatan}</strong>
         </td>
-        <td style="padding: 1rem; vertical-align: middle; border: none;">
+        <td style="width: 18%;">
           <div style="color: #1e293b; font-weight: 600;">${
             kegiatan.pelaksana_manual || "-"
           }</div>
@@ -693,20 +708,20 @@ export function renderBendaharaDashboardPage(path, userRole) {
             kegiatan.pengusul_nama || ""
           }</div>
         </td>
-        <td style="padding: 1rem; vertical-align: middle; border: none;">
+        <td style="width: 14%;">
           <strong style="color: #00BCD4;">${formatCurrency(
             kegiatan.total_anggaran_diusulkan || 0
           )}</strong>
         </td>
-        <td style="padding: 1rem; vertical-align: middle; border: none;">
+        <td style="width: 14%;">
           <strong style="color: #059669;">${formatCurrency(
             kegiatan.dana_dicairkan || 0
           )}</strong>
         </td>
-        <td style="text-align: center; padding: 1rem; vertical-align: middle; border: none;">
+        <td style="width: 11%; text-align: center;">
           ${statusBadge}
         </td>
-        <td style="text-align: center; padding: 1rem; vertical-align: middle; border: none;">
+        <td style="width: 10%; text-align: center;">
           ${actionButtons}
         </td>
       `;

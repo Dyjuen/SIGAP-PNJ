@@ -218,52 +218,36 @@ export function renderUsulanKakPage(path, userRole) {
         </div>
       </div>
 
-      <!-- Main Step 2: Indikator Kinerja Utama & Renstra -->
+      <!-- Main Step 2: IKU & Renstra -->
       <div class="main-step-content" id="main-step-2">
         <div class="bg-white rounded-xl shadow-lg p-8">
-          <div class="flex gap-8">
-            <!-- Sidebar Menu -->
-            <div class="flex flex-col gap-4 w-96">
-              <button class="menu-button-iku border-2 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3 active" data-menu-iku="indikator-kinerja-renstra" style="border-color: #00BCD4; background: rgba(0, 188, 212, 0.1);">
-                <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;">O</div>
-                <div class="font-semibold text-base" style="color: #00BCD4;">Indikator Kinerja Utama<br/>& Renstra</div>
-              </button>
-            </div>
-
-            <!-- Main Form Area -->
-            <div class="flex-1 min-h-[500px]">
-              <div class="border border-gray-200 rounded-xl p-6">
-                <!-- Indikator Kinerja Utama & Renstra -->
-                <div class="step-content-iku active" id="indikator-kinerja-renstra">
-                  <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama & Renstra</h4>
-                  
-                  <div class="mb-8" id="ikuRenstraContainer">
-                    <div class="iku-item dynamic-field-item grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4">
-                      <div>
-                        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-                        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                          <option value="">Input</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-                        <div class="flex gap-2 items-center">
-                          <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-                        </div>
-                      </div>
-                      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
-                        <span class="text-xl font-bold">−</span>
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIkuField()">Tambah</button>
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama & Renstra</h4>
+          
+          <div class="mb-8" id="ikuRenstraContainer">
+            <div class="iku-item dynamic-field-item row-item mb-4">
+              <div class="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
+                <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+                  <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
+                    <option value="">Pilih IKU</option>
+                  </select>
                 </div>
+                <div>
+                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
+                  <div class="flex gap-2 items-center">
+                    <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100">
+                    <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+                  </div>
+                </div>
+                <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+                  <span class="text-xl font-bold">−</span>
+                </button>
               </div>
             </div>
           </div>
           
+          <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIkuField()">Tambah</button>
+
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackIku">
@@ -1577,24 +1561,26 @@ export function renderUsulanKakPage(path, userRole) {
   window.addIkuField = function () {
     const container = document.getElementById("ikuRenstraContainer");
     const newItem = document.createElement("div");
-    newItem.className = "iku-item dynamic-field-item new-item-animation grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4";
+    newItem.className = "iku-item dynamic-field-item new-item-animation row-item mb-4"; // Added row-item and margin
     newItem.innerHTML = `
-      <div>
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
-          <option value="">Input</option>
-        </select>
-      </div>
-      <div>
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Target Persentase</label>
-        <div class="flex gap-2 items-center">
-          <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input">
-          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+      <div class="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
+            <option value="">Pilih IKU</option>
+          </select>
         </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
+          <div class="flex gap-2 items-center">
+            <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100">
+            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+          </div>
+        </div>
+        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+          <span class="text-xl font-bold">−</span>
+        </button>
       </div>
-      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
-        <span class="text-xl font-bold">−</span>
-      </button>
     `;
     container.appendChild(newItem);
     populateIkuDropdowns(); // Re-populate for the new select
@@ -2032,8 +2018,6 @@ export function renderUsulanKakPage(path, userRole) {
         // Populate satuan dropdowns
         populateSatuanDropdowns();
       }
-
-      showSuccess("Data berhasil dimuat untuk diedit");
     } catch (error) {
       console.error("Error fetching KAK data:", error);
       showError(`Gagal memuat data: ${error.message}`);
@@ -2318,7 +2302,7 @@ export function renderUsulanKakPage(path, userRole) {
         } else {
           // Create new KAK
           result = await submitKak(formData);
-          showSuccess("Usulan KAK berhasil diajukan!");
+          showSuccess("Usulan KAK berhasil disimpan!");
         }
 
         // Redirect after a short delay to allow user to see the message

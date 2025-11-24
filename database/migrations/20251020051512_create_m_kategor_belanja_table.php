@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class CreateMKategorBelanjaTable extends AbstractMigration
+final class CreateMKategoriBelanjaTable extends AbstractMigration
 {
     /**
      * Change Method.
