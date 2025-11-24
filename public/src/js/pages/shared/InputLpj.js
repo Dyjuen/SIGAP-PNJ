@@ -195,6 +195,7 @@ export function renderInputLpjPage(path, userRole) {
   let rowComments = {}; // { anggaran_id: "comment text" }
   let currentCommentTarget = null;
     let rowCommentModalInstance = null;
+  let fileStore = {}; // { anggaran_id: [File, File, ...] }
   
     const formatCurrency = (amount) => {
       if (amount === null || amount === undefined) return "Rp 0";
@@ -429,7 +430,7 @@ export function renderInputLpjPage(path, userRole) {
               : ""
           }
         </div>
-        <div class="uploaded-files-container mt-4 grid grid-cols-2 gap-4">
+        <div class="uploaded-files-container mt-4 grid grid-cols-1 gap-2">
             ${(realisasiItem.bukti || [])
               .map(
                 (file) => `
@@ -488,6 +489,34 @@ export function renderInputLpjPage(path, userRole) {
 
   // --- DATA COLLECTION & SUBMISSION ---
   async function submitLpj(kegiatanId) {
+    // --- VALIDATION ---
+    const rabSections = document.querySelectorAll(".row-with-comment");
+    let allItemsHaveFiles = true;
+
+    // First, clear any previous error styles
+    rabSections.forEach(section => {
+      section.style.border = '';
+    });
+
+    for (const section of rabSections) {
+        const anggaranId = section.dataset.pkValue;
+        if (!fileStore[anggaranId] || fileStore[anggaranId].length === 0) {
+            allItemsHaveFiles = false;
+            section.style.border = '2px solid red';
+            // We don't break, so we can highlight all failing items
+        }
+    }
+
+    if (!allItemsHaveFiles) {
+        Swal.fire({ 
+            icon: 'error', 
+            title: 'Validasi Gagal', 
+            text: 'Setiap uraian harus memiliki minimal satu file bukti yang diupload.' 
+        });
+        return; // Stop the submission
+    }
+    // --- END VALIDATION ---
+
     const button = document.getElementById("submitLpjButton");
     button.disabled = true;
     button.innerHTML = "Submitting...";
@@ -575,12 +604,8 @@ export function renderInputLpjPage(path, userRole) {
       const volume3 = numberInputs[2] ? numberInputs[2].value : '';
       const satuan3_id = selectInputs[2] ? selectInputs[2].value : '';
 
-      const harga_satuan_input = realisasiGrid.querySelector(
-        ".harga-satuan-input"
-      );
-      const harga_satuan =
-        harga_satuan_input.dataset.realValue ||
-        harga_satuan_input.value.replace(/[^0-9]/g, "");
+      const harga_satuan_input = realisasiGrid.querySelector('input[value*="Rp"]');
+      const harga_satuan = harga_satuan_input.value.replace(/[^0-9]/g, "");
 
       formData.append(`realisasi[${anggaranId}][uraian]`, uraian);
       formData.append(`realisasi[${anggaranId}][volume1]`, volume1);
@@ -591,11 +616,11 @@ export function renderInputLpjPage(path, userRole) {
       formData.append(`realisasi[${anggaranId}][satuan3_id]`, satuan3_id);
       formData.append(`realisasi[${anggaranId}][harga_satuan]`, harga_satuan);
 
-      const fileInput = section.querySelector('input[type="file"]');
-      if (fileInput && fileInput.files.length > 0) {
-        for (let i = 0; i < fileInput.files.length; i++) {
-          formData.append(`bukti[${anggaranId}][]`, fileInput.files[i]);
-        }
+      // Append files from the fileStore
+      if (fileStore[anggaranId] && fileStore[anggaranId].length > 0) {
+        fileStore[anggaranId].forEach(file => {
+          formData.append(`bukti[${anggaranId}][]`, file);
+        });
       }
     });
 
@@ -670,14 +695,46 @@ export function renderInputLpjPage(path, userRole) {
   }
 
   // --- EVENT HANDLERS & INITIALIZATION ---
+  window.removeFile = function(button, anggaranId, fileName) {
+    // Remove from UI
+    button.parentElement.remove();
+    // Remove from fileStore
+    if (fileStore[anggaranId]) {
+      fileStore[anggaranId] = fileStore[anggaranId].filter(f => f.name !== fileName);
+    }
+  };
+
   window.handleFileUpload = function (input) {
+    const anggaranId = input.dataset.anggaranId;
     const files = Array.from(input.files);
     const container = input.closest(".realisasi-grid").nextElementSibling;
+
+    const MAX_SIZE = 10485760; // 10 MB
+    const ALLOWED_TYPES = ['jpg', 'jpeg', 'png', 'pdf'];
+
+    if (!fileStore[anggaranId]) {
+      fileStore[anggaranId] = [];
+    }
+
     files.forEach((file) => {
+      const extension = file.name.split('.').pop().toLowerCase();
+      
+      // Validation
+      if (file.size > MAX_SIZE) {
+        Swal.fire({ icon: 'error', title: 'File Ditolak', text: `Ukuran file "${file.name}" terlalu besar. Maksimal 10MB.`});
+        return;
+      }
+      if (!ALLOWED_TYPES.includes(extension)) {
+        Swal.fire({ icon: 'error', title: 'File Ditolak', text: `Tipe file "${file.name}" tidak diizinkan. Hanya ${ALLOWED_TYPES.join(', ')}.`});
+        return;
+      }
+
+      // Add to store and UI
+      fileStore[anggaranId].push(file);
       const fileItem = document.createElement("div");
       fileItem.className =
         "flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200";
-      fileItem.innerHTML = `<span class="text-sm truncate flex-1" style="color: #374151;">📎 ${file.name}</span><button type="button" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center transition-all bg-red-500 text-white" onclick="this.parentElement.remove()">×</button>`;
+      fileItem.innerHTML = `<span class="text-sm truncate flex-1" style="color: #374151;">📎 ${file.name}</span><button type="button" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center transition-all bg-red-500 text-white" onclick="window.removeFile(this, '${anggaranId}', '${file.name}')">×</button>`;
       container.appendChild(fileItem);
     });
     input.value = "";
