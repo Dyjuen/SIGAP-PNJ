@@ -538,15 +538,10 @@ export function renderDummyInputPage(path, userRole) {
                 <div class="step-content" id="kurun-waktu">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</h4>
                   
-                  <div class="grid grid-cols-2 gap-6">
-                    <div class="mb-6">
-                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Mulai</label>
-                      <input type="date" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="" data-field="tanggalMulai">
-                    </div>
-                    <div class="mb-6">
-                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Selesai</label>
-                      <input type="date" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="" data-field="tanggalSelesai">
-                    </div>
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Period Pelaksanaan</label>
+                    <input type="text" id="kurunWaktu" readonly class="form-control w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" placeholder="Date range not set" />
+                    <small class="text-gray-500 mt-1 block">Tanggal mulai dan tanggal selesai</small>
                   </div>
                 </div>
               </div>
@@ -801,8 +796,21 @@ export function renderDummyInputPage(path, userRole) {
       document.querySelector('[data-field="namaKegiatan"]').value = kakData.nama_kegiatan || "";
       document.querySelector('[data-field="gambaranUmum"]').value = kakData.deskripsi_kegiatan || "";
       document.querySelector('[data-field="metodePelaksanaan"]').value = kakData.metode_pelaksanaan || "";
-      document.querySelector('[data-field="tanggalMulai"]').value = kakData.tanggal_mulai || "";
-      document.querySelector('[data-field="tanggalSelesai"]').value = kakData.tanggal_selesai || "";
+      const tanggalMulai = kakData.tanggal_mulai;
+      const tanggalSelesai = kakData.tanggal_selesai;
+      const kurunWaktuEl = document.getElementById("kurunWaktu");
+      if (tanggalMulai && tanggalSelesai) {
+        // Formatting the date to a more readable format, e.g., DD MMM YYYY
+        const formatDate = (dateStr) => {
+          if (!dateStr) return '';
+          const [year, month, day] = dateStr.split('-');
+          const date = new Date(year, month - 1, day);
+          return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        };
+        kurunWaktuEl.value = `${formatDate(tanggalMulai)} - ${formatDate(tanggalSelesai)}`;
+      } else {
+        kurunWaktuEl.value = "Date range not set";
+      }
 
       // Populate Sasaran & Manfaat
       const sasaranContainer = document.getElementById("sasaranUtamaContainer");

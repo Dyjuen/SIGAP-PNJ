@@ -534,13 +534,11 @@ export function renderRevisiKakPage(path, userRole) {
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- Action Buttons (Fixed at bottom) -->
-      <div class="action-buttons">
-        ${
-          isVerifikator
-            ? `
+        <!-- Action Buttons (Fixed at bottom) -->
+        <div class="action-buttons">
+          ${
+            isVerifikator
+              ? `
           <button class="btn-back" onclick="window.location.href = '/verifikator/usulan'">
             <i class="ti ti-arrow-left">&#xea19;</i> Kembali
           </button>
@@ -551,8 +549,8 @@ export function renderRevisiKakPage(path, userRole) {
             </button>
           </div>
         `
-            : isPengusul
-            ? `
+              : isPengusul
+              ? `
           <button class="btn-back" onclick="window.location.href = '/pengusul/usulan'">
             <i class="ti ti-arrow-left">&#xea19;</i> Kembali
           </button>
@@ -563,8 +561,9 @@ export function renderRevisiKakPage(path, userRole) {
             </button>
           </div>
         `
-            : ""
-        }
+              : ""
+          }
+        </div>
       </div>
 
       <!-- Comment Count Badge -->
