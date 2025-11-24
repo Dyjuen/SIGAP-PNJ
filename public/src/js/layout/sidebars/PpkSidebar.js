@@ -863,50 +863,6 @@ export const ppkSidebar = `
   </div>
 </aside>
 
-<<<<<<< Updated upstream
-    <ul class="menu-inner py-1">
-      <!-- verif Kegiatan -->
-      <li class="menu-item">
-        <a href="/ppk/kegiatan/approve" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-check">&#xea5e;</i>
-          <div data-i18n="Setujui Kegiatan">Setujui Kegiatan</div>
-        </a>
-      </li>
-
-      <!-- Monitoring Kegiatan -->
-      <li class="menu-item">
-        <a href="/ppk/kegiatan/monitoring" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-presentation-analytics">&#xea9a;</i>
-          <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
-        </a>
-      </li>
-
-      <!-- Riwayat -->
-      <li class="menu-item">
-        <a href="/ppk/kegiatan/riwayat" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-history">&#xebea;</i>
-          <div data-i18n="Riwayat">Riwayat</div>
-        </a>
-      </li>
-
-      <!-- Pengaturan -->
-      <li class="menu-item">
-        <a href="/ppk/pengaturan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-settings">&#xeb20;</i>
-          <div data-i18n="Pengaturan">Pengaturan</div>
-        </a>
-      </li>
-    </ul>
-    <ul class="menu-inner py-1">
-      <li class="menu-item">
-        <a href="/login" data-link class="menu-link" id="logout-btn">
-          <i class="menu-icon tf-icons ti ti-logout"></i>
-          <div data-i18n="Logout">Logout</div>
-        </a>
-      </li>
-    </ul>
-  </aside>
-=======
 <script>
   // Sidebar toggle functionality
   document.addEventListener('DOMContentLoaded', function() {
@@ -1047,5 +1003,4 @@ export const ppkSidebar = `
     }
   }
 </script>
->>>>>>> Stashed changes
 `;

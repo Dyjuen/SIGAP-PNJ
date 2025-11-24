@@ -845,42 +845,6 @@ export const wadirSidebar = `
   </div>
 </aside>
 
-<<<<<<< Updated upstream
-    <ul class="menu-inner py-1">
-      <!-- Verifikasi Kegiatan -->
-      <li class="menu-item">
-        <a href="/wadir/kegiatan/approve" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-check">&#xea5e;</i>
-          <div data-i18n="Verifikasi Kegiatan">Verifikasi Kegiatan</div>
-        </a>
-      </li>
-
-      <!-- Monitoring Kegiatan -->
-      <li class="menu-item">
-        <a href="/wadir/kegiatan/monitoring" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-presentation-analytics">&#xea9a;</i>
-          <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
-        </a>
-      </li>
-
-      <!-- Pengaturan -->
-      <li class="menu-item">
-        <a href="/wadir/pengaturan" data-link class="menu-link">
-          <i class="menu-icon tf-icons ti ti-settings">&#xeb20;</i>
-          <div data-i18n="Pengaturan">Pengaturan</div>
-        </a>
-      </li>
-    </ul>
-    <ul class="menu-inner py-1">
-      <li class="menu-item">
-        <a href="/login" data-link class="menu-link" id="logout-btn">
-          <i class="menu-icon tf-icons ti ti-logout"></i>
-          <div data-i18n="Logout">Logout</div>
-        </a>
-      </li>
-    </ul>
-  </aside>
-=======
 <script>
   // Sidebar toggle functionality
   document.addEventListener('DOMContentLoaded', function() {
@@ -1021,5 +985,4 @@ export const wadirSidebar = `
     }
   }
 </script>
->>>>>>> Stashed changes
 `;

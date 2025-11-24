@@ -7,14 +7,8 @@ import { wadirSidebar } from "./sidebars/WadirSidebar.js";
 import { ppkSidebar } from "./sidebars/PpkSidebar.js";
 import { bendaharaSidebar } from "./sidebars/BendaharaSidebar.js";
 
-<<<<<<< Updated upstream
-// Header Component
-export const header = `
-  <nav class="layout-navbar container navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
-=======
 // Header Component is now an empty spacer to push content down
 export const header = `<div style="height: 2.5rem;"></div>`;
->>>>>>> Stashed changes
 
 export const footer = `<footer class="content-footer footer bg-footer-theme"></footer>`;
 
@@ -92,14 +86,7 @@ function initializeSidebar() {
   
   menuLinks.forEach((link) => {
     const href = link.getAttribute("href");
-<<<<<<< Updated upstream
-    if (!href) return;
-
-    // Make the check more flexible: exact match or startsWith for nested routes
-    if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
-=======
     if (href && href === currentPath) {
->>>>>>> Stashed changes
       const menuItem = link.closest(".menu-item");
       if (menuItem) {
         menuItem.classList.add("active");
