@@ -392,9 +392,9 @@ export const pengusulSidebar = `
     height: 54px;
     min-width: 54px;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     color: #64748b;
     background: transparent;
     transition: all 0.2s ease;
@@ -408,11 +408,13 @@ export const pengusulSidebar = `
 
   .menu-icon i {
     font-size: 28px !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
     opacity: 0.5 !important;
+    width: 100% !important;
+    height: 100% !important;
     transition: all 0.2s ease;
   }
 
@@ -431,15 +433,22 @@ export const pengusulSidebar = `
 
   .menu-link.active .menu-icon,
   .menu-item.active > .menu-link .menu-icon {
-    background: #00bcd4;
-    color: white;
-    border-radius: 12px;
+    background: #00bcd4 !important;
+    color: white !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .menu-link.active .menu-icon i,
   .menu-item.active > .menu-link .menu-icon i {
     opacity: 1 !important;
     font-size: 30px !important;
+    transform: scale(1) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .menu-link.active:hover .menu-icon,
@@ -822,7 +831,7 @@ export const pengusulSidebar = `
     <li class="menu-item">
       <a href="/pengusul/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
         <span class="menu-icon">
-          <i class="ti ti-activity">&#xea9a;</i>
+          <i class="ti ti-eye">&#xea9a;</i>
         </span>
         <span class="menu-text">Monitoring Kegiatan</span>
       </a>

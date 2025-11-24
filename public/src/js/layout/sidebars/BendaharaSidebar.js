@@ -392,9 +392,9 @@ export const bendaharaSidebar = `
     height: 54px;
     min-width: 54px;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     color: #64748b;
     background: transparent;
     transition: all 0.2s ease;
@@ -406,15 +406,49 @@ export const bendaharaSidebar = `
     display: block;
   }
 
+  .menu-icon i {
+    font-size: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    opacity: 0.5 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transition: all 0.2s ease;
+  }
+
   .menu-link:hover .menu-icon {
     color: #00bcd4;
-    transform: scale(1.1);
+    transform: scale(1.05);
+  }
+
+  .menu-link:hover .menu-icon i {
+    opacity: 1 !important;
+  }
+
+  #layout-menu.sidebar-expanded-js .menu-icon i {
+    opacity: 1 !important;
   }
 
   .menu-link.active .menu-icon,
   .menu-item.active > .menu-link .menu-icon {
-    background: #00bcd4;
-    color: white;
+    background: #00bcd4 !important;
+    color: white !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .menu-link.active .menu-icon i,
+  .menu-item.active > .menu-link .menu-icon i {
+    opacity: 1 !important;
+    font-size: 30px !important;
+    transform: scale(1) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .menu-link.active:hover .menu-icon,
@@ -761,10 +795,7 @@ export const bendaharaSidebar = `
     <li class="menu-item">
       <a href="/bendahara/dashboard" class="menu-link" data-tooltip="Dashboard">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
+          <i class="ti ti-home">&#xecde;</i>
         </span>
         <span class="menu-text">Dashboard</span>
       </a>
@@ -774,13 +805,7 @@ export const bendaharaSidebar = `
     <li class="menu-item">
       <a href="/bendahara/kegiatan/pencairan" class="menu-link" data-tooltip="Pencairan Dana">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="1"></circle>
-            <path d="M12 1v6m0 6v6"></path>
-            <path d="M4.22 4.22l4.24 4.24m5.08 0l4.24-4.24"></path>
-            <path d="M1 12h6m6 0h6"></path>
-            <path d="M4.22 19.78l4.24-4.24m5.08 0l4.24 4.24"></path>
-          </svg>
+          <i class="ti ti-cash">&#xea55;</i>
         </span>
         <span class="menu-text">Pencairan Dana</span>
       </a>
@@ -790,10 +815,7 @@ export const bendaharaSidebar = `
     <li class="menu-item">
       <a href="/bendahara/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="23 6 13.5 15.5 8.5 10.5 1 17"></polyline>
-            <polyline points="17 6 23 6 23 12"></polyline>
-          </svg>
+          <i class="ti ti-eye">&#xea9a;</i>
         </span>
         <span class="menu-text">Monitoring Kegiatan</span>
       </a>
@@ -803,11 +825,7 @@ export const bendaharaSidebar = `
     <li class="menu-item">
       <a href="/bendahara/kegiatan/lpj" class="menu-link" data-tooltip="Daftar LPJ">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
-            <rect x="9" y="3" width="6" height="4" rx="2"></rect>
-            <path d="M9 12h6M9 16h6"></path>
-          </svg>
+          <i class="ti ti-file-invoice">&#xeb67;</i>
         </span>
         <span class="menu-text">Daftar LPJ</span>
       </a>
@@ -817,11 +835,7 @@ export const bendaharaSidebar = `
     <li class="menu-item">
       <a href="/bendahara/riwayat" class="menu-link" data-tooltip="Riwayat">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-            <path d="M3 3v5h5"></path>
-            <path d="M12 7v5l4 2"></path>
-          </svg>
+          <i class="ti ti-history">&#xebea;</i>
         </span>
         <span class="menu-text">Riwayat</span>
       </a>
@@ -854,11 +868,7 @@ export const bendaharaSidebar = `
   <div class="logout-section">
     <a href="#" class="menu-link" id="logout-btn" data-tooltip="Logout">
       <span class="menu-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-          <polyline points="16 17 21 12 16 7"></polyline>
-          <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
+        <i class="ti ti-logout">&#xeba8;</i>
       </span>
       <span class="menu-text">Logout</span>
     </a>
