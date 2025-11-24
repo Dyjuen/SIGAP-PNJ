@@ -555,7 +555,7 @@ export function renderLoginPage() {
               redirectPath = `/${rolePath}/kegiatan/approve`;
               break;
             case "Bendahara":
-              redirectPath = `/${rolePath}/kegiatan/pencairan`;
+              redirectPath = `/${rolePath}/dashboard`;
               break;
           }
           window.location.pathname = redirectPath;

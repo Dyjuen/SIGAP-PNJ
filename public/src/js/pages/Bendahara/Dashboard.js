@@ -3,10 +3,817 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderBendaharaDashboardPage(path, userRole) {
   const dashboardContent = `
-        <div class="p-8">
-            <h1 class="text-2xl font-bold">Dashboard Bendahara</h1>
-            <p>Selamat datang di dasbor Bendahara!</p>
+    <style>
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      .bendahara-dashboard-page {
+        animation: fadeInUp 0.5s ease-out;
+      }
+
+      .dashboard-header {
+        animation: slideInRight 0.6s ease-out;
+        margin-bottom: 1.5rem;
+      }
+
+      .stat-card-active,
+      .stat-card-inactive {
+        opacity: 0;
+        animation: fadeInUp 0.6s ease-out forwards;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card-active::before,
+      .stat-card-inactive::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+      }
+
+      .stat-card-active:hover::before,
+      .stat-card-inactive:hover::before {
+        left: 100%;
+      }
+
+      .stat-card-active {
+        animation-delay: 0.1s;
+      }
+
+      .stat-card-inactive:nth-of-type(2) {
+        animation-delay: 0.2s;
+      }
+
+      .stat-card-inactive:nth-of-type(3) {
+        animation-delay: 0.3s;
+      }
+
+      .stat-card-inactive:nth-of-type(4) {
+        animation-delay: 0.4s;
+      }
+
+      .stat-card-active:hover,
+      .stat-card-inactive:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 188, 212, 0.35);
+      }
+
+      .stat-card-active:active,
+      .stat-card-inactive:active {
+        transform: translateY(-5px) scale(1.01);
+      }
+
+      .card-datatable {
+        opacity: 0;
+        animation: fadeInUp 0.6s ease-out forwards;
+        animation-delay: 0.5s;
+        margin-top: 0.5rem;
+      }
+
+      .table {
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+      }
+
+      .table tbody tr {
+        opacity: 0;
+        animation: fadeInUp 0.4s ease-out forwards;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        border-radius: 12px;
+      }
+
+      .table tbody tr td:first-child {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+      }
+
+      .table tbody tr td:last-child {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+      }
+
+      .table tbody tr::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: linear-gradient(135deg, #00BCD4, #0097A7);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+        border-radius: 0 4px 4px 0;
+      }
+
+      .table tbody tr:hover::before {
+        transform: scaleY(1);
+      }
+
+      .table tbody tr:nth-child(1) { animation-delay: 0.6s; }
+      .table tbody tr:nth-child(2) { animation-delay: 0.7s; }
+      .table tbody tr:nth-child(3) { animation-delay: 0.8s; }
+      .table tbody tr:nth-child(4) { animation-delay: 0.9s; }
+      .table tbody tr:nth-child(5) { animation-delay: 1s; }
+
+      .table tbody tr:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
+        background: #fafbfc;
+      }
+
+      .number-badge {
+        transition: all 0.3s ease;
+        display: inline-block;
+      }
+
+      .table tbody tr:hover .number-badge {
+        transform: scale(1.1);
+        background: #00BCD4 !important;
+        color: white !important;
+      }
+
+      .btn {
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      .btn:hover::after {
+        width: 300px;
+        height: 300px;
+      }
+
+      .btn:hover {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 10px 30px rgba(0, 188, 212, 0.5);
+      }
+
+      .btn:active {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
+      }
+
+      .form-select {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .form-select:hover {
+        border-color: #00BCD4;
+        box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+      }
+
+      .form-select:focus {
+        transform: scale(1.03);
+        box-shadow: 0 6px 20px rgba(0, 188, 212, 0.25);
+        border-color: #00BCD4;
+      }
+
+      .form-check-input {
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .form-check-input:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+      }
+
+      .badge {
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .badge:hover {
+        transform: scale(1.1);
+      }
+
+      .counter {
+        opacity: 0;
+        animation: fadeInUp 0.5s ease-out forwards;
+        transition: all 0.3s ease;
+      }
+
+      .counter:hover {
+        transform: scale(1.1);
+        color: #00BCD4;
+        text-shadow: 0 0 20px rgba(0, 188, 212, 0.5);
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      .card-datatable:hover {
+        box-shadow: 0 12px 40px rgba(0, 188, 212, 0.2);
+      }
+
+      .pagination-container {
+        transition: all 0.3s ease;
+      }
+
+      .pagination-container:hover {
+        background: #f8fafb !important;
+      }
+    </style>
+
+    <div class="bendahara-dashboard-page">
+      <!-- Header -->
+      <div class="dashboard-header d-flex justify-content-between align-items-center">
+        <h2 class="mb-0" style="font-size: 2rem; font-weight: 700; color: #1f2937;">Dashboard Bendahara</h2>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="row g-4 mb-3">
+        <div class="col-sm-6 col-xl-3">
+          <div class="card stat-card-active">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between">
+                <div class="content-left">
+                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Pencairan</span>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Menunggu</h4>
+                  <div class="d-flex align-items-end mt-2">
+                    <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="waitingCount" data-target="0">0</h1>
+                    <small style="font-size: 15px; font-weight: 500; opacity: 0.9;">Kegiatan</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    `;
+        <div class="col-sm-6 col-xl-3">
+          <div class="card stat-card-inactive">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between">
+                <div class="content-left">
+                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Pencairan</span>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Sudah Dicairkan</h4>
+                  <div class="d-flex align-items-end mt-2">
+                    <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="disbursedCount" data-target="0">0</h1>
+                    <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">Kegiatan</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="card stat-card-inactive">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between">
+                <div class="content-left">
+                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Total Anggaran</span>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Dicairkan</h4>
+                  <div class="d-flex align-items-end mt-2">
+                    <h1 class="mb-0 me-2" style="font-size: 32px; font-weight: 700; letter-spacing: -1px;" id="totalDisbursed">0</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="card stat-card-inactive">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between">
+                <div class="content-left">
+                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">LPJ</span>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Perlu Verifikasi</h4>
+                  <div class="d-flex align-items-end mt-2">
+                    <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="lpjCount" data-target="0">0</h1>
+                    <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">LPJ</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Table Card -->
+      <div class="card card-datatable">
+        <div class="d-flex justify-content-between align-items-center px-4 pt-4 pb-3">
+          <h3 class="text-xl font-bold text-gray-800 mb-0">Kegiatan Siap Dicairkan</h3>
+          <div class="d-flex gap-2">
+            <select id="filterStatus" class="form-select form-select-sm" style="width: 200px;">
+              <option value="all">Semua Status</option>
+              <option value="waiting">Menunggu Pencairan</option>
+              <option value="disbursed">Sudah Dicairkan</option>
+              <option value="lpj_submitted">LPJ Diajukan</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width: 50px; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">
+                <input type="checkbox" class="form-check-input" id="selectAll">
+              </th>
+              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">ID</th>
+              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 200px;">Nama Kegiatan</th>
+              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 150px;">Pengusul</th>
+              <th style="background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 150px;">Total Anggaran</th>
+              <th style="text-align: center; background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; min-width: 130px;">Status</th>
+              <th style="text-align: center; background: #f8fafb; font-weight: 600; color: #475569; padding: 1rem; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0; width: 140px;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="disbursementTableBody">
+            <!-- Data will be populated by JavaScript -->
+          </tbody>
+        </table>
+        </div>
+        
+        <!-- Pagination Container -->
+        <div class="pagination-container" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-top: 1px solid #f1f5f9; background: white;">
+          <div class="pagination-info" style="color: #6B7280; font-size: 14px;">
+            Showing <span id="startEntry">0</span> to <span id="endEntry">0</span> of <span id="totalEntries">0</span> entries
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
   renderDashboardLayout(dashboardContent, userRole);
+
+  // ==============================================
+  // STATE
+  // ==============================================
+  let state = {
+    allKegiatan: [],
+    displayKegiatan: [],
+    currentFilter: 'all',
+  };
+
+  // ==============================================
+  // API FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
+    const headers = { ...options.headers, Authorization: `Bearer ${token}` };
+    if (!(options.body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
+    const config = { ...options, headers };
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (data.success !== true) {
+        throw new Error(data.message || "API request failed");
+      }
+      return data;
+    } catch (error) {
+      console.error("API Request Error:", error);
+      throw error;
+    }
+  }
+
+  async function fetchKegiatan() {
+    const tbody = document.getElementById("disbursementTableBody");
+    tbody.innerHTML =
+      '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+    try {
+      const response = await apiRequest("/kegiatan");
+      const kegiatanData = response.data.data
+        ? response.data.data
+        : response.data;
+      state.allKegiatan = kegiatanData || [];
+
+      applyFilter();
+      updateStats(state.allKegiatan);
+    } catch (error) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    }
+  }
+
+  function applyFilter() {
+    const filter = state.currentFilter;
+    
+    if (filter === 'all') {
+      // Show all approved activities (PPK + Wadir approved)
+      state.displayKegiatan = state.allKegiatan.filter((k) => {
+        const ppkApproval = k.approvals?.find((a) => a.approval_level === "PPK");
+        const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir2");
+        return (
+          ppkApproval?.status === "Disetujui" &&
+          wadirApproval?.status === "Disetujui"
+        );
+      });
+    } else if (filter === 'waiting') {
+      // Approved but not yet disbursed
+      state.displayKegiatan = state.allKegiatan.filter((k) => {
+        const ppkApproval = k.approvals?.find((a) => a.approval_level === "PPK");
+        const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir2");
+        return (
+          ppkApproval?.status === "Disetujui" &&
+          wadirApproval?.status === "Disetujui" &&
+          !k.disbursement_date
+        );
+      });
+    } else if (filter === 'disbursed') {
+      // Already disbursed
+      state.displayKegiatan = state.allKegiatan.filter((k) => k.disbursement_date);
+    } else if (filter === 'lpj_submitted') {
+      // LPJ submitted, waiting for verification
+      state.displayKegiatan = state.allKegiatan.filter((k) => k.lpj_submitted_date && !k.lpj_verified_date);
+    }
+
+    renderTableRows(state.displayKegiatan);
+  }
+
+  async function handleDisbursementAction(kegiatanId) {
+    // Step 1: Confirmation with date input
+    const { value: formValues } = await Swal.fire({
+      title: "Konfirmasi Pencairan Dana",
+      html: `
+        <div class="text-start">
+          <label class="form-label">Tanggal Pencairan</label>
+          <input type="date" id="disbursementDate" class="form-control mb-3" value="${new Date().toISOString().split('T')[0]}">
+          <label class="form-label">Catatan (Opsional)</label>
+          <textarea id="disbursementNotes" class="form-control" rows="3" placeholder="Catatan pencairan..."></textarea>
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: "Cairkan Dana",
+      cancelButtonText: "Batal",
+      confirmButtonColor: "#00BCD4",
+      preConfirm: () => {
+        return {
+          date: document.getElementById('disbursementDate').value,
+          notes: document.getElementById('disbursementNotes').value,
+        };
+      },
+    });
+
+    if (!formValues) return;
+
+    // Step 2: Final confirmation
+    const confirmResult = await Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Dana akan dicairkan untuk kegiatan ini.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Ya, Cairkan",
+      cancelButtonText: "Batal",
+      confirmButtonColor: "#00BCD4",
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    // Step 3: API request
+    try {
+      await apiRequest(`/kegiatan/${kegiatanId}/disburse`, {
+        method: "POST",
+        body: JSON.stringify({
+          disbursement_date: formValues.date,
+          notes: formValues.notes || null,
+        }),
+      });
+
+      showSuccess("Dana berhasil dicairkan!");
+      fetchKegiatan();
+    } catch (error) {
+      showError(`Gagal mencairkan dana: ${error.message}`);
+    }
+  }
+
+  async function viewDisbursementDetails(kegiatanId) {
+    try {
+      const response = await apiRequest(`/kegiatan/${kegiatanId}`);
+      const kegiatan = response.data;
+
+      const disbursementDate = kegiatan.disbursement_date
+        ? new Date(kegiatan.disbursement_date).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        : "-";
+
+      Swal.fire({
+        title: "Detail Pencairan",
+        html: `
+          <div class="text-start">
+            <table class="table table-borderless">
+              <tr>
+                <td><strong>Nama Kegiatan:</strong></td>
+                <td>${kegiatan.nama_kegiatan}</td>
+              </tr>
+              <tr>
+                <td><strong>Pengusul:</strong></td>
+                <td>${kegiatan.pengusul_nama}</td>
+              </tr>
+              <tr>
+                <td><strong>Total Anggaran:</strong></td>
+                <td>${formatCurrency(kegiatan.total_anggaran || 0)}</td>
+              </tr>
+              <tr>
+                <td><strong>Tanggal Pencairan:</strong></td>
+                <td>${disbursementDate}</td>
+              </tr>
+              <tr>
+                <td><strong>Status:</strong></td>
+                <td>${kegiatan.disbursement_date ? '<span class="badge bg-success">Sudah Dicairkan</span>' : '<span class="badge bg-warning">Menunggu Pencairan</span>'}</td>
+              </tr>
+            </table>
+          </div>
+        `,
+        icon: "info",
+        confirmButtonText: "Tutup",
+        confirmButtonColor: "#00BCD4",
+      });
+    } catch (error) {
+      showError(`Gagal mengambil detail: ${error.message}`);
+    }
+  }
+
+  // ==============================================
+  // RENDER FUNCTIONS
+  // ==============================================
+  function formatDate(dateString) {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
+  function formatCurrency(amount) {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  }
+
+  function renderTableRows(data) {
+    const tbody = document.getElementById("disbursementTableBody");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+    if (!data || data.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" class="text-center">Tidak ada data kegiatan.</td></tr>';
+      updatePaginationInfo(0, 0, 0);
+      return;
+    }
+    
+    // Update pagination info
+    updatePaginationInfo(1, data.length, data.length);
+
+    data.forEach((kegiatan) => {
+      const row = document.createElement("tr");
+      
+      let statusBadge = "";
+      let actionButtons = "";
+
+      if (kegiatan.disbursement_date) {
+        statusBadge = '<span class="badge bg-label-success" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Dicairkan</span>';
+        actionButtons = `
+          <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Lihat Detail">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+          </button>
+        `;
+      } else {
+        statusBadge = '<span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>';
+        actionButtons = `
+          <button class="btn btn-sm me-2 btn-disburse" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Cairkan Dana">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-cash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="7" y="9" width="14" height="10" rx="2" /><circle cx="14" cy="14" r="2" /><path d="M17 9v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h2" /></svg>
+          </button>
+          <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Lihat Detail">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+          </button>
+        `;
+      }
+
+      row.innerHTML = `
+        <td style="text-align: center; padding: 1rem; vertical-align: middle; border: none;">
+          <input type="checkbox" class="form-check-input row-checkbox">
+        </td>
+        <td style="padding: 1rem; vertical-align: middle; border: none;">
+          <span class="number-badge" style="background: #e0f7fa; color: #00BCD4; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.875rem;">${kegiatan.kegiatan_id}</span>
+        </td>
+        <td style="padding: 1rem; vertical-align: middle; border: none;">
+          <strong style="color: #1e293b;">${kegiatan.nama_kegiatan}</strong>
+        </td>
+        <td style="padding: 1rem; vertical-align: middle; border: none;">
+          <div style="color: #1e293b; font-weight: 600;">${kegiatan.pengusul_nama}</div>
+          <div class="text-muted" style="font-size: 0.8125rem; margin-top: 2px;">${kegiatan.pengusul_role || ""}</div>
+        </td>
+        <td style="padding: 1rem; vertical-align: middle; border: none;">
+          <strong style="color: #059669;">${formatCurrency(kegiatan.total_anggaran || 0)}</strong>
+        </td>
+        <td style="text-align: center; padding: 1rem; vertical-align: middle; border: none;">
+          ${statusBadge}
+        </td>
+        <td style="text-align: center; padding: 1rem; vertical-align: middle; border: none;">
+          ${actionButtons}
+        </td>
+      `;
+
+      tbody.appendChild(row);
+    });
+
+    attachEventListeners();
+  }
+
+  // ==============================================
+  // EVENT LISTENERS
+  // ==============================================
+  function attachEventListeners() {
+    document.querySelectorAll(".btn-disburse").forEach((btn) => {
+      btn.addEventListener("click", () =>
+        handleDisbursementAction(btn.dataset.id)
+      );
+    });
+
+    document.querySelectorAll(".btn-view-detail").forEach((btn) => {
+      btn.addEventListener("click", () =>
+        viewDisbursementDetails(btn.dataset.id)
+      );
+    });
+
+    const filterSelect = document.getElementById("filterStatus");
+    if (filterSelect) {
+      filterSelect.addEventListener("change", (e) => {
+        state.currentFilter = e.target.value;
+        applyFilter();
+      });
+    }
+  }
+
+  function updateStats(allData) {
+    // Waiting for disbursement (approved by both PPK and Wadir, but not yet disbursed)
+    const waitingCount = allData.filter((k) => {
+      const ppkApproval = k.approvals?.find((a) => a.approval_level === "PPK");
+      const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir2");
+      return (
+        ppkApproval?.status === "Disetujui" &&
+        wadirApproval?.status === "Disetujui" &&
+        !k.disbursement_date
+      );
+    }).length;
+
+    // Already disbursed
+    const disbursedCount = allData.filter((k) => k.disbursement_date).length;
+
+    // Total disbursed amount
+    const totalDisbursed = allData
+      .filter((k) => k.disbursement_date)
+      .reduce((sum, k) => sum + (k.total_anggaran || 0), 0);
+
+    // LPJ submitted but not yet verified
+    const lpjCount = allData.filter(
+      (k) => k.lpj_submitted_date && !k.lpj_verified_date
+    ).length;
+
+    const waitingEl = document.getElementById("waitingCount");
+    const disbursedEl = document.getElementById("disbursedCount");
+    const totalDisbursedEl = document.getElementById("totalDisbursed");
+    const lpjEl = document.getElementById("lpjCount");
+
+    if (waitingEl) {
+      waitingEl.setAttribute('data-target', waitingCount);
+      waitingEl.textContent = '0';
+    }
+    if (disbursedEl) {
+      disbursedEl.setAttribute('data-target', disbursedCount);
+      disbursedEl.textContent = '0';
+    }
+    if (totalDisbursedEl) totalDisbursedEl.textContent = formatCurrency(totalDisbursed);
+    if (lpjEl) {
+      lpjEl.setAttribute('data-target', lpjCount);
+      lpjEl.textContent = '0';
+    }
+
+    // Trigger counter animations
+    setTimeout(() => {
+      initCounters();
+    }, 100);
+  }
+
+  function showError(message) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: message,
+      confirmButtonColor: "#00BCD4",
+    });
+  }
+
+  function showSuccess(message) {
+    Swal.fire({
+      icon: "success",
+      title: "Success",
+      text: message,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  }
+
+  function updatePaginationInfo(start, end, total) {
+    const startEl = document.getElementById("startEntry");
+    const endEl = document.getElementById("endEntry");
+    const totalEl = document.getElementById("totalEntries");
+
+    if (startEl) startEl.textContent = start;
+    if (endEl) endEl.textContent = end;
+    if (totalEl) totalEl.textContent = total;
+  }
+
+  // ==============================================
+  // ANIMATION FUNCTIONS
+  // ==============================================
+  function animateCounter(element) {
+    const target = parseInt(element.getAttribute('data-target'));
+    if (isNaN(target)) return;
+    const duration = 2000;
+    const increment = target / (duration / 16);
+    let current = 0;
+
+    const updateCounter = () => {
+      current += increment;
+      if (current < target) {
+        element.textContent = Math.floor(current);
+        requestAnimationFrame(updateCounter);
+      } else {
+        element.textContent = target;
+      }
+    };
+
+    setTimeout(() => {
+      updateCounter();
+    }, 500);
+  }
+
+  function initCounters() {
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach((counter, index) => {
+      setTimeout(() => {
+        animateCounter(counter);
+      }, index * 100);
+    });
+  }
+
+  // ==============================================
+  // INITIALIZATION
+  // ==============================================
+  fetchKegiatan();
+  
+  setTimeout(() => {
+    initCounters();
+  }, 100);
 }

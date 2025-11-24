@@ -19,7 +19,9 @@ import { renderInputLpjPage } from "./pages/Pengusul/InputLpj.js";
 import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
 import { renderRevisiKakPage } from "./pages/shared/RevisiKak.js";
 import { renderMonitoringKegiatanPage } from "./pages/shared/MonitoringKegiatan.js";
-import { renderRiwayatKAKPage } from "./pages/Pengusul/RiwayatKAK.js";
+import { renderRiwayatKAKPage } from "./pages/shared/RiwayatKAK.js";
+import { renderDummyInputPage } from "./pages/Pengusul/DummyInputReadOnly.js";
+import { renderDaftarLpjPage } from "./pages/Bendahara/MonitorLpj.js";
 
 function getCurrentUserRole() {
   return localStorage.getItem("userRole") || "guest";
@@ -55,14 +57,16 @@ const roleBasedRoutes = {
     "/kegiatan/monitoring": renderMonitoringKegiatanPage,
     "/kegiatan/lpj": renderPengajuanLpjPage,
     "/kegiatan/lpj/new": renderInputLpjPage,
-    "/riwayat-kak": renderRiwayatKAKPage,
+    "/riwayat": renderRiwayatKAKPage,
+    "/riwayat/detail/": renderDummyInputPage,
     "/usulan/revisi/": renderRevisiKakPage,
     "/pengaturan": renderNotFoundPage,
   },
   Verifikator: {
     "/dashboard": renderDashboardVerifikator,
     "/usulan": renderDashboardVerifikator,
-    "/riwayat": renderNotFoundPage,
+    "/riwayat": renderRiwayatKAKPage,
+    "/riwayat/detail/": renderDummyInputPage,
     "/pengaturan": renderNotFoundPage,
     "/revisi/": renderRevisiKakPage,
   },
@@ -70,21 +74,25 @@ const roleBasedRoutes = {
     "/dashboard": renderWadirDashboardPage,
     "/kegiatan/approve": renderWadirDashboardPage,
     "/kegiatan/monitoring": renderMonitoringKegiatanPage,
+    "/riwayat": renderRiwayatKAKPage,
+    "/riwayat/detail/": renderDummyInputPage,
     "/pengaturan": renderNotFoundPage,
   },
   PPK: {
     "/dashboard": renderPpkDashboardPage,
     "/kegiatan/approve": renderPpkDashboardPage,
     "/kegiatan/monitoring": renderMonitoringKegiatanPage,
-    "/kegiatan/riwayat": renderNotFoundPage,
+    "/riwayat": renderRiwayatKAKPage,
+    "/riwayat/detail/": renderDummyInputPage,
     "/pengaturan": renderNotFoundPage,
   },
   Bendahara: {
     "/dashboard": renderBendaharaDashboardPage,
     "/kegiatan/pencairan": renderPencairanDanaPage,
     "/kegiatan/monitoring": renderMonitoringKegiatanPage,
-    "/kegiatan/lpj": renderNotFoundPage,
-    "/riwayat": renderNotFoundPage,
+    "/kegiatan/lpj": renderDaftarLpjPage,
+    "/riwayat": renderRiwayatKAKPage,
+    "/riwayat/detail/": renderDummyInputPage,
     "/pengaturan": renderNotFoundPage,
   },
 };

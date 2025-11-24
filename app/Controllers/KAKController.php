@@ -578,6 +578,7 @@ class KAKController
                 catatan_sasaran_utama = NULL,
                 catatan_metode_pelaksanaan = NULL,
                 catatan_lokasi = NULL,
+                catatan_tanggal = NULL,
                 updated_at = NOW()
                 WHERE kak_id = :id
             ");
@@ -677,14 +678,32 @@ class KAKController
                     if (!$pk) continue;
 
                     foreach ($rows as $r) {
-                        $db->query("
-                            UPDATE $table SET catatan_verifikator = :c 
-                            WHERE $pk = :pk AND kak_id = :id
-                        ");
-                        $db->bind(':c', $r['catatan_verifikator']);
-                        $db->bind(':pk', $r['id']);
-                        $db->bind(':id', $id);
-                        $db->execute();
+                        // Special handling untuk t_kak_manfaat dengan 2 field catatan
+                        if ($table === 't_kak_manfaat') {
+                            $catatanManfaat = $r['catatan_manfaat'] ?? null;
+                            $catatanSasaran = $r['catatan_sasaran_utama'] ?? null;
+                            
+                            $db->query("
+                                UPDATE $table 
+                                SET catatan_manfaat = :cm, catatan_sasaran_utama = :cs
+                                WHERE $pk = :pk AND kak_id = :id
+                            ");
+                            $db->bind(':cm', $catatanManfaat);
+                            $db->bind(':cs', $catatanSasaran);
+                            $db->bind(':pk', $r['id']);
+                            $db->bind(':id', $id);
+                            $db->execute();
+                        } else {
+                            // Untuk tabel lain tetap pakai catatan_verifikator
+                            $db->query("
+                                UPDATE $table SET catatan_verifikator = :c 
+                                WHERE $pk = :pk AND kak_id = :id
+                            ");
+                            $db->bind(':c', $r['catatan_verifikator']);
+                            $db->bind(':pk', $r['id']);
+                            $db->bind(':id', $id);
+                            $db->execute();
+                        }
                     }
                 }
             }
@@ -910,7 +929,8 @@ class KAKController
                 'catatan_deskripsi_kegiatan',
                 'catatan_sasaran_utama',
                 'catatan_metode_pelaksanaan',
-                'catatan_lokasi'
+                'catatan_lokasi',
+                'catatan_tanggal'
             ];
 
             foreach ($fields as $f) {
@@ -920,18 +940,23 @@ class KAKController
             }
 
             $childTables = [
-                't_kak_manfaat',
                 't_kak_tahapan',
                 't_kak_target',
                 't_kak_anggaran',
                 't_kak_iku'
             ];
 
+            // Clear catatan_verifikator untuk tabel child biasa
             foreach ($childTables as $tbl) {
                 $db->query("UPDATE $tbl SET catatan_verifikator=NULL WHERE kak_id=:id");
                 $db->bind(':id', $id);
                 $db->execute();
             }
+
+            // Clear catatan_manfaat dan catatan_sasaran_utama untuk t_kak_manfaat
+            $db->query("UPDATE t_kak_manfaat SET catatan_manfaat=NULL, catatan_sasaran_utama=NULL WHERE kak_id=:id");
+            $db->bind(':id', $id);
+            $db->execute();
 
             $db->commit();
 

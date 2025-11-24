@@ -1,109 +1,1015 @@
-// frontend/src/layout/sidebars/pengusulSidebar.js
+// frontend/src/layouts/sidebars/pengusulSidebar.js
 
 export const pengusulSidebar = `
 <style>
-  /* Add left padding to submenu items */
-  .menu-submenu .menu-item .menu-link {
-    padding-left: 16px !important; /* Adjust as needed */
+  /* ============== MODERN SIDEBAR FIXES - INLINE INTEGRATION ============== */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .layout-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-width: 0;
+    transition: margin-left 0.28s ease-in-out;
+    margin-top: -67px;
+  }
+
+  @media (min-width: 1200px) {
+    .layout-page:not(.sidebar-collapsed-content):not(.sidebar-expanded-content) {
+      margin-left: -140px;
+    }
+    .layout-page.sidebar-collapsed-content {
+      margin-left: -140px !important;
+    }
+    .layout-page.sidebar-expanded-content {
+      margin-left: 90px !important;
+    }
+  }
+
+  @media (max-width: 1199px) {
+    .layout-page {
+      margin-left: 0;
+    }
+  }
+
+  .content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .container-fluid-full {
+    width: 100%;
+    padding: 0.25rem;
+    flex: 1;
+  }
+
+  .layout-navbar {
+    position: sticky;
+    margin-bottom: 20px;
+    top: 0;
+    z-index: 999;
+  }
+
+  .content-footer {
+    margin-top: auto;
+  }
+
+  .layout-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+  }
+
+  .layout-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .menu-mobile-toggler {
+    position: flex;
+    bottom: 2rem;
+    right: 4rem;
+    z-index: 1060;
+    display: none;
+  }
+
+  @media (max-width: 1199px) {
+    .menu-mobile-toggler {
+      display: block;
+    }
+  }
+
+  /* ============== SIDEBAR BASE ============== */
+  #layout-menu {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    width: 70px; /* Default collapsed state untuk desktop */
+    transition: width 0.28s ease-in-out;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 1000;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+    border-right: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  /* Mobile default expanded */
+  @media (max-width: 1199px) {
+    #layout-menu {
+      width: 300px;
+    }
+  }
+
+  /* ============== COLLAPSED STATE (DESKTOP) ============== */
+  @media (min-width: 1200px) {
+    #layout-menu:not(.sidebar-expanded-js) {
+      width: 70px;
+      overflow: hidden;
+    }
+
+    #layout-menu:not(.sidebar-expanded-js) .menu-text,
+    #layout-menu:not(.sidebar-expanded-js) .app-brand-text {
+      display: none !important;
+    }
+
+    #layout-menu:not(.sidebar-expanded-js) .menu-link {
+      width: 54px;
+      margin: 0 auto;
+      padding: 0 !important;
+      border-radius: 0.375rem !important;
+    }
+
+    #layout-menu:not(.sidebar-expanded-js) .menu-link .menu-icon {
+      width: 54px;
+      height: 54px;
+      background: transparent;
+      border-radius: 0.375rem;
+    }
+    
+    #layout-menu:not(.sidebar-expanded-js) .app-brand {
+      justify-content: center;
+      padding: 1.25rem 0;
+    }
+
+    #layout-menu:not(.sidebar-expanded-js) .app-brand-logo {
+      margin: 0;
+    }
+
+    #layout-menu:not(.sidebar-expanded-js) .menu-inner {
+      padding: 0.5rem 0;
+    }
+
+    #layout-menu:not(.sidebar-expanded-js) .menu-item {
+      width: 100%;
+      padding: 0;
+    }
+
+    #layout-menu:not(.sidebar-expanded-js) .user-profile-section {
+      padding: 0.5rem;
+    }
+    
+    #layout-menu:not(.sidebar-expanded-js) .user-profile-card {
+      padding: 0;
+      border-radius: 0.375rem;
+      justify-content: center;
+    }
+    
+    #layout-menu:not(.sidebar-expanded-js) .user-info {
+      display: none !important;
+    }
+    
+    #layout-menu:not(.sidebar-expanded-js) .user-avatar {
+      margin: 0;
+    }
+    
+    #layout-menu:not(.sidebar-expanded-js) .logout-section {
+      padding: 0.5rem;
+    }
+    
+    #layout-menu:not(.sidebar-expanded-js) #sidebar-toggle {
+      display: none !important;
+    }
+  }
+
+  /* ============== EXPANDED STATE (DESKTOP) ============== */
+  @media (min-width: 1200px) {
+    #layout-menu.sidebar-expanded-js {
+      width: 300px;
+    }
+
+    #layout-menu.sidebar-expanded-js .menu-text,
+    #layout-menu.sidebar-expanded-js .app-brand-text {
+      opacity: 1;
+      visibility: visible;
+      width: auto;
+      transition: opacity 0.2s ease-in-out 0.1s;
+    }
+
+    #layout-menu.sidebar-expanded-js .app-brand {
+      justify-content: flex-start;
+    }
+
+    #layout-menu.sidebar-expanded-js .menu-item {
+      padding: 0 8px;
+    }
+    
+    #layout-menu.sidebar-expanded-js .user-profile-section {
+      padding: 1rem 0.5rem;
+    }
+
+    #layout-menu.sidebar-expanded-js .logout-section {
+      padding: 0.5rem 0.5rem 1rem 0.5rem;
+    }
+  }
+
+  /* ============== APP BRAND / LOGO ============== */
+  .app-brand {
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
+  .app-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    overflow: visible;
+  }
+
+  .app-brand-logo {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: visible;
+  }
+
+  .app-brand-logo img {
+    object-fit: contain;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+
+  /* Logo states untuk animasi */
+  .logo-collapsed {
+    opacity: 1;
+    width: 38px;
+    height: 38px;
+  }
+
+  .logo-expanded {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+    width: 200px;
+    height: auto;
+    max-height: 50px;
+  }
+
+  /* Ketika sidebar expanded */
+  #layout-menu.sidebar-expanded-js .logo-collapsed {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+
+  #layout-menu.sidebar-expanded-js .logo-expanded {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  
+  #layout-menu.sidebar-expanded-js .app-brand-logo {
+    width:250px;
+    min-width: 250px;
+    right: auto;
+    left: auto;
+  }
+
+  .app-brand-text {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+  
+  /* Toggle Button Styles */
+  #sidebar-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: auto;
+    color: #64748b;
+    display: none;
+    transition: all 0.2s ease;
+    border-radius: 0.375rem;
+  }
+  
+  #sidebar-toggle:hover {
+    background: #e2e8f0;
+    color: #4338ca;
+  }
+  
+  #sidebar-toggle svg {
+    transition: transform 0.3s ease;
+  }
+  
+  #layout-menu.sidebar-expanded-js #sidebar-toggle svg {
+    transform: rotate(180deg);
+  }
+
+  /* ============== MENU ============== */
+  .menu-inner {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    padding: 1rem 0.5rem;
+  }
+
+  .menu-item {
+    margin-bottom: 0.25rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+    text-decoration: none;
+    color: #475569;
+    border-radius: 0.5rem;
+    transition: all 0.28s ease;
+    cursor: pointer;
+    position: relative;
+    white-space: nowrap;
+    height: 54px;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .menu-link:hover {
+    background: #eef2ff;
+    color: #4338ca;
+    transform: translateX(2px);
+  }
+
+  .menu-link.active,
+  .menu-item.active > .menu-link {
+    background: #00bcd4;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+  }
+
+  .menu-item.active > .menu-link .menu-icon {
+    background: #00bcd4;
+    color: white;
+  }
+
+  .menu-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+    flex: 1;
+  }
+
+  /* Icon container */
+  .menu-icon {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    background: transparent;
+    transition: all 0.2s ease;
+  }
+
+  .menu-icon svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  .menu-icon i {
+    font-size: 28px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    opacity: 0.5 !important;
+    transition: all 0.2s ease;
+  }
+
+  .menu-link:hover .menu-icon {
+    color: #00bcd4;
+    transform: scale(1.05);
+  }
+
+  .menu-link:hover .menu-icon i {
+    opacity: 1 !important;
+  }
+
+  #layout-menu.sidebar-expanded-js .menu-icon i {
+    opacity: 1 !important;
+  }
+
+  .menu-link.active .menu-icon,
+  .menu-item.active > .menu-link .menu-icon {
+    background: #00bcd4;
+    color: white;
+    border-radius: 12px;
+  }
+
+  .menu-link.active .menu-icon i,
+  .menu-item.active > .menu-link .menu-icon i {
+    opacity: 1 !important;
+    font-size: 30px !important;
+  }
+
+  .menu-link.active:hover .menu-icon,
+  .menu-item.active > .menu-link:hover .menu-icon {
+    color: white;
+  }
+
+  /* ============== USER PROFILE SECTION ============== */
+  .user-profile-section {
+    flex-shrink: 0;
+    padding: 1rem 0;
+    margin-top: auto;
+  }
+  
+  .user-profile-card {
+    background: #eef2ff;
+    border-radius: 0.375rem;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    height: 54px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-profile-card:hover {
+    background: #e0f2fe;
+    transform: translateX(2px);
+  }
+  
+  .user-profile-card:active {
+    transform: translateX(0);
+  }
+  
+  .user-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  
+  .user-avatar {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+    border-radius: 0.375rem;
+    background: #00bcd4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+    color: white;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+  
+  .user-profile-card:hover .user-avatar {
+    background: #0097a7;
+  }
+  
+  .user-info {
+    flex: 1;
+    overflow: hidden;
+    padding-right: 0.75rem;
+  }
+  
+  .user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #0f172a;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+  }
+  
+  .user-profile-card:hover .user-name {
+    color: #00bcd4;
+  }
+  
+  .user-role {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin: 0.15rem 0 0 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .user-role::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.7;
+    }
+  }
+  
+  .user-profile-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
+    opacity: 0;
+    padding: 0 0.75rem;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #e0f2fe;
+    border-radius: 0 0 0.375rem 0.375rem;
+    z-index: 10;
+  }
+  
+  .user-profile-card.expanded {
+    border-radius: 0.375rem 0.375rem 0 0;
+  }
+  
+  .user-profile-card.expanded .user-profile-details {
+    max-height: 200px;
+    opacity: 1;
+    padding: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-email {
+    font-size: 0.8rem;
+    color: #475569;
+    margin: 0;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 0.375rem;
+    word-break: break-all;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideIn 0.3s ease;
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .user-email svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  /* ============== LOGOUT SECTION ============== */
+  .logout-section {
+    flex-shrink: 0;
+    padding: 0.5rem 0 1rem 0;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  #logout-btn .menu-icon {
+    color: #ef4444 !important;
+    background: transparent;
+    border-radius: 0.375rem;
+  }
+  
+  #logout-btn:hover .menu-icon {
+    color: #dc2626 !important;
+    background: transparent;
+  }
+  
+  #logout-btn:hover .menu-text {
+    color: #dc2626 !important;
+  }
+  
+  #logout-btn:hover {
+    background-color: #fee2e2 !important;
+    transform: translateX(2px);
+  }
+  
+  #logout-btn {
+    color: #ef4444 !important;
+    border-radius: 0.375rem !important;
+  }
+
+  /* ============== MOBILE RESPONSIVE ============== */
+  @media (max-width: 1199px) {
+    #layout-menu {
+      transform: translateX(-100%);
+      z-index: 1100;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #layout-menu.show {
+      transform: translateX(0);
+    }
+    
+    /* Logo always show extended on mobile */
+    #layout-menu .logo-collapsed {
+      opacity: 0 !important;
+      transform: scale(0.8) !important;
+    }
+    
+    #layout-menu .logo-expanded {
+      opacity: 1 !important;
+      transform: scale(1) !important;
+    }
+    
+    #sidebar-toggle {
+      display: none !important;
+    }
+  }
+  
+  /* Show toggle button on desktop */
+  @media (min-width: 1200px) {
+    #sidebar-toggle {
+      display: block !important;
+    }
+  }
+
+  /* ============== TOOLTIP ============== */
+  @media (min-width: 1200px) {
+    #layout-menu:not(.sidebar-expanded-js) .menu-link[data-tooltip] {
+      position: relative;
+    }
+
+    #layout-menu:not(.sidebar-expanded-js) .menu-link[data-tooltip]::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%) scale(0.95);
+      background: #1e293b;
+      color: white;
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.375rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    #layout-menu:not(.sidebar-expanded-js) .menu-link[data-tooltip]:hover::before {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-50%) scale(1);
+    }
+    
+    /* Tooltip untuk user profile saat collapsed */
+    #layout-menu:not(.sidebar-expanded-js) .user-profile-card {
+      position: relative;
+    }
+    
+    #layout-menu:not(.sidebar-expanded-js) .user-profile-card::after {
+      content: attr(data-user-name);
+      position: absolute;
+      left: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%) scale(0.95);
+      background: #1e293b;
+      color: white;
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.375rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 1000;
+    }
+    
+    #layout-menu:not(.sidebar-expanded-js) .user-profile-card:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-50%) scale(1);
+    }
+  }
+  
+  /* ============== SCROLLBAR ============== */
+  .menu-inner::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .menu-inner::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .menu-inner::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+
+  .menu-inner::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
   }
 </style>
-  <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-    <div class="app-brand demo">
-      <a href="/pengusul/dashboard" class="app-brand-link">
-        <span class="app-brand-logo demo">
-          <img src="/assets/img/logo/logo2.svg" alt="Logo" style="width: 160px; height: 160px;">
+
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+  <div class="app-brand demo">
+    <a href="/pengusul/dashboard" class="app-brand-link">
+      <span class="app-brand-logo demo">
+        <img src="/assets/img/logo/logo.svg" alt="Logo" class="logo-collapsed">
+        <img src="/assets/img/logo/logo2.svg" alt="Logo Extended" class="logo-expanded">
+      </span>
+    </a>
+  </div>
+
+  <ul class="menu-inner">
+    <!-- Dashboard -->
+    <li class="menu-item">
+      <a href="/pengusul/dashboard" class="menu-link" data-tooltip="Dashboard">
+        <span class="menu-icon">
+          <i class="ti ti-home">&#xecde;</i>
         </span>
+        <span class="menu-text">Dashboard</span>
       </a>
+    </li>
 
-      <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-        <i class="ti menu-toggle-icon d-none d-xl-block align-middle"></i>
-        <i class="ti ti-x d-block d-xl-none ti-md align-middle"></i>
+    
+    <!-- Pengajuan Usulan -->
+    <li class="menu-item">
+      <a href="/pengusul/usulan" class="menu-link" data-tooltip="Pengajuan Usulan">
+        <span class="menu-icon">
+          <i class="ti ti-file-plus">&#xeaa0;</i>
+        </span>
+        <span class="menu-text">Pengajuan Usulan</span>
       </a>
+    </li>
+
+    <!-- Pengajuan Kegiatan -->
+    <li class="menu-item">
+      <a href="/pengusul/kegiatan/view" class="menu-link" data-tooltip="Pengajuan Kegiatan">
+        <span class="menu-icon">
+          <i class="ti ti-clipboard-text">&#xf089;</i>
+        </span>
+        <span class="menu-text">Pengajuan Kegiatan</span>
+      </a>
+    </li>
+
+    <!-- Pengajuan LPJ -->
+    <li class="menu-item">
+      <a href="/pengusul/kegiatan/lpj" class="menu-link" data-tooltip="Pengajuan LPJ">
+        <span class="menu-icon">
+          <i class="ti ti-file-invoice">&#xeb67;</i>
+        </span>
+        <span class="menu-text">Pengajuan LPJ</span>
+      </a>
+    </li>
+
+    <!-- Monitoring Kegiatan -->
+    <li class="menu-item">
+      <a href="/pengusul/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
+        <span class="menu-icon">
+          <i class="ti ti-activity">&#xea9a;</i>
+        </span>
+        <span class="menu-text">Monitoring Kegiatan</span>
+      </a>
+    </li>
+
+    <!-- Riwayat -->
+    <li class="menu-item">
+      <a href="/pengusul/riwayat" class="menu-link" data-tooltip="Riwayat">
+        <span class="menu-icon">
+          <i class="ti ti-history">&#xebea;</i>
+        </span>
+        <span class="menu-text">Riwayat</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- User Profile Section -->
+  <div class="user-profile-section">
+    <div class="user-profile-card" id="user-profile-card" data-user-name="John Doe">
+      <div class="user-profile-header">
+        <div class="user-avatar" id="user-avatar">JD</div>
+        <div class="user-info">
+          <p class="user-name" id="user-name">John Doe</p>
+          <p class="user-role" id="user-role">Pengusul</p>
+        </div>
+      </div>
+      <div class="user-profile-details">
+        <p class="user-email" id="user-email">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <span>johndoe@email.com</span>
+        </p>
+      </div>
     </div>
+  </div>
 
-    <div class="menu-inner-shadow"></div>
+  <!-- Logout Section -->
+  <div class="logout-section">
+    <a href="#" class="menu-link" id="logout-btn" data-tooltip="Logout">
+      <span class="menu-icon">
+        <i class="ti ti-logout">&#xeba8;</i>
+      </span>
+      <span class="menu-text">Logout</span>
+    </a>
+  </div>
+</aside>
 
-    <ul class="menu-inner py-1">
-      <!-- Dashboard -->
-      <li class="menu-item" id="">
-        <a href="/pengusul/dashboard" class="menu-link gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-smart-home"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19 8.71l-5.333 -4.148a2.666 2.666 0 0 0 -3.274 0l-5.334 4.148a2.665 2.665 0 0 0 -1.029 2.105v7.2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-7.2c0 -.823 -.38 -1.6 -1.03 -2.105" /><path d="M16 15c-2.21 1.333 -5.792 1.333 -8 0" /></svg>
-          <div data-i18n="Dashboard">Dashboard</div>
-        </a>
-      </li>
-      <!-- Usulan Kegiatan -->
-      <li class="menu-item">
-        <a href="javascript:void(0);" class="menu-link menu-toggle gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clipboard-text"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" /><path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /><path d="M9 12h6" /><path d="M9 16h6" /></svg>
-          <div data-i18n="Usulan Kegiatan">Usulan Kegiatan</div>
-        </a>
-        <ul class="menu-submenu">
-          <li class="menu-item">
-            <a href="/pengusul/usulan/new" class="menu-link gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
-              <div data-i18n="Usulkan Kegiatan">Usulkan Kegiatan</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="/pengusul/usulan" class="menu-link gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
-              <div data-i18n="Monitoring Usulan">Monitoring Usulan</div>
-            </a>
-          </li>
-        </ul>
-      </li>
-
-      <!-- Pengajuan Kegiatan -->
-      <li class="menu-item">
-        <a href="javascript:void(0);" class="menu-link menu-toggle gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12.5 21h-6.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v5" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M16 19h6" /><path d="M19 16v6" /></svg>
-          <div data-i18n="Pengajuan Kegiatan">Pengajuan Kegiatan</div>
-        </a>
-        <ul class="menu-submenu">
-          <li class="menu-item">
-            <a href="/pengusul/kegiatan/view" class="menu-link gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
-              <div data-i18n="Mengajukan Kegiatan">Mengajukan Kegiatan</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="/pengusul/kegiatan/monitoring" class="menu-link gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
-              <div data-i18n="Monitoring Kegiatan">Monitoring Kegiatan</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="/pengusul/kegiatan/lpj" class="menu-link gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg>
-              <div data-i18n="Pengajuan LPJ">Pengajuan LPJ</div>
-            </a>
-          </li>
-        </ul>
-      </li>
-
-      <!-- Riwayat -->
-      <li class="menu-item">
-        <a href="/pengusul/riwayat-kak" class="menu-link gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-history"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 8l0 4l2 2" /><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" /></svg>
-          <div data-i18n="Riwayat">Riwayat</div>
-        </a>
-      </li>
-
-      <!-- Pengaturan -->
-      <li class="menu-item">
-        <a href="/pengusul/pengaturan" class="menu-link gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-settings"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg>
-          <div data-i18n="Pengaturan">Pengaturan</div>
-        </a>
-      </li>
-    </ul>
-    <ul class="menu-inner py-1">
-      <li class="menu-item">
-        <a href="/login" data-link class="menu-link" id="logout-btn">
-          <i class="menu-icon tf-icons ti ti-logout"></i>
-          <div data-i18n="Logout">Logout</div>
-        </a>
-      </li>
-    </ul>
-  </aside>
+<script>
+  // Sidebar toggle functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('layout-menu');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const userProfileCard = document.getElementById('user-profile-card');
+    
+    // User Profile Card Toggle
+    if (userProfileCard) {
+      userProfileCard.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Only allow expansion when sidebar is expanded on desktop
+        const isDesktop = window.innerWidth >= 1200;
+        const isSidebarExpanded = sidebar.classList.contains('sidebar-expanded-js');
+        
+        if (!isDesktop || isSidebarExpanded) {
+          this.classList.toggle('expanded');
+        }
+      });
+    }
+    
+    // Load user data from localStorage or API
+    loadUserData();
+    
+    // Set active menu based on current URL
+    const currentPath = window.location.pathname;
+    const menuLinks = document.querySelectorAll('.menu-link[href]');
+    
+    menuLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href !== '#' && currentPath.includes(href)) {
+        link.classList.add('active');
+        link.closest('.menu-item').classList.add('active');
+      }
+    });
+    
+    // Logout handler
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Apakah Anda yakin ingin logout?')) {
+          // Clear localStorage
+          localStorage.removeItem('userData');
+          // Redirect to logout
+          window.location.href = '/logout';
+        }
+      });
+    }
+    
+    // Close user profile when clicking outside (mobile)
+    document.addEventListener('click', function(e) {
+      if (userProfileCard && !userProfileCard.contains(e.target)) {
+        userProfileCard.classList.remove('expanded');
+      }
+    });
+  });
+  
+  // Function to load user data
+  function loadUserData() {
+    // Try to get user data from localStorage first
+    const storedUserData = localStorage.getItem('userData');
+    
+    if (storedUserData) {
+      try {
+        const userData = JSON.parse(storedUserData);
+        updateUserProfile(userData);
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        // Fallback to default or fetch from API
+        fetchUserDataFromAPI();
+      }
+    } else {
+      // Fetch from API
+      fetchUserDataFromAPI();
+    }
+  }
+  
+  // Function to fetch user data from API
+  function fetchUserDataFromAPI() {
+    // Example API call - adjust according to your backend
+    fetch('/api/user/profile')
+      .then(response => response.json())
+      .then(data => {
+        // Store in localStorage for future use
+        localStorage.setItem('userData', JSON.stringify(data));
+        updateUserProfile(data);
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+        // Use default values if API fails
+        updateUserProfile({
+          name: 'John Doe',
+          email: 'johndoe@email.com',
+          role: 'Pengusul'
+        });
+      });
+  }
+  
+  // Function to update user profile in sidebar
+  function updateUserProfile(userData) {
+    const userNameEl = document.getElementById('user-name');
+    const userEmailEl = document.getElementById('user-email');
+    const userRoleEl = document.getElementById('user-role');
+    const userAvatarEl = document.getElementById('user-avatar');
+    const userProfileCard = document.getElementById('user-profile-card');
+    
+    if (userData.name && userNameEl) {
+      userNameEl.textContent = userData.name;
+      
+      // Update avatar with initials
+      const initials = userData.name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .slice(0, 2)
+        .join('');
+      
+      if (userAvatarEl) {
+        userAvatarEl.textContent = initials;
+      }
+      
+      // Update tooltip
+      if (userProfileCard) {
+        userProfileCard.setAttribute('data-user-name', userData.name);
+      }
+    }
+    
+    if (userData.email && userEmailEl) {
+      const emailSpan = userEmailEl.querySelector('span');
+      if (emailSpan) {
+        emailSpan.textContent = userData.email;
+      }
+    }
+    
+    if (userData.role && userRoleEl) {
+      userRoleEl.textContent = userData.role;
+    }
+  }
+</script>
 `;

@@ -33,6 +33,20 @@
   color: #ffffff !important;
 }
 
+.menu-link.menu-toggle {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important; /* FIX paling penting */
+}
+
+.a.menu-link.menu-toggle::before {
+  margin-left: 2rem !important;
+}
+
+.a.menu-link.menu-toggle::after {
+  margin-left: 2rem !important;
+}
+
 /* 3. Stat Cards */
 .stat-card-active {
   transition: all 0.4s ease;
@@ -213,10 +227,6 @@ i.ti {
   vertical-align: middle !important;
 }
 
-.menu-link i {
-  margin-right: 10px !important;
-}
-
 .container-xxl {
   max-width: 96% !important;
 }
@@ -266,6 +276,11 @@ i.ti {
   background: #ffffff;
   color: #374151;
   display: inline-block;
+}
+
+.stat-card-active .number-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

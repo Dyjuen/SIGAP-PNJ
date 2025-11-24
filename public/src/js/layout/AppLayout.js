@@ -7,237 +7,74 @@ import { wadirSidebar } from "./sidebars/WadirSidebar.js";
 import { ppkSidebar } from "./sidebars/PpkSidebar.js";
 import { bendaharaSidebar } from "./sidebars/BendaharaSidebar.js";
 
-// Header Component
-export const header = `
-  <nav class="layout-navbar container navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+// Header Component is now an empty spacer to push content down
+export const header = `<div style="height: 2.5rem;"></div>`;
 
-    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-      <!-- Search -->
-      <div class="navbar-nav align-items-center">
-        <div class="nav-item navbar-search-wrapper mb-0">
-          <a class="nav-item nav-link search-toggler d-flex align-items-center px-0" href="javascript:void(0);">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-search mr-4"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
-            <span class="d-none d-md-inline-block text-muted fw-normal">Search (Ctrl+/)</span>
-          </a>
-        </div>
-      </div>
-      <!-- /Search -->
+export const footer = `<footer class="content-footer footer bg-footer-theme"></footer>`;
 
-      <ul class="navbar-nav flex-row align-items-center ms-auto">
-
-
-        <!-- User -->
-        <li class="nav-item navbar-dropdown dropdown-user dropdown">
-          <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
-            <div class="avatar avatar-online">
-              <img src="/assets/img/avatars/default-avatar.png" alt class="rounded-circle" />
-            </div>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-              <a class="dropdown-item" href="/profile">
-                <div class="d-flex">
-                  <div class="flex-shrink-0 me-3">
-                    <div class="avatar avatar-online">
-                      <img src="/assets/img/avatars/default-avatar.png" alt class="rounded-circle" />
-                    </div>
-                  </div>
-                  <div class="flex-grow-1">
-                    <h6 class="mb-0">John Doe</h6>
-                    <small class="text-muted">Admin</small>
-                  </div>
-                </div>
-              </a>
-            </li>
-            <li>
-              <div class="dropdown-divider my-1"></div>
-            </li>
-            <li>
-              <a class="dropdown-item" href="/profile">
-                <i class="ti ti-user me-3 ti-md"></i><span class="align-middle">My Profile</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="/settings">
-                <i class="ti ti-settings me-3 ti-md"></i><span class="align-middle">Settings</span>
-              </a>
-            </li>
-            <li>
-              <div class="dropdown-divider my-1"></div>
-            </li>
-            <li>
-              <a class="dropdown-item" href="/logout">
-                <i class="ti ti-logout me-3 ti-md"></i><span class="align-middle">Log Out</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <!--/ User -->
-      </ul>
-    </div>
-
-    <!-- Search Small Screens -->
-    <div class="navbar-search-wrapper search-input-wrapper d-none">
-      <input type="text" class="form-control search-input container-xxl border-0" placeholder="Search..." aria-label="Search..." />
-      <i class="ti ti-x search-toggler cursor-pointer"></i>
-    </div>
-  </nav>
-`;
-
-// Footer Component
-export const footer = `
-  <footer class="content-footer footer bg-footer-theme">
-  </footer>
-`;
-
-// Main Layout Render Function
 export function renderDashboardLayout(content, userRole) {
   console.log("renderDashboardLayout is running with role:", userRole);
   const rootElement = document.getElementById("root");
 
   let dynamicSidebar = "";
   switch (userRole) {
-    case "Admin":
-      dynamicSidebar = adminSidebar;
-      break;
-    case "Pengusul":
-      dynamicSidebar = pengusulSidebar;
-      break;
-    case "Verifikator":
-      dynamicSidebar = verifikatorSidebar;
-      break;
-    case "Wadir":
-      dynamicSidebar = wadirSidebar;
-      break;
-    case "PPK":
-      dynamicSidebar = ppkSidebar;
-      break;
-    case "Bendahara":
-      dynamicSidebar = bendaharaSidebar;
-      break;
-    // Add more cases for other roles here
+    case "Admin": dynamicSidebar = adminSidebar; break;
+    case "Pengusul": dynamicSidebar = pengusulSidebar; break;
+    case "Verifikator": dynamicSidebar = verifikatorSidebar; break;
+    case "Wadir": dynamicSidebar = wadirSidebar; break;
+    case "PPK": dynamicSidebar = ppkSidebar; break;
+    case "Bendahara": dynamicSidebar = bendaharaSidebar; break;
     default:
-      // Fallback sidebar or an empty sidebar if role is not recognized
       dynamicSidebar = `
-        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme" style="width: 260px;">
           <div class="app-brand demo">
             <a href="index.html" class="app-brand-link">
-              <span class="app-brand-logo demo">
-                <img src="/assets/img/logo/logo.svg" alt="SIGAP PNJ" width="32">
-              </span>
+              <span class="app-brand-logo demo"><img src="/assets/img/logo/logo.svg" alt="SIGAP PNJ" width="32"></span>
               <span class="app-brand-text demo menu-text fw-bold">SIGAP PNJ</span>
             </a>
-            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-              <i class="ti menu-toggle-icon d-none d-xl-block align-middle"></i>
-              <i class="ti ti-x d-block d-xl-none ti-md align-middle"></i>
-            </a>
           </div>
-          <div class="menu-inner-shadow"></div>
           <ul class="menu-inner py-1">
-            <li class="menu-item active">
-              <a href="/dashboard" class="menu-link">
-                <i class="menu-icon tf-icons ti ti-smart-home"></i>
-                <div data-i18n="Dashboard">Dashboard</div>
-              </a>
-            </li>
-            <li class="menu-header small text-uppercase">
-              <span class="menu-header-text">General</span>
-            </li>
-            <li class="menu-item">
-              <a href="/profile" class="menu-link">
-                <i class="menu-icon tf-icons ti ti-user"></i>
-                <div data-i18n="Profile">Profile</div>
-              </a>
-            </li>
+            <li class="menu-item active"><a href="/dashboard" class="menu-link"><i class="menu-icon tf-icons ti ti-smart-home"></i><div>Dashboard</div></a></li>
           </ul>
-        </aside>
-      `;
+        </aside>`;
       break;
   }
 
   const layoutHTML = `
-    <div class="layout-wrapper layout-content-navbar">
-      <div class="layout-container">
-        <!-- Sidebar -->
-        ${dynamicSidebar}
+    <div class="layout-wrapper">
+      ${dynamicSidebar}
+
+      <div class="layout-page" id="main-layout-page">
         
-        <!-- Mobile Menu Toggle -->
-        <div class="menu-mobile-toggler d-xl-none rounded-1">
-          <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large text-bg-secondary p-2 rounded-1">
-            <i class="ti tabler-menu icon-base"></i>
-            <i class="ti tabler-chevron-right icon-base"></i>
-          </a>
-        </div>
+        ${header}
 
-        <!-- Layout Page -->
-        <div class="layout-page">
-          <!-- Header -->
-          ${header}
-
-          <!-- Content Wrapper -->
-          <div class="content-wrapper">
-            <!-- Content -->
-            <div class="container-xxl flex-grow-1 container-p-y">
-              ${content}
-            </div>
-            
-            <!-- Footer -->
-            ${footer}
-
-            <div class="content-backdrop fade"></div>
+        <div class="content-wrapper">
+          <div class="container-fluid-full">
+            ${content}
           </div>
+          ${footer}
         </div>
       </div>
 
-      <!-- Overlay -->
-      <div class="layout-overlay layout-menu-toggle"></div>
-      
-      <!-- Drag Target -->
-      <div class="drag-target"></div>
+      <div class="layout-overlay" id="layout-overlay"></div>
+
+      <div class="menu-mobile-toggler d-xl-none">
+        <button class="mobile-toggle-btn" id="mobile-menu-btn" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
     </div>
   `;
 
   rootElement.innerHTML = layoutHTML;
-
-  // Initialize sidebar logic
   initializeSidebar();
-
-  // Fallback for the main mobile toggle if the full script isn't available
-  initializeMenuToggle();
-
-  // Add logout event listener
-  const logoutBtn = document.getElementById("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async function (e) {
-      e.preventDefault();
-
-      const token = localStorage.getItem("token");
-
-      try {
-        const response = await fetch("/api/auth/logout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok || response.status === 401) {
-          // Also clear if token is invalid/expired
-          localStorage.removeItem("token");
-          window.location.href = "/login";
-        } else {
-          console.error("Logout failed:", await response.json());
-          // Optionally, show an error message to the user
-        }
-      } catch (error) {
-        console.error("An error occurred during logout:", error);
-        // Clear token and redirect on network errors as well
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      }
-    });
-  }
+  initializeMobileMenuToggle();
+  initializeLogout();
+  setupPengusulSidebarInteractivity(userRole);
 }
 
 function initializeSidebar() {
@@ -245,11 +82,11 @@ function initializeSidebar() {
   if (!menu) return;
 
   const currentPath = window.location.pathname;
-
-  // Set active state and open parent submenus
   const menuLinks = menu.querySelectorAll(".menu-link");
+  
   menuLinks.forEach((link) => {
-    if (link.getAttribute("href") === currentPath) {
+    const href = link.getAttribute("href");
+    if (href && href === currentPath) {
       const menuItem = link.closest(".menu-item");
       if (menuItem) {
         menuItem.classList.add("active");
@@ -264,45 +101,136 @@ function initializeSidebar() {
     }
   });
 
-  // Hide all submenus by default, unless they should be open
-  const submenus = menu.querySelectorAll(".menu-submenu");
-  submenus.forEach((submenu) => {
-    const parentMenuItem = submenu.closest(".menu-item");
-    if (parentMenuItem && !parentMenuItem.classList.contains("open")) {
-      submenu.style.display = "none";
-    }
-  });
-
-  // Add click listeners to toggle submenus
   const menuToggles = menu.querySelectorAll(".menu-link.menu-toggle");
   menuToggles.forEach((toggle) => {
     toggle.addEventListener("click", (e) => {
       e.preventDefault();
       const menuItem = toggle.closest(".menu-item");
-      const submenu = menuItem.querySelector(".menu-submenu");
-
-      if (submenu) {
-        if (submenu.style.display === "block") {
-          submenu.style.display = "none";
-          menuItem.classList.remove("open");
-        } else {
-          submenu.style.display = "block";
-          menuItem.classList.add("open");
-        }
+      if (menuItem) {
+        menuItem.classList.toggle("open");
       }
     });
   });
 }
 
-// Initialize menu toggle functionality (basic fallback)
-function initializeMenuToggle() {
-  const menuToggle = document.querySelector(".layout-menu-toggle");
+function initializeMobileMenuToggle() {
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
   const layoutMenu = document.getElementById("layout-menu");
+  const overlay = document.getElementById("layout-overlay");
 
-  if (menuToggle && layoutMenu) {
-    menuToggle.addEventListener("click", function (e) {
-      e.preventDefault();
-      document.body.classList.toggle("layout-menu-expanded");
+  if (!mobileMenuBtn || !layoutMenu) return;
+
+  const openMenu = () => {
+    layoutMenu.classList.add("show");
+    overlay?.classList.add("show");
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeMenu = () => {
+    layoutMenu.classList.remove("show");
+    overlay?.classList.remove("show");
+    document.body.style.overflow = "";
+  };
+
+  mobileMenuBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (layoutMenu.classList.contains("show")) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  overlay?.addEventListener("click", closeMenu);
+
+  if (window.innerWidth < 1200) {
+    layoutMenu.querySelectorAll(".menu-link:not(.menu-toggle)").forEach(link => {
+      link.addEventListener("click", closeMenu);
     });
   }
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth >= 1200) {
+      closeMenu();
+    }
+  });
+}
+
+function initializeLogout() {
+  const logoutBtn = document.getElementById("logout-btn");
+  if (!logoutBtn) return;
+
+  logoutBtn.addEventListener("click", async function (e) {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok || response.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userRole");
+        window.location.href = "/login";
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      localStorage.removeItem("token");
+      localStorage.removeItem("userRole");
+      window.location.href = "/login";
+    }
+  });
+}
+
+function setupPengusulSidebarInteractivity(userRole) {
+  // Delay untuk memastikan sidebar sudah di-render
+  setTimeout(() => {
+    const sidebar = document.getElementById("layout-menu");
+    const mainContent = document.getElementById("main-layout-page");
+    if (!sidebar || !mainContent) {
+      console.error("Sidebar atau mainContent tidak ditemukan!");
+      return;
+    }
+
+    console.log(`[${userRole}] Setting up sidebar with MOUSE HOVER interactivity...`);
+
+    // SEMUA ROLE PAKAI MOUSE HOVER (sama seperti Pengusul)
+    const handleResize = () => {
+      if (window.innerWidth >= 1200) {
+        mainContent.classList.add('sidebar-collapsed-content');
+        mainContent.classList.remove('sidebar-expanded-content');
+        sidebar.classList.remove('sidebar-expanded-js');
+      } else {
+        mainContent.classList.remove('sidebar-expanded-content', 'sidebar-collapsed-content');
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    // Mouse ENTER - expand sidebar
+    sidebar.addEventListener("mouseenter", () => {
+      if (window.innerWidth >= 1200) {
+        console.log(`[${userRole}] mouseenter - expanding sidebar`);
+        sidebar.classList.add('sidebar-expanded-js');
+        mainContent.classList.remove('sidebar-collapsed-content');
+        mainContent.classList.add('sidebar-expanded-content');
+      }
+    });
+
+    // Mouse LEAVE - collapse sidebar
+    sidebar.addEventListener("mouseleave", () => {
+      if (window.innerWidth >= 1200) {
+        console.log(`[${userRole}] mouseleave - collapsing sidebar`);
+        sidebar.classList.remove('sidebar-expanded-js');
+        mainContent.classList.remove('sidebar-expanded-content');
+        mainContent.classList.add('sidebar-collapsed-content');
+      }
+    });
+  }, 100);
 }

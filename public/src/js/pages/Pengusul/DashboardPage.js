@@ -390,10 +390,12 @@ export function renderPengusulDashboardPage(path, userRole) {
       }
 
       /* Header Animation */
-      .flex.justify-between.items-center.my-6 {
+      .dashboard-header {
         opacity: 0;
         animation: slideInRight 0.6s ease-out forwards;
+        margin-bottom: 1.5rem !important;
       }
+
 
       /* Template List Animation */
       #templateList > div {
@@ -457,18 +459,18 @@ export function renderPengusulDashboardPage(path, userRole) {
     </style>
 
     <div class="pengusul-dashboard-page">
-      <!-- Header -->
-      <div class="flex justify-between items-center my-6 ">
+      <!-- Header - FIX MARGIN -->
+      <div class="dashboard-header flex justify-between items-center">
         <h2 class="text-4xl font-bold text-gray-800">Monitoring Usulan Kegiatan</h2>
         <div class="flex gap-3">
-          <button class="btn btn-tambah-akun inline-flex items-center gap-2 px-4 py-2 rounded-lg">
+          <button id="btn-tambah-usulan" class="btn btn-tambah-akun inline-flex items-center gap-2 px-4 py-2 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             Tambah Usulan
           </button>
-          <button class="btn btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg">
+          <button id="btn-ajukan-kegiatan" class="btn btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -1016,5 +1018,19 @@ export function renderPengusulDashboardPage(path, userRole) {
 
   if (window.Helpers) {
     window.Helpers.init();
+  }
+
+  const tambahUsulanBtn = document.getElementById("btn-tambah-usulan");
+  if (tambahUsulanBtn) {
+    tambahUsulanBtn.addEventListener("click", () => {
+      window.location.href = "/pengusul/usulan/new";
+    });
+  }
+
+  const ajukanKegiatanBtn = document.getElementById("btn-ajukan-kegiatan");
+  if (ajukanKegiatanBtn) {
+    ajukanKegiatanBtn.addEventListener("click", () => {
+      window.location.href = "/pengusul/kegiatan/view";
+    });
   }
 }

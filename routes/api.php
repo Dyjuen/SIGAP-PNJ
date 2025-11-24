@@ -227,6 +227,7 @@ $router->get('/kegiatan/{id}/catatan-ppk', 'KegiatanController@getCatatanPPK');
 
 // Fitur Tambahan
 $router->post('/kegiatan/{id}/cairkan', 'PencairanController@cairkanDana');
+$router->post('/kegiatan/{id}/selesaikan-pencairan', 'KegiatanController@selesaikanPencairan');
 $router->post('/kegiatan/{id}/duplicate', 'KegiatanController@duplicate');
 
 $router->get('/kegiatan/export/excel', 'KegiatanController@exportExcel');
