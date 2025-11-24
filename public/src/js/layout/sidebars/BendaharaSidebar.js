@@ -772,7 +772,7 @@ export const bendaharaSidebar = `
 
     <!-- Pencairan Dana -->
     <li class="menu-item">
-      <a href="/bendahara/pencairan-dana" class="menu-link" data-tooltip="Pencairan Dana">
+      <a href="/bendahara/kegiatan/pencairan" class="menu-link" data-tooltip="Pencairan Dana">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="1"></circle>
@@ -788,7 +788,7 @@ export const bendaharaSidebar = `
 
     <!-- Monitoring Kegiatan -->
     <li class="menu-item">
-      <a href="/bendahara/monitoring-kegiatan" class="menu-link" data-tooltip="Monitoring Kegiatan">
+      <a href="/bendahara/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="23 6 13.5 15.5 8.5 10.5 1 17"></polyline>
@@ -801,7 +801,7 @@ export const bendaharaSidebar = `
 
     <!-- Daftar LPJ -->
     <li class="menu-item">
-      <a href="/bendahara/daftar-lpj" class="menu-link" data-tooltip="Daftar LPJ">
+      <a href="/bendahara/kegiatan/lpj" class="menu-link" data-tooltip="Daftar LPJ">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
@@ -824,22 +824,6 @@ export const bendaharaSidebar = `
           </svg>
         </span>
         <span class="menu-text">Riwayat</span>
-      </a>
-    </li>
-
-    <!-- Pengaturan -->
-    <li class="menu-item">
-      <a href="/bendahara/pengaturan" class="menu-link" data-tooltip="Pengaturan">
-        <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M12 1v6m0 6v6"></path>
-            <path d="M4.22 4.22l4.24 4.24m5.08 0l4.24-4.24"></path>
-            <path d="M1 12h6m6 0h6"></path>
-            <path d="M4.22 19.78l4.24-4.24m5.08 0l4.24 4.24"></path>
-          </svg>
-        </span>
-        <span class="menu-text">Pengaturan</span>
       </a>
     </li>
   </ul>

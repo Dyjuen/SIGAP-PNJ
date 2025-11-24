@@ -406,15 +406,40 @@ export const pengusulSidebar = `
     display: block;
   }
 
+  .menu-icon i {
+    font-size: 28px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    opacity: 0.5 !important;
+    transition: all 0.2s ease;
+  }
+
   .menu-link:hover .menu-icon {
     color: #00bcd4;
-    transform: scale(1.1);
+    transform: scale(1.05);
+  }
+
+  .menu-link:hover .menu-icon i {
+    opacity: 1 !important;
+  }
+
+  #layout-menu.sidebar-expanded-js .menu-icon i {
+    opacity: 1 !important;
   }
 
   .menu-link.active .menu-icon,
   .menu-item.active > .menu-link .menu-icon {
     background: #00bcd4;
     color: white;
+    border-radius: 12px;
+  }
+
+  .menu-link.active .menu-icon i,
+  .menu-item.active > .menu-link .menu-icon i {
+    opacity: 1 !important;
+    font-size: 30px !important;
   }
 
   .menu-link.active:hover .menu-icon,
@@ -756,39 +781,28 @@ export const pengusulSidebar = `
     <li class="menu-item">
       <a href="/pengusul/dashboard" class="menu-link" data-tooltip="Dashboard">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
+          <i class="ti ti-home">&#xecde;</i>
         </span>
         <span class="menu-text">Dashboard</span>
       </a>
     </li>
 
     
-    <!-- Pengajuan Kegiatan -->
+    <!-- Pengajuan Usulan -->
     <li class="menu-item">
-      <a href="/pengusul/monitoring-usulan" class="menu-link" data-tooltip="Pengajuan Kegiatan">
+      <a href="/pengusul/usulan" class="menu-link" data-tooltip="Pengajuan Usulan">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
-            <rect x="9" y="3" width="6" height="4" rx="2"></rect>
-            <path d="M9 12h6M9 16h6"></path>
-          </svg>
+          <i class="ti ti-file-plus">&#xeaa0;</i>
         </span>
         <span class="menu-text">Pengajuan Usulan</span>
       </a>
     </li>
 
-    <!-- Monitoring Kegiatan -->
+    <!-- Pengajuan Kegiatan -->
     <li class="menu-item">
-      <a href="/pengusul/pengajuan-kegiatan" class="menu-link" data-tooltip="Monitoring Kegiatan">
+      <a href="/pengusul/kegiatan/view" class="menu-link" data-tooltip="Pengajuan Kegiatan">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
-            <rect x="9" y="3" width="6" height="4" rx="2"></rect>
-            <path d="M9 12h6M9 16h6"></path>
-          </svg>
+          <i class="ti ti-clipboard-text">&#xf089;</i>
         </span>
         <span class="menu-text">Pengajuan Kegiatan</span>
       </a>
@@ -796,27 +810,19 @@ export const pengusulSidebar = `
 
     <!-- Pengajuan LPJ -->
     <li class="menu-item">
-      <a href="/pengusul/pengajuan-lpj" class="menu-link" data-tooltip="Pengajuan LPJ">
+      <a href="/pengusul/kegiatan/lpj" class="menu-link" data-tooltip="Pengajuan LPJ">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
-            <rect x="9" y="3" width="6" height="4" rx="2"></rect>
-            <path d="M9 12h6M9 16h6"></path>
-          </svg>
+          <i class="ti ti-file-invoice">&#xeb67;</i>
         </span>
         <span class="menu-text">Pengajuan LPJ</span>
       </a>
     </li>
 
-    <!-- Monitoring LPJ -->
+    <!-- Monitoring Kegiatan -->
     <li class="menu-item">
-      <a href="/pengusul/monitoring-kegiatan" class="menu-link" data-tooltip="Monitoring LPJ">
+      <a href="/pengusul/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
-            <rect x="9" y="3" width="6" height="4" rx="2"></rect>
-            <path d="M9 12h6M9 16h6"></path>
-          </svg>
+          <i class="ti ti-activity">&#xea9a;</i>
         </span>
         <span class="menu-text">Monitoring Kegiatan</span>
       </a>
@@ -824,13 +830,9 @@ export const pengusulSidebar = `
 
     <!-- Riwayat -->
     <li class="menu-item">
-      <a href="/pengusul/riwayat-kak" class="menu-link" data-tooltip="Riwayat">
+      <a href="/pengusul/riwayat" class="menu-link" data-tooltip="Riwayat">
         <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-            <path d="M3 3v5h5"></path>
-            <path d="M12 7v5l4 2"></path>
-          </svg>
+          <i class="ti ti-history">&#xebea;</i>
         </span>
         <span class="menu-text">Riwayat</span>
       </a>
@@ -863,11 +865,7 @@ export const pengusulSidebar = `
   <div class="logout-section">
     <a href="#" class="menu-link" id="logout-btn" data-tooltip="Logout">
       <span class="menu-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-          <polyline points="16 17 21 12 16 7"></polyline>
-          <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
+        <i class="ti ti-logout">&#xeba8;</i>
       </span>
       <span class="menu-text">Logout</span>
     </a>

@@ -35,21 +35,24 @@ html, body {
 /* State default / role lain (non-Pengusul) - sidebar collapsed 70px */
 @media (min-width: 1200px) {
   .layout-page:not(.sidebar-collapsed-content):not(.sidebar-expanded-content) {
-    margin-left: -140px; /* Sidebar width when collapsed */
+    margin-left: 70px; /* Sidebar width when collapsed */
+    margin-right: 45px;
   }
 }
 
 /* Role 'Pengusul' saat sidebar collapsed (70px) */
 @media (min-width: 1200px) {
   .layout-page.sidebar-collapsed-content {
-    margin-left: -140px !important;
+    margin-left: 70px !important;
+    margin-right: 45px !important;
   }
 }
 
-/* Role 'Pengusul' saat sidebar expanded (300px) */
+/* Role 'Pengusul' saat sidebar expanded (260px) */
 @media (min-width: 1200px) {
   .layout-page.sidebar-expanded-content {
-    margin-left: 90px !important;
+    margin-left: 260px !important;
+    margin-right: 45px !important; /* Keep right margin consistent */
   }
 }
 

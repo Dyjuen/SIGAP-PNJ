@@ -772,7 +772,7 @@ export const ppkSidebar = `
 
     <!-- Setujui Kegiatan -->
     <li class="menu-item">
-      <a href="/ppk/setujui-kegiatan" class="menu-link" data-tooltip="Setujui Kegiatan">
+      <a href="/ppk/kegiatan/approve" class="menu-link" data-tooltip="Setujui Kegiatan">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
@@ -784,7 +784,7 @@ export const ppkSidebar = `
 
     <!-- Monitoring Kegiatan -->
     <li class="menu-item">
-      <a href="/ppk/monitoring-kegiatan" class="menu-link" data-tooltip="Monitoring Kegiatan">
+      <a href="/ppk/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="23 6 13.5 15.5 8.5 10.5 1 17"></polyline>
@@ -806,22 +806,6 @@ export const ppkSidebar = `
           </svg>
         </span>
         <span class="menu-text">Riwayat</span>
-      </a>
-    </li>
-
-    <!-- Pengaturan -->
-    <li class="menu-item">
-      <a href="/ppk/pengaturan" class="menu-link" data-tooltip="Pengaturan">
-        <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M12 1v6m0 6v6"></path>
-            <path d="M4.22 4.22l4.24 4.24m5.08 0l4.24-4.24"></path>
-            <path d="M1 12h6m6 0h6"></path>
-            <path d="M4.22 19.78l4.24-4.24m5.08 0l4.24 4.24"></path>
-          </svg>
-        </span>
-        <span class="menu-text">Pengaturan</span>
       </a>
     </li>
   </ul>
