@@ -226,7 +226,7 @@ $router->get('/kegiatan/{id}/logs', 'KegiatanController@logs');
 $router->get('/kegiatan/{id}/catatan-ppk', 'KegiatanController@getCatatanPPK');
 
 // Fitur Tambahan
-$router->post('/kegiatan/{id}/cairkan', 'PencairanController@cairkanDana');
+$router->post('/kegiatan/{id}/cairkan', 'PencairanController@logPencairan');
 $router->post('/kegiatan/{id}/selesaikan-pencairan', 'KegiatanController@selesaikanPencairan');
 $router->post('/kegiatan/{id}/duplicate', 'KegiatanController@duplicate');
 
