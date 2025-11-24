@@ -243,7 +243,7 @@ export function renderInputLpjPage(path, userRole) {
   async function fetchLpjDetail(id) {
     try {
       // This endpoint should return KAK data, and if available, existing LPJ data + comments
-      const response = await apiRequest(`/lpj/${id}/detail`);
+      const response = await apiRequest(`/kegiatan/${id}/detail`);
       state.kegiatan = response.data.kegiatan;
       state.lpjData = response.data.lpj; // This can be null
       state.status = response.data.status || "new";
