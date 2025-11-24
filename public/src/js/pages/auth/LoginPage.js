@@ -45,6 +45,61 @@ export function renderLoginPage() {
                 }
             }
 
+            /* ========== EYE SLASH ANIMATION ========== */
+            @keyframes drawSlashForward {
+                from {
+                    stroke-dashoffset: -30;
+                }
+                to {
+                    stroke-dashoffset: 0;
+                }
+            }
+
+            @keyframes drawSlashReverse {
+                from {
+                    stroke-dashoffset: 0;
+                }
+                to {
+                    stroke-dashoffset: -30;
+                }
+            }
+
+            @keyframes fadeInSlash {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeOutSlash {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0;
+                }
+            }
+
+            .eye-slash-line {
+                stroke-dasharray: 30;
+                stroke-dashoffset: 0;
+                opacity: 0;
+            }
+
+            .eye-slash-line.show {
+                animation: drawSlashReverse 0.5s ease-out forwards;
+            }
+
+            .eye-slash-line.hide {
+                animation: drawSlashForward 0.5s ease-out forwards;
+            }
+
+            .eye-icon {
+                transition: opacity 0.2s ease;
+            }
+
             /* Animation Classes */
             .animate-element {
                 opacity: 0;
@@ -276,17 +331,16 @@ export function renderLoginPage() {
             .reload-captcha-btn:hover {
                 background: linear-gradient(135deg, rgba(51, 200, 218, 0.2) 0%, rgba(43, 169, 184, 0.15) 100%);
                 border-color: rgba(51, 200, 218, 0.6);
-                transform: rotate(180deg);
                 box-shadow: 0 4px 12px rgba(51, 200, 218, 0.2);
             }
             
-            .reload-captcha-btn svg {
-                color: #33C8DA;
-                transition: color 0.3s ease;
+            .captcha-container .reload-captcha-btn svg {
+                display: inline-block;
+                transition: transform 0.4s ease, color 0.3s ease !important;
             }
-            
-            .reload-captcha-btn:hover svg {
-                color: #2BA9B8;
+            .captcha-container .reload-captcha-btn:hover svg {
+                transform: rotate(180deg) !important;
+                color: #2BA9B8 !important;
             }
 
             .link-text {
@@ -402,8 +456,11 @@ export function renderLoginPage() {
                                         id="togglePassword"
                                     >
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            <g class="eye-icon">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </g>
+                                            <line class="eye-slash-line" x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                         </svg>
                                     </button>
                                 </div>
@@ -585,28 +642,30 @@ export function renderLoginPage() {
     }
   });
 
-  // Password toggle functionality
+  // Password toggle functionality with animated slash
   const togglePasswordButton = document.getElementById("togglePassword");
   if (passwordInput && togglePasswordButton) {
+    const slashLine = togglePasswordButton.querySelector('.eye-slash-line');
+    
+    // Set initial state based on password field type
+    if (passwordInput.getAttribute("type") === "password") {
+      slashLine.style.opacity = '1';
+    }
+    
     togglePasswordButton.addEventListener("click", () => {
       const type =
         passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
 
-      // Update icon with smooth transition
-      if (type === "text") {
-        togglePasswordButton.innerHTML = `
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
-          </svg>
-        `;
+      // Toggle slash animation
+      if (type === "password") {
+        // Show slash with animation (kanan bawah ke kiri atas)
+        slashLine.classList.remove('hide');
+        slashLine.classList.add('show');
       } else {
-        togglePasswordButton.innerHTML = `
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-          </svg>
-        `;
+        // Hide slash with reverse animation (kiri atas ke kanan bawah)
+        slashLine.classList.remove('show');
+        slashLine.classList.add('hide');
       }
     });
   }

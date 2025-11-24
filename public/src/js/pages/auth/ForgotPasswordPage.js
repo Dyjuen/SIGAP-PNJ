@@ -175,16 +175,24 @@ export function renderForgotPasswordPage() {
                 transform: none;
             }
 
-            .back-button {
-                background: rgba(255, 255, 255, 0.8);
-                border: 1px solid rgba(209, 213, 219, 0.5);
+            /* ========== BACK BUTTON COMPACT ========== */
+            .back-button-compact {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0;
+                background: transparent;
+                border: none;
                 color: #4B5563;
-                margin-bottom: 1rem;
+                font-size: 0.875rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: color 0.3s ease;
+                text-decoration: none;
             }
 
-            .back-button:hover {
-                background: rgba(255, 255, 255, 1);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            .back-button-compact:hover {
+                color: #33C8DA;
             }
 
             /* ========== CONTAINER STYLES ========== */
@@ -229,13 +237,15 @@ export function renderForgotPasswordPage() {
         <div style="background-image: url('/assets/img/backgrounds/Auth.png'); background-size: cover; background-position: center; min-height: 100vh;" class="flex items-center justify-center">
             <div class="w-full max-w-lg px-4">
                 <div class="forgot-container animate-element animate-delay-100">
-                    <!-- Back Button -->
-                    <button id="back-button" class="modern-button back-button animate-element animate-delay-200 flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        Kembali ke Login
-                    </button>
+                    <!-- Back Button Compact -->
+                    <div class="mb-6">
+                        <button id="back-button" class="back-button-compact">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                            </svg>
+                            Kembali
+                        </button>
+                    </div>
 
                     <!-- Icon -->
                     <div class="flex justify-center mb-6 animate-element animate-delay-300">
@@ -301,7 +311,7 @@ export function renderForgotPasswordPage() {
                             id="submit-button"
                             class="modern-button animate-element animate-delay-800"
                         >
-                            Kirim Permintaan Reset Password
+                            Reset Password
                         </button>
                     </form>
                 </div>
@@ -346,7 +356,7 @@ export function renderForgotPasswordPage() {
       emailInput.disabled = true;
     } else {
       submitButton.disabled = false;
-      submitButton.innerHTML = "Kirim Permintaan Reset Password";
+      submitButton.innerHTML = "Reset Password";
       usernameInput.disabled = false;
       emailInput.disabled = false;
     }
