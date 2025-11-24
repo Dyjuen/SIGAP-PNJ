@@ -110,7 +110,7 @@ export function renderUsulanKakPage(path, userRole) {
                   
                   <div id="penerimaManfaatContainer">
                     <!-- Dynamic rows will be inserted here -->
-                    <div class="penerima-manfaat-item flex gap-4 items-start mb-4">
+                    <div class="penerima-manfaat-item dynamic-field-item flex gap-4 items-start mb-4">
                       <div class="flex-1">
                         <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
                         <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran">
@@ -119,7 +119,7 @@ export function renderUsulanKakPage(path, userRole) {
                         <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
                         <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat">
                       </div>
-                      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+                      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
                         <span class="text-xl font-bold">−</span>
                       </button>
                     </div>
@@ -139,14 +139,14 @@ export function renderUsulanKakPage(path, userRole) {
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tahapan Pelaksanaan</label>
                     <div id="tahapanPelaksanaanContainer">
-                      <div class="flex gap-4 items-start mb-4">
+                      <div class="tahapan-item dynamic-field-item flex gap-4 items-start mb-4">
                         <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                        <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
+                        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
                           <span class="text-xl font-bold">−</span>
                         </button>
                       </div>
                     </div>
-                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addTahapanPelaksanaan()">Tambah</button>
+                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addTahapanPelaksanaan()">Tambah</button>
                   </div>
                 </div>
 
@@ -157,7 +157,7 @@ export function renderUsulanKakPage(path, userRole) {
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja</label>
                     <div id="indikatorKinerjaContainer">
-                      <div class="flex items-end gap-4 mb-6">
+                      <div class="indikator-kinerja-item dynamic-field-item flex items-end gap-4 mb-6">
                         <div class='w-full'>
                           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
                           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
@@ -184,12 +184,12 @@ export function renderUsulanKakPage(path, userRole) {
                           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
                           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
                         </div>
-                        <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
+                        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
                           <span class="text-xl font-bold">−</span>
                         </button>
                       </div>
                     </div>
-                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addIndikatorKinerja()">Tambah</button>
+                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIndikatorKinerja()">Tambah</button>
                   </div>
                 </div>
 
@@ -238,7 +238,7 @@ export function renderUsulanKakPage(path, userRole) {
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama & Renstra</h4>
                   
                   <div class="mb-8" id="ikuRenstraContainer">
-                    <div class="grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item">
+                    <div class="iku-item dynamic-field-item grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4">
                       <div>
                         <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
                         <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
@@ -252,13 +252,13 @@ export function renderUsulanKakPage(path, userRole) {
                           <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
                         </div>
                       </div>
-                      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeIkuField(this)">
+                      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
                         <span class="text-xl font-bold">−</span>
                       </button>
                     </div>
                   </div>
                   
-                  <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addIkuField()">Tambah</button>
+                  <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIkuField()">Tambah</button>
                 </div>
               </div>
             </div>
@@ -518,110 +518,147 @@ export function renderUsulanKakPage(path, userRole) {
   // Render the main layout
   renderDashboardLayout(pageContent, userRole);
 
-  // Add custom CSS for daterangepicker colors
+  const animationStyle = document.createElement("style");
+  animationStyle.textContent = `
+    /* Dynamic field animations */
+    .dynamic-field-item {
+        transition: all 0.4s ease-in-out;
+        overflow: hidden;
+    }
+
+    .dynamic-field-item.new-item-animation {
+        animation: slide-in 0.4s ease-out;
+    }
+    
+    @keyframes slide-in {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+            max-height: 0;
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px; /* Adjust based on content */
+        }
+    }
+
+    .dynamic-field-item.removing {
+      animation: slide-out 0.4s ease-out forwards;
+    }
+
+    @keyframes slide-out {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px; /* Adjust based on content */
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+            max-height: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border: none;
+        }
+    }
+
+    .remove-button {
+      display: none; /* Hide by default */
+      opacity: 0;
+      transform: scale(0.5);
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+
+    .remove-button.visible {
+      display: flex;
+      opacity: 1;
+      transform: scale(1);
+    }
+  `;
+  document.head.appendChild(animationStyle);
+
+  // Add custom CSS for daterangepicker colors and animations
   const style = document.createElement("style");
   style.textContent = `
-    /* Override Bootstrap Daterangepicker colors to match cyan theme */
-    .daterangepicker {
-      border-color: #00BCD4 !important;
+    /* Daterangepicker theme overrides */
+    .daterangepicker { border-color: #00BCD4 !important; }
+    .daterangepicker .calendar-table { border-color: #E5F8FB !important; }
+    .daterangepicker td.active, .daterangepicker td.active:hover { background-color: #00BCD4 !important; border-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker td.in-range { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker td.available:hover { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker .ranges li.active { background-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker .ranges li:hover { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker td.start-date, .daterangepicker td.end-date { background-color: #00BCD4 !important; border-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker .drp-buttons .btn-primary { background-color: #00BCD4 !important; border-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker .drp-buttons .btn-primary:hover { background-color: #0097A7 !important; border-color: #0097A7 !important; }
+    .daterangepicker th.month { color: #00BCD4 !important; }
+    .daterangepicker td.off, .daterangepicker td.off.in-range, .daterangepicker td.off.start-date, .daterangepicker td.off.end-date { background-color: #F9FAFB !important; color: #9CA3AF !important; }
+    .daterangepicker select.monthselect, .daterangepicker select.yearselect { border-color: #E5E7EB !important; }
+    .daterangepicker select.monthselect:focus, .daterangepicker select.yearselect:focus { border-color: #00BCD4 !important; outline: none !important; box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1) !important; }
+    .daterangepicker .calendar-table .next span, .daterangepicker .calendar-table .prev span { border-color: #00BCD4 !important; }
+    .daterangepicker .calendar-table .next:hover, .daterangepicker .calendar-table .prev:hover { background-color: #E5F8FB !important; }
+    .daterangepicker td.today { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker td.today.active { background-color: #00BCD4 !important; color: #FFFFFF !important; }
+
+    /* Dynamic field animations */
+    .dynamic-field-item {
+        transition: all 0.4s ease-in-out;
+        overflow: hidden;
+    }
+
+    .dynamic-field-item.new-item-animation {
+        animation: slide-in 0.4s ease-out;
     }
     
-    .daterangepicker .calendar-table {
-      border-color: #E5F8FB !important;
+    @keyframes slide-in {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+            max-height: 0;
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px; /* Adjust based on content */
+        }
     }
-    
-    .daterangepicker td.active, 
-    .daterangepicker td.active:hover {
-      background-color: #00BCD4 !important;
-      border-color: #00BCD4 !important;
-      color: #FFFFFF !important;
+
+    .dynamic-field-item.removing {
+      animation: slide-out 0.4s ease-out forwards;
     }
-    
-    .daterangepicker td.in-range {
-      background-color: #E5F8FB !important;
-      color: #374151 !important;
+
+    @keyframes slide-out {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px; /* Adjust based on content */
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+            max-height: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border: none;
+        }
     }
-    
-    .daterangepicker td.available:hover {
-      background-color: #E5F8FB !important;
-      color: #374151 !important;
+
+    .remove-button {
+      display: none; /* Hide by default */
+      opacity: 0;
+      transform: scale(0.5);
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     }
-    
-    .daterangepicker .ranges li.active {
-      background-color: #00BCD4 !important;
-      color: #FFFFFF !important;
-    }
-    
-    .daterangepicker .ranges li:hover {
-      background-color: #E5F8FB !important;
-      color: #374151 !important;
-    }
-    
-    .daterangepicker td.start-date {
-      background-color: #00BCD4 !important;
-      border-color: #00BCD4 !important;
-      color: #FFFFFF !important;
-    }
-    
-    .daterangepicker td.end-date {
-      background-color: #00BCD4 !important;
-      border-color: #00BCD4 !important;
-      color: #FFFFFF !important;
-    }
-    
-    .daterangepicker .drp-buttons .btn-primary {
-      background-color: #00BCD4 !important;
-      border-color: #00BCD4 !important;
-      color: #FFFFFF !important;
-    }
-    
-    .daterangepicker .drp-buttons .btn-primary:hover {
-      background-color: #0097A7 !important;
-      border-color: #0097A7 !important;
-    }
-    
-    .daterangepicker th.month {
-      color: #00BCD4 !important;
-    }
-    
-    .daterangepicker td.off, 
-    .daterangepicker td.off.in-range, 
-    .daterangepicker td.off.start-date, 
-    .daterangepicker td.off.end-date {
-      background-color: #F9FAFB !important;
-      color: #9CA3AF !important;
-    }
-    
-    .daterangepicker select.monthselect, 
-    .daterangepicker select.yearselect {
-      border-color: #E5E7EB !important;
-    }
-    
-    .daterangepicker select.monthselect:focus, 
-    .daterangepicker select.yearselect:focus {
-      border-color: #00BCD4 !important;
-      outline: none !important;
-      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1) !important;
-    }
-    
-    .daterangepicker .calendar-table .next span,
-    .daterangepicker .calendar-table .prev span {
-      border-color: #00BCD4 !important;
-    }
-    
-    .daterangepicker .calendar-table .next:hover,
-    .daterangepicker .calendar-table .prev:hover {
-      background-color: #E5F8FB !important;
-    }
-    
-    .daterangepicker td.today {
-      background-color: #E5F8FB !important;
-      color: #374151 !important;
-    }
-    
-    .daterangepicker td.today.active {
-      background-color: #00BCD4 !important;
-      color: #FFFFFF !important;
+
+    .remove-button.visible {
+      display: flex;
+      opacity: 1;
+      transform: scale(1);
     }
   `;
   document.head.appendChild(style);
@@ -701,6 +738,42 @@ export function renderUsulanKakPage(path, userRole) {
     "indikator-kinerja",
     "kurun-waktu",
   ];
+
+  // ==============================================
+  // DYNAMIC FIELD LOGIC
+  // ==============================================
+
+  function updateRemoveButtonVisibility(container) {
+    if (!container) return;
+    const items = container.querySelectorAll(".dynamic-field-item");
+    const show = items.length > 1;
+    items.forEach(item => {
+      const removeBtn = item.querySelector(".remove-button");
+      if (removeBtn) {
+        if (show) {
+          removeBtn.classList.add("visible");
+        } else {
+          removeBtn.classList.remove("visible");
+        }
+      }
+    });
+  }
+
+  window.removeField = function (btn) {
+    const item = btn.closest(".dynamic-field-item");
+    if (!item) return;
+
+    const container = item.parentElement;
+    if (container.querySelectorAll(".dynamic-field-item:not(.removing)").length > 1) {
+      item.classList.add("removing");
+      item.addEventListener("animationend", () => {
+        item.remove();
+        updateRemoveButtonVisibility(container);
+      }, { once: true });
+    } else {
+      showError("Minimal harus ada 1 field!");
+    }
+  };
 
   // ==============================================
   // VALIDATION FUNCTIONS
@@ -1018,6 +1091,15 @@ export function renderUsulanKakPage(path, userRole) {
     attachEventListeners();
     populateIkuDropdowns(); // Populate IKU dropdowns on init
     populateSatuanDropdowns(); // Populate Satuan dropdowns on init
+
+    // Set initial visibility of remove buttons
+    updateRemoveButtonVisibility(document.getElementById("penerimaManfaatContainer"));
+    updateRemoveButtonVisibility(document.getElementById("tahapanPelaksanaanContainer"));
+    updateRemoveButtonVisibility(document.getElementById("indikatorKinerjaContainer"));
+    updateRemoveButtonVisibility(document.getElementById("ikuRenstraContainer"));
+    updateRemoveButtonVisibility(document.getElementById('belanjaBarangContainer'));
+    updateRemoveButtonVisibility(document.getElementById('belanjaJasaContainer'));
+    updateRemoveButtonVisibility(document.getElementById('belanjaPerjalananContainer'));
   }
 
   // ==============================================  // API FUNCTIONS
@@ -1417,20 +1499,11 @@ export function renderUsulanKakPage(path, userRole) {
   }
 
   // Dynamic Field Functions (Global scope)
-  window.removeField = function (btn) {
-    const item = btn.closest(".mb-4, .dynamic-field-item");
-    const container = item.parentElement;
-    if (container.children.length > 1) {
-      item.remove();
-    } else {
-      showError("Minimal harus ada 1 field!");
-    }
-  };
 
   window.addPenerimaManfaat = function () {
     const container = document.getElementById("penerimaManfaatContainer");
     const newItem = document.createElement("div");
-    newItem.className = "penerima-manfaat-item flex gap-4 items-start mb-4";
+    newItem.className = "penerima-manfaat-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
     newItem.innerHTML = `
       <div class="flex-1">
         <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
@@ -1440,149 +1513,95 @@ export function renderUsulanKakPage(path, userRole) {
         <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
         <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat">
       </div>
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
       </button>
     `;
     container.appendChild(newItem);
+    updateRemoveButtonVisibility(container);
+    newItem.addEventListener('animationend', () => {
+        newItem.classList.remove('new-item-animation');
+    });
   };
 
   window.addTahapanPelaksanaan = function () {
     const container = document.getElementById("tahapanPelaksanaanContainer");
-
-    // Save current values
-    const currentValues = Array.from(container.querySelectorAll("input")).map(
-      (input) => input.value
-    );
-
     const newItem = document.createElement("div");
-    newItem.className = "flex gap-4 items-start mb-4";
+    newItem.className = "tahapan-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
     newItem.innerHTML = `
       <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
       </button>
     `;
     container.appendChild(newItem);
-
-    // Restore old values
-    const inputs = container.querySelectorAll("input");
-    currentValues.forEach((value, index) => {
-      if (inputs[index]) {
-        inputs[index].value = value;
-      }
+    updateRemoveButtonVisibility(container);
+    newItem.addEventListener('animationend', () => {
+        newItem.classList.remove('new-item-animation');
     });
   };
 
   window.addIndikatorKinerja = function () {
     const container = document.getElementById("indikatorKinerjaContainer");
-
-    // Save current values
-    const currentValues = [];
-    container.querySelectorAll(".flex.items-end.gap-4.mb-6").forEach((item) => {
-      const inputs = item.querySelectorAll("input[type='text']");
-      currentValues.push({
-        bulan: inputs[0].value,
-        indikator: inputs[1].value,
-        target: inputs[2].value,
-      });
-    });
-
     const newItem = document.createElement("div");
-    newItem.className = "flex items-end gap-4 mb-6";
+    newItem.className = "indikator-kinerja-item dynamic-field-item new-item-animation flex items-end gap-4 mb-6";
     newItem.innerHTML = `
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
           <option value="">Pilih Bulan</option>
-          <option value="Januari">Januari</option>
-          <option value="Februari">Februari</option>
-          <option value="Maret">Maret</option>
-          <option value="April">April</option>
-          <option value="Mei">Mei</option>
-          <option value="Juni">Juni</option>
-          <option value="Juli">Juli</option>
-          <option value="Agustus">Agustus</option>
-          <option value="September">September</option>
-          <option value="Oktober">Oktober</option>
-          <option value="November">November</option>
-          <option value="Desember">Desember</option>
+          <option value="Januari">Januari</option> <option value="Februari">Februari</option> <option value="Maret">Maret</option>
+          <option value="April">April</option> <option value="Mei">Mei</option> <option value="Juni">Juni</option>
+          <option value="Juli">Juli</option> <option value="Agustus">Agustus</option> <option value="September">September</option>
+          <option value="Oktober">Oktober</option> <option value="November">November</option> <option value="Desember">Desember</option>
         </select>
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input">
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input">
       </div>
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
       </button>
     `;
     container.appendChild(newItem);
-
-    // Restore old values
-    const items = container.querySelectorAll(".flex.items-end.gap-4.mb-6");
-    currentValues.forEach((value, index) => {
-      if (items[index]) {
-        const inputs = items[index].querySelectorAll("input[type='text']");
-        inputs[0].value = value.bulan;
-        inputs[1].value = value.indikator;
-        inputs[2].value = value.target;
-      }
+    updateRemoveButtonVisibility(container);
+    newItem.addEventListener('animationend', () => {
+        newItem.classList.remove('new-item-animation');
     });
   };
 
   window.addIkuField = function () {
     const container = document.getElementById("ikuRenstraContainer");
-
-    // Save current values
-    const currentValues = [];
-    container.querySelectorAll(".iku-item").forEach((item) => {
-      const select = item.querySelector("select");
-      const input = item.querySelector("input[type='text']");
-      currentValues.push({
-        iku_id: select.value,
-        persentase_target: input.value,
-      });
-    });
-
-    // Add new empty field
     const newItem = document.createElement("div");
-    newItem.className =
-      "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
+    newItem.className = "iku-item dynamic-field-item new-item-animation grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4";
     newItem.innerHTML = `
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
+      <div>
+        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
+          <option value="">Input</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Target Persentase</label>
+        <div class="flex gap-2 items-center">
+          <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input">
+          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
         </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-          <div class="flex gap-2 items-center">
-            <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-          </div>
-        </div>
-        <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeIkuField(this)">
-              <span class="text-xl font-bold">−</span>
-            </button>
-          `;
+      </div>
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+        <span class="text-xl font-bold">−</span>
+      </button>
+    `;
     container.appendChild(newItem);
-
-    // Repopulate and restore values
-    populateIkuDropdowns().then(() => {
-      container.querySelectorAll(".iku-item").forEach((item, index) => {
-        if (currentValues[index]) {
-          const select = item.querySelector("select");
-          const input = item.querySelector("input[type='text']");
-          select.value = currentValues[index].iku_id;
-          input.value = currentValues[index].persentase_target;
-        }
-      });
+    populateIkuDropdowns(); // Re-populate for the new select
+    updateRemoveButtonVisibility(container);
+     newItem.addEventListener('animationend', () => {
+        newItem.classList.remove('new-item-animation');
     });
   };
   // Increment/Decrement value functions
