@@ -39,4 +39,27 @@ class KegiatanApproval extends Model
         $sql = "SELECT * FROM {$this->table} WHERE kegiatan_id = ? ORDER BY approval_kegiatan_id ASC";
         return $this->query($sql, [$kegiatanId])->fetchAll();
     }
+
+    /**
+     * Find a specific approval record by kegiatan ID and approval level.
+     *
+     * @param int $kegiatanId The ID of the kegiatan.
+     * @param string $level The approval level.
+     * @return array|false The full approval record or false if not found.
+     */
+    public function findByKegiatanIdAndLevel($kegiatanId, $level)
+    {
+        $sql = "SELECT * FROM {$this->table} 
+                WHERE kegiatan_id = :kegiatan_id 
+                AND approval_level = :approval_level 
+                LIMIT 1";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'kegiatan_id' => $kegiatanId,
+            'approval_level' => $level
+        ]);
+        
+        return $stmt->fetch();
+    }
 }

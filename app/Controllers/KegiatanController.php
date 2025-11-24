@@ -660,6 +660,96 @@ class KegiatanController
     }
 
     /**
+     * Mark the disbursement process as complete and start the LPJ timer.
+     * 
+     * POST /api/kegiatan/{id}/selesaikan-pencairan
+     */
+    public function selesaikanPencairan()
+    {
+        $db = $this->kegiatanModel->getDb();
+        try {
+            $db->beginTransaction();
+
+            // 1. Get Input and Find Kegiatan
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/selesaikan-pencairan$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // 2. Authorization: Only Bendahara can do this.
+            if (!$this->hasRole('Bendahara') && !$this->hasRole('Admin')) {
+                Response::forbidden("Hanya Bendahara yang dapat menyelesaikan proses pencairan.");
+            }
+
+            // 3. Find Bendahara-Cair approval step
+            $bendaharaCairApproval = $this->kegiatanApprovalModel->findByKegiatanIdAndLevel($kegiatanId, 'Bendahara-Cair');
+
+            if (!$bendaharaCairApproval) {
+                Response::error('Proses pencairan untuk kegiatan ini belum dimulai.', 400);
+            }
+
+            // 4. Update the Bendahara-Cair step to 'Selesai'
+            $this->kegiatanModel->updateApprovalStatus(
+                $bendaharaCairApproval['approval_kegiatan_id'],
+                'Selesai', // A new status indicating completion
+                $this->userData['user_id'],
+                'Proses pencairan dana telah selesai.'
+            );
+            
+            // 5. Activate the Bendahara-LPJ step
+            $bendaharaLpjApproval = $this->kegiatanApprovalModel->findByKegiatanIdAndLevel($kegiatanId, 'Bendahara-LPJ');
+            if ($bendaharaLpjApproval) {
+                 $this->kegiatanModel->updateApprovalStatus(
+                    $bendaharaLpjApproval['approval_kegiatan_id'],
+                    'Aktif', // Activate the LPJ step
+                    null,
+                    null
+                );
+            }
+
+            // 6. Update main kegiatan status to 'LPJ'
+            $this->kegiatanModel->updateStatus($kegiatanId, 8); // 8 = Menunggu LPJ
+
+            // 7. Start the LPJ Timer
+            $lpjTimerService = new LpjTimerService();
+            $lpjTimerService->startLpjTimer($kegiatanId);
+
+            // 8. Log status change
+            $this->logStatusModel->create([
+                'kak_id' => $kegiatan['kak_id'],
+                'status_id_lama' => $kegiatan['status_id'],
+                'status_id_baru' => 8, // Menunggu LPJ
+                'actor_user_id' => $this->userData['user_id'],
+                'catatan' => 'Proses pencairan selesai, tahap LPJ dimulai.'
+            ]);
+
+            // 9. Notify Pengusul
+            $this->notifikasiModel->create([
+                'penerima_user_id' => $kegiatan['pengusul_user_id'],
+                'pesan' => "Pencairan untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah selesai. Anda sekarang dapat mengunggah LPJ.",
+                'link_tujuan' => '/pengusul/lpj/' . $kegiatanId,
+            ]);
+
+            $db->commit();
+            Response::success(null, 'Proses pencairan berhasil diselesaikan dan tahap LPJ telah dimulai.');
+
+        } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            Response::error('Gagal menyelesaikan proses pencairan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
      * Duplicate kegiatan
      * 
      * POST /api/kegiatan/{id}/duplicate
