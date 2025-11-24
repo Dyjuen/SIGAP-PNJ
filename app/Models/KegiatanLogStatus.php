@@ -7,7 +7,7 @@ use PDO;
 
 class KegiatanLogStatus extends Model
 {
-    protected $table = 't_kak_log_status';
+    protected $table = 't_kegiatan_log_status';
     protected $primaryKey = 'log_id';
 
     /**
@@ -16,8 +16,8 @@ class KegiatanLogStatus extends Model
     public function getByKegiatanId($kegiatanId)
     {
         $sql = "SELECT kls.*, u.nama_lengkap as actor_nama, s_lama.nama_status as status_lama, s_baru.nama_status as status_baru
-                FROM t_kak_log_status kls
-                JOIN t_kegiatan k ON kls.kak_id = k.kak_id
+                FROM t_kegiatan_log_status kls
+                JOIN t_kegiatan k ON kls.kegiatan_id = k.kegiatan_id
                 JOIN m_users u ON kls.actor_user_id = u.user_id
                 LEFT JOIN m_kegiatan_status s_lama ON kls.status_id_lama = s_lama.status_id
                 JOIN m_kegiatan_status s_baru ON kls.status_id_baru = s_baru.status_id

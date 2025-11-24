@@ -16,7 +16,7 @@ class Controller
      */
     public function __construct()
     {
-        $this->db = Database::getInstance()->getConnection();
+        $this->db = Database::getInstance();
         $this->user = AuthMiddleware::getAuthUser();
     }
 

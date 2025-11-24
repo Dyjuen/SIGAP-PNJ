@@ -7,7 +7,7 @@ use PDO;
 
 class KegiatanAnggaran extends Model
 {
-    protected $table = 't_telaah_anggaran';
+    protected $table = 't_kegiatan_anggaran';
     protected $primaryKey = 'anggaran_id';
 
     /**
@@ -16,9 +16,8 @@ class KegiatanAnggaran extends Model
     public function getByKegiatanId($kegiatanId)
     {
         $sql = "SELECT ta.* 
-                FROM t_telaah_anggaran ta
-                JOIN t_telaah t ON ta.telaah_id = t.telaah_id
-                JOIN t_kegiatan k ON t.telaah_id = k.telaah_id
+                FROM t_kegiatan_anggaran ta
+                JOIN t_kegiatan k ON ta.kegiatan_id = k.kegiatan_id
                 WHERE k.kegiatan_id = ?";
         
         return $this->query($sql, [$kegiatanId])->fetchAll(PDO::FETCH_ASSOC);

@@ -176,9 +176,9 @@ class KAKController
 
             $rows = $this->db->resultSet();
 
-            return $this->responseSuccess($rows);
-        } catch (PDOException $e) {
-            return $this->responseError('Gagal mengambil data KAK: ' . $e->getMessage());
+            Response::success($rows);
+        } catch (\PDOException $e) {
+            Response::error('Gagal mengambil data KAK: ' . $e->getMessage());
         }
     }
 
