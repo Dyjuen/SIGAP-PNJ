@@ -72,32 +72,6 @@ export function renderDummyInputPage(path, userRole) {
         }
       }
 
-      @keyframes pulse {
-        0%, 100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.05);
-        }
-      }
-
-      @keyframes bounceIn {
-        0% {
-          opacity: 0;
-          transform: scale(0.3);
-        }
-        50% {
-          opacity: 1;
-          transform: scale(1.05);
-        }
-        70% {
-          transform: scale(0.9);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-
       @keyframes shimmer {
         0% {
           background-position: -1000px 0;
@@ -120,42 +94,25 @@ export function renderDummyInputPage(path, userRole) {
       .progress-step-item {
         cursor: pointer;
         animation: fadeIn 0.6s ease-out;
-        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      }
-
-      .progress-step-item:nth-child(1) {
-        animation-delay: 0.1s;
-      }
-
-      .progress-step-item:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-
-      .progress-step-item:nth-child(3) {
-        animation-delay: 0.3s;
       }
 
       .progress-step-item:hover {
-        transform: translateY(-5px) scale(1.05);
+        transform: translateY(-3px); 
       }
       
       .progress-step-circle {
         box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);        
       }
 
       .progress-step-item:hover .progress-step-circle {
         box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
         transform: rotate(360deg);
       }
-
-      .progress-step-circle.active-step {
-        animation: pulse 2s infinite;
-      }
       
-      /* Menu buttons */
+      /* Menu buttons - SAMA SEPERTI STEPPER YANG SMOOTH! */
       .menu-button {
-        transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.4s ease-in-out;
         position: relative;
         overflow: hidden;
       }
@@ -168,7 +125,7 @@ export function renderDummyInputPage(path, userRole) {
         width: 100%;
         height: 100%;
         background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), transparent);
-        transition: left 0.5s ease;
+        transition: left 0.6s ease;
       }
 
       .menu-button:hover::before {
@@ -176,22 +133,41 @@ export function renderDummyInputPage(path, userRole) {
       }
 
       .menu-button:hover {
-        transform: translateX(10px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+        transform: translateY(-3px); 
       }
-      
+
       .menu-button.active {
         border-color: #00BCD4 !important;
         background: rgba(0, 188, 212, 0.1) !important;
-        animation: bounceIn 0.6s ease-out;
       }
 
+      /* KUNCI: SAMA PERSIS SEPERTI STEPPER CIRCLE! */
       .menu-button .w-8 {
-        transition: all 0.7s ease;
+        transition: all 0.8s cubic-bezier(0.050, 0.600, 0.165, 1.025);
       }
 
       .menu-button:hover .w-8 {
-        transform: rotate(360deg) scale(1.2);
+        transform: rotate(360deg);
+      }
+
+      /* PENTING: MATIKAN transform untuk icon di dalam menu button! */
+      .menu-button .w-8 .ti {
+        transition: none !important;
+        transform: none !important;
+      }
+
+      .menu-button:hover .w-8 .ti {
+        transform: none !important;
+        /* Icon ikut muter karena parent (.w-8) yang rotate, bukan transform sendiri! */
+      }
+
+      /* Text transition */
+      .menu-button .font-semibold {
+        transition: color 0.3s ease;
+      }
+
+      .menu-button:hover .font-semibold {
+        color: #00ACC1;
       }
       
       /* Step content */
@@ -227,7 +203,7 @@ export function renderDummyInputPage(path, userRole) {
       /* RAB Grid */
       .grid-rab {
         display: grid;
-        grid-template-columns: 2fr 1fr 2fr 1fr 1fr 2fr;
+        grid-template-columns: 2fr 1fr 2fr 1fr 1fr 1fr 1fr 2fr;
         gap: 1rem;
         align-items: end;
       }
@@ -239,7 +215,7 @@ export function renderDummyInputPage(path, userRole) {
         margin-bottom: 1rem;
         background: white;
         animation: fadeInLeft 0.5s ease-out;
-        transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: all 0.8s cubic-bezier(0.050, 0.600, 0.165, 1.025);
         position: relative;
         overflow: hidden;
       }
@@ -334,11 +310,6 @@ export function renderDummyInputPage(path, userRole) {
         transition: all 0.7s ease;
       }
 
-      h4:hover, h5:hover {
-        transform: scale(1.05);
-        text-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
-      }
-
       /* Backdrop */
       .backdrop-blur-md {
         animation: slideInDown 0.6s ease-out;
@@ -414,6 +385,45 @@ export function renderDummyInputPage(path, userRole) {
       .border:hover::after {
         width: 100%;
       }
+
+      /* Border Drawing Animation - On Hover (Forward & Reverse) */
+      .border-hover-draw {
+        position: relative;
+      }
+
+      .border-hover-draw::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        padding: 2px;
+        background: linear-gradient(135deg, #00BCD4, #059cd8, #00BCD4);
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        clip-path: polygon(
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%
+        );
+        transition: clip-path 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+      }
+
+      /* Forward animation - Mouse IN (bawah → kiri/kanan → atas) */
+      .border-hover-draw:hover::before {
+        clip-path: polygon(
+          0% 100%, 0% 0%, 
+          0% 0%, 50% 0%, 
+          50% 0%, 100% 0%, 
+          100% 0%, 100% 100%
+        );
+      }
+
+      /* Reverse animation - Mouse OUT (atas → kiri/kanan → bawah) - handled by transition */
     </style>
 
     <div class="kerangka-acuan-kerja-page">
@@ -429,13 +439,12 @@ export function renderDummyInputPage(path, userRole) {
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">2</div>
           <div class="text-left">
             <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Indikator Kinerja Utama</div>
-            <div class="progress-step-subtext text-xs" style="color: #9CA3AF;">& RENSTRA</div>
           </div>
         </div>
         <div class="progress-step-item flex items-center justify-center gap-3 px-4" data-main-step="3">
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">3</div>
           <div class="text-left">
-            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rincian Anggaran Biaya</div>
+            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rencana Anggaran Biaya</div>
           </div>
         </div>
       </div>
@@ -470,7 +479,7 @@ export function renderDummyInputPage(path, userRole) {
 
             <!-- Main Form Area -->
             <div class="flex-1 min-h-[500px]">
-              <div class="border border-gray-200 rounded-xl p-6">
+              <div class="border border-gray-200 rounded-xl p-6 border-hover-draw">
                 <!-- Step 1: Gambaran Umum -->
                 <div class="step-content active" id="gambaran-umum">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Gambaran Umum</h4>
@@ -613,12 +622,11 @@ export function renderDummyInputPage(path, userRole) {
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" id="btnBackRab">
-              <span>←</span> Kembali
+              <span>←</span> Back
             </button>
           </div>
         </div>
       </div>
-    </div>
   `;
 
   renderDashboardLayout(pageContent, userRole);
@@ -753,6 +761,14 @@ export function renderDummyInputPage(path, userRole) {
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
           <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.satuan2_id ? getNameById(item.satuan2_id, masterState.satuan, "satuan_id", "nama_satuan") : ""}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume3 || "1"}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.satuan3_id ? getNameById(item.satuan3_id, masterState.satuan, "satuan_id", "nama_satuan") : ""}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
