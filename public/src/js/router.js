@@ -15,7 +15,7 @@ import { renderMengajukanKegiatanPage } from "./pages/Pengusul/MengajukanKegiata
 import { renderPencairanDanaPage } from "./pages/Bendahara/PencairanDanaPage.js";
 import { renderMonitoringUsulanPage } from "./pages/Pengusul/MonitoringUsulan.js";
 import { renderPengajuanLpjPage } from "./pages/Pengusul/PengajuanLpj.js";
-import { renderInputLpjPage } from "./pages/Pengusul/InputLpj.js";
+import { renderInputLpjPage } from "./pages/shared/InputLpj.js";
 import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
 import { renderRevisiKakPage } from "./pages/shared/RevisiKak.js";
 import { renderMonitoringKegiatanPage } from "./pages/shared/MonitoringKegiatan.js";
