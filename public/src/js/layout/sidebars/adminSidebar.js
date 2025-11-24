@@ -798,22 +798,6 @@ export const adminSidebar = `
         <span class="menu-text">Daftar Template</span>
       </a>
     </li>
-
-    <!-- Pengaturan -->
-    <li class="menu-item">
-      <a href="/admin/settings" class="menu-link" data-tooltip="Pengaturan">
-        <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M12 1v6m0 6v6"></path>
-            <path d="M4.22 4.22l4.24 4.24m5.08 0l4.24-4.24"></path>
-            <path d="M1 12h6m6 0h6"></path>
-            <path d="M4.22 19.78l4.24-4.24m5.08 0l4.24 4.24"></path>
-          </svg>
-        </span>
-        <span class="menu-text">Pengaturan</span>
-      </a>
-    </li>
   </ul>
 
   <!-- User Profile Section -->

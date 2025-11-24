@@ -768,7 +768,7 @@ export const pengusulSidebar = `
     
     <!-- Pengajuan Kegiatan -->
     <li class="menu-item">
-      <a href="/pengusul/monitoring-usulan" class="menu-link" data-tooltip="Pengajuan Kegiatan">
+      <a href="/pengusul/usulan" class="menu-link" data-tooltip="Pengajuan Kegiatan">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
@@ -782,7 +782,7 @@ export const pengusulSidebar = `
 
     <!-- Monitoring Kegiatan -->
     <li class="menu-item">
-      <a href="/pengusul/pengajuan-kegiatan" class="menu-link" data-tooltip="Monitoring Kegiatan">
+      <a href="/pengusul/kegiatan/view" class="menu-link" data-tooltip="Monitoring Kegiatan">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
@@ -796,7 +796,7 @@ export const pengusulSidebar = `
 
     <!-- Pengajuan LPJ -->
     <li class="menu-item">
-      <a href="/pengusul/pengajuan-lpj" class="menu-link" data-tooltip="Pengajuan LPJ">
+      <a href="/pengusul/kegiatan/lpj" class="menu-link" data-tooltip="Pengajuan LPJ">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
@@ -810,7 +810,7 @@ export const pengusulSidebar = `
 
     <!-- Monitoring LPJ -->
     <li class="menu-item">
-      <a href="/pengusul/monitoring-kegiatan" class="menu-link" data-tooltip="Monitoring LPJ">
+      <a href="/pengusul/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring LPJ">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>

@@ -767,7 +767,7 @@ export const wadirSidebar = `
 
     <!-- Verifikasi Kegiatan -->
     <li class="menu-item">
-      <a href="/wadir/verifikasi-kegiatan" class="menu-link" data-tooltip="Verifikasi Kegiatan">
+      <a href="/wadir/kegiatan/approve" class="menu-link" data-tooltip="Verifikasi Kegiatan">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
@@ -779,7 +779,7 @@ export const wadirSidebar = `
 
     <!-- Monitoring Kegiatan -->
     <li class="menu-item">
-      <a href="/wadir/monitoring-kegiatan" class="menu-link" data-tooltip="Monitoring Kegiatan">
+      <a href="/wadir/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
         <span class="menu-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
@@ -788,22 +788,6 @@ export const wadirSidebar = `
           </svg>
         </span>
         <span class="menu-text">Monitoring Kegiatan</span>
-      </a>
-    </li>
-
-    <!-- Pengaturan -->
-    <li class="menu-item">
-      <a href="/wadir/pengaturan" class="menu-link" data-tooltip="Pengaturan">
-        <span class="menu-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M12 1v6m0 6v6"></path>
-            <path d="M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24"></path>
-            <path d="M1 12h6m6 0h6"></path>
-            <path d="M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24"></path>
-          </svg>
-        </span>
-        <span class="menu-text">Pengaturan</span>
       </a>
     </li>
   </ul>
