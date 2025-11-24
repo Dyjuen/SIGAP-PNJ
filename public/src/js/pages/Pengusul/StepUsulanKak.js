@@ -16,6 +16,481 @@ export function renderUsulanKakPage(path, userRole) {
     <!-- Add required CSS for daterangepicker in the head section -->
     <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
     
+    <style>
+      /* Border Drawing Animation - SUPER SMOOTH VERSION with POP-UP */
+      .border-hover-draw {
+        position: relative;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Subtle pop-up effect saat hover */
+      .border-hover-draw:hover {
+        transform: translateY(-4px) scale(1.01);
+      }
+
+      .border-hover-draw::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        padding: 2px;
+        background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        
+        /* Default state: hidden di tengah bawah */
+        clip-path: polygon(
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%
+        );
+        
+        /* Smooth reverse animation by default */
+        animation: borderDrawReverse 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      }
+
+      /* Forward animation saat hover - SUPER SMOOTH */
+      .border-hover-draw:hover::before {
+        animation: borderDrawForward 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      }
+
+      /* ====== FORWARD ANIMATION (Mouse IN) ====== */
+      /* Bawah → Kiri/Kanan → Atas */
+      @keyframes borderDrawForward {
+        0% {
+          /* Start: titik tengah bawah */
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+        
+        30% {
+          /* Garis bawah expand smooth ke kiri-kanan */
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+        
+        70% {
+          /* Border kiri & kanan naik bersamaan ke atas (SMOOTH!) */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+        
+        100% {
+          /* Complete: border penuh dengan slight overshoot */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+      }
+
+      /* ====== REVERSE ANIMATION (Mouse OUT) ====== */
+      /* Atas → Kiri/Kanan → Bawah */
+      @keyframes borderDrawReverse {
+        0% {
+          /* Start: border penuh */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+        
+        30% {
+          /* Garis atas & border kiri-kanan turun smooth */
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+        
+        70% {
+          /* Garis bawah mulai menyusut ke tengah */
+          clip-path: polygon(
+            25% 100%, 25% 100%, 
+            25% 100%, 50% 100%, 
+            50% 100%, 75% 100%, 
+            75% 100%, 75% 100%
+          );
+        }
+        
+        100% {
+          /* End: hilang di tengah bawah */
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+      }
+
+      /* Bonus: Input subtle lift + shadow + glow saat hover */
+      .border-hover-draw:hover input,
+      .border-hover-draw:hover textarea,
+      .border-hover-draw:hover select {
+        border-color: rgba(0, 188, 212, 0.4) !important;
+        box-shadow: 
+          0 8px 24px rgba(0, 188, 212, 0.12),
+          0 0 0 1px rgba(0, 188, 212, 0.1);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* ====== MAIN STEP CONTENT - Border Drawing + Pop-Up ====== */
+      .main-step-content {
+        display: none;
+        position: relative;
+      }
+
+      .main-step-content.active {
+        display: block;
+        animation: 
+          fadeIn 0.6s ease-out,
+          popUpEntry 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Wrapper untuk border animation */
+      .main-step-content.active > .bg-white {
+        position: relative;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Border drawing effect (made smoother to match .border-hover-draw) */
+      .main-step-content.active > .bg-white::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 16px;
+        padding: 2px;
+        background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0;
+
+        /* Default hidden (center-bottom) */
+        clip-path: polygon(
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%
+        );
+
+        /* Smoother animation + slightly longer so it feels natural on page load */
+        animation: 
+          mainStepBorderDraw 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.15s forwards,
+          borderFadeIn 0.35s ease-out 0.15s forwards;
+      }
+
+      /* Pop-up subtle saat hover */
+      .main-step-content.active > .bg-white:hover {
+        transform: translateY(-6px) scale(1.005);
+      }
+
+      .main-step-content.active > .bg-white:hover::before {
+        opacity: 1;
+      }
+
+      /* Animasi pop-up entry */
+      @keyframes popUpEntry {
+        0% {
+          opacity: 0;
+          transform: translateY(30px) scale(0.95);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Border drawing untuk main step */
+      @keyframes mainStepBorderDraw {
+        /* 0%: hidden center-bottom */
+        0% {
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+
+        /* 20%: bottom expands smoothly left-right */
+        20% {
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+
+        /* 45%: sides start rising (soft corner formation) */
+        45% {
+          clip-path: polygon(
+            0% 100%, 0% 65%, 
+            0% 65%, 50% 65%, 
+            50% 65%, 100% 65%, 
+            100% 65%, 100% 100%
+          );
+        }
+
+        /* 75%: sides rise higher (near final) */
+        75% {
+          clip-path: polygon(
+            0% 100%, 0% 30%, 
+            0% 30%, 50% 30%, 
+            50% 30%, 100% 30%, 
+            100% 30%, 100% 100%
+          );
+        }
+
+        /* 100%: complete border */
+        100% {
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+      }
+
+      /* Border fade in */
+      @keyframes borderFadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 0.8;
+        }
+      }
+
+      /* Hover enhancement untuk main step */
+      .main-step-content.active > .bg-white:hover::before {
+        opacity: 1 !important;
+        animation: none; /* Stop animation saat hover */
+        clip-path: polygon(
+          0% 100%, 0% 0%, 
+          0% 0%, 50% 0%, 
+          50% 0%, 100% 0%, 
+          100% 0%, 100% 100%
+        );
+      }
+
+      /* FadeIn animation for step content */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ====== ADDITIONAL ANIMATIONS ====== */
+      /* Icon animations */
+      .ti {
+        transition: all 0.3s ease;
+        display: inline-block;
+      }
+
+      button:hover .ti {
+        transform: scale(1.2) rotate(10deg);
+      }
+
+      /* Progress step hover animations */
+      .progress-step-item {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .progress-step-item:hover {
+        transform: translateY(-3px);
+      }
+
+      .progress-step-circle {
+        transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      .progress-step-item:hover .progress-step-circle {
+        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
+        transform: rotate(360deg);
+      }
+
+      /* Menu button animations */
+      .menu-button {
+        transition: all 0.4s ease-in-out;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .menu-button:hover::before {
+        left: 100%;
+      }
+
+      .menu-button:hover {
+        transform: translateY(-3px);
+      }
+
+      /* Menu button icon rotation (like stepper circle) */
+      .menu-button .w-8 {
+        transition: all 0.8s cubic-bezier(0.050, 0.600, 0.165, 1.025);
+      }
+
+      .menu-button:hover .w-8 {
+        transform: rotate(360deg);
+      }
+
+      /* PENTING: MATIKAN transform untuk icon di dalam menu button */
+      .menu-button .w-8 .ti {
+        transition: none !important;
+        transform: none !important;
+      }
+
+      .menu-button:hover .w-8 .ti {
+        transform: none !important;
+      }
+
+      /* Menu button text color transition */
+      .menu-button .font-semibold {
+        transition: color 0.3s ease;
+      }
+
+      .menu-button:hover .font-semibold {
+        color: #00ACC1;
+      }
+
+      /* Shimmer effect for loading states */
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      .shimmer {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite;
+      }
+
+      /* Button ripple effect */
+      button {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+      }
+
+      button:active::after {
+        width: 300px;
+        height: 300px;
+      }
+
+      button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 188, 212, 0.3);
+      }
+
+      button:active {
+        transform: translateY(-1px);
+      }
+
+      /* Step content fade in */
+      .step-content {
+        display: none;
+      }
+
+      .step-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      /* Card animations */
+      .bg-white.rounded-xl.shadow-lg {
+        transition: all 0.7s ease;
+      }
+
+      .bg-white.rounded-xl.shadow-lg:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-5px);
+      }
+
+      /* Input/textarea transitions */
+      input, textarea, select {
+        transition: all 0.3s ease;
+      }
+
+      /* Backdrop blur hover effect */
+      .backdrop-blur-md {
+        transition: all 0.7s ease;
+      }
+
+      .backdrop-blur-md:hover {
+        backdrop-filter: blur(20px) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+      }
+
+      /* Smooth scroll */
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
+    
     <div class="kerangka-acuan-kerja-page">
       <!-- Progress Steps -->
       <div class="flex justify-center gap-24 mb-8 backdrop-blur-md p-6 rounded-xl shadow-lg" style="background: rgba(255, 255, 255, 0.8);">
@@ -39,7 +514,6 @@ export function renderUsulanKakPage(path, userRole) {
           </div>
           <div class="text-left">
             <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Indikator Kinerja Utama</div>
-            <div class="progress-step-subtext text-xs" style="color: #9CA3AF;">& RENSTRA</div>
           </div>
         </div>
 
@@ -86,7 +560,7 @@ export function renderUsulanKakPage(path, userRole) {
 
             <!-- Main Form Area -->
             <div class="flex-1 min-h-[500px]">
-              <div class="border border-gray-200 rounded-xl p-6">
+              <div class="border border-gray-200 rounded-xl p-6 border-hover-draw">
                 <!-- Step 1: Gambaran Umum -->
                 <div class="step-content active" id="gambaran-umum">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Gambaran Umum</h4>
@@ -221,7 +695,7 @@ export function renderUsulanKakPage(path, userRole) {
       <!-- Main Step 2: IKU & Renstra -->
       <div class="main-step-content" id="main-step-2">
         <div class="bg-white rounded-xl shadow-lg p-8">
-          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama & Renstra</h4>
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama</h4>
           
           <div class="mb-8" id="ikuRenstraContainer">
             <div class="iku-item dynamic-field-item row-item mb-4">

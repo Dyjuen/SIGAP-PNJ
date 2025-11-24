@@ -179,15 +179,6 @@ export function renderDummyInputPage(path, userRole) {
         display: block;
         animation: fadeIn 0.5s ease-out;
       }
-      
-      .main-step-content {
-        display: none;
-      }
-      
-      .main-step-content.active {
-        display: block;
-        animation: fadeIn 0.6s ease-out;
-      }
 
       /* Card animations */
       .bg-white.rounded-xl.shadow-lg {
@@ -203,7 +194,7 @@ export function renderDummyInputPage(path, userRole) {
       /* RAB Grid */
       .grid-rab {
         display: grid;
-        grid-template-columns: 2fr 1fr 2fr 1fr 1fr 1fr 1fr 2fr;
+        grid-template-columns: 2.5fr 0.8fr 1.2fr 0.8fr 1.2fr 0.8fr 1.2fr 2.5fr;
         gap: 1rem;
         align-items: end;
       }
@@ -299,11 +290,6 @@ export function renderDummyInputPage(path, userRole) {
         display: inline-block;
       }
 
-      label:hover {
-        transform: translateX(5px);
-        color: #00BCD4 !important;
-      }
-
       /* Headers */
       h4, h5 {
         animation: fadeInDown 0.6s ease-out;
@@ -364,31 +350,15 @@ export function renderDummyInputPage(path, userRole) {
         transform: scale(1.2) rotate(10deg);
       }
 
-      /* Border animations */
-      .border {
-        position: relative;
-        transition: all 0.3s ease;
-      }
-
-      .border::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        width: 0;
-        height: 2px;
-        background: #00BCD4;
-        transform: translateX(-50%);
-        transition: width 0.4s ease;
-      }
-
-      .border:hover::after {
-        width: 100%;
-      }
-
-      /* Border Drawing Animation - On Hover (Forward & Reverse) */
+      /* Border Drawing Animation - SUPER SMOOTH VERSION with POP-UP */
       .border-hover-draw {
         position: relative;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Subtle pop-up effect saat hover */
+      .border-hover-draw:hover {
+        transform: translateY(-4px) scale(1.01);
       }
 
       .border-hover-draw::before {
@@ -397,24 +367,267 @@ export function renderDummyInputPage(path, userRole) {
         inset: 0;
         border-radius: 12px;
         padding: 2px;
-        background: linear-gradient(135deg, #00BCD4, #059cd8, #00BCD4);
+        background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
         -webkit-mask: 
           linear-gradient(#fff 0 0) content-box, 
           linear-gradient(#fff 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
         pointer-events: none;
+        
+        /* Default state: hidden di tengah bawah */
         clip-path: polygon(
           50% 100%, 50% 100%, 
           50% 100%, 50% 100%, 
           50% 100%, 50% 100%, 
           50% 100%, 50% 100%
         );
-        transition: clip-path 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+        
+        /* Smooth reverse animation by default */
+        animation: borderDrawReverse 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
       }
 
-      /* Forward animation - Mouse IN (bawah → kiri/kanan → atas) */
+      /* Forward animation saat hover - SUPER SMOOTH */
       .border-hover-draw:hover::before {
+        animation: borderDrawForward 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      }
+
+      /* ====== FORWARD ANIMATION (Mouse IN) ====== */
+      /* Bawah → Kiri/Kanan → Atas */
+      @keyframes borderDrawForward {
+        0% {
+          /* Start: titik tengah bawah */
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+        
+        30% {
+          /* Garis bawah expand smooth ke kiri-kanan */
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+        
+        70% {
+          /* Border kiri & kanan naik bersamaan ke atas (SMOOTH!) */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+        
+        100% {
+          /* Complete: border penuh dengan slight overshoot */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+      }
+
+      /* ====== REVERSE ANIMATION (Mouse OUT) ====== */
+      /* Atas → Kiri/Kanan → Bawah */
+      @keyframes borderDrawReverse {
+        0% {
+          /* Start: border penuh */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+        
+        30% {
+          /* Garis atas & border kiri-kanan turun smooth */
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+        
+        70% {
+          /* Garis bawah mulai menyusut ke tengah */
+          clip-path: polygon(
+            25% 100%, 25% 100%, 
+            25% 100%, 50% 100%, 
+            50% 100%, 75% 100%, 
+            75% 100%, 75% 100%
+          );
+        }
+        
+        100% {
+          /* End: hilang di tengah bawah */
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+      }
+
+      /* Bonus: Input subtle lift + shadow + glow saat hover */
+      .border-hover-draw:hover input[readonly],
+      .border-hover-draw:hover textarea[readonly] {
+        border-color: rgba(0, 188, 212, 0.4) !important;
+        box-shadow: 
+          0 8px 24px rgba(0, 188, 212, 0.12),
+          0 0 0 1px rgba(0, 188, 212, 0.1);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* ====== MAIN STEP CONTENT - Border Drawing + Pop-Up ====== */
+      .main-step-content {
+        display: none;
+        position: relative;
+      }
+
+      .main-step-content.active {
+        display: block;
+        animation: 
+          fadeIn 0.6s ease-out,
+          popUpEntry 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Wrapper untuk border animation */
+      .main-step-content.active > .bg-white {
+        position: relative;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Border drawing effect (made smoother to match .border-hover-draw) */
+      .main-step-content.active > .bg-white::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 16px;
+        padding: 2px;
+        background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0;
+
+        /* Default hidden (center-bottom) */
+        clip-path: polygon(
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%
+        );
+
+        /* Smoother animation + slightly longer so it feels natural on page load */
+        animation: 
+          mainStepBorderDraw 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.15s forwards,
+          borderFadeIn 0.35s ease-out 0.15s forwards;
+      }
+
+      /* Pop-up subtle saat hover */
+      .main-step-content.active > .bg-white:hover {
+        transform: translateY(-6px) scale(1.005);
+      }
+
+      .main-step-content.active > .bg-white:hover::before {
+        opacity: 1;
+      }
+
+      /* Animasi pop-up entry */
+      @keyframes popUpEntry {
+        0% {
+          opacity: 0;
+          transform: translateY(30px) scale(0.95);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Border drawing untuk main step */
+      @keyframes mainStepBorderDraw {
+        /* 0%: hidden center-bottom */
+        0% {
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+
+        /* 20%: bottom expands smoothly left-right */
+        20% {
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+
+        /* 45%: sides start rising (soft corner formation) */
+        45% {
+          clip-path: polygon(
+            0% 100%, 0% 65%, 
+            0% 65%, 50% 65%, 
+            50% 65%, 100% 65%, 
+            100% 65%, 100% 100%
+          );
+        }
+
+        /* 75%: sides rise higher (near final) */
+        75% {
+          clip-path: polygon(
+            0% 100%, 0% 30%, 
+            0% 30%, 50% 30%, 
+            50% 30%, 100% 30%, 
+            100% 30%, 100% 100%
+          );
+        }
+
+        /* 100%: complete border */
+        100% {
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+      }
+
+      /* Border fade in */
+      @keyframes borderFadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 0.8;
+        }
+      }
+
+      /* Hover enhancement untuk main step */
+      .main-step-content.active > .bg-white:hover::before {
+        opacity: 1 !important;
+        animation: none; /* Stop animation saat hover */
         clip-path: polygon(
           0% 100%, 0% 0%, 
           0% 0%, 50% 0%, 
@@ -422,8 +635,6 @@ export function renderDummyInputPage(path, userRole) {
           100% 0%, 100% 100%
         );
       }
-
-      /* Reverse animation - Mouse OUT (atas → kiri/kanan → bawah) - handled by transition */
     </style>
 
     <div class="kerangka-acuan-kerja-page">
@@ -748,7 +959,7 @@ export function renderDummyInputPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume1 || "1"}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume1 || ""}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
@@ -756,7 +967,7 @@ export function renderDummyInputPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume2 || "1"}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume2 || ""}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
@@ -764,7 +975,7 @@ export function renderDummyInputPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume3 || "1"}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume3 || ""}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
