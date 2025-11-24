@@ -271,7 +271,8 @@ export function renderRevisiKakPage(path, userRole) {
       .comment-count {
         position: fixed;
         bottom: 2rem;
-        right: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
         background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
         color: white;
         padding: 1rem 1.5rem;
