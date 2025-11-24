@@ -106,7 +106,7 @@ export function renderInputLpjPage(path, userRole) {
   }
 
   function getSatuanOptions(selectedValue) {
-    let options = '<option value="">Input</option>';
+    let options = '<option value=""></option>';
     options += state.satuan.map(s => 
       `<option value="${s.satuan_id}" ${s.satuan_id == selectedValue ? 'selected' : ''}>${s.nama_satuan}</option>`
     ).join('');
@@ -121,8 +121,8 @@ export function renderInputLpjPage(path, userRole) {
       <!-- RAB Section (Disabled) -->
       <div class="mb-6">
         <h5 class="mb-4 font-bold text-lg" style="color: #374151;">RAB</h5>
-        <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end mb-4">
-          <div>
+        <div class="grid grid-cols-12 gap-4 items-end mb-4 rab-grid">
+          <div class="col-span-3">
             <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
             <input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.uraian || ''}">
           </div>
@@ -143,6 +143,14 @@ export function renderInputLpjPage(path, userRole) {
             <select disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;">${getSatuanOptions(item.satuan2_id)}</select>
           </div>
           <div>
+            <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+            <input type="number" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume3 || ''}">
+          </div>
+          <div>
+            <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Opsional)</label>
+            <select disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;">${getSatuanOptions(item.satuan3_id)}</select>
+          </div>
+          <div class="col-span-2">
             <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
             <input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;" value="Rp ${formatHarga}">
           </div>
@@ -153,8 +161,8 @@ export function renderInputLpjPage(path, userRole) {
       <!-- Realisasi Section (Enabled) -->
       <div class="mb-6">
         <h5 class="mb-4 font-bold text-lg" style="color: #374151;">Realisasi</h5>
-        <div class="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_2fr_auto] gap-4 items-end mb-4">
-          <div>
+        <div class="grid grid-cols-12 gap-4 items-end mb-4 realisasi-grid">
+          <div class="col-span-3">
             <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
             <input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.uraian || ''}">
           </div>
@@ -175,6 +183,14 @@ export function renderInputLpjPage(path, userRole) {
             <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">${getSatuanOptions(item.satuan2_id)}</select>
           </div>
           <div>
+            <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+            <input type="number" min="1" value="${item.volume3 || '1'}" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+          </div>
+          <div>
+            <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Opsional)</label>
+            <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">${getSatuanOptions(item.satuan3_id)}</select>
+          </div>
+          <div class="col-span-2">
             <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
             <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input harga" value="Rp ${formatHarga}">
           </div>
@@ -219,21 +235,32 @@ export function renderInputLpjPage(path, userRole) {
     const rabSections = document.querySelectorAll('.rab-section-item');
 
     rabSections.forEach((section, index) => {
-      const inputs = section.querySelectorAll('input, select');
-      const realisasiGrid = section.querySelector('.grid.grid-cols-\[2fr_1fr_2fr_1fr_1fr_2fr_auto\]');
+      const anggaranId = state.kegiatan.anggaran_items[index].anggaran_id;
+      const realisasiGrid = section.querySelector('.realisasi-grid');
       const fileInput = realisasiGrid.querySelector('input[type="file"]');
+      
+      const volume1 = realisasiGrid.querySelectorAll('input[type="number"]')[0].value;
+      const satuan1_id = realisasiGrid.querySelectorAll('select')[0].value;
+      const volume2 = realisasiGrid.querySelectorAll('input[type="number"]')[1].value;
+      const satuan2_id = realisasiGrid.querySelectorAll('select')[1].value;
+      const volume3 = realisasiGrid.querySelectorAll('input[type="number"]')[2].value;
+      const satuan3_id = realisasiGrid.querySelectorAll('select')[2].value;
+      const harga_satuan = realisasiGrid.querySelector('input[placeholder="Input harga"]').value.replace(/[^0-9]/g, '');
 
-      formData.append(`items[${index}][anggaran_id]`, state.kegiatan.anggaran_items[index].anggaran_id);
-      formData.append(`items[${index}][uraian]`, realisasiGrid.querySelector('input[type="text"]').value);
-      formData.append(`items[${index}][volume1]`, realisasiGrid.querySelectorAll('input[type="number"]')[0].value);
-      formData.append(`items[${index}][satuan1_id]`, realisasiGrid.querySelectorAll('select')[0].value);
-      formData.append(`items[${index}][volume2]`, realisasiGrid.querySelectorAll('input[type="number"]')[1].value);
-      formData.append(`items[${index}][satuan2_id]`, realisasiGrid.querySelectorAll('select')[1].value);
-      formData.append(`items[${index}][harga_satuan]`, realisasiGrid.querySelector('input[placeholder="Input harga"]').value.replace(/[^0-9]/g, ''));
+      formData.append(`realisasi[${anggaranId}][volume1]`, volume1);
+      if (satuan1_id) formData.append(`realisasi[${anggaranId}][satuan1_id]`, satuan1_id);
+      formData.append(`realisasi[${anggaranId}][volume2]`, volume2);
+      if (satuan2_id) formData.append(`realisasi[${anggaranId}][satuan2_id]`, satuan2_id);
+      formData.append(`realisasi[${anggaranId}][volume3]`, volume3);
+      if (satuan3_id) formData.append(`realisasi[${anggaranId}][satuan3_id]`, satuan3_id);
+      formData.append(`realisasi[${anggaranId}][harga_satuan]`, harga_satuan);
+      
+      const jumlah = (volume1 || 1) * (volume2 || 1) * (volume3 || 1) * harga_satuan;
+      formData.append(`realisasi[${anggaranId}][jumlah]`, jumlah);
 
       if (fileInput.files.length > 0) {
         for (let i = 0; i < fileInput.files.length; i++) {
-          formData.append(`items[${index}][files][]`, fileInput.files[i]);
+          formData.append(`bukti[${anggaranId}][]`, fileInput.files[i]);
         }
       }
     });
