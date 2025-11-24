@@ -398,3 +398,4 @@ export function renderPencairanDanaPage(path, userRole) {
       tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${error.message}</td></tr>`;
     }
   }
+}
