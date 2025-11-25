@@ -603,13 +603,13 @@ export function renderLoginPage() {
 
           switch (primaryRole) {
             case "Verifikator":
-              redirectPath = `/${rolePath}/usulan`;
+              redirectPath = `/${rolePath}/dashboard`;
               break;
             case "Wadir":
-              redirectPath = `/${rolePath}/kegiatan/approve`;
+              redirectPath = `/${rolePath}/dashboard`;
               break;
             case "PPK":
-              redirectPath = `/${rolePath}/kegiatan/approve`;
+              redirectPath = `/${rolePath}/dashboard`;
               break;
             case "Bendahara":
               redirectPath = `/${rolePath}/dashboard`;

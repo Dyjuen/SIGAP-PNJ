@@ -11,12 +11,12 @@ class KategoriBelanja extends Model
 
     public function findAll()
     {
-        $this->db->query("
+        $stmt = $this->db->query("
             SELECT * FROM {$this->table} 
             WHERE is_active = 1 
             ORDER BY urutan ASC
         ");
-        return $this->db->resultSet();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function findById($id)
