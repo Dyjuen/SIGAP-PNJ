@@ -77,6 +77,7 @@ const roleBasedRoutes = {
   },
   Wadir: {
     "/dashboard": renderWadirDashboardPage,
+    "/kegiatan/approve": renderWadirDashboardPage,
     "/kegiatan/monitoring": renderMonitoringKegiatanPage,
     "/kegiatan/detail/": renderDetailKegiatanPage,
     "/riwayat": renderRiwayatKAKPage,
