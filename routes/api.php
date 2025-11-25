@@ -181,6 +181,7 @@ $router = new Router();
 $router->get('/master/iku', 'MasterController@getIku');
 $router->get('/master/tipe-kegiatan', 'MasterController@getTipeKegiatan');
 $router->get('/master/satuan', 'MasterController@getSatuan');
+$router->get('/master/kategori-belanja', 'MasterController@getKategoriBelanja');
 $router->get('/panduan', 'PanduanController@index');
 $router->post('/panduan', 'PanduanController@store');
 $router->get('/panduan/{id}', 'PanduanController@show');

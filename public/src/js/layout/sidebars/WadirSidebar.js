@@ -815,6 +815,16 @@ export const wadirSidebar = `
         <span class="menu-text">Monitoring Kegiatan</span>
       </a>
     </li>
+
+        <!-- Riwayat -->
+    <li class="menu-item">
+      <a href="/wadir/riwayat" class="menu-link" data-tooltip="Riwayat">
+        <span class="menu-icon">
+          <i class="ti ti-history">&#xebea;</i>
+        </span>
+        <span class="menu-text">Riwayat</span>
+      </a>
+    </li>
   </ul>
 
   <!-- User Profile Section -->

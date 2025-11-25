@@ -104,3 +104,7 @@ vendor/bin/phinx migrate -c phinx.php
 vendor/bin/phinx seed:run -s nama seeder -c phinx.php
 vendor/bin/phinx seed:run -s MasterDataSeeder -c phinx.php
 vendor/bin/phinx seed:run -s KegiatanSeeder -c phinx.php
+vendor/bin/phinx seed:run -s KegiatanLogStatusSeeder -c phinx.php
+vendor/bin/phinx seed:run -s KegiatanAnggaranSeeder -c phinx.php
+vendor/bin/phinx seed:run -s NotificationSeeder -c phinx.php
+vendor/bin/phinx seed:run -s PanduanSeeder -c phinx.php
