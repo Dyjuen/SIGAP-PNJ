@@ -166,6 +166,14 @@ class Kegiatan extends Model
                             LEFT JOIN m_kategori_belanja kb ON ka.kategori_belanja_id = kb.kategori_belanja_id
                             WHERE ka.kak_id = ?";
             $kegiatan['anggaran_items'] = $this->query($sqlAnggaran, [$kegiatan['kak_id']])->fetchAll(PDO::FETCH_ASSOC);
+
+            // Fetch associated files for each budget item
+            if (!empty($kegiatan['anggaran_items'])) {
+                $lampiranModel = new \App\Models\KegiatanLampiran();
+                foreach ($kegiatan['anggaran_items'] as &$item) { // Use reference to modify in place
+                    $item['bukti'] = $lampiranModel->findAllBy('anggaran_id', $item['anggaran_id']);
+                }
+            }
         }
         return $kegiatan;
     }

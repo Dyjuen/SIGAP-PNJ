@@ -32,6 +32,7 @@ class LpjController extends Controller
      */
     public function submit($kegiatanId)
     {
+        error_log("Incoming _FILES: " . json_encode($_FILES)); // Debug line
         $db = $this->kegiatanModel->getDb();
         $uploader = new FileUpload(
             '/storage/uploads/documents/', // path
@@ -67,46 +68,63 @@ class LpjController extends Controller
             // 2. Process each budget item's realization
             foreach ($realisasiData as $anggaranId => $data) {
                 // Sanitize and prepare data for update
+                $volume1 = (float) ($data['volume1'] ?? 0);
+                $volume2 = (float) ($data['volume2'] ?? 0);
+                $volume3 = (float) ($data['volume3'] ?? 0);
+                $hargaSatuan = (float) ($data['harga_satuan'] ?? 0);
+
+                $totalVolume = $volume1 + $volume2 + $volume3;
+                $realisasiJumlah = $totalVolume * $hargaSatuan;
+
                 $updateData = [
-                    'realisasi_volume1' => $data['volume1'] ?? null,
-                    'realisasi_satuan1_id' => $data['satuan1_id'] ?? null,
-                    'realisasi_volume2' => $data['volume2'] ?? null,
-                    'realisasi_satuan2_id' => $data['satuan2_id'] ?? null,
-                    'realisasi_volume3' => $data['volume3'] ?? null,
-                    'realisasi_satuan3_id' => $data['satuan3_id'] ?? null,
-                    'realisasi_harga_satuan' => $data['harga_satuan'] ?? null,
-                    'realisasi_jumlah' => $data['jumlah'] ?? null,
+                    'realisasi_volume1' => ($data['volume1'] === '' ? null : $data['volume1']),
+                    'realisasi_satuan1_id' => ($data['satuan1_id'] === '' ? null : $data['satuan1_id']),
+                    'realisasi_volume2' => ($data['volume2'] === '' ? null : $data['volume2']),
+                    'realisasi_satuan2_id' => ($data['satuan2_id'] === '' ? null : $data['satuan2_id']),
+                    'realisasi_volume3' => ($data['volume3'] === '' ? null : $data['volume3']),
+                    'realisasi_satuan3_id' => ($data['satuan3_id'] === '' ? null : $data['satuan3_id']),
+                    'realisasi_harga_satuan' => ($data['harga_satuan'] === '' ? null : $data['harga_satuan']),
+                    'realisasi_jumlah' => $realisasiJumlah,
                 ];
 
                 // Update the t_kak_anggaran table
                 $this->kakAnggaranModel->update($anggaranId, $updateData);
 
-                // Handle file upload if exists for this item
-                if (isset($files['name'][$anggaranId]) && $files['error'][$anggaranId] === UPLOAD_ERR_OK) {
-                    $fileToUpload = [
-                        'name' => $files['name'][$anggaranId],
-                        'type' => $files['type'][$anggaranId],
-                        'tmp_name' => $files['tmp_name'][$anggaranId],
-                        'error' => $files['error'][$anggaranId],
-                        'size' => $files['size'][$anggaranId],
-                    ];
-                    
-                    $uploadResult = $uploader->upload($fileToUpload);
-                    if (!$uploadResult['success']) {
-                        throw new \Exception("Gagal mengupload file bukti untuk item anggaran ID {$anggaranId}: " . $uploadResult['message']);
-                    }
-                    $uploadedFiles[] = $uploadResult['file_path'];
-
-                    // Create a record in t_kegiatan_lampiran
-                    $this->kegiatanLampiranModel->create([
-                        'anggaran_id' => $anggaranId,
-                        'nama_file_asli' => $uploadResult['original_name'],
-                        'path_file_disimpan' => $uploadResult['file_path'],
-                        'uploader_user_id' => $this->user['user_id'],
-                        'catatan' => 'Bukti LPJ untuk item anggaran.',
-                    ]);
-                }
-            }
+                            // Handle file upload if exists for this item
+                            if (isset($files['name'][$anggaranId]) && is_array($files['name'][$anggaranId])) {
+                                foreach ($files['name'][$anggaranId] as $fileIndex => $fileName) {
+                                    if ($files['error'][$anggaranId][$fileIndex] === UPLOAD_ERR_OK) {
+                                        $fileToUpload = [
+                                            'name' => $files['name'][$anggaranId][$fileIndex],
+                                            'type' => $files['type'][$anggaranId][$fileIndex],
+                                            'tmp_name' => $files['tmp_name'][$anggaranId][$fileIndex],
+                                            'error' => $files['error'][$anggaranId][$fileIndex],
+                                            'size' => $files['size'][$anggaranId][$fileIndex],
+                                        ];
+                                        
+                                        $uploadResult = $uploader->upload($fileToUpload);
+                                        if (!$uploadResult['success']) {
+                                            throw new \Exception("Gagal mengupload file bukti '{$fileName}' untuk item anggaran ID {$anggaranId}: " . $uploadResult['message']);
+                                        }
+                                        $uploadedFiles[] = $uploadResult['file_path'];
+                
+                                                                // Create a record in t_kegiatan_lampiran
+                                                                error_log("Attempting to create lampiran record for anggaran_id {$anggaranId}: " . json_encode([
+                                                                    'anggaran_id' => $anggaranId,
+                                                                    'nama_file_asli' => $uploadResult['original_name'],
+                                                                    'path_file_disimpan' => $uploadResult['file_path'],
+                                                                    'uploader_user_id' => $this->user['user_id'],
+                                                                    'catatan' => 'Bukti LPJ untuk item anggaran.',
+                                                                ]));
+                                                                $this->kegiatanLampiranModel->create([                                            'anggaran_id' => $anggaranId,
+                                            'nama_file_asli' => $uploadResult['original_name'],
+                                            'path_file_disimpan' => $uploadResult['file_path'],
+                                            'uploader_user_id' => $this->user['user_id'],
+                                            'catatan' => 'Bukti LPJ untuk item anggaran.',
+                                        ]);
+                                    }
+                                }
+                            }            }
 
             // 3. Update Kegiatan status
             $this->kegiatanModel->update($kegiatanId, ['lpj_submitted_at' => date('Y-m-d H:i:s')]);
@@ -131,7 +149,48 @@ class LpjController extends Controller
     }
 
     /**
-     * Send an LPJ back for revision.
+     * Get LPJ data for review by Bendahara or Pengusul.
+     * GET /api/kegiatan/{kegiatan_id}/lpj/review
+     */
+    public function review($kegiatanId)
+    {
+        try {
+            // Authorization: Only Bendahara or the original Pengusul can view.
+            $isBendahara = in_array('Bendahara', $this->user['roles']);
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+
+            if (!$kegiatan) {
+                return Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            $isPengusul = $kegiatan['pengusul_user_id'] == $this->user['user_id'];
+
+            if (!$isBendahara && !$isPengusul) {
+                return Response::forbidden('Anda tidak memiliki akses untuk melihat LPJ ini.');
+            }
+
+            // Fetch main kegiatan data
+            $data['kegiatan'] = $kegiatan;
+
+            // Fetch budget items (anggaran) for the associated KAK
+            $data['anggaran'] = $this->kakAnggaranModel->findAllBy('kak_id', $kegiatan['kak_id']);
+
+            // Fetch attachments (lampiran) associated with the budget items
+            $anggaranIds = array_map(fn($item) => $item['anggaran_id'], $data['anggaran']);
+            $data['lampiran'] = [];
+            if (!empty($anggaranIds)) {
+                $data['lampiran'] = $this->kegiatanLampiranModel->findByAnggaranIds($anggaranIds);
+            }
+            
+            return Response::success($data, 'Data LPJ berhasil diambil.');
+
+        } catch (\Exception $e) {
+            return Response::error('Gagal mengambil data LPJ untuk direview: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Send an LPJ back for revision with granular comments.
      * POST /api/kegiatan/{kegiatan_id}/lpj/revise
      */
     public function revise($kegiatanId)
@@ -145,42 +204,43 @@ class LpjController extends Controller
             }
 
             $kegiatanId = (int) $kegiatanId;
-            $data = json_decode(file_get_contents('php://input'), true);
-            $catatan = $data['catatan'] ?? null;
+            $payload = json_decode(file_get_contents('php://input'), true);
+            
+            if (empty($payload)) {
+                return Response::error('Input tidak valid.', 422);
+            }
 
-            if (empty($catatan)) {
-                return Response::error('Catatan revisi tidak boleh kosong.', 422);
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                return Response::notFound('Kegiatan tidak ditemukan.');
             }
 
             $db->beginTransaction();
+            
+            // Komentar untuk anggaran dan lampiran sekarang ditangani secara individual
+            // di LampiranController@saveCatatan. Blok ini tidak lagi diperlukan.
 
-            // Find the Bendahara-LPJ approval record
+            // 3. Update the approval status to 'Revisi'
             $approvalModel = new \App\Models\KegiatanApproval();
-            $lpjApproval = $approvalModel->findOneBy([
-                'kegiatan_id' => $kegiatanId,
-                'approval_level' => 'Bendahara-LPJ'
-            ]);
+            $lpjApproval = $approvalModel->findByKegiatanIdAndLevel($kegiatanId, 'Bendahara-LPJ');
 
             if (!$lpjApproval) {
+                 $db->rollBack();
                 return Response::notFound('Alur persetujuan LPJ untuk kegiatan ini tidak ditemukan.');
             }
 
-            // Update the approval status to 'Revisi'
+            $generalComment = $payload['catatan_umum'] ?? 'LPJ perlu direvisi. Mohon periksa catatan pada setiap item.';
             $approvalModel->update($lpjApproval['approval_kegiatan_id'], [
                 'status' => 'Revisi',
-                'catatan' => $catatan,
+                'catatan' => $generalComment,
                 'approver_user_id' => $this->user['user_id']
             ]);
 
-            // Optional: Update the main kegiatan status if there's a specific "Revisi LPJ" status
-            // For now, we'll rely on the approval status.
-
-            // Notify the Pengusul
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            // 4. Notify the Pengusul
             $notifikasiModel = new \App\Models\Notifikasi();
             $notifikasiModel->create([
                 'penerima_user_id' => $kegiatan['pengusul_user_id'],
-                'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" perlu direvisi. Catatan: {$catatan}",
+                'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" perlu direvisi. Catatan: {$generalComment}",
                 'link_tujuan' => "/pengusul/kegiatan/lpj/new?kegiatan_id=" . $kegiatanId,
             ]);
 

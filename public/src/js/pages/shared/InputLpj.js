@@ -328,6 +328,18 @@ export function renderInputLpjPage(path, userRole) {
       .join("");
   }
 
+  window.deleteUploadedFile = async function(button, fileId) {
+    // Placeholder for backend deletion
+    console.log(`Request to delete file with ID: ${fileId}`);
+    Swal.fire({
+        title: "Fungsi Belum Tersedia",
+        text: "Menghapus file yang sudah di-upload dari server akan diimplementasikan.",
+        icon: "info"
+    });
+    // On success, you would remove the parent element:
+    // button.parentElement.remove();
+  }
+
   function getSectionHTML(item, index) {
     const realisasiItem =
       state.lpjData?.realisasi?.find(
@@ -391,27 +403,27 @@ export function renderInputLpjPage(path, userRole) {
         <h5 class="mb-4 font-bold text-lg" style="color: #00BCD4;">Realisasi Pertanggungjawaban (LPJ)</h5>
         <div class="grid grid-cols-12 gap-4 items-end mb-4 realisasi-grid">
           <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
-      realisasiItem.uraian || item.uraian || ""
+      item.realisasi_uraian || item.uraian || ""
     }"></div>
           <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
-      realisasiItem.volume1 || item.volume1 || ""
+      item.realisasi_volume1 || item.volume1 || ""
     }"></div>
           <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}">${getSatuanOptions(
-      realisasiItem.satuan1_id || item.satuan1_id
+      item.realisasi_satuan1_id || item.satuan1_id
     )}</select></div>
           
           <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
-      realisasiItem.volume2 || item.volume2 || ""
+      item.realisasi_volume2 || item.volume2 || ""
     }"></div>
           <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}">${getSatuanOptions(
-      realisasiItem.satuan2_id || item.satuan2_id
+      item.realisasi_satuan2_id || item.satuan2_id
     )}</select></div>
           
           <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
-      realisasiItem.volume3 || item.volume3 || ""
+      item.realisasi_volume3 || item.volume3 || ""
     }"></div>
           <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}">${getSatuanOptions(
-      realisasiItem.satuan3_id || item.satuan3_id
+      item.realisasi_satuan3_id || item.satuan3_id
     )}</select></div>
 
           <div class="col-span-2"><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${formatCurrency(item.realisasi_harga_satuan || item.harga_satuan || "")}"></div>
@@ -431,18 +443,16 @@ export function renderInputLpjPage(path, userRole) {
           }
         </div>
         <div class="uploaded-files-container mt-4 grid grid-cols-1 gap-2">
-            ${(realisasiItem.bukti || [])
+            ${(item.bukti || [])
               .map(
                 (file) => `
                 <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200">
-                    <a href="/uploads/lpj/${
-                      file.nama_file
-                    }" target="_blank" class="text-sm truncate flex-1 text-blue-500 hover:underline">📎 ${
+                    <a href="${file.path_file_disimpan}" target="_blank" class="text-sm truncate flex-1 text-blue-500 hover:underline">📎 ${
                   file.nama_file_asli
                 }</a>
                     ${
                       isPengusul
-                        ? `<button type="button" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center transition-all bg-red-500 text-white" onclick="this.parentElement.remove()">×</button>`
+                        ? `<button type="button" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center transition-all bg-red-500 text-white" onclick="window.deleteUploadedFile(this, ${file.lampiran_id})">×</button>`
                         : ""
                     }
                 </div>
@@ -522,7 +532,7 @@ export function renderInputLpjPage(path, userRole) {
     button.innerHTML = "Submitting...";
     try {
       const formData = collectLpjData();
-      await apiRequest(`/lpj/${kegiatanId}/submit`, {
+      await apiRequest(`/kegiatan/${kegiatanId}/lpj`, {
         method: "POST",
         body: formData,
       });
@@ -624,6 +634,7 @@ export function renderInputLpjPage(path, userRole) {
       }
     });
 
+    console.log("FormData being sent:", Object.fromEntries(formData.entries())); // Log all entries
     return formData;
   }
 

@@ -7,6 +7,7 @@ use App\Core\Model;
 class KegiatanApproval extends Model
 {
     protected $table = 't_kegiatan_approval';
+    protected $primaryKey = 'approval_kegiatan_id';
 
     /**
      * Find the latest note for a given kegiatan ID and approval level.

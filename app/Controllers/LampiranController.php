@@ -6,12 +6,16 @@ use App\Core\Response;
 use App\Core\FileUpload;
 use App\Models\Kegiatan;
 use App\Models\KegiatanLampiran;
+use App\Models\KAK;
+use App\Models\KAKAnggaran;
 use App\Middlewares\AuthMiddleware;
 
 class LampiranController
 {
     private $kegiatanModel;
     private $lampiranModel;
+    private $kakModel;
+    private $kakAnggaranModel;
     private $fileUpload;
     private $userData;
 
@@ -31,6 +35,8 @@ class LampiranController
         // Initialize models and utilities
         $this->kegiatanModel = new Kegiatan();
         $this->lampiranModel = new KegiatanLampiran();
+        $this->kakModel = new KAK();
+        $this->kakAnggaranModel = new KAKAnggaran();
         $this->fileUpload = new FileUpload();
     }
 
@@ -50,7 +56,7 @@ class LampiranController
             }
 
             // Check if kegiatan exists
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
             if (!$kegiatan) {
                 Response::notFound('Kegiatan tidak ditemukan.');
             }
@@ -91,7 +97,7 @@ class LampiranController
             }
 
             // Check if kegiatan exists
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
             if (!$kegiatan) {
                 Response::notFound('Kegiatan tidak ditemukan.');
             }
@@ -139,7 +145,7 @@ class LampiranController
             ]);
 
             // Get created lampiran
-            $lampiran = $this->lampiranModel->findById($lampiranId);
+            $lampiran = $this->lampiranModel->find($lampiranId);
 
             Response::created($lampiran, 'File berhasil diupload.');
 
@@ -166,13 +172,13 @@ class LampiranController
             }
 
             // Check if kegiatan exists
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
             if (!$kegiatan) {
                 Response::notFound('Kegiatan tidak ditemukan.');
             }
 
             // Check if lampiran exists
-            $lampiran = $this->lampiranModel->findById($lampiranId);
+            $lampiran = $this->lampiranModel->find($lampiranId);
             if (!$lampiran || $lampiran['kegiatan_id'] != $kegiatanId) {
                 Response::notFound('File tidak ditemukan.');
             }
@@ -220,13 +226,13 @@ class LampiranController
             }
 
             // Check if kegiatan exists
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
             if (!$kegiatan) {
                 Response::notFound('Kegiatan tidak ditemukan.');
             }
 
             // Check if lampiran exists
-            $lampiran = $this->lampiranModel->findById($lampiranId);
+            $lampiran = $this->lampiranModel->find($lampiranId);
             if (!$lampiran || $lampiran['kegiatan_id'] != $kegiatanId) {
                 Response::notFound('File tidak ditemukan.');
             }
@@ -315,5 +321,107 @@ class LampiranController
             'kegiatan_id' => null,
             'lampiran_id' => null
         ];
+    }
+
+    /**
+     * Get a single lampiran record.
+     * GET /api/lampiran/{id}
+     */
+    public function show($id)
+    {
+        try {
+            $lampiran = $this->lampiranModel->find($id);
+
+            if (!$lampiran) {
+                Response::notFound('Lampiran tidak ditemukan.');
+            }
+
+            // Grant access immediately if user is Bendahara
+            if ($this->hasRole('Bendahara')) {
+                Response::success($lampiran, 'Data lampiran berhasil diambil.');
+                return;
+            }
+
+            // For other roles, verify ownership via KAK
+            $anggaran = $this->kakAnggaranModel->find($lampiran['anggaran_id']);
+            if (!$anggaran) {
+                Response::forbidden('Tidak dapat memverifikasi anggaran terkait lampiran ini.');
+            }
+
+            $kak = $this->kakModel->find($anggaran['kak_id']);
+            if (!$kak) {
+                Response::forbidden('Tidak dapat memverifikasi KAK terkait lampiran ini.');
+            }
+
+            if ($kak['pengusul_id'] == $this->userData['user_id']) {
+                Response::success($lampiran, 'Data lampiran berhasil diambil.');
+            } else {
+                Response::forbidden('Anda tidak memiliki akses untuk melihat lampiran ini.');
+            }
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil data lampiran: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Save catatan for a lampiran, restricted to Bendahara.
+     * 
+     * POST /api/lampiran/{id}/catatan
+     */
+    public function saveCatatan()
+    {
+        try {
+            // Authorization: Only Bendahara or Admin can add catatan
+            if (!$this->hasRole('Bendahara') && !$this->hasRole('Admin')) {
+                Response::forbidden('Anda tidak memiliki akses untuk menyimpan catatan.');
+            }
+
+            // Get lampiran_id from URL
+            $lampiranId = $this->extractLampiranIdOnly();
+            if (!$lampiranId) {
+                Response::badRequest('Lampiran ID tidak valid.');
+            }
+
+            // Get lampiran from DB
+            $lampiran = $this->lampiranModel->find($lampiranId);
+            if (!$lampiran) {
+                Response::notFound('Lampiran tidak ditemukan.');
+            }
+
+            // Get catatan from request body
+            $data = json_decode(file_get_contents('php://input'), true);
+            $catatan = $data['catatan'] ?? null;
+
+            if ($catatan === null) {
+                Response::badRequest('Catatan tidak boleh kosong.');
+            }
+
+            // Update the record
+            $this->lampiranModel->update($lampiranId, ['catatan' => $catatan]);
+
+            // Fetch the updated record to return
+            $updatedLampiran = $this->lampiranModel->find($lampiranId);
+
+            Response::success($updatedLampiran, 'Catatan berhasil disimpan.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal menyimpan catatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Helper: Extract lampiran_id from a simple URL structure.
+     */
+    private function extractLampiranIdOnly()
+    {
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        
+        // Pattern: /api/lampiran/{id}/catatan
+        if (preg_match('/\/lampiran\/(\d+)\/catatan$/', $uri, $matches)) {
+            return (int) $matches[1];
+        }
+
+        return null;
     }
 }

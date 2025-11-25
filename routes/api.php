@@ -239,6 +239,8 @@ $router->get('/kegiatan/statistics/dashboard', 'KegiatanController@statistics');
 
 $router->get('/kegiatan/{id}/lampiran', 'LampiranController@index');
 $router->post('/kegiatan/{id}/lampiran', 'LampiranController@upload');
+$router->get('/lampiran/{id}', 'LampiranController@show');
+$router->post('/lampiran/{id}/catatan', 'LampiranController@saveCatatan');
 $router->get('/kegiatan/{id}/lampiran/{file_id}', 'LampiranController@download');
 $router->delete('/kegiatan/{id}/lampiran/{file_id}', 'LampiranController@delete');
 
@@ -258,6 +260,7 @@ $router->post('/kegiatan/{kegiatan_id}/pencairan', 'PencairanController@logPenca
 // ============================================
 // LPJ (LAPORAN PERTANGGUNGJAWABAN) ROUTES
 // ============================================
+$router->get('/kegiatan/{kegiatan_id}/lpj/review', 'LpjController@review');
 $router->post('/kegiatan/{kegiatan_id}/lpj', 'LpjController@submit');
 $router->post('/kegiatan/{kegiatan_id}/lpj/revise', 'LpjController@revise');
 
