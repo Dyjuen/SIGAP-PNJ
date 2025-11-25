@@ -30,6 +30,12 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         border-left: 4px solid #03C9D7;
         animation: slideDown 0.5s ease-out;
+        transition: all 0.3s ease;
+      }
+
+      .info-banner:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 8px rgba(3, 201, 215, 0.2);
       }
 
       @keyframes slideDown {
@@ -48,6 +54,46 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         width: 20px;
         height: 20px;
         flex-shrink: 0;
+        transition: transform 0.3s ease;
+      }
+
+      .info-banner:hover .info-icon {
+        transform: scale(1.1);
+      }
+
+      /* ========================================== */
+      /* PAGE HEADER SECTION */
+      /* ========================================== */
+      .page-header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 0 0.5rem;
+        opacity: 0;
+        animation: slideInRight 0.6s ease-out forwards;
+      }
+
+      .page-header-section h2 {
+        margin: 0;
+        color: #1e293b;
+      }
+
+      .page-header-section p {
+        margin: 0.5rem 0 0 0;
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
 
       /* Card container - Enhanced with rounded corners and proper padding */
@@ -56,21 +102,23 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         border-radius: 18px;
         padding: 0;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        overflow: hidden;
+        overflow: visible;
         animation: scaleIn 0.5s ease-out;
         animation-delay: 0.1s;
         animation-fill-mode: backwards;
         transition: box-shadow 0.3s ease, transform 0.3s ease;
+        min-height: auto;
+        height: auto;
       }
 
       .card-datatable:hover {
-        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        box-shadow: 0 8px 24px rgba(3, 201, 215, 0.15);
         transform: translateY(-2px);
       }
       
       .card-datatable .table {
         border-radius: 18px;
-        overflow: hidden;
+        overflow: visible;
       }
 
       /* Table styling */
@@ -87,6 +135,12 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         border-bottom: 2px solid #e2e8f0;
         white-space: nowrap;
         animation: fadeIn 0.5s ease-out backwards;
+        transition: all 0.3s ease;
+      }
+
+      .table thead tr th:hover {
+        background: #f0f4f8;
+        color: #03C9D7;
       }
 
       .table thead tr th:nth-child(1) { animation-delay: 0.2s; }
@@ -97,10 +151,28 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       /* Enhanced row hover effect with premium interaction */
       .table tbody tr {
         border-bottom: 1px solid #f1f5f9;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s ease;
         position: relative;
-        border-left: 4px solid transparent;
+        border-left: 3px solid transparent;
         animation: slideInRight 0.5s ease-out backwards;
+        background: white;
+        cursor: pointer;
+      }
+
+      .table tbody tr::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 0;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(3, 201, 215, 0.05) 0%, transparent 100%);
+        transition: width 0.3s ease;
+        z-index: 0;
+      }
+
+      .table tbody tr:hover::before {
+        width: 100%;
       }
 
       .table tbody tr:nth-child(1) { animation-delay: 0.4s; }
@@ -110,11 +182,21 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       .table tbody tr:nth-child(5) { animation-delay: 0.6s; }
 
       .table tbody tr:hover {
-        background-color: #f8fafc;
-        transform: translateX(4px) scale(1.005);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.15);
         border-left-color: #03C9D7;
+        border-left-width: 3px;
         z-index: 10;
+      }
+
+      .table tbody tr:active {
+        transform: translateX(2px);
+      }
+
+      .table tbody tr:hover td {
+        position: relative;
+        z-index: 1;
       }
 
       @keyframes slideInRight {
@@ -134,27 +216,27 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         border: none;
       }
 
-      /* Checkbox styling */
-      .custom-checkbox {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-        accent-color: #03C9D7;
-        transition: transform 0.2s ease;
+      .table tbody tr td:nth-child(1) {
+        text-align: center;
+        width: 80px;
+        min-width: 80px;
+        max-width: 80px;
       }
 
-      .custom-checkbox:hover {
-        transform: scale(1.15);
+      .table tbody tr td:nth-child(2) {
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
       }
 
-      .custom-checkbox:checked {
-        animation: checkBounce 0.4s ease;
+      .table tbody tr td:nth-child(3) {
+        text-align: center;
+        width: auto;
+        padding-left: 3rem;
+        padding-right: 3rem;
       }
 
-      @keyframes checkBounce {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.2); }
-      }
+      /* Removed checkbox styling */
 
       /* Index number */
       .index-number {
@@ -181,16 +263,18 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
       tr:hover .activity-name {
         color: #03C9D7;
+        transform: translateX(4px);
       }
 
       .activity-name-sub {
         font-size: 0.75rem;
         color: #94a3b8;
-        transition: color 0.3s ease;
+        transition: all 0.3s ease;
       }
 
       tr:hover .activity-name-sub {
         color: #64748b;
+        transform: translateX(4px);
       }
 
       /* Bootstrap Progress Stepper */
@@ -199,8 +283,9 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         align-items: center;
         justify-content: space-between;
         position: relative;
-        padding: 0.5rem 0;
-        min-width: 600px;
+        padding: 1.5rem 1rem;
+        width: 100%;
+        gap: 0.5rem;
       }
 
       /* Stepper Item - Base */
@@ -209,7 +294,8 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         display: flex;
         flex-direction: column;
         align-items: center;
-        flex: 1;
+        flex: 1 1 0;
+        max-width: calc(20% - 0.5rem);
         animation: fadeIn 0.5s ease-out backwards;
       }
 
@@ -217,6 +303,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       .stepper-item:nth-child(2) { animation-delay: 0.1s; }
       .stepper-item:nth-child(3) { animation-delay: 0.15s; }
       .stepper-item:nth-child(4) { animation-delay: 0.2s; }
+      .stepper-item:nth-child(5) { animation-delay: 0.25s; }
 
       /* Step Counter - Base */
       .step-counter {
@@ -225,17 +312,28 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 44px;
-        height: 44px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         background: #e2e8f0;
         margin-bottom: 0.5rem;
         font-weight: 700;
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         color: #94a3b8;
         transition: all 0.3s ease;
         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         animation: fadeIn 0.5s ease-out backwards;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .stepper-item:hover .step-counter {
+        transform: scale(1.15);
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.2);
+      }
+
+      .stepper-item.pending:hover .step-counter {
+        background: #cbd5e1;
       }
       
       /* Completed Step Enhancements */
@@ -243,7 +341,12 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         background: linear-gradient(135deg, #03C9D7 0%, #02b3c4 100%);
         color: white;
         box-shadow: 0 4px 12px rgba(3, 201, 215, 0.3);
-        animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+        animation: scaleIn 0.5s ease-out backwards;
+      }
+
+      .stepper-item.completed:hover .step-counter {
+        transform: scale(1.2);
+        box-shadow: 0 6px 16px rgba(3, 201, 215, 0.4);
       }
       
       /* Active Step Enhancements */
@@ -252,7 +355,20 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         border: 3px solid #03C9D7;
         color: #03C9D7;
         box-shadow: 0 0 0 0 rgba(3, 201, 215, 0.4);
-        animation: pulse 2s ease-in-out infinite;
+        animation: pulseBorder 2s ease-in-out infinite;
+      }
+
+      .stepper-item.active:hover .step-counter {
+        transform: scale(1.2);
+      }
+
+      @keyframes pulseBorder {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(3, 201, 215, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 8px rgba(3, 201, 215, 0.1);
+        }
       }
       
       /* Stepper Animations */
@@ -283,21 +399,46 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
       .step-name {
         text-align: center;
-        font-size: 0.75rem;
+        font-size: 0.65rem;
         font-weight: 600;
         color: #94a3b8;
         margin-top: 0.25rem;
         animation: fadeIn 0.6s ease-out backwards;
         animation-delay: 0.15s;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        padding: 0 2px;
+        line-height: 1.2;
+      }
+
+      .stepper-item:hover .step-name {
+        transform: translateY(-2px);
+        color: #475569;
       }
 
       .step-date {
         text-align: center;
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         color: #cbd5e0;
         margin-top: 0.15rem;
         animation: fadeIn 0.6s ease-out backwards;
         animation-delay: 0.25s;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        font-weight: 500;
+      }
+
+      .stepper-item:hover .step-name {
+        transform: translateY(-3px);
+        color: #64748b;
+      }
+
+      .stepper-item:hover .step-date {
+        transform: translateY(-2px);
+        color: #94a3b8;
       }
 
       .stepper-item.completed .step-name,
@@ -306,17 +447,31 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         font-weight: 700;
       }
 
+      .stepper-item.completed:hover .step-name {
+        color: #03C9D7;
+        transform: translateY(-4px);
+      }
+
+      .stepper-item.active:hover .step-name {
+        color: #03C9D7;
+        transform: translateY(-4px);
+      }
+
       .stepper-item.completed .step-date {
         color: #03C9D7;
         font-weight: 600;
       }
 
+      .stepper-item.completed:hover .step-date {
+        transform: translateY(-3px);
+      }
+
       /* Bootstrap Progress Bar as Connector */
       .progress-connector {
         position: absolute;
-        top: 22px;
-        left: calc(50% + 22px);
-        width: calc(100% - 44px);
+        top: 19px;
+        left: calc(50% + 19px);
+        width: calc(100% - 38px);
         height: 4px;
         z-index: 1;
       }
@@ -330,25 +485,16 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
       .progress-connector .progress-bar {
         background: linear-gradient(90deg, #03C9D7 0%, #02b3c4 100%);
-        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s ease;
         border-radius: 2px;
         position: relative;
         overflow: hidden;
+        box-shadow: 0 2px 8px rgba(3, 201, 215, 0.3);
       }
 
-      .progress-connector .progress-bar::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        animation: shimmer 2s ease-in-out infinite;
-      }
-
-      @keyframes shimmer {
-        to { left: 100%; }
+      .stepper-item.completed:hover .progress-connector .progress-bar {
+        height: 6px;
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.4);
       }
 
       /* Last item - no connector */
@@ -388,13 +534,39 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       }
 
       .badge-overdue {
-        background: #fee2e2;
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
         color: #dc2626;
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        display: inline-block;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: statusPulse 2s ease-in-out infinite;
+      }
+
+      .badge-overdue:hover {
+        transform: scale(1.1);
+        animation: pulse 0.5s ease-in-out;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
       }
 
       .badge-on-track {
-        background: #d1fae5;
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
         color: #059669;
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        display: inline-block;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: statusPulse 2s ease-in-out infinite;
+      }
+
+      .badge-on-track:hover {
+        transform: scale(1.1);
+        animation: pulse 0.5s ease-in-out;
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
       }
 
       /* Pagination */
@@ -438,7 +610,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         font-weight: 600;
         font-size: 0.875rem;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s ease;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -450,24 +622,14 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         border-color: #03C9D7;
         color: #03C9D7;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.2);
+        box-shadow: 0 4px 8px rgba(3, 201, 215, 0.15);
       }
 
       .pagination .page-item.active .page-link {
-        background: #03C9D7;
+        background: linear-gradient(135deg, #03C9D7, #02b3c4);
         color: white;
         border-color: #03C9D7;
         box-shadow: 0 4px 12px rgba(3, 201, 215, 0.3);
-        animation: activePagePulse 2s ease-in-out infinite;
-      }
-
-      @keyframes activePagePulse {
-        0%, 100% {
-          box-shadow: 0 4px 12px rgba(3, 201, 215, 0.3);
-        }
-        50% {
-          box-shadow: 0 4px 16px rgba(3, 201, 215, 0.5);
-        }
       }
 
       .pagination .page-item.disabled .page-link {
@@ -498,6 +660,10 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         50% { transform: translateY(-10px); }
       }
 
+      .empty-state:hover .empty-state-icon {
+        opacity: 0.7;
+      }
+
       .empty-state h3 {
         color: #64748b;
         font-weight: 600;
@@ -508,29 +674,88 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       }
 
       /* Responsive */
-      @media (max-width: 1200px) {
+      @media (max-width: 1400px) {
+        .step-counter {
+          width: 34px;
+          height: 34px;
+          font-size: 0.7rem;
+        }
+        
+        .step-name {
+          font-size: 0.6rem;
+        }
+        
+        .step-date {
+          font-size: 0.55rem;
+        }
+        
+        .progress-connector {
+          top: 17px;
+          left: calc(50% + 17px);
+          width: calc(100% - 34px);
+        }
+        
         .stepper-wrapper {
-          min-width: 500px;
+          padding: 1.25rem 0.75rem;
         }
       }
 
+      @media (max-width: 1200px) {
+        .step-counter {
+          width: 30px;
+          height: 30px;
+          font-size: 0.65rem;
+        }
+        
+        .stepper-wrapper {
+          padding: 1rem 0.5rem;
+          gap: 0.25rem;
+        }
+        
+        .step-name {
+          font-size: 0.55rem;
+        }
+        
+        .step-date {
+          font-size: 0.5rem;
+        }
+        
+        .progress-connector {
+          top: 15px;
       @media (max-width: 992px) {
         .monitoring-kegiatan-page {
           padding: 1rem;
         }
 
         .card-datatable {
-          padding: 1rem;
+          padding: 0.5rem;
         }
 
         .stepper-wrapper {
-          flex-direction: column;
-          gap: 1.5rem;
-          min-width: auto;
+          flex-wrap: nowrap;
+          gap: 0.125rem;
+          padding: 0.75rem 0.25rem;
+        }
+        
+        .step-counter {
+          width: 26px;
+          height: 26px;
+          font-size: 0.6rem;
+        }
+        
+        .step-name {
+          font-size: 0.5rem;
+        }
+        
+        .step-date {
+          font-size: 0.45rem;
         }
 
         .progress-connector {
-          display: none;
+          top: 13px;
+          left: calc(50% + 13px);
+          width: calc(100% - 26px);
+          height: 2px;
         }
 
         .table tbody tr td {
@@ -540,15 +765,290 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         .table tbody tr:hover {
           transform: translateY(-2px) scale(1.002);
         }
+      }   padding: 1rem 0.5rem;
+        }
+
+        .table tbody tr:hover {
+          transform: translateY(-2px) scale(1.002);
+        }
+      }
+
+      /* ========================================== */
+      /* ENHANCED ANIMATIONS FROM MONITORING USULAN */
+      /* ========================================== */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      @keyframes statusPulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes skeletonLoading {
+        0% { background-position: -200px 0; }
+        100% { background-position: calc(200px + 100%) 0; }
+      }
+
+      /* Enhanced monitoring page animation */
+      .monitoring-kegiatan-page {
+        animation: fadeIn 0.5s ease-out !important;
+      }
+
+      /* Enhanced card with shimmer effect */
+      .card-datatable {
+        position: relative;
+        animation: fadeInUp 0.6s ease-out forwards !important;
+        animation-delay: 0.2s;
+        opacity: 0;
+      }
+
+      .card-datatable::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+        animation: shimmer 3s infinite;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* Enhanced table row animations */
+      .table tbody tr {
+        opacity: 0;
+        animation: slideUp 0.5s ease-out forwards !important;
+      }
+
+      .table tbody tr:nth-child(1) { animation-delay: 0.3s !important; }
+      .table tbody tr:nth-child(2) { animation-delay: 0.4s !important; }
+      .table tbody tr:nth-child(3) { animation-delay: 0.5s !important; }
+      .table tbody tr:nth-child(4) { animation-delay: 0.6s !important; }
+      .table tbody tr:nth-child(5) { animation-delay: 0.7s !important; }
+      .table tbody tr:nth-child(6) { animation-delay: 0.8s !important; }
+      .table tbody tr:nth-child(7) { animation-delay: 0.9s !important; }
+      .table tbody tr:nth-child(8) { animation-delay: 1s !important; }
+      .table tbody tr:nth-child(9) { animation-delay: 1.1s !important; }
+      .table tbody tr:nth-child(10) { animation-delay: 1.2s !important; }
+
+      /* Enhanced stepper animations */
+      .step-circle {
+        animation: statusPulse 2s ease-in-out infinite;
+      }
+
+      .step-circle:hover {
+        animation: pulse 0.5s ease-in-out;
+      }
+
+      /* Button ripple effect */
+      .btn {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      .btn:hover::before {
+        width: 300px;
+        height: 300px;
+      }
+
+      /* Skeleton loading animation */
+      .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200px 100%;
+        animation: skeletonLoading 1.5s ease-in-out infinite;
+        border-radius: 4px;
+      }
+
+      /* Enhanced pagination animations */
+      .pagination-container {
+        opacity: 0;
+        animation: fadeInUp 0.6s ease-out forwards;
+        animation-delay: 1.3s;
+      }
+
+      .pagination .page-item {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .pagination .page-link {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .pagination .page-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(3, 201, 215, 0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .pagination .page-link:hover::before {
+        left: 100%;
+      }
+
+      .pagination .page-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(3, 201, 215, 0.2);
+      }
+
+      .pagination .page-item.active .page-link {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.4);
+      }
+
+      /* Enhanced hover effects for table rows */
+      .table tbody tr:hover {
+        background: linear-gradient(to right, #F0F9FF, transparent) !important;
+        transform: translateX(4px) scale(1.002) !important;
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.12) !important;
+      }
+
+      /* Number badge animation */
+      .index-number {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      tr:hover .index-number {
+        transform: scale(1.1);
+        text-shadow: 0 2px 4px rgba(3, 201, 215, 0.3);
+      }
+
+      /* Removed arrow indicator */
+
+      /* Info banner enhancement */
+      .info-banner {
+        animation: slideDown 0.5s ease-out, pulse 2s ease-in-out 2s infinite;
+      }
+
+      /* Stepper connector animation */
+      .progress-connector {
+        transition: all 0.5s ease;
+      }
+
+      .progress-connector.completed {
+        animation: progressFill 0.8s ease-out forwards;
+      }
+
+      @keyframes progressFill {
+        from {
+          width: 0;
+          opacity: 0;
+        }
+        to {
+          width: 100%;
+          opacity: 1;
+        }
+      }
+
+      /* ========================================== */
+      /* UTILITY CLASSES */
+      /* ========================================== */
+      .text-center { text-align: center; }
+      .text-muted { color: #6B7280; }
+      .text-danger { color: #EF4444; }
+      
+      strong {
+        font-weight: 600;
+        color: #1F2937;
+      }
+
+      .small {
+        font-size: 13px;
+        color: #9CA3AF;
+      }
+
+      /* ========================================== */
+      /* RESPONSIVE ENHANCEMENTS */
+      /* ========================================== */
+      @media (max-width: 768px) {
+        .page-header-section {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .pagination-container {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .table {
+          font-size: 13px;
+        }
+
+        .monitoring-kegiatan-page {
+          padding: 1rem;
+        }
       }
     </style>
 
-      <div class="card card-datatable table-responsive p-0">
+    <div class="monitoring-kegiatan-page">
+      <!-- Header Section -->
+      <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
+        <div>
+          <h2 class="text-4xl font-bold text-gray-800">Monitoring Kegiatan</h2>
+          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau progress dan status kegiatan yang sedang berjalan</p>
+        </div>
+      </div>
+
+      <!-- Main Table Card -->
+      <div class="card card-datatable p-0">
         <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
           <thead>
             <tr>
               <th style="width: 50px; text-align: center;">
-                <input type="checkbox" class="form-check-input custom-checkbox" id="selectAll">
               </th>
               <th style="width: 60px;">No.</th>
               <th style="min-width: 200px;">Nama Kegiatan</th>
@@ -643,11 +1143,12 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       'PPK': { step: 1, dateKey: 'accPPK' },
       'Wadir2': { step: 2, dateKey: 'accWD2' },
       'Bendahara-Cair': { step: 3, dateKey: 'uangMuka' },
-      'Bendahara-LPJ': { step: 4, dateKey: 'lpj' }
+      'Bendahara-LPJ': { step: 4, dateKey: 'lpj' },
+      'Setor-Fisik': { step: 5, dateKey: 'setorFisik' }
     };
     
     return apiData.map(item => {
-        const dates = { accPPK: null, accWD2: null, uangMuka: null, lpj: null };
+        const dates = { accPPK: null, accWD2: null, uangMuka: null, lpj: null, setorFisik: null };
         const approvedSteps = [];
 
         item.approvals.forEach(approval => {
@@ -664,8 +1165,8 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         if (item.current_approval && item.current_approval.status === 'Aktif' && approvalStepMapping[item.current_approval.approval_level]) {
             currentStatus = approvalStepMapping[item.current_approval.approval_level].step;
         } else {
-            if (maxApprovedStep === 4) {
-                currentStatus = 5; // All steps are completed, so status is beyond the last step
+            if (maxApprovedStep === 5) {
+                currentStatus = 6; // All steps are completed, so status is beyond the last step
             } else {
                 currentStatus = maxApprovedStep + 1;
             }
@@ -686,7 +1187,8 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       { number: "01", label: "Acc PPK", date: item.dates.accPPK },
       { number: "02", label: "Acc WD2", date: item.dates.accWD2 },
       { number: "03", label: "Uang Muka", date: item.dates.uangMuka },
-      { number: "04", label: "LPJ", date: item.dates.lpj }
+      { number: "04", label: "LPJ", date: item.dates.lpj },
+      { number: "05", label: "Setor Fisik LPJ", date: item.dates.setorFisik }
     ];
 
     return `
@@ -732,7 +1234,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
   }
 
   function renderStatusBadge(item) {
-    if (item.status === 4 && item.overdueDays > 0) {
+    if (item.status === 5 && item.overdueDays > 0) {
       return `<span class="status-badge badge-overdue">${item.overdueDays} Hari</span>`;
     }
     return `<span class="status-badge badge-on-track">✓</span>`;
@@ -746,19 +1248,19 @@ export function renderMonitoringKegiatanPage(path, userRole) {
     if (!tbody) return;
 
     if (state.isLoading) {
-      tbody.innerHTML = `<tr><td colspan="4" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="3" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>`;
       return;
     }
 
     if (state.error) {
-      tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">${state.error}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="3" class="text-center text-danger">${state.error}</td></tr>`;
       return;
     }
 
     if (state.activities.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="4">
+          <td colspan="3">
             <div class="empty-state">
               <svg class="empty-state-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -780,18 +1282,9 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
     state.activities.forEach((item, index) => {
         const globalIndex = (state.currentPage - 1) * state.itemsPerPage + index + 1;
-      const isChecked = state.selectedItems.has(item.kak_id);
 
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td style="text-align: center;">
-          <input 
-            type="checkbox" 
-            class="form-check-input custom-checkbox row-checkbox" 
-            data-id="${item.kak_id}"
-            ${isChecked ? "checked" : ""}
-          />
-        </td>
         <td>
           <span class="index-number">${globalIndex}</span>
         </td>
@@ -815,49 +1308,13 @@ export function renderMonitoringKegiatanPage(path, userRole) {
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
-    const selectAll = document.getElementById("selectAll");
-    if (selectAll) {
-      selectAll.addEventListener("change", function () {
-        document
-          .querySelectorAll(".row-checkbox")
-          .forEach((cb) => {
-            cb.checked = this.checked;
-            const id = parseInt(cb.dataset.id);
-            if (this.checked) {
-              state.selectedItems.add(id);
-            } else {
-              state.selectedItems.delete(id);
-            }
-          });
-      });
-    }
-
-    document.querySelectorAll(".row-checkbox").forEach((checkbox) => {
-      checkbox.addEventListener("change", function() {
-        const id = parseInt(this.dataset.id);
-        if (this.checked) {
-          state.selectedItems.add(id);
-        } else {
-          state.selectedItems.delete(id);
-        }
-        updateSelectAll();
+    // Simple click event for rows
+    document.querySelectorAll(".table tbody tr").forEach((row) => {
+      row.addEventListener("click", function() {
+        // Future: Navigate to detail page or show modal
+        console.log("Row clicked");
       });
     });
-  }
-
-  function updateSelectAll() {
-    const allCheckboxes = document.querySelectorAll(".row-checkbox");
-    const checkedCount = document.querySelectorAll(
-      ".row-checkbox:checked"
-    ).length;
-    const selectAll = document.getElementById("selectAll");
-
-    if (selectAll) {
-      selectAll.checked =
-        checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAll.indeterminate =
-        checkedCount > 0 && checkedCount < allCheckboxes.length;
-    }
   }
 
   // ==============================================
@@ -967,6 +1424,12 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         state.isLoading = false;
         renderTableRows();
         setupPagination();
+        
+        // Smooth scroll to top of table after page change
+        const cardElement = document.querySelector('.card-datatable');
+        if (cardElement) {
+          cardElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
   }
 
