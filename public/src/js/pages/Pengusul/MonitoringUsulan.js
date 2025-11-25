@@ -856,6 +856,9 @@ export function renderMonitoringUsulanPage(path, userRole) {
       const statusId = activity.status_id;
       const statusBadge = getStatusBadge(statusId);
       const actionButtons = getActionButtons(statusId, activity.kak_id);
+      
+      // Calculate global index for numbering (1-based, continuous across pages)
+      const globalIndex = (state.currentPage - 1) * state.itemsPerPage + index + 1;
 
       const row = document.createElement("tr");
       row.style.animationDelay = `${0.3 + index * 0.1}s`;
@@ -864,7 +867,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
         <td>
-          <span class="number-badge">${activity.kak_id}</span>
+          <span class="number-badge">${globalIndex}</span>
         </td>
         <td>
           <strong>${activity.nama_kegiatan || "Tanpa Judul"}</strong>
