@@ -662,9 +662,9 @@ export function renderPengajuanLpjPage(path, userRole) {
   // ==============================================
   function getStatusBadge(status) {
     const statusMap = {
-      'Menunggu Penyerahan': { class: "bg-label-warning", text: "Menunggu" },
-      'Diajukan': { class: "bg-label-info", text: "Diajukan" },
-      'Direvisi': { class: "bg-label-danger", text: "Revisi" },
+      'Menunggu Penyerahan': { class: "bg-label-secondary", text: "Menunggu" },
+      'Diajukan': { class: "bg-label-warning", text: "Diajukan" },
+      'Direvisi': { class: "bg-label-info", text: "Revisi" },
       'Selesai': { class: "bg-label-success", text: "Selesai" },
     };
     return statusMap[status] || { class: "bg-label-secondary", text: status };
@@ -676,39 +676,53 @@ export function renderPengajuanLpjPage(path, userRole) {
     const now = new Date();
     const deadlineDate = new Date(deadline);
     const diffTime = deadlineDate - now;
-    const diffSeconds = Math.floor(diffTime / 1000);
-    const diffMinutes = Math.floor(diffSeconds / 60);
-    const diffHours = Math.floor(diffMinutes / 60);
-    const diffDays = Math.floor(diffHours / 24);
 
-    if (diffDays > 0) {
-      return { text: `${diffDays} hari lagi`, colorClass: 'countdown-normal' };
-    } else if (diffDays === 0 && diffHours >= 0 && diffMinutes >= 0 && diffSeconds >= 0) {
-      const remainingHours = diffHours % 24;
-      const remainingMinutes = diffMinutes % 60;
-      const remainingSeconds = diffSeconds % 60;
-      const formattedTime = `${String(remainingHours).padStart(2, '0')}j ${String(remainingMinutes).padStart(2, '0')}m ${String(remainingSeconds).padStart(2, '0')}d`;
-      return { text: `Hari Ini (${formattedTime})`, colorClass: 'countdown-danger' };
-    } else {
-      const overdueDays = Math.abs(diffDays);
-      const overdueHours = Math.abs(diffHours % 24);
-      const overdueMinutes = Math.abs(diffMinutes % 60);
-      return { text: `Terlambat ${overdueDays} hari, ${overdueHours}j ${overdueMinutes}m`, colorClass: 'countdown-danger' };
+    if (diffTime > 0) { // Belum telat
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (diffDays > 0) {
+        return { text: `${diffDays} hari`, colorClass: 'countdown-normal' };
+      } else {
+        return { text: `${String(diffHours).padStart(2, '0')}j ${String(diffMinutes).padStart(2, '0')}m`, colorClass: 'countdown-normal' };
+      }
+    } else { // Telat
+      const overdueTime = now - deadlineDate;
+      const overdueDays = Math.floor(overdueTime / (1000 * 60 * 60 * 24));
+      const overdueHours = Math.floor((overdueTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+      if (overdueDays > 0) {
+        return { text: `-${overdueDays} hari`, colorClass: 'countdown-danger' };
+      } else if (overdueHours > 0) {
+        return { text: `-${overdueHours} jam`, colorClass: 'countdown-danger' };
+      } else {
+        return { text: 'Baru saja', colorClass: 'countdown-danger' };
+      }
     }
   }
 
   function getActionButtons(status, id) {
     switch (status) {
       case "Menunggu Penyerahan":
-      case "Direvisi":
         return `
           <button class="btn btn-sm bg-cyan-500 text-white shadow-md hover:bg-cyan-600 border-0 px-4 py-2 rounded-md text-sm inline-flex items-center gap-2 transition-all hover:-translate-y-0.5" data-id="${id}" title="Upload LPJ">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
             Upload LPJ
+          </button>
+        `;
+      case "Direvisi":
+        return `
+          <button class="btn btn-sm bg-cyan-500 text-white shadow-md hover:bg-cyan-600 border-0 px-4 py-2 rounded-md text-sm inline-flex items-center gap-2 transition-all hover:-translate-y-0.5" data-id="${id}" title="Revisi LPJ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Revisi
           </button>
         `;
       case "Diajukan":
@@ -755,7 +769,7 @@ export function renderPengajuanLpjPage(path, userRole) {
           <div>${item.tgl_batas_lpj ? new Date(item.tgl_batas_lpj).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : "-"}</div>
         </td>
         <td class="text-center">
-          <span id="countdown-${item.kegiatan_id}" class="${countdown.colorClass} font-semibold px-2 py-1 rounded-md text-sm">
+          <span id="countdown-${item.kegiatan_id}" class="${countdown.colorClass} font-semibold text-sm">
             <i class="bx bx-time me-1"></i>${countdown.text}
           </span>
         </td>
@@ -785,7 +799,7 @@ export function renderPengajuanLpjPage(path, userRole) {
         if (countdownSpan) {
           const countdown = calculateCountdown(item.tgl_batas_lpj);
           countdownSpan.innerHTML = `<i class="bx bx-time me-1"></i>${countdown.text}`;
-          countdownSpan.className = `${countdown.colorClass} font-semibold px-2 py-1 rounded-md text-sm`;
+          countdownSpan.className = `${countdown.colorClass} font-semibold text-sm`;
         }
       });
     }, 1000); // Update every second
@@ -897,10 +911,20 @@ export function renderPengajuanLpjPage(path, userRole) {
   // EVENT LISTENERS
   // ==============================================
   function attachActionListeners() {
-    document.querySelectorAll("button[title='Upload LPJ']").forEach(btn => {
+    document.querySelectorAll("button[title='Upload LPJ'], button[title='Revisi LPJ']").forEach(btn => {
       btn.addEventListener("click", function() {
         const kegiatanId = this.dataset.id;
-        window.location.href = `/pengusul/kegiatan/lpj/new?kegiatan_id=${kegiatanId}`;
+        const action = this.getAttribute('title');
+        
+        let url = '';
+        if (action === 'Upload LPJ') {
+            // This might be for creating a new LPJ from scratch
+            url = `/pengusul/kegiatan/lpj/new?kegiatan_id=${kegiatanId}`;
+        } else { // 'Revisi LPJ'
+            // This is for editing an existing LPJ that has been sent back
+            url = `/pengusul/kegiatan/lpj/revisi/${kegiatanId}`;
+        }
+        window.location.href = url;
       });
     });
   }

@@ -137,25 +137,28 @@ function initializeDaftarLpj() {
     const deadlineDate = new Date(deadline);
     const diffTime = deadlineDate - now;
 
-    if (diffTime <= 0) {
-      return { text: `Terlambat`, colorClass: "countdown-danger" };
-    }
+    if (diffTime > 0) { // Belum telat
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
 
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor(
-      (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+      if (diffDays > 0) {
+        return { text: `${diffDays} hari`, colorClass: 'countdown-normal' };
+      } else {
+        return { text: `${String(diffHours).padStart(2, '0')}j ${String(diffMinutes).padStart(2, '0')}m`, colorClass: 'countdown-normal' };
+      }
+    } else { // Telat
+      const overdueTime = now - deadlineDate;
+      const overdueDays = Math.floor(overdueTime / (1000 * 60 * 60 * 24));
+      const overdueHours = Math.floor((overdueTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
-    if (diffDays > 0) {
-      return { text: `${diffDays} hari lagi`, colorClass: "countdown-normal" };
-    } else {
-      return {
-        text: `${String(diffHours).padStart(2, "0")}j ${String(
-          diffMinutes
-        ).padStart(2, "0")}m`,
-        colorClass: "countdown-danger",
-      };
+      if (overdueDays > 0) {
+        return { text: `-${overdueDays} hari`, colorClass: 'countdown-danger' };
+      } else if (overdueHours > 0) {
+        return { text: `-${overdueHours} jam`, colorClass: 'countdown-danger' };
+      } else {
+        return { text: 'Baru saja', colorClass: 'countdown-danger' };
+      }
     }
   }
 
@@ -187,7 +190,7 @@ function initializeDaftarLpj() {
                 <td class="text-center">
                     <span id="countdown-${item.kegiatan_id}" class="${
         countdown.colorClass
-      }">${countdown.text}</span>
+      } font-semibold"><i class="bx bx-time me-1"></i>${countdown.text}</span>
                 </td>
                 <td class="text-center">
                     <span class="badge ${statusClass}">${item.status_lpj}</span>

@@ -508,52 +508,135 @@ export function renderRevisiLpjPage(path, userRole) {
             </div>
         </div>
 
-        <div class="mt-4">
-            <h6 class="font-semibold text-xs text-gray-500 mb-2">BUKTI/LAMPIRAN:</h6>
-            <div class="pl-4 border-l-2 border-gray-200 space-y-2">
-                ${
-                  lampiran.length > 0
-                    ? lampiran
-                        .map(
-                          (file) => `
-                    <div class="lampiran-item ${
-                      lampiranComments[file.lampiran_id]
-                        ? "has-comment"
-                        : ""
-                    }" data-lampiran-id="${file.lampiran_id}">
-                       <div class="lampiran-content">
-                         <i class="ti ti-file-text text-gray-400"></i>
-                         <a href="/download.php?path=${
-                           file.path_file_disimpan
-                         }" target="_blank" class="text-blue-600 hover:underline text-sm">${
-                            file.nama_file_asli
-                          }</a>
-                       </div>
-                       ${
-                         isBendahara ||
-                         lampiranComments[file.lampiran_id]
-                           ? `<button type="button" class="lampiran-comment-btn ${
-                               lampiranComments[file.lampiran_id]
-                                 ? "has-comment"
-                                 : ""
-                             }" data-lampiran-id="${
-                               file.lampiran_id
-                             }" data-filename="${
-                               file.nama_file_asli
-                             }" title="Komentar">
-                               <i class="ti ti-message-circle-2"></i>
-                             </button>`
-                           : ""
-                       }
+                <div class="mt-4">
+
+                    <h6 class="font-semibold text-xs text-gray-500 mb-2">BUKTI/LAMPIRAN:</h6>
+
+                    <div class="pl-4 border-l-2 border-gray-200 space-y-2 lampiran-list" data-anggaran-id="${item.anggaran_id}">
+
+                        ${
+
+                          lampiran.length > 0
+
+                            ? lampiran
+
+                                .map(
+
+                                  (file) => `
+
+                            <div class="lampiran-item ${
+
+                              lampiranComments[file.lampiran_id]
+
+                                ? "has-comment"
+
+                                : ""
+
+                            }" data-lampiran-id="${file.lampiran_id}">
+
+                               <div class="lampiran-content">
+
+                                 <i class="ti ti-file-text text-gray-400"></i>
+
+                                 <a href="/download.php?path=${
+
+                                   file.path_file_disimpan
+
+                                 }" target="_blank" class="text-blue-600 hover:underline text-sm">${
+
+                                    file.nama_file_asli
+
+                                  }</a>
+
+                               </div>
+
+                               <div class="flex items-center gap-2">
+
+                                                          ${
+
+                                                            isBendahara || isPengusul // Always show comment button for Pengusul
+
+                                                              ? `<button type="button" class="lampiran-comment-btn ${
+
+                                                                  lampiranComments[file.lampiran_id]
+
+                                                                    ? "has-comment"
+
+                                                                    : ""
+
+                                                                }" data-lampiran-id="${
+
+                                                                  file.lampiran_id
+
+                                                                }" data-filename="${
+
+                                                                  file.nama_file_asli
+
+                                                                }" title="Komentar">
+
+                                                                  <i class="ti ti-message-circle-2"></i>
+
+                                                                </button>`
+
+                                                              : ""
+
+                                                          }
+
+                                 ${
+
+                                   isPengusul
+
+                                   ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
+
+                                        <i class="ti ti-trash text-red-500"></i>
+
+                                      </button>`
+
+                                   : ''
+
+                                 }
+
+                               </div>
+
+                            </div>
+
+                        `
+
+                                )
+
+                                .join("")
+
+                            : '<p class="text-xs text-gray-400 italic no-files">Tidak ada bukti terlampir untuk item ini.</p>'
+
+                        }
+
                     </div>
-                `
-                        )
-                        .join("")
-                    : '<p class="text-xs text-gray-400 italic">Tidak ada bukti terlampir untuk item ini.</p>'
-                }
-            </div>
-        </div>
-      </div>
+
+                    ${
+
+                      isPengusul
+
+                      ? `
+
+                      <div class="mt-2">
+
+                        <input type="file" class="input-add-lampiran" data-anggaran-id="${item.anggaran_id}" multiple style="display: none;" />
+
+                        <button type="button" class="btn-add-lampiran btn btn-sm btn-outline-primary" data-anggaran-id="${item.anggaran_id}">
+
+                          <i class="ti ti-plus"></i> Tambah File
+
+                        </button>
+
+                      </div>`
+
+                      : ''
+
+                    }
+
+                </div>
+
+              </div>
     `;
   }
 
@@ -592,30 +675,31 @@ export function renderRevisiLpjPage(path, userRole) {
     document.getElementById("lampiranFileName").textContent = filename;
 
     const commentInput = document.getElementById("lampiranCommentInput");
-    const commentDisplay = document.getElementById("lampiranCommentDisplayText");
+    const commentDisplay = document.getElementById(
+      "lampiranCommentDisplayText"
+    );
 
     // Show loading state
     commentInput.value = "Memuat catatan...";
     commentInput.disabled = true;
     commentDisplay.textContent = "Memuat catatan...";
-    
+
     lampiranCommentModalInstance.show();
 
     try {
       const response = await apiRequest(`/lampiran/${lampiranId}`);
       const commentText = response.data.catatan || "";
-      
+
       if (isBendahara) {
         commentInput.value = commentText;
         commentInput.disabled = false;
       }
       commentDisplay.textContent = commentText || "(Tidak ada catatan)";
-
     } catch (error) {
       const errorMsg = `Gagal memuat catatan: ${error.message}`;
       commentInput.value = errorMsg;
       commentDisplay.textContent = errorMsg;
-      Swal.fire({ icon: 'error', title: 'Error', text: errorMsg });
+      Swal.fire({ icon: "error", title: "Error", text: errorMsg });
     }
   }
 
@@ -731,7 +815,7 @@ export function renderRevisiLpjPage(path, userRole) {
         "LPJ telah dikembalikan ke pengusul untuk direvisi.",
         "success"
       );
-      window.location.reload();
+      window.location.href = "/bendahara/kegiatan/lpj";
     } catch (error) {
       Swal.fire("Error", `Gagal mengirim revisi: ${error.message}`, "error");
     }
@@ -760,7 +844,177 @@ export function renderRevisiLpjPage(path, userRole) {
         revisionBtn.addEventListener("click", submitRevision);
       }
     }
+
+    // Pengusul specific listeners
+    if (isPengusul) {
+        // Handle clicks on dynamically added buttons
+        document.body.addEventListener('click', function(event) {
+            if (event.target.matches('.btn-add-lampiran')) {
+                const anggaranId = event.target.dataset.anggaranId;
+                document.querySelector(`.input-add-lampiran[data-anggaran-id="${anggaranId}"]`).click();
+            }
+            if (event.target.closest('.btn-delete-lampiran')) {
+                handleDeleteFile(event.target.closest('.btn-delete-lampiran'));
+            }
+            if (event.target.closest('.btn-cancel-new-lampiran')) {
+                handleCancelNewFile(event.target.closest('.btn-cancel-new-lampiran'));
+            }
+        });
+
+        document.body.addEventListener('change', function(event) {
+            if (event.target.matches('.input-add-lampiran')) {
+                handleFileSelect(event.target);
+            }
+        });
+
+        const resubmitBtn = document.getElementById('btn-resubmit-lpj');
+        if (resubmitBtn) {
+            resubmitBtn.addEventListener('click', resubmitLpj);
+        }
+    }
   }
+
+  // --- Resubmission Logic for Pengusul ---
+  const filesToDelete = new Set();
+  const newFiles = {}; // Structure: { anggaran_id: [File, File, ...] }
+
+  function handleDeleteFile(btn) {
+    const lampiranId = btn.dataset.lampiranId;
+    Swal.fire({
+      title: 'Anda yakin?',
+      text: "File ini akan dihapus secara permanen saat Anda submit ulang.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya, tandai untuk dihapus!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        filesToDelete.add(lampiranId);
+        const lampiranItem = btn.closest('.lampiran-item');
+        lampiranItem.style.opacity = '0.5';
+        lampiranItem.style.textDecoration = 'line-through';
+        btn.disabled = true;
+      }
+    });
+  }
+
+  function handleFileSelect(input) {
+      const anggaranId = input.dataset.anggaranId;
+      const files = Array.from(input.files);
+      
+      if (!newFiles[anggaranId]) {
+          newFiles[anggaranId] = [];
+      }
+
+      const lampiranList = document.querySelector(`.lampiran-list[data-anggaran-id="${anggaranId}"]`);
+      
+      files.forEach(file => {
+          const fileIndex = newFiles[anggaranId].push(file) - 1;
+          
+          const pendingItem = document.createElement('div');
+          pendingItem.className = 'lampiran-item pending-lampiran';
+          pendingItem.dataset.anggaranId = anggaranId;
+          pendingItem.dataset.fileIndex = fileIndex;
+          pendingItem.innerHTML = `
+              <div class="lampiran-content">
+                  <i class="ti ti-clock text-blue-500"></i>
+                  <span class="text-blue-700">${file.name}</span>
+              </div>
+              <button type="button" class="btn-cancel-new-lampiran" title="Batal upload">
+                  <i class="ti ti-x text-red-500"></i>
+              </button>
+          `;
+          lampiranList.querySelector('.no-files')?.remove();
+          lampiranList.appendChild(pendingItem);
+      });
+  }
+
+  function handleCancelNewFile(btn) {
+      const pendingItem = btn.closest('.pending-lampiran');
+      const anggaranId = pendingItem.dataset.anggaranId;
+      const fileIndex = parseInt(pendingItem.dataset.fileIndex, 10);
+
+      // Mark the file as null in the array instead of shifting indices
+      if (newFiles[anggaranId] && newFiles[anggaranId][fileIndex]) {
+          newFiles[anggaranId][fileIndex] = null;
+      }
+      
+      pendingItem.remove();
+  }
+
+  async function resubmitLpj() {
+    Swal.fire({
+      title: 'Submit Ulang LPJ?',
+      text: "Pastikan semua data realisasi dan lampiran sudah benar sebelum submit.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Submit Ulang!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        executeResubmission();
+      }
+    });
+  }
+
+  async function executeResubmission() {
+    Swal.fire({
+        title: "Mengirim data...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    const formData = new FormData();
+    
+    // 1. Append files to delete
+    formData.append('files_to_delete', JSON.stringify(Array.from(filesToDelete)));
+
+    // 2. Append realization data
+    const realisasiData = {};
+    document.querySelectorAll('.realisasi-grid').forEach(grid => {
+        const anggaranId = grid.closest('[data-anggaran-id]').dataset.anggaranId;
+        realisasiData[anggaranId] = {};
+        grid.querySelectorAll('.realisasi-input').forEach(input => {
+            const field = input.dataset.field;
+            realisasiData[anggaranId][field] = input.value;
+        });
+    });
+    formData.append('realisasi', JSON.stringify(realisasiData));
+
+    // 3. Append new files
+    for (const anggaranId in newFiles) {
+        newFiles[anggaranId].forEach((file, index) => {
+            if (file) { // Check if file is not cancelled
+                formData.append(`bukti[${anggaranId}][]`, file, file.name);
+            }
+        });
+    }
+
+    try {
+        await apiRequest(`/kegiatan/${kegiatanId}/lpj/resubmit`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        await Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'LPJ telah berhasil disubmit ulang.'
+        });
+
+        window.location.href = '/pengusul/kegiatan/lpj';
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: `Terjadi kesalahan: ${error.message}`
+        });
+    }
+  }
+
 
   init();
 }

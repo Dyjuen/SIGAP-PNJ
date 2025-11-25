@@ -8,6 +8,7 @@ use App\Core\FileUpload;
 use App\Models\Kegiatan;
 use App\Models\KAKAnggaran;
 use App\Models\KegiatanLampiran;
+use App\Models\KAK;
 use App\Middlewares\AuthMiddleware;
 
 class LpjController extends Controller
@@ -19,7 +20,19 @@ class LpjController extends Controller
 
     public function __construct()
     {
+        // 1. Handle auth first to populate the global user variable
+        $middleware = new AuthMiddleware();
+        $middleware->handle();
+
+        // 2. Now, call the parent constructor which reads the global user variable
         parent::__construct();
+        
+        // 3. Check if the user was successfully fetched by the parent
+        if (!$this->user) {
+            Response::unauthorized('User tidak terautentikasi.');
+        }
+
+        // 4. Initialize models
         $this->kegiatanModel = new Kegiatan();
         $this->kakAnggaranModel = new KAKAnggaran();
         $this->kegiatanLampiranModel = new KegiatanLampiran();
@@ -45,11 +58,11 @@ class LpjController extends Controller
             $kegiatanId = (int) $kegiatanId;
 
             // 1. Authorization & Validation
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
             if (!$kegiatan) {
                 return Response::notFound('Kegiatan tidak ditemukan.');
             }
-            if ($kegiatan['pengusul_user_id'] != $this->user['user_id']) {
+            if ($kegiatan['kak_pengusul_user_id'] != $this->user['user_id']) {
                 return Response::forbidden('Anda bukan pengusul kegiatan ini.');
             }
             if ($kegiatan['lpj_submitted_at'] !== null) {
@@ -157,16 +170,21 @@ class LpjController extends Controller
         try {
             // Authorization: Only Bendahara or the original Pengusul can view.
             $isBendahara = in_array('Bendahara', $this->user['roles']);
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
 
             if (!$kegiatan) {
                 return Response::notFound('Kegiatan tidak ditemukan.');
             }
 
-            $isPengusul = $kegiatan['pengusul_user_id'] == $this->user['user_id'];
+            $isPengusul = $kegiatan['kak_pengusul_user_id'] == $this->user['user_id'];
 
             if (!$isBendahara && !$isPengusul) {
-                return Response::forbidden('Anda tidak memiliki akses untuk melihat LPJ ini.');
+                $ownerId = $kegiatan['kak_pengusul_user_id'] ?? 'null';
+                $userId = $this->user['user_id'] ?? 'null';
+                $kegiatanKakId = $kegiatan['kegiatan_kak_id'] ?? 'null';
+                $kakTableKakId = $kegiatan['kak_table_kak_id'] ?? 'null';
+                $errorMessage = "Anda tidak memiliki akses. ID Pengusul KAK: [{$ownerId}], ID Anda yang login: [{$userId}]. (Debug: Kegiatan ID: {$kegiatanId}, Kegiatan KAK ID: [{$kegiatanKakId}], KAK Table KAK ID: [{$kakTableKakId}])";
+                return Response::forbidden($errorMessage);
             }
 
             // Fetch main kegiatan data
@@ -210,7 +228,7 @@ class LpjController extends Controller
                 return Response::error('Input tidak valid.', 422);
             }
 
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
             if (!$kegiatan) {
                 return Response::notFound('Kegiatan tidak ditemukan.');
             }
@@ -239,7 +257,7 @@ class LpjController extends Controller
             // 4. Notify the Pengusul
             $notifikasiModel = new \App\Models\Notifikasi();
             $notifikasiModel->create([
-                'penerima_user_id' => $kegiatan['pengusul_user_id'],
+                'penerima_user_id' => $kegiatan['kak_pengusul_user_id'],
                 'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" perlu direvisi. Catatan: {$generalComment}",
                 'link_tujuan' => "/pengusul/kegiatan/lpj/new?kegiatan_id=" . $kegiatanId,
             ]);
@@ -253,6 +271,121 @@ class LpjController extends Controller
                 $db->rollBack();
             }
             return Response::error('Gagal merevisi LPJ: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Resubmit a revised LPJ by the Pengusul.
+     * Handles multipart/form-data with realization data, new files, and files to delete.
+     * POST /api/kegiatan/{kegiatan_id}/lpj/resubmit
+     */
+    public function resubmit($kegiatanId)
+    {
+        $db = $this->kegiatanModel->getDb();
+        $uploader = new FileUpload(
+            '/storage/uploads/documents/',
+            ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'xls', 'xlsx'],
+            10485760 // 10 MB
+        );
+        $uploadedFiles = [];
+
+        try {
+            $kegiatanId = (int) $kegiatanId;
+
+            // 1. Authorization & Validation
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
+            if (!$kegiatan) {
+                return Response::notFound('Kegiatan tidak ditemukan.');
+            }
+            if ($kegiatan['kak_pengusul_user_id'] != $this->user['user_id']) {
+                return Response::forbidden('Anda bukan pengusul kegiatan ini.');
+            }
+
+            $db->beginTransaction();
+
+            // 2. Process files for deletion
+            $filesToDelete = isset($_POST['files_to_delete']) ? json_decode($_POST['files_to_delete'], true) : [];
+            if (!empty($filesToDelete)) {
+                foreach ($filesToDelete as $lampiranId) {
+                    $lampiran = $this->kegiatanLampiranModel->find($lampiranId);
+                    if ($lampiran) {
+                        $uploader->delete($lampiran['path_file_disimpan']);
+                        $this->kegiatanLampiranModel->delete($lampiranId);
+                    }
+                }
+            }
+
+            // 3. Process realization data updates
+            $realisasiData = isset($_POST['realisasi']) ? json_decode($_POST['realisasi'], true) : [];
+            if (!empty($realisasiData)) {
+                foreach ($realisasiData as $anggaranId => $data) {
+                    $this->kakAnggaranModel->update($anggaranId, [
+                        'realisasi_uraian' => $data['realisasi_uraian'] ?? null,
+                        'realisasi_volume1' => ($data['realisasi_volume1'] === '' ? null : $data['realisasi_volume1']),
+                        'realisasi_satuan1_id' => ($data['realisasi_satuan1_id'] === '' ? null : $data['realisasi_satuan1_id']),
+                        'realisasi_harga_satuan' => ($data['realisasi_harga_satuan'] === '' ? null : str_replace(['Rp ', '.'], '', $data['realisasi_harga_satuan'])),
+                    ]);
+                }
+            }
+
+            // 4. Process new file uploads
+            $files = $_FILES['bukti'] ?? [];
+             if (!empty($files)) {
+                foreach ($files['name'] as $anggaranId => $fileList) {
+                    foreach ($fileList as $fileIndex => $fileName) {
+                        if ($files['error'][$anggaranId][$fileIndex] === UPLOAD_ERR_OK) {
+                            $fileToUpload = [
+                                'name' => $files['name'][$anggaranId][$fileIndex],
+                                'type' => $files['type'][$anggaranId][$fileIndex],
+                                'tmp_name' => $files['tmp_name'][$anggaranId][$fileIndex],
+                                'error' => $files['error'][$anggaranId][$fileIndex],
+                                'size' => $files['size'][$anggaranId][$fileIndex],
+                            ];
+                            
+                            $uploadResult = $uploader->upload($fileToUpload);
+                            if (!$uploadResult['success']) {
+                                throw new \Exception("Gagal mengupload file '{$fileName}': " . $uploadResult['message']);
+                            }
+                            $uploadedFiles[] = $uploadResult['file_path'];
+    
+                            $this->kegiatanLampiranModel->create([
+                                'anggaran_id' => $anggaranId,
+                                'nama_file_asli' => $uploadResult['original_name'],
+                                'path_file_disimpan' => $uploadResult['file_path'],
+                                'uploader_user_id' => $this->user['user_id'],
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            // 5. Update approval status back to 'Aktif' for Bendahara review
+            $approvalModel = new \App\Models\KegiatanApproval();
+            $lpjApproval = $approvalModel->findByKegiatanIdAndLevel($kegiatanId, 'Bendahara-LPJ');
+            if ($lpjApproval) {
+                $approvalModel->update($lpjApproval['approval_kegiatan_id'], [
+                    'status' => 'Aktif',
+                    'catatan' => null, // Clear previous rejection note
+                    'approver_user_id' => null,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+            
+            // Also update the main submission timestamp
+            $this->kegiatanModel->update($kegiatanId, ['lpj_submitted_at' => date('Y-m-d H:i:s')]);
+
+            $db->commit();
+
+            return Response::success(null, 'LPJ berhasil disubmit ulang dan menunggu review dari Bendahara.');
+
+        } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            foreach ($uploadedFiles as $path) {
+                $uploader->delete($path);
+            }
+            return Response::error('Gagal submit ulang LPJ: ' . $e->getMessage(), 500);
         }
     }
 }

@@ -17,7 +17,7 @@ class LampiranController
     private $kakModel;
     private $kakAnggaranModel;
     private $fileUpload;
-    private $userData;
+    protected $user;
 
     public function __construct()
     {
@@ -26,9 +26,9 @@ class LampiranController
         $middleware->handle();
 
         // Get authenticated user
-        $this->userData = AuthMiddleware::getAuthUser();
+        $this->user = AuthMiddleware::getAuthUser();
         
-        if (!$this->userData) {
+        if (!$this->user) {
             Response::unauthorized('User tidak terautentikasi.');
         }
 
@@ -102,8 +102,7 @@ class LampiranController
                 Response::notFound('Kegiatan tidak ditemukan.');
             }
 
-            // Authorization: Only owner can upload
-            if ($kegiatan['pengusul_user_id'] != $this->userData['user_id'] && !$this->hasRole('Admin')) {
+            if ($kegiatan['pengusul_user_id'] != $this->user['user_id'] && !$this->hasRole('Admin')) {
                 Response::forbidden('Anda tidak memiliki akses untuk upload lampiran.');
             }
 
@@ -141,7 +140,7 @@ class LampiranController
                 'file_size' => $uploadResult['file_size'],
                 'mime_type' => $uploadResult['mime_type'],
                 'keterangan' => $keterangan,
-                'uploader_user_id' => $this->userData['user_id']
+                'uploader_user_id' => $this->user['user_id']
             ]);
 
             // Get created lampiran
@@ -238,7 +237,7 @@ class LampiranController
             }
 
             // Authorization
-            if ($kegiatan['pengusul_user_id'] != $this->userData['user_id'] && !$this->hasRole('Admin')) {
+            if ($kegiatan['pengusul_user_id'] != $this->user['user_id'] && !$this->hasRole('Admin')) {
                 Response::forbidden('Anda tidak memiliki akses untuk menghapus lampiran.');
             }
 
@@ -274,7 +273,7 @@ class LampiranController
         }
 
         // Pengusul hanya bisa akses kegiatan sendiri
-        if ($kegiatan['pengusul_user_id'] != $this->userData['user_id']) {
+        if ($kegiatan['pengusul_user_id'] != $this->user['user_id']) {
             Response::forbidden('Anda tidak memiliki akses ke kegiatan ini.');
         }
     }
@@ -284,7 +283,7 @@ class LampiranController
      */
     private function hasRole($roleName)
     {
-        return in_array($roleName, $this->userData['roles'] ?? []);
+        return in_array($roleName, $this->user['roles'] ?? []);
     }
 
     /**
@@ -353,10 +352,15 @@ class LampiranController
                 Response::forbidden('Tidak dapat memverifikasi KAK terkait lampiran ini.');
             }
 
-            if ($kak['pengusul_id'] == $this->userData['user_id']) {
+            if ($kak['pengusul_user_id'] == $this->user['user_id']) {
                 Response::success($lampiran, 'Data lampiran berhasil diambil.');
             } else {
-                Response::forbidden('Anda tidak memiliki akses untuk melihat lampiran ini.');
+                $ownerId = $kak['pengusul_user_id'] ?? 'null';
+                $userId = $this->user['user_id'] ?? 'null';
+                $anggaranId = $anggaran['anggaran_id'] ?? 'null';
+                $kakId = $kak['kak_id'] ?? 'null';
+                $errorMessage = "Anda tidak memiliki akses untuk melihat lampiran ini. (Debug: Lampiran ID: {$id}, Anggaran ID: {$anggaranId}, KAK ID: {$kakId}, Pengusul KAK di DB: [{$ownerId}], ID Anda login: [{$userId}])";
+                Response::forbidden($errorMessage);
             }
 
         } catch (\Exception $e) {
