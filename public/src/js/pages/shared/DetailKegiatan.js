@@ -2,7 +2,7 @@
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
-export function renderDummyInputPage(path, userRole) {
+export function renderDetailKegiatanPage(path, userRole) {
   const pageContent = `
     <style>
       /* Keyframe Animations */
@@ -862,6 +862,7 @@ export function renderDummyInputPage(path, userRole) {
   let masterState = {
     iku: [],
     satuan: [],
+    kategoriBelanja: [],
   };
 
   // ==============================================
@@ -1008,14 +1009,16 @@ export function renderDummyInputPage(path, userRole) {
     });
 
     try {
-      const [kakResponse, ikuResponse, satuanResponse] = await Promise.all([
+      const [kakResponse, ikuResponse, satuanResponse, kategoriBelanjaResponse] = await Promise.all([
         apiRequest(`/kak/${kakId}/data`),
         apiRequest("/master/iku"),
         apiRequest("/master/satuan"),
+        apiRequest("/master/kategori-belanja"),
       ]);
 
       masterState.iku = ikuResponse.data;
       masterState.satuan = satuanResponse.data;
+      masterState.kategoriBelanja = kategoriBelanjaResponse.data;
       const kakData = kakResponse.data;
       kakDataState = kakData;
 
@@ -1091,8 +1094,18 @@ export function renderDummyInputPage(path, userRole) {
       belanjaPerjalananContainer.innerHTML = "";
 
       if (kakData.anggaran && kakData.anggaran.length > 0) {
+        const kategoriBarangId = masterState.kategoriBelanja.find(k => k.nama?.toLowerCase() === 'belanja barang')?.kategori_belanja_id;
+        const kategoriJasaId = masterState.kategoriBelanja.find(k => k.nama?.toLowerCase() === 'belanja jasa')?.kategori_belanja_id;
+        const kategoriPerjalananId = masterState.kategoriBelanja.find(k => k.nama?.toLowerCase() === 'belanja perjalanan')?.kategori_belanja_id;
+
         kakData.anggaran.forEach((item) => {
-          belanjaBarangContainer.innerHTML += createRabRow(item);
+          if (item.kategori_belanja_id == kategoriBarangId) {
+            belanjaBarangContainer.innerHTML += createRabRow(item);
+          } else if (item.kategori_belanja_id == kategoriJasaId) {
+            belanjaJasaContainer.innerHTML += createRabRow(item);
+          } else if (item.kategori_belanja_id == kategoriPerjalananId) {
+            belanjaPerjalananContainer.innerHTML += createRabRow(item);
+          }
         });
       }
 
@@ -1230,4 +1243,4 @@ export function renderDummyInputPage(path, userRole) {
   }
 }
 
-export default renderDummyInputPage;
+export default renderDetailKegiatanPage;

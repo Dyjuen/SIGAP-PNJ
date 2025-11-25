@@ -245,18 +245,9 @@ export function renderPpkDashboardPage(path, userRole) {
 
   // --- VIEW DETAIL BUTTON ---
   document.querySelectorAll(".btn-view-detail").forEach((btn) => {
-    btn.addEventListener("click", async function () {
+    btn.addEventListener("click", function () {
       const kegiatanId = this.dataset.id;
-
-      await Swal.fire({
-        icon: "info",
-        title: "Detail Kegiatan",
-        text: `Lihat detail kegiatan: ${kegiatanId}`,
-        confirmButtonColor: "#00BCD4",
-      });
-
-      // TODO: Implement actual navigation
-      // window.location.href = `/kegiatan/${kegiatanId}`;
+      window.location.href = `/${userRole.toLowerCase()}/kegiatan/detail/${kegiatanId}`;
     });
   });
 }
