@@ -459,7 +459,7 @@ export function renderRevisiLpjPage(path, userRole) {
             <div class="grid grid-cols-12 gap-4 items-end mb-4 realisasi-grid">
               <div class="col-span-3">
                 <label class="block font-semibold mb-2 text-sm">Uraian</label>
-                <input type="text" ${inputAttr} class="form-control form-control-sm realisasi-input" data-field="realisasi_uraian" style="${inputStyle}" value="${
+                <input type="text" disabled class="form-control form-control-sm realisasi-input" data-field="realisasi_uraian" style="${readOnlyStyle}" value="${
       item.realisasi_uraian || item.uraian || ""
     }">
               </div>

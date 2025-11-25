@@ -320,10 +320,9 @@ class LpjController extends Controller
             if (!empty($realisasiData)) {
                 foreach ($realisasiData as $anggaranId => $data) {
                     $this->kakAnggaranModel->update($anggaranId, [
-                        'realisasi_uraian' => $data['realisasi_uraian'] ?? null,
                         'realisasi_volume1' => ($data['realisasi_volume1'] === '' ? null : $data['realisasi_volume1']),
                         'realisasi_satuan1_id' => ($data['realisasi_satuan1_id'] === '' ? null : $data['realisasi_satuan1_id']),
-                        'realisasi_harga_satuan' => ($data['realisasi_harga_satuan'] === '' ? null : str_replace(['Rp ', '.'], '', $data['realisasi_harga_satuan'])),
+                        'realisasi_harga_satuan' => ($data['realisasi_harga_satuan'] === '' ? null : preg_replace('/[^0-9]/', '', $data['realisasi_harga_satuan'])),
                     ]);
                 }
             }
