@@ -195,6 +195,21 @@ class Kegiatan extends Model
         return $this->query($sql, [$id])->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function findById($id)
+    {
+        $sql = "SELECT 
+                    k.*, 
+                    t.pengusul_user_id, 
+                    t.status_id, 
+                    t.nama_kegiatan,
+                    (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_disetujui,
+                    (SELECT COALESCE(SUM(pd.jumlah_dicairkan), 0) FROM t_pencairan_dana pd WHERE pd.kegiatan_id = k.kegiatan_id) as dana_dicairkan
+                FROM {$this->table} k
+                JOIN t_kak t ON k.kak_id = t.kak_id
+                WHERE k.{$this->primaryKey} = ?";
+        return $this->query($sql, [$id])->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function updateStatus($kegiatanId, $statusId)
     {
         $sql = "UPDATE t_kak SET status_id = ? WHERE kak_id = (SELECT kak_id FROM t_kegiatan WHERE kegiatan_id = ?)";
