@@ -3,7 +3,7 @@
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderDaftarLpjPage(path, userRole) {
-  const isBendahara = userRole.toLowerCase() === 'bendahara';
+  const isBendahara = userRole.toLowerCase() === "bendahara";
 
   const bendaharaStatCards = `
     <h3 class="text-2xl font-bold mb-4">Monitoring LPJ</h3>
@@ -68,7 +68,7 @@ export function renderDaftarLpjPage(path, userRole) {
               <tr>
                 <th style="width: 80px;">No.</th>
                 <th>Nama Kegiatan</th>
-                ${isBendahara ? '<th>Pengusul</th>' : ''}
+                ${isBendahara ? "<th>Pengusul</th>" : ""}
                 <th>Batas Waktu LPJ</th>
                 <th class="text-center">Hitung Mundur</th>
                 <th class="text-center">Status</th>
@@ -88,8 +88,8 @@ export function renderDaftarLpjPage(path, userRole) {
 }
 
 function initializeDaftarLpj(userRole) {
-  const isBendahara = userRole.toLowerCase() === 'bendahara';
-  const isPengusul = userRole.toLowerCase() === 'pengusul';
+  const isBendahara = userRole.toLowerCase() === "bendahara";
+  const isPengusul = userRole.toLowerCase() === "pengusul";
 
   const state = {
     kegiatan: [],
@@ -102,7 +102,7 @@ function initializeDaftarLpj(userRole) {
   const statCards = document.querySelectorAll("[data-status]");
 
   function showError(message) {
-    Swal.fire('Error', message, 'error');
+    Swal.fire("Error", message, "error");
   }
 
   async function apiRequest(endpoint, options = {}) {
@@ -144,10 +144,10 @@ function initializeDaftarLpj(userRole) {
   function getStatusBadge(status) {
     const statusMap = {
       "Menunggu Penyerahan": "bg-label-secondary",
-      "Diajukan": "bg-label-warning",
-      "Direvisi": "bg-label-info",
-      "Setor Fisik": "bg-label-primary",
-      "Selesai": "bg-label-success",
+      Diajukan: "bg-label-warning",
+      Direvisi: "bg-label-info",
+      "Setor Fisik": "bg-label-danger",
+      Selesai: "bg-label-success",
     };
     return statusMap[status] || "bg-label-dark";
   }
@@ -180,7 +180,7 @@ function initializeDaftarLpj(userRole) {
           return `<a href="/pengusul/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
       }
     }
-    return '';
+    return "";
   }
 
   function calculateCountdown(deadline) {
@@ -192,25 +192,36 @@ function initializeDaftarLpj(userRole) {
 
     if (diffTime > 0) {
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+      const diffHours = Math.floor(
+        (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const diffMinutes = Math.floor(
+        (diffTime % (1000 * 60 * 60)) / (1000 * 60)
+      );
 
       if (diffDays > 0) {
-        return { text: `${diffDays} hari`, colorClass: 'countdown-normal' };
+        return { text: `${diffDays} hari`, colorClass: "countdown-normal" };
       } else {
-        return { text: `${String(diffHours).padStart(2, '0')}j ${String(diffMinutes).padStart(2, '0')}m`, colorClass: 'countdown-normal' };
+        return {
+          text: `${String(diffHours).padStart(2, "0")}j ${String(
+            diffMinutes
+          ).padStart(2, "0")}m`,
+          colorClass: "countdown-normal",
+        };
       }
     } else {
       const overdueTime = now - deadlineDate;
       const overdueDays = Math.floor(overdueTime / (1000 * 60 * 60 * 24));
-      const overdueHours = Math.floor((overdueTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const overdueHours = Math.floor(
+        (overdueTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
 
       if (overdueDays > 0) {
-        return { text: `-${overdueDays} hari`, colorClass: 'countdown-danger' };
+        return { text: `-${overdueDays} hari`, colorClass: "countdown-danger" };
       } else if (overdueHours > 0) {
-        return { text: `-${overdueHours} jam`, colorClass: 'countdown-danger' };
+        return { text: `-${overdueHours} jam`, colorClass: "countdown-danger" };
       } else {
-        return { text: 'Baru saja', colorClass: 'countdown-danger' };
+        return { text: "Baru saja", colorClass: "countdown-danger" };
       }
     }
   }
@@ -228,8 +239,10 @@ function initializeDaftarLpj(userRole) {
       const actionButtons = getActionButtons(item.status_lpj, item.kegiatan_id);
       const countdown = calculateCountdown(item.tgl_batas_lpj);
 
-      const pengusulCell = isBendahara ? `<td>${item.pengusul_nama}</td>` : '';
-      const pengusulSubtext = isBendahara ? `<small class="text-muted">${item.pengusul_nama}</small>` : '';
+      const pengusulCell = isBendahara ? `<td>${item.pengusul_nama}</td>` : "";
+      const pengusulSubtext = isBendahara
+        ? `<small class="text-muted">${item.pengusul_nama}</small>`
+        : "";
 
       row.innerHTML = `
         <td>${index + 1}</td>
@@ -244,7 +257,9 @@ function initializeDaftarLpj(userRole) {
             : "-"
         }</td>
         <td class="text-center">
-            <span id="countdown-${item.kegiatan_id}" class="${countdown.colorClass} font-semibold">
+            <span id="countdown-${item.kegiatan_id}" class="${
+        countdown.colorClass
+      } font-semibold">
               <i class="bx bx-time me-1"></i>${countdown.text}
             </span>
         </td>
@@ -270,11 +285,13 @@ function initializeDaftarLpj(userRole) {
         state.kegiatan.filter((k) => k.status_lpj === "Selesai").length;
     } else if (isPengusul) {
       document.getElementById("count-menunggu").textContent =
-        state.kegiatan.filter(k => k.status_lpj === 'Menunggu Penyerahan').length;
+        state.kegiatan.filter(
+          (k) => k.status_lpj === "Menunggu Penyerahan"
+        ).length;
       document.getElementById("count-revisi").textContent =
-        state.kegiatan.filter(k => k.status_lpj === 'Direvisi').length;
+        state.kegiatan.filter((k) => k.status_lpj === "Direvisi").length;
       document.getElementById("count-setor-fisik").textContent =
-        state.kegiatan.filter(k => k.status_lpj === 'Setor Fisik').length;
+        state.kegiatan.filter((k) => k.status_lpj === "Setor Fisik").length;
     }
   }
 
@@ -316,20 +333,24 @@ function initializeDaftarLpj(userRole) {
 
   async function approveLpj(id) {
     Swal.fire({
-      title: 'Setujui LPJ?',
+      title: "Setujui LPJ?",
       text: "Status akan berubah menjadi 'Setor Fisik'. Anda tidak dapat mengembalikan tindakan ini.",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Ya, Setujui!',
-      cancelButtonText: 'Batal'
+      confirmButtonText: "Ya, Setujui!",
+      cancelButtonText: "Batal",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await apiRequest(`/kegiatan/${id}/lpj/approve`, { method: 'POST' });
-          Swal.fire('Berhasil!', 'LPJ telah disetujui.', 'success');
+          await apiRequest(`/kegiatan/${id}/lpj/approve`, { method: "POST" });
+          Swal.fire("Berhasil!", "LPJ telah disetujui.", "success");
           fetchData();
         } catch (error) {
-          Swal.fire('Gagal!', `Gagal menyetujui LPJ: ${error.message}`, 'error');
+          Swal.fire(
+            "Gagal!",
+            `Gagal menyetujui LPJ: ${error.message}`,
+            "error"
+          );
         }
       }
     });
@@ -337,36 +358,40 @@ function initializeDaftarLpj(userRole) {
 
   async function completeLpj(id) {
     Swal.fire({
-      title: 'Selesaikan LPJ?',
+      title: "Selesaikan LPJ?",
       text: "Proses LPJ akan ditandai sebagai selesai sepenuhnya.",
-      icon: 'question',
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: 'Ya, Selesaikan!',
-      cancelButtonText: 'Batal'
+      confirmButtonText: "Ya, Selesaikan!",
+      cancelButtonText: "Batal",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await apiRequest(`/kegiatan/${id}/lpj/complete`, { method: 'POST' });
-          Swal.fire('Berhasil!', 'LPJ telah diselesaikan.', 'success');
+          await apiRequest(`/kegiatan/${id}/lpj/complete`, { method: "POST" });
+          Swal.fire("Berhasil!", "LPJ telah diselesaikan.", "success");
           fetchData();
         } catch (error) {
-          Swal.fire('Gagal!', `Gagal menyelesaikan LPJ: ${error.message}`, 'error');
+          Swal.fire(
+            "Gagal!",
+            `Gagal menyelesaikan LPJ: ${error.message}`,
+            "error"
+          );
         }
       }
     });
   }
 
   if (isBendahara) {
-    tbody.addEventListener('click', async (event) => {
-      const target = event.target.closest('button[data-action]');
+    tbody.addEventListener("click", async (event) => {
+      const target = event.target.closest("button[data-action]");
       if (!target) return;
 
       const action = target.dataset.action;
       const id = target.dataset.id;
 
-      if (action === 'setujui') {
+      if (action === "setujui") {
         await approveLpj(id);
-      } else if (action === 'selesaikan') {
+      } else if (action === "selesaikan") {
         await completeLpj(id);
       }
     });
