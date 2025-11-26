@@ -1122,28 +1122,8 @@ export function renderRevisiKakPage(path, userRole) {
         <div class="bg-white rounded-xl shadow-lg p-8">
           <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rencana Anggaran Biaya</h4>
           
-          <!-- Belanja Barang -->
-          <div class="mb-10">
-            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
-            <div id="belanjaBarangContainer">
-              <!-- Dynamic content will be injected here -->
-            </div>
-          </div>
-
-          <!-- Belanja Jasa -->
-          <div class="mb-10">
-            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
-            <div id="belanjaJasaContainer">
-              <!-- Dynamic content will be injected here -->
-            </div>
-          </div>
-
-          <!-- Belanja Perjalanan -->
-          <div class="mb-10">
-            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
-            <div id="belanjaPerjalananContainer">
-              <!-- Dynamic content will be injected here -->
-            </div>
+          <div id="rab-container">
+            <!-- Dynamic RAB sections will be injected here -->
           </div>
 
           <!-- Navigation Buttons -->
@@ -1324,6 +1304,19 @@ export function renderRevisiKakPage(path, userRole) {
   let fieldCommentModalInstance = null;
   let rowCommentModalInstance = null;
 
+  function updateCommentButton(selector, comment) {
+    const btn = document.querySelector(selector);
+    if (!btn) {
+      return;
+    }
+    const row = btn.closest('.row-with-comment');
+    const hasComment = comment && comment.trim() !== '';
+    btn.classList.toggle('has-comment', hasComment);
+    if (row) {
+      row.classList.toggle('has-row-comment', hasComment);
+    }
+  }
+
   let masterState = {
     iku: [],
     satuan: [],
@@ -1377,18 +1370,22 @@ export function renderRevisiKakPage(path, userRole) {
     return item ? item[nameField] : "N/A";
   };
 
-  const createReadOnlyRow = (value, index, type, pkValue, pkName) => `
-    <div class="row-with-comment" data-row-type="${type}" data-pk-name="${pkName}" data-pk-value="${pkValue}">
+  const createReadOnlyRow = (value, index, type, pkValue, pkName, fieldName) => {
+    const fieldAttr = fieldName ? `data-field-name="${fieldName}"` : '';
+    return `
+    <div class="row-with-comment" data-row-type="${type}" data-pk-name="${pkName}" data-pk-value="${pkValue}" ${fieldAttr}>
       <div class="input-with-comment" style="padding-right: 60px;">
         <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${value}">
       </div>
       <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="${
-        type.charAt(0).toUpperCase() + type.slice(1)
+        (fieldName ? (fieldName.charAt(0).toUpperCase() + fieldName.slice(1)).replace('_', ' ') : type.charAt(0).toUpperCase() + type.slice(1))
       } #${index + 1}">
         <i class="ti ti-message-circle-2">&#xeaed;</i>
       </button>
     </div>
-  `;
+  `};
+
+
 
   const createIndikatorKinerjaRow = (item, index) => `
     <div class="row-with-comment" data-row-type="t_kak_target" data-pk-name="target_id" data-pk-value="${
@@ -1454,7 +1451,35 @@ export function renderRevisiKakPage(path, userRole) {
     </div>
   `;
 
-  const createRabRow = (item, index) => `
+  const createRabRow = (item, index) => {
+    const vol1 = isVerifikator && !item.volume1 ? "" : item.volume1 || "0";
+    const vol2 = isVerifikator && !item.volume2 ? "" : item.volume2 || "0";
+    const vol3 = isVerifikator && !item.volume3 ? "" : item.volume3 || "0";
+
+    const satuanOptions = (satuanId) => {
+      if (isVerifikator) {
+        const selectedSatuan = masterState.satuan.find(s => s.satuan_id == satuanId);
+        if (selectedSatuan) {
+          return `<option value="${selectedSatuan.satuan_id}" selected>${selectedSatuan.nama_satuan}</option>`;
+        } else {
+          return `<option value="" selected></option>`;
+        }
+      }
+      // Default for pengusul
+      return `
+        <option value="">Pilih Satuan</option>
+        ${masterState.satuan
+          .map(
+            (s) =>
+              `<option value="${s.satuan_id}" ${
+                s.satuan_id == satuanId ? "selected" : ""
+              }>${s.nama_satuan}</option>`
+          )
+          .join("")}
+      `;
+    };
+
+    return `
     <div class="row-with-comment" data-row-type="t_kak_anggaran" data-pk-name="anggaran_id" data-pk-value="${
       item.anggaran_id
     }">
@@ -1462,73 +1487,44 @@ export function renderRevisiKakPage(path, userRole) {
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.uraian || ""
-  }">
+      item.uraian || ""
+    }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.volume1 || "0"
-  }">
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol1}">
         </div>
         <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" style="background: #FFFFFF; ${inputStyle}" ${inputAttr}>
-            <option value="">Pilih Satuan</option>
-            ${masterState.satuan
-              .map(
-                (s) =>
-                  `<option value="${s.satuan_id}" ${
-                    s.satuan_id == item.satuan1_id ? "selected" : ""
-                  }>${s.nama_satuan}</option>`
-              )
-              .join("")}
+            ${satuanOptions(item.satuan1_id)}
           </select>
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.volume2 || "0"
-  }">
+                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol2}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" style="background: #FFFFFF; ${inputStyle}" ${inputAttr}>
-            <option value="">Pilih Satuan</option>
-            ${masterState.satuan
-              .map(
-                (s) =>
-                  `<option value="${s.satuan_id}" ${
-                    s.satuan_id == item.satuan2_id ? "selected" : ""
-                  }>${s.nama_satuan}</option>`
-              )
-              .join("")}
+            ${satuanOptions(item.satuan2_id)}
           </select>
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.volume3 || "0"
-  }">
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol3}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" style="background: #FFFFFF; ${inputStyle}" ${inputAttr}>
-            <option value="">Pilih Satuan</option>
-            ${masterState.satuan
-              .map(
-                (s) =>
-                  `<option value="${s.satuan_id}" ${
-                    s.satuan_id == item.satuan3_id ? "selected" : ""
-                  }>${s.nama_satuan}</option>`
-              )
-              .join("")}
+            ${satuanOptions(item.satuan3_id)}
           </select>
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${formatCurrency(
-    item.harga_satuan
-  )}">
+      item.harga_satuan
+    )}">
         </div>
       </div>
       <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Anggaran #${
@@ -1538,6 +1534,7 @@ export function renderRevisiKakPage(path, userRole) {
       </button>
     </div>
   `;
+  };
 
   // ==============================================
   // DATE RANGE PICKER
@@ -1617,10 +1614,11 @@ export function renderRevisiKakPage(path, userRole) {
     });
 
     try {
-      const [kakResponse, ikuResponse, satuanResponse] = await Promise.all([
+      const [kakResponse, ikuResponse, satuanResponse, kategoriBelanjaResponse] = await Promise.all([
         apiRequest(`/kak/${kakId}/data`),
         apiRequest("/master/iku"),
         apiRequest("/master/satuan"),
+        apiRequest("/master/kategori-belanja"),
       ]);
 
       masterState.iku = ikuResponse.data;
@@ -1633,7 +1631,7 @@ export function renderRevisiKakPage(path, userRole) {
         catatan_nama_kegiatan: "namaKegiatan",
         catatan_deskripsi_kegiatan: "gambaranUmum",
         catatan_metode_pelaksanaan: "metodePelaksanaan",
-        catatan_kurun_waktu: "kurunWaktu",
+        catatan_tanggal: "kurunWaktu",
       };
 
       for (const [backendKey, frontendKey] of Object.entries(fieldMapping)) {
@@ -1658,8 +1656,18 @@ export function renderRevisiKakPage(path, userRole) {
         if (config.array && config.array.length > 0) {
           if (!rowComments[config.tableName]) rowComments[config.tableName] = {};
           config.array.forEach((item) => {
-            if (item[config.idField] && item.catatan_verifikator) {
-              rowComments[config.tableName][item[config.idField]] = item.catatan_verifikator;
+            const pk = item[config.idField];
+            if (!pk) return;
+
+            if (config.tableName === 't_kak_manfaat') {
+              if (item.catatan_sasaran_utama) {
+                rowComments[config.tableName][`${pk}_sasaran_utama`] = item.catatan_sasaran_utama;
+              }
+              if (item.catatan_manfaat) {
+                rowComments[config.tableName][`${pk}_manfaat`] = item.catatan_manfaat;
+              }
+            } else if (item.catatan_verifikator) {
+              rowComments[config.tableName][pk] = item.catatan_verifikator;
             }
           });
         }
@@ -1692,15 +1700,18 @@ export function renderRevisiKakPage(path, userRole) {
       if (kakData.manfaat && kakData.manfaat.length > 0) {
         kakData.manfaat.forEach((item, index) => {
           if (item.sasaran_utama) {
-            sasaranContainer.innerHTML += createReadOnlyRow(item.sasaran_utama, index, "t_kak_manfaat", item.manfaat_id, "manfaat_id");
+            sasaranContainer.innerHTML += createReadOnlyRow(item.sasaran_utama, index, "t_kak_manfaat", item.manfaat_id, "manfaat_id", "sasaran_utama");
           }
           if (item.manfaat) {
-            manfaatContainer.innerHTML += createReadOnlyRow(item.manfaat, index, "t_kak_manfaat", item.manfaat_id, "manfaat_id");
+            manfaatContainer.innerHTML += createReadOnlyRow(item.manfaat, index, "t_kak_manfaat", item.manfaat_id, "manfaat_id", "manfaat");
           }
         });
         kakData.manfaat.forEach((item) => {
-          if (item.catatan_verifikator) {
-            updateCommentButton(`.row-with-comment[data-pk-value="${item.manfaat_id}"] .row-comment-icon`, item.catatan_verifikator);
+          if (item.catatan_sasaran_utama) {
+            updateCommentButton(`.row-with-comment[data-pk-value="${item.manfaat_id}"][data-field-name="sasaran_utama"] .row-comment-icon`, item.catatan_sasaran_utama);
+          }
+          if (item.catatan_manfaat) {
+            updateCommentButton(`.row-with-comment[data-pk-value="${item.manfaat_id}"][data-field-name="manfaat"] .row-comment-icon`, item.catatan_manfaat);
           }
         });
       }
@@ -1748,24 +1759,41 @@ export function renderRevisiKakPage(path, userRole) {
         });
       }
 
-      // Populate RAB
-      const belanjaBarangContainer = document.getElementById("belanjaBarangContainer");
-      belanjaBarangContainer.innerHTML = "";
-      const belanjaJasaContainer = document.getElementById("belanjaJasaContainer");
-      belanjaJasaContainer.innerHTML = "";
-      const belanjaPerjalananContainer = document.getElementById("belanjaPerjalananContainer");
-      belanjaPerjalananContainer.innerHTML = "";
+      // Populate RAB with Categories
+      const rabContainer = document.getElementById("rab-container");
+      rabContainer.innerHTML = "";
+      const kategoriBelanja = kategoriBelanjaResponse.data;
 
-      if (kakData.anggaran && kakData.anggaran.length > 0) {
-        kakData.anggaran.forEach((item, index) => {
-          belanjaBarangContainer.innerHTML += createRabRow(item, index);
-        });
-        kakData.anggaran.forEach((item) => {
-          if (item.catatan_verifikator) {
-            updateCommentButton(`.row-with-comment[data-pk-value="${item.anggaran_id}"] .row-comment-icon`, item.catatan_verifikator);
-          }
-        });
-      }
+      kategoriBelanja.forEach(kategori => {
+        const section = document.createElement('div');
+        section.className = 'mb-10';
+        section.dataset.kategoriId = kategori.kategori_belanja_id;
+        
+        const itemsContainer = document.createElement('div');
+        itemsContainer.id = `rab-items-container-${kategori.kategori_belanja_id}`;
+
+        const anggaranForKategori = kakData.anggaran.filter(
+          (item) => item.kategori_belanja_id === kategori.kategori_belanja_id
+        );
+
+        if (anggaranForKategori.length > 0) {
+            section.innerHTML = `<h5 class="mb-6 font-bold text-lg" style="color: #374151;">${kategori.nama}</h5>`;
+            
+            anggaranForKategori.forEach((item, index) => {
+                itemsContainer.innerHTML += createRabRow(item, index);
+            });
+
+            section.appendChild(itemsContainer);
+            rabContainer.appendChild(section);
+
+            // After appending, update comment buttons for the items in this category
+            anggaranForKategori.forEach((item) => {
+                if (item.catatan_verifikator) {
+                    updateCommentButton(`.row-with-comment[data-pk-value="${item.anggaran_id}"] .row-comment-icon`, item.catatan_verifikator);
+                }
+            });
+        }
+      });
 
       Swal.close();
     } catch (error) {
@@ -1933,17 +1961,21 @@ export function renderRevisiKakPage(path, userRole) {
 
   window.openRowCommentModal = function (btn) {
     const rowElement = btn.closest(".row-with-comment");
+    const fieldName = rowElement.dataset.fieldName;
     currentCommentTarget = {
       type: "row",
       table: rowElement.dataset.rowType,
       pk: rowElement.dataset.pkValue,
+      field: fieldName,
     };
     const rowLabel = btn.getAttribute("data-label");
-    const commentText =
-      rowComments[currentCommentTarget.table] &&
-      rowComments[currentCommentTarget.table][currentCommentTarget.pk]
-        ? rowComments[currentCommentTarget.table][currentCommentTarget.pk]
-        : "";
+    let commentText = "";
+    if (currentCommentTarget.table === 't_kak_manfaat' && currentCommentTarget.field) {
+        const key = `${currentCommentTarget.pk}_${currentCommentTarget.field}`;
+        commentText = (rowComments[currentCommentTarget.table]?.[key]) || "";
+    } else {
+        commentText = (rowComments[currentCommentTarget.table]?.[currentCommentTarget.pk]) || "";
+    }
 
     const rowCommentInputContainer = document.getElementById(
       "rowCommentInputContainer"
@@ -2007,30 +2039,125 @@ export function renderRevisiKakPage(path, userRole) {
     });
   };
 
-  window.saveRowComment = function () {
-    const comment = document.getElementById("rowCommentInput").value.trim();
-    const { table, pk } = currentCommentTarget;
-    if (!rowComments[table]) {
-      rowComments[table] = {};
-    }
-    if (comment) {
-      rowComments[table][pk] = comment;
-    } else {
-      delete rowComments[table][pk];
-    }
-    updateCommentButton(
-      `.row-with-comment[data-pk-value="${pk}"] .row-comment-icon`,
-      comment
-    );
-    updateCommentCount();
-    rowCommentModalInstance.hide();
-    Swal.fire({
-      icon: "success",
-      title: "Tersimpan!",
-      timer: 1500,
-      showConfirmButton: false,
-    });
-  };
+    window.saveRowComment = function () {
+
+      const comment = document.getElementById("rowCommentInput").value.trim();
+
+      const { table, pk, field } = currentCommentTarget;
+
+  
+
+    if (table === 't_kak_manfaat' && field) {
+
+  
+
+              if (!rowComments[table]) rowComments[table] = {};
+
+  
+
+              const key = `${pk}_${field}`;
+
+  
+
+              if (comment) {
+
+  
+
+                  rowComments[table][key] = comment;
+
+  
+
+              } else {
+
+  
+
+                  delete rowComments[table][key];
+
+  
+
+              }
+
+  
+
+          } else {
+
+  
+
+               if (!rowComments[table]) {
+
+  
+
+                rowComments[table] = {};
+
+  
+
+              }
+
+  
+
+              if (comment) {
+
+  
+
+                rowComments[table][pk] = comment;
+
+  
+
+              } else {
+
+  
+
+                delete rowComments[table][pk];
+
+  
+
+              }
+
+  
+
+          }
+
+      
+
+      let selector = `.row-with-comment[data-pk-value="${pk}"]`;
+
+      if (field) {
+
+        selector += `[data-field-name="${field}"]`;
+
+      } else {
+
+        selector += `:not([data-field-name])`;
+
+      }
+
+      selector += ` .row-comment-icon`;
+
+  
+
+      updateCommentButton(selector, comment);
+
+      updateCommentCount();
+
+      rowCommentModalInstance.hide();
+
+      Swal.fire({
+
+        toast: true,
+
+        position: "top-end",
+
+        icon: "success",
+
+        title: "Catatan disimpan!",
+
+        showConfirmButton: false,
+
+        timer: 1500,
+
+      });
+
+    };
 
   function updateCommentButton(selector, comment) {
     const btn = document.querySelector(selector);
@@ -2046,17 +2173,19 @@ export function renderRevisiKakPage(path, userRole) {
 
   function updateCommentCount() {
     const fieldCount = Object.keys(fieldComments).length;
-    let rowCount = 0;
-    Object.values(rowComments).forEach((table) => {
-      rowCount += Object.keys(table).length;
-    });
-    const totalCount = fieldCount + rowCount;
-
+    const rowCount = Object.values(rowComments).reduce(
+      (acc, table) => acc + Object.keys(table).length,
+      0
+    );
+    const totalComments = fieldCount + rowCount;
     const badge = document.getElementById("commentCountBadge");
-    badge.style.display = totalCount > 0 ? "flex" : "none";
-    document.getElementById(
-      "commentCountText"
-    ).textContent = `${totalCount} Catatan`;
+    const text = document.getElementById("commentCountText");
+    if (totalComments > 0) {
+      text.textContent = `${totalComments} Catatan`;
+      badge.style.display = "flex";
+    } else {
+      badge.style.display = "none";
+    }
   }
 
   window.submitReview = function () {
@@ -2089,12 +2218,32 @@ export function renderRevisiKakPage(path, userRole) {
 
     const anakPayload = {};
     for (const table in rowComments) {
-      anakPayload[table] = [];
-      for (const id in rowComments[table]) {
-        anakPayload[table].push({
-          id: id,
-          catatan_verifikator: rowComments[table][id],
-        });
+      if (table === 't_kak_manfaat') {
+        const groupedManfaat = {};
+        for (const key in rowComments[table]) {
+          const firstUnderscoreIndex = key.indexOf('_');
+          const id = key.substring(0, firstUnderscoreIndex);
+          const field = key.substring(firstUnderscoreIndex + 1);
+
+          if (!groupedManfaat[id]) {
+            groupedManfaat[id] = { id: id };
+          }
+
+          if (field === 'manfaat') {
+            groupedManfaat[id].catatan_manfaat = rowComments[table][key];
+          } else if (field === 'sasaran_utama') {
+            groupedManfaat[id].catatan_sasaran_utama = rowComments[table][key];
+          }
+        }
+        anakPayload[table] = Object.values(groupedManfaat);
+      } else {
+        anakPayload[table] = [];
+        for (const id in rowComments[table]) {
+          anakPayload[table].push({
+            id: id,
+            catatan_verifikator: rowComments[table][id],
+          });
+        }
       }
     }
 
