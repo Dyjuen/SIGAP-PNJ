@@ -648,7 +648,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       fetchApprovedTelaah(); // Refresh the list
       showPageAlert("Kegiatan berhasil diajukan!", "success"); // Use showPageAlert for success
     } catch (error) {
-      showPageAlert(error.message || "Gagal mengajukan kegiatan.", "danger"); // Use showPageAlert for error
+      showModalError(error.message || "Gagal mengajukan kegiatan."); // Use showPageAlert for error
     } finally {
       setButtonLoading("btnSelesaiAjukan", false);
     }
@@ -725,15 +725,21 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox" data-id="${item.kak_id}">
+          <input type="checkbox" class="form-check-input row-checkbox" data-id="${
+            item.kak_id
+          }">
         </td>
         <td>
-          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${item.kak_id}</span>
+          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${
+            item.kak_id
+          }</span>
         </td>
         <td>
           <div style="display: flex; flex-direction: column;">
             <strong>${item.nama_kegiatan}</strong>
-            <small class="text-muted">${item.pengusul_nama || "Tanpa Pengusul"}</small>
+            <small class="text-muted">${
+              item.pengusul_nama || "Tanpa Pengusul"
+            }</small>
           </div>
         </td>
         <td>${formatDate(item.created_at)}</td>
@@ -795,7 +801,9 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   if (btnSelesaiAjukan) {
     btnSelesaiAjukan.addEventListener("click", () => {
       const kakId = document.getElementById("kakId").value;
-      const penanggungJawab = document.getElementById("penanggungJawab").value.trim();
+      const penanggungJawab = document
+        .getElementById("penanggungJawab")
+        .value.trim();
       const pelaksana = document.getElementById("pelaksana").value.trim();
       const suratPengantar = document.getElementById("suratPengantar").files[0];
 

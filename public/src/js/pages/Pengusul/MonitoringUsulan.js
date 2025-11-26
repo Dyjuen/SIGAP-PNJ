@@ -412,7 +412,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
       }
 
       .bg-label-dark {
-        background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+        background: linear-gradient(135deg, #818181ff 0%, #b4b4b4ff 100%);
         color: white;
       }
 
@@ -696,7 +696,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
   async function fetchKak() {
     const tbody = document.getElementById("monitoringTableBody");
     if (!tbody) return;
-    
+
     // Show loading skeleton
     tbody.innerHTML = `
       <tr>
@@ -856,9 +856,10 @@ export function renderMonitoringUsulanPage(path, userRole) {
       const statusId = activity.status_id;
       const statusBadge = getStatusBadge(statusId);
       const actionButtons = getActionButtons(statusId, activity.kak_id);
-      
+
       // Calculate global index for numbering (1-based, continuous across pages)
-      const globalIndex = (state.currentPage - 1) * state.itemsPerPage + index + 1;
+      const globalIndex =
+        (state.currentPage - 1) * state.itemsPerPage + index + 1;
 
       const row = document.createElement("tr");
       row.style.animationDelay = `${0.3 + index * 0.1}s`;
@@ -907,7 +908,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
         }, 300);
       });
     }
-    
+
     const selectAll = document.getElementById("selectAll");
     if (selectAll) {
       selectAll.addEventListener("change", function () {
@@ -983,12 +984,16 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
   function updateSelectAll() {
     const allCheckboxes = document.querySelectorAll(".row-checkbox");
-    const checkedCount = document.querySelectorAll(".row-checkbox:checked").length;
+    const checkedCount = document.querySelectorAll(
+      ".row-checkbox:checked"
+    ).length;
     const selectAll = document.getElementById("selectAll");
 
     if (selectAll) {
-      selectAll.checked = checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAll.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
+      selectAll.checked =
+        checkedCount > 0 && checkedCount === allCheckboxes.length;
+      selectAll.indeterminate =
+        checkedCount > 0 && checkedCount < allCheckboxes.length;
     }
   }
 
@@ -1046,13 +1051,14 @@ export function renderMonitoringUsulanPage(path, userRole) {
       gap: 12px;
     `;
 
-    const icon = type === "success" 
-      ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
-      : type === "error"
-      ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>'
-      : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+    const icon =
+      type === "success"
+        ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+        : type === "error"
+        ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
 
-    notification.innerHTML = icon + '<span>' + message + '</span>';
+    notification.innerHTML = icon + "<span>" + message + "</span>";
     document.body.appendChild(notification);
 
     setTimeout(() => {
@@ -1082,7 +1088,10 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
     // Page number buttons
     const maxVisiblePages = 5;
-    let startPage = Math.max(1, state.currentPage - Math.floor(maxVisiblePages / 2));
+    let startPage = Math.max(
+      1,
+      state.currentPage - Math.floor(maxVisiblePages / 2)
+    );
     let endPage = Math.min(state.totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
@@ -1099,10 +1108,14 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
     // Next buttons
     paginationContainer.innerHTML += `
-      <li class="page-item ${state.currentPage === state.totalPages ? "disabled" : ""}">
+      <li class="page-item ${
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
         <a class="page-link" href="#" id="btnNextPage">›</a>
       </li>
-      <li class="page-item ${state.currentPage === state.totalPages ? "disabled" : ""}">
+      <li class="page-item ${
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
         <a class="page-link" href="#" id="btnLastPage">»</a>
       </li>
     `;
@@ -1136,7 +1149,8 @@ export function renderMonitoringUsulanPage(path, userRole) {
     if (btnNextPage)
       btnNextPage.addEventListener("click", (e) => {
         e.preventDefault();
-        if (state.currentPage < state.totalPages) changePage(state.currentPage + 1);
+        if (state.currentPage < state.totalPages)
+          changePage(state.currentPage + 1);
       });
     if (btnLastPage)
       btnLastPage.addEventListener("click", (e) => {
@@ -1148,22 +1162,26 @@ export function renderMonitoringUsulanPage(path, userRole) {
   function changePage(page) {
     if (page < 1 || page > state.totalPages) return;
     state.currentPage = page;
-    
+
     // Smooth scroll to top of table
-    document.querySelector(".card-datatable")?.scrollIntoView({ 
-      behavior: "smooth", 
-      block: "start" 
+    document.querySelector(".card-datatable")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
     });
-    
+
     renderTableRows(state.activities);
     updatePagination();
   }
 
   function updatePagination() {
     const startEntry = (state.currentPage - 1) * state.itemsPerPage + 1;
-    const endEntry = Math.min(state.currentPage * state.itemsPerPage, state.totalEntries);
+    const endEntry = Math.min(
+      state.currentPage * state.itemsPerPage,
+      state.totalEntries
+    );
 
-    document.getElementById("startEntry").textContent = state.totalEntries > 0 ? startEntry : 0;
+    document.getElementById("startEntry").textContent =
+      state.totalEntries > 0 ? startEntry : 0;
     document.getElementById("endEntry").textContent = endEntry;
     document.getElementById("totalEntries").textContent = state.totalEntries;
 
@@ -1175,16 +1193,16 @@ export function renderMonitoringUsulanPage(path, userRole) {
   // ==============================================
   async function confirmAction(title, message) {
     // If SweetAlert2 is available
-    if (typeof Swal !== 'undefined') {
+    if (typeof Swal !== "undefined") {
       const result = await Swal.fire({
         title: title,
         text: message,
-        icon: 'warning',
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#0fb4caff',
-        cancelButtonColor: '#6B7280',
-        confirmButtonText: 'Ya, Lanjutkan',
-        cancelButtonText: 'Batal'
+        confirmButtonColor: "#0fb4caff",
+        cancelButtonColor: "#6B7280",
+        confirmButtonText: "Ya, Lanjutkan",
+        cancelButtonText: "Batal",
       });
       return result.isConfirmed;
     }
@@ -1193,35 +1211,35 @@ export function renderMonitoringUsulanPage(path, userRole) {
   }
 
   function showSuccess(message) {
-    if (typeof Swal !== 'undefined') {
+    if (typeof Swal !== "undefined") {
       Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
+        icon: "success",
+        title: "Berhasil!",
         text: message,
-        confirmButtonColor: '#0fb4caff'
+        confirmButtonColor: "#0fb4caff",
       });
     } else {
-      showNotification(message, 'success');
+      showNotification(message, "success");
     }
   }
 
   function showError(message) {
-    if (typeof Swal !== 'undefined') {
+    if (typeof Swal !== "undefined") {
       Swal.fire({
-        icon: 'error',
-        title: 'Error!',
+        icon: "error",
+        title: "Error!",
         text: message,
-        confirmButtonColor: '#0fb4caff'
+        confirmButtonColor: "#0fb4caff",
       });
     } else {
-      showNotification(message, 'error');
+      showNotification(message, "error");
     }
   }
 
   // ==============================================
   // INITIALIZATION
   // ==============================================
-  
+
   // Add animate-spin keyframe
   const style = document.createElement("style");
   style.textContent = `
