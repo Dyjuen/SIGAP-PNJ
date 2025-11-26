@@ -221,28 +221,31 @@ class Kegiatan extends Model
     public function getLpjWithFilters(array $filters)
     {
         $params = [];
-        $sql = "SELECT 
-                    k.kegiatan_id,
-                    t.nama_kegiatan,
-                    u.nama_lengkap as pengusul_nama,
-                    k.tgl_batas_lpj,
-                    CASE 
-                        WHEN lpj_approval.status = 'Revisi' THEN 'Direvisi'
-                        WHEN lpj_approval.status = 'Setor Fisik' THEN 'Setor Fisik'
-                        WHEN lpj_approval.status = 'Disetujui' THEN 'Selesai'
-                        WHEN k.lpj_submitted_at IS NOT NULL THEN 'Diajukan'
-                        ELSE 'Menunggu Penyerahan'
-                    END as status_lpj,
-                    CASE 
-                        WHEN k.tgl_batas_lpj IS NOT NULL AND k.lpj_submitted_at IS NULL AND k.tgl_batas_lpj < NOW() THEN 'Terlambat'
-                        ELSE 'Tepat Waktu'
-                    END as status_ketepatan
-                FROM t_kegiatan k
-                JOIN t_kak t ON k.kak_id = t.kak_id
-                JOIN m_users u ON t.pengusul_user_id = u.user_id
-                JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
-                LEFT JOIN t_kegiatan_approval lpj_approval ON k.kegiatan_id = lpj_approval.kegiatan_id AND lpj_approval.approval_level = 'Bendahara-LPJ'
-                WHERE k.tgl_batas_lpj IS NOT NULL";
+                $sql = "SELECT
+                            k.kegiatan_id,
+                            t.nama_kegiatan,
+                            u.nama_lengkap as pengusul_nama,
+                            k.tgl_batas_lpj,
+                                                CASE
+                                                    WHEN lpj_digital_approval.status = 'Aktif' AND k.lpj_submitted_at IS NULL THEN 'Menunggu Penyerahan'
+                                                    WHEN lpj_digital_approval.status = 'Aktif' AND k.lpj_submitted_at IS NOT NULL THEN 'Diajukan'
+                                                    WHEN lpj_digital_approval.status = 'Revisi' THEN 'Direvisi'
+                                                    WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status IN ('Aktif', 'Revisi') THEN 'Setor Fisik'
+                                                    WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Disetujui' THEN 'Selesai'
+                                                    ELSE 'Tidak Diketahui'
+                                                END as status_lpj,                            CASE
+                                WHEN k.tgl_batas_lpj IS NOT NULL AND k.lpj_submitted_at IS NULL AND k.tgl_batas_lpj < NOW() THEN 'Terlambat'
+                                ELSE 'Tepat Waktu'
+                            END as status_ketepatan
+                        FROM t_kegiatan k
+                        JOIN t_kak t ON k.kak_id = t.kak_id
+                        JOIN m_users u ON t.pengusul_user_id = u.user_id
+                        JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
+                                        LEFT JOIN t_kegiatan_approval lpj_digital_approval ON k.kegiatan_id = lpj_digital_approval.kegiatan_id AND lpj_digital_approval.approval_level = 'Bendahara-LPJ'
+                                        LEFT JOIN t_kegiatan_approval lpj_fisik_approval ON k.kegiatan_id = lpj_fisik_approval.kegiatan_id AND lpj_fisik_approval.approval_level = 'Bendahara-Setor'
+                                        WHERE k.tgl_batas_lpj IS NOT NULL
+                                          AND lpj_digital_approval.approval_level = 'Bendahara-LPJ'
+                                          AND lpj_digital_approval.status IN ('Aktif', 'Revisi', 'Disetujui')";
 
         if (!empty($filters['search'])) {
             $sql .= " AND t.nama_kegiatan LIKE ?";

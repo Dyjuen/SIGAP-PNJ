@@ -14,7 +14,6 @@ import { renderPreviewKakPage } from "./pages/Pengusul/PreviewKak.js";
 import { renderMengajukanKegiatanPage } from "./pages/Pengusul/MengajukanKegiatanPage.js";
 import { renderPencairanDanaPage } from "./pages/Bendahara/PencairanDanaPage.js";
 import { renderMonitoringUsulanPage } from "./pages/Pengusul/MonitoringUsulan.js";
-import { renderPengajuanLpjPage } from "./pages/Pengusul/PengajuanLpj.js";
 import { renderInputLpjPage } from "./pages/shared/InputLpj.js";
 import { renderUnauthorizedPage } from "./pages/UnauthorizedPage.js";
 import { renderRevisiKakPage } from "./pages/shared/RevisiKak.js";
