@@ -12,6 +12,8 @@ export function renderUsulanKakPage(path, userRole) {
       : null;
   const isEditMode = kakId !== null;
 
+  let isInitialized = false; // DEBUG: Initialization Guard
+
   const pageContent = `
     <!-- Add required CSS for daterangepicker in the head section -->
     <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
@@ -44,9 +46,9 @@ export function renderUsulanKakPage(path, userRole) {
         
         /* Default state: hidden di tengah bawah */
         clip-path: polygon(
-          50% 100%, 50% 100%, 
-          50% 100%, 50% 100%, 
-          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%,
+          50% 100%, 50% 100%,
+          50% 100%, 50% 100%,
           50% 100%, 50% 100%
         );
         
@@ -65,9 +67,9 @@ export function renderUsulanKakPage(path, userRole) {
         0% {
           /* Start: titik tengah bawah */
           clip-path: polygon(
-            50% 100%, 50% 100%, 
-            50% 100%, 50% 100%, 
-            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%,
+            50% 100%, 50% 100%,
+            50% 100%, 50% 100%,
             50% 100%, 50% 100%
           );
         }
@@ -75,9 +77,9 @@ export function renderUsulanKakPage(path, userRole) {
         30% {
           /* Garis bawah expand smooth ke kiri-kanan */
           clip-path: polygon(
-            0% 100%, 0% 100%, 
-            0% 100%, 50% 100%, 
-            50% 100%, 100% 100%, 
+            0% 100%, 0% 100%,
+            0% 100%, 50% 100%,
+            50% 100%, 100% 100%,
             100% 100%, 100% 100%
           );
         }
@@ -85,9 +87,9 @@ export function renderUsulanKakPage(path, userRole) {
         70% {
           /* Border kiri & kanan naik bersamaan ke atas (SMOOTH!) */
           clip-path: polygon(
-            0% 100%, 0% 0%, 
-            0% 0%, 50% 0%, 
-            50% 0%, 100% 0%, 
+            0% 100%, 0% 0%,
+            0% 0%, 50% 0%,
+            50% 0%, 100% 0%,
             100% 0%, 100% 100%
           );
         }
@@ -95,9 +97,9 @@ export function renderUsulanKakPage(path, userRole) {
         100% {
           /* Complete: border penuh dengan slight overshoot */
           clip-path: polygon(
-            0% 100%, 0% 0%, 
-            0% 0%, 50% 0%, 
-            50% 0%, 100% 0%, 
+            0% 100%, 0% 0%,
+            0% 0%, 50% 0%,
+            50% 0%, 100% 0%,
             100% 0%, 100% 100%
           );
         }
@@ -109,9 +111,9 @@ export function renderUsulanKakPage(path, userRole) {
         0% {
           /* Start: border penuh */
           clip-path: polygon(
-            0% 100%, 0% 0%, 
-            0% 0%, 50% 0%, 
-            50% 0%, 100% 0%, 
+            0% 100%, 0% 0%,
+            0% 0%, 50% 0%,
+            50% 0%, 100% 0%,
             100% 0%, 100% 100%
           );
         }
@@ -119,9 +121,9 @@ export function renderUsulanKakPage(path, userRole) {
         30% {
           /* Garis atas & border kiri-kanan turun smooth */
           clip-path: polygon(
-            0% 100%, 0% 100%, 
-            0% 100%, 50% 100%, 
-            50% 100%, 100% 100%, 
+            0% 100%, 0% 100%,
+            0% 100%, 50% 100%,
+            50% 100%, 100% 100%,
             100% 100%, 100% 100%
           );
         }
@@ -129,9 +131,9 @@ export function renderUsulanKakPage(path, userRole) {
         70% {
           /* Garis bawah mulai menyusut ke tengah */
           clip-path: polygon(
-            25% 100%, 25% 100%, 
-            25% 100%, 50% 100%, 
-            50% 100%, 75% 100%, 
+            25% 100%, 25% 100%,
+            25% 100%, 50% 100%,
+            50% 100%, 75% 100%,
             75% 100%, 75% 100%
           );
         }
@@ -139,9 +141,9 @@ export function renderUsulanKakPage(path, userRole) {
         100% {
           /* End: hilang di tengah bawah */
           clip-path: polygon(
-            50% 100%, 50% 100%, 
-            50% 100%, 50% 100%, 
-            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%,
+            50% 100%, 50% 100%,
+            50% 100%, 50% 100%,
             50% 100%, 50% 100%
           );
         }
@@ -196,9 +198,9 @@ export function renderUsulanKakPage(path, userRole) {
 
         /* Default hidden (center-bottom) */
         clip-path: polygon(
-          50% 100%, 50% 100%, 
-          50% 100%, 50% 100%, 
-          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%,
+          50% 100%, 50% 100%,
+          50% 100%, 50% 100%,
           50% 100%, 50% 100%
         );
 
@@ -234,9 +236,9 @@ export function renderUsulanKakPage(path, userRole) {
         /* 0%: hidden center-bottom */
         0% {
           clip-path: polygon(
-            50% 100%, 50% 100%, 
-            50% 100%, 50% 100%, 
-            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%,
+            50% 100%, 50% 100%,
+            50% 100%, 50% 100%,
             50% 100%, 50% 100%
           );
         }
@@ -244,9 +246,9 @@ export function renderUsulanKakPage(path, userRole) {
         /* 20%: bottom expands smoothly left-right */
         20% {
           clip-path: polygon(
-            0% 100%, 0% 100%, 
-            0% 100%, 50% 100%, 
-            50% 100%, 100% 100%, 
+            0% 100%, 0% 100%,
+            0% 100%, 50% 100%,
+            50% 100%, 100% 100%,
             100% 100%, 100% 100%
           );
         }
@@ -254,9 +256,9 @@ export function renderUsulanKakPage(path, userRole) {
         /* 45%: sides start rising (soft corner formation) */
         45% {
           clip-path: polygon(
-            0% 100%, 0% 65%, 
-            0% 65%, 50% 65%, 
-            50% 65%, 100% 65%, 
+            0% 100%, 0% 65%,
+            0% 65%, 50% 65%,
+            50% 65%, 100% 65%,
             100% 65%, 100% 100%
           );
         }
@@ -264,9 +266,9 @@ export function renderUsulanKakPage(path, userRole) {
         /* 75%: sides rise higher (near final) */
         75% {
           clip-path: polygon(
-            0% 100%, 0% 30%, 
-            0% 30%, 50% 30%, 
-            50% 30%, 100% 30%, 
+            0% 100%, 0% 30%,
+            0% 30%, 50% 30%,
+            50% 30%, 100% 30%,
             100% 30%, 100% 100%
           );
         }
@@ -274,9 +276,9 @@ export function renderUsulanKakPage(path, userRole) {
         /* 100%: complete border */
         100% {
           clip-path: polygon(
-            0% 100%, 0% 0%, 
-            0% 0%, 50% 0%, 
-            50% 0%, 100% 0%, 
+            0% 100%, 0% 0%,
+            0% 0%, 50% 0%,
+            50% 0%, 100% 0%,
             100% 0%, 100% 100%
           );
         }
@@ -297,9 +299,9 @@ export function renderUsulanKakPage(path, userRole) {
         opacity: 1 !important;
         animation: none; /* Stop animation saat hover */
         clip-path: polygon(
-          0% 100%, 0% 0%, 
-          0% 0%, 50% 0%, 
-          50% 0%, 100% 0%, 
+          0% 100%, 0% 0%,
+          0% 0%, 50% 0%,
+          50% 0%, 100% 0%,
           100% 0%, 100% 100%
         );
       }
@@ -537,23 +539,23 @@ export function renderUsulanKakPage(path, userRole) {
             <!-- Sidebar Menu -->
             <div class="flex flex-col gap-4 w-96">
               <button class="menu-button border-2 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3 active" data-menu="gambaran-umum" style="border-color: #00BCD4; background: rgba(0, 188, 212, 0.1);">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text">&#xff43;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text">&#xff43;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Gambaran Umum</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="penerima-manfaat">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users">&#xf7cd;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users">&#xf7cd;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Penerima Manfaat</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="strategi-pencapaian">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target">&#xeb35;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target">&#xeb35;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Strategi Pencapaian</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="indikator-kinerja">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar">&#xea59;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar">&#xea59;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Indikator Kinerja</div>
               </button>
               <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="kurun-waktu">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center style="font-size: 5px" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar">&#xea53;</i></div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar">&#xea53;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</div>
               </button>
             </div>
@@ -565,8 +567,6 @@ export function renderUsulanKakPage(path, userRole) {
                 <div class="step-content active" id="gambaran-umum">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Gambaran Umum</h4>
                   
-
-
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nama Kegiatan</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input" id="namaKegiatan">
@@ -584,19 +584,6 @@ export function renderUsulanKakPage(path, userRole) {
                   
                   <div id="penerimaManfaatContainer">
                     <!-- Dynamic rows will be inserted here -->
-                    <div class="penerima-manfaat-item dynamic-field-item flex gap-4 items-start mb-4">
-                      <div class="flex-1">
-                        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-                        <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran">
-                      </div>
-                      <div class="flex-1">
-                        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
-                        <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat">
-                      </div>
-                      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
-                        <span class="text-xl font-bold">−</span>
-                      </button>
-                    </div>
                   </div>
                   <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addPenerimaManfaat()">Tambah Penerima Manfaat</button>
                 </div>
@@ -613,12 +600,7 @@ export function renderUsulanKakPage(path, userRole) {
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tahapan Pelaksanaan</label>
                     <div id="tahapanPelaksanaanContainer">
-                      <div class="tahapan-item dynamic-field-item flex gap-4 items-start mb-4">
-                        <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
-                          <span class="text-xl font-bold">−</span>
-                        </button>
-                      </div>
+                      <!-- Dynamic rows will be inserted here -->
                     </div>
                     <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addTahapanPelaksanaan()">Tambah</button>
                   </div>
@@ -631,37 +613,7 @@ export function renderUsulanKakPage(path, userRole) {
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja</label>
                     <div id="indikatorKinerjaContainer">
-                      <div class="indikator-kinerja-item dynamic-field-item flex items-end gap-4 mb-6">
-                        <div class='w-full'>
-                          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-                          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                            <option value="">Pilih Bulan</option>
-                            <option value="Januari">Januari</option>
-                            <option value="Februari">Februari</option>
-                            <option value="Maret">Maret</option>
-                            <option value="April">April</option>
-                            <option value="Mei">Mei</option>
-                            <option value="Juni">Juni</option>
-                            <option value="Juli">Juli</option>
-                            <option value="Agustus">Agustus</option>
-                            <option value="September">September</option>
-                            <option value="Oktober">Oktober</option>
-                            <option value="November">November</option>
-                            <option value="Desember">Desember</option>
-                          </select>
-                        </div>
-                        <div class='w-full'>
-                          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                        </div>
-                        <div class='w-full'>
-                          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-                          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                        </div>
-                        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
-                          <span class="text-xl font-bold">−</span>
-                        </button>
-                      </div>
+                      <!-- Dynamic rows will be inserted here -->
                     </div>
                     <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIndikatorKinerja()">Tambah</button>
                   </div>
@@ -698,26 +650,7 @@ export function renderUsulanKakPage(path, userRole) {
           <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama</h4>
           
           <div class="mb-8" id="ikuRenstraContainer">
-            <div class="iku-item dynamic-field-item row-item mb-4">
-              <div class="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
-                <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-                  <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
-                    <option value="">Pilih IKU</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
-                  <div class="flex gap-2 items-center">
-                    <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100">
-                    <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-                  </div>
-                </div>
-                <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
-                  <span class="text-xl font-bold">−</span>
-                </button>
-              </div>
-            </div>
+            <!-- Dynamic IKU rows will be inserted here -->
           </div>
           
           <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIkuField()">Tambah</button>
@@ -739,223 +672,8 @@ export function renderUsulanKakPage(path, userRole) {
         <div class="bg-white rounded-xl shadow-lg p-8">
           <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rincian Anggaran Biaya</h4>
           
-          <!-- Belanja Barang Section -->
-          <div class="mb-10">
-            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
-            <div id="belanjaBarangContainer">
-              <div class="belanja-barang-item dynamic-field-item mb-8 p-6 rounded-lg">
-                <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <div class="relative">
-                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <option value="">Input</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                    <div class="relative">
-                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <option value="">Input</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-                    <div class="relative">
-                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <option value="">Input</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                  </div>
-                  <div class="flex items-end pb-3">
-                    <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-                      <span class="text-xl font-bold">−</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaBarang()">Tambah Item Barang</button>
-          </div>
-
-          <!-- Belanja Jasa Section -->
-          <div class="mb-10">
-            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
-            <div id="belanjaJasaContainer">
-              <div class="belanja-jasa-item dynamic-field-item mb-8 p-6 rounded-lg">
-                <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <div class="relative">
-                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <option value="">Input</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                    <div class="relative">
-                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <option value="">Input</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-                    <div class="relative">
-                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <option value="">Input</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                  </div>
-                  <div class="flex items-end pb-3">
-                    <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-                      <span class="text-xl font-bold">−</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaJasa()">Tambah Item Barang</button>
-          </div>
-
-          <!-- Belanja Perjalanan Section -->
-          <div class="mb-10">
-            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
-            <div id="belanjaPerjalananContainer">
-              <div class="belanja-perjalanan-item dynamic-field-item mb-8 p-6 rounded-lg">
-                <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <div class="relative">
-                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <option value="">Input</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                    <div class="relative">
-                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <option value="">Input</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-                    <div class="relative">
-                      <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-                        <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
-                    <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-                      <option value="">Input</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-                  </div>
-                  <div class="flex items-end pb-3">
-                    <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-                      <span class="text-xl font-bold">−</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" onclick="addBelanjaPerjalanan()">Tambah Item Barang</button>
+          <div id="rab-container">
+            <!-- Dynamic RAB sections will be injected here -->
           </div>
           
           <!-- Navigation Buttons -->
@@ -1145,6 +863,7 @@ export function renderUsulanKakPage(path, userRole) {
         showDropdowns: true,
         minYear: 2020,
         maxYear: parseInt(moment().format("YYYY"), 10) + 5,
+        minDate: moment(), // Set minimum date to today
         locale: {
           format: "DD/MM/YYYY",
           separator: " - ",
@@ -1171,8 +890,8 @@ export function renderUsulanKakPage(path, userRole) {
           ],
           firstDay: 1,
         },
-        startDate: moment("2025-03-11", "YYYY-MM-DD"),
-        endDate: moment("2025-03-11", "YYYY-MM-DD").add(7, "days"),
+        startDate: moment(),
+        endDate: moment().add(7, "days"),
         opens: "right",
       });
 
@@ -1244,7 +963,7 @@ export function renderUsulanKakPage(path, userRole) {
   }
   if (typeof showError !== "function") {
     window.showError = function (message) {
-      console.error("Detailed Error Object:", error); // <-- Add this line for debugging
+      console.error("Detailed Error Object:", message); // <-- Add this line for debugging
       alert("Error: " + message);
     };
   }
@@ -1335,10 +1054,16 @@ export function renderUsulanKakPage(path, userRole) {
         isValid = false;
       }
     } else if (step === 5) {
-      // Kurun Waktu
-      const kurunWaktu = document.getElementById("kurunWaktu");
-      if (!kurunWaktu.value)
-        addError(kurunWaktu, "Kurun Waktu Pelaksanaan wajib diisi.");
+        // Kurun Waktu
+        const kurunWaktu = document.getElementById("kurunWaktu");
+        if (!kurunWaktu.value) {
+            addError(kurunWaktu, "Kurun Waktu Pelaksanaan wajib diisi.");
+        } else {
+            const startDate = $("#kurunWaktu").data('daterangepicker').startDate;
+            if (startDate.isBefore(moment(), 'day')) {
+                addError(kurunWaktu, "Tanggal mulai tidak boleh lebih awal dari hari ini.");
+            }
+        }
     }
 
     if (!isValid) {
@@ -1353,6 +1078,13 @@ export function renderUsulanKakPage(path, userRole) {
     document
       .querySelectorAll("#main-step-2 .validation-error")
       .forEach((el) => el.remove());
+    document
+      .querySelectorAll("#main-step-2 .is-invalid")
+      .forEach((el) => {
+          el.classList.remove("is-invalid");
+          el.style.borderColor = "#E5E7EB";
+      });
+
     const addError = (el, message) => {
       isValid = false;
       el.classList.add("is-invalid");
@@ -1360,9 +1092,12 @@ export function renderUsulanKakPage(path, userRole) {
       const errorEl = document.createElement("p");
       errorEl.className = "validation-error text-red-500 text-sm mt-1";
       errorEl.textContent = message;
-      if (el.type === 'text' && el.parentElement.classList.contains('flex')) {
+      // Check if the element is the numeric input for IKU
+      if (el.type === 'number' && el.parentElement.classList.contains('flex')) {
+        // Place error message after the parent of the flex container
         el.parentElement.parentElement.appendChild(errorEl);
       } else {
+        // Default behavior for other elements like select
         el.parentElement.appendChild(errorEl);
       }
     };
@@ -1371,10 +1106,12 @@ export function renderUsulanKakPage(path, userRole) {
     if (ikuRows.length > 0) {
       ikuRows.forEach((row) => {
         const select = row.querySelector("select");
-        const input = row.querySelector("input");
+        const input = row.querySelector("input[type='number']");
         if (!select.value) addError(select, "IKU wajib dipilih.");
         if (!input.value) {
-          addError(input, "Target wajib diisi.");
+          addError(input, "Nilai wajib diisi.");
+        } else if (parseFloat(input.value) <= 0) {
+          addError(input, "Nilai harus lebih dari 0.");
         }
       });
     }
@@ -1406,46 +1143,32 @@ export function renderUsulanKakPage(path, userRole) {
       el.parentElement.appendChild(errorEl);
     };
 
-    const validateSection = (containerId) => {
-      const items = document.querySelectorAll(`#${containerId} .grid`);
-      items.forEach((item) => {
+    const rabItems = document.querySelectorAll("#rab-container .rab-item");
+    let hasAtLeastOneItem = false;
+    rabItems.forEach((item) => {
         const inputs = item.querySelectorAll("input, select");
         const uraian = inputs[0];
         const qty1 = inputs[1];
         const satuan1 = inputs[2];
-        const qty2 = inputs[3];
-        const satuan2 = inputs[4];
-        const qty3 = inputs[5];
-        const satuan3 = inputs[6];
         const harga = inputs[7];
 
-        // Only validate if any field in the row is filled
-        if (
-          uraian.value ||
-          qty1.value !== "1" ||
-          satuan1.value ||
-          qty2.value !== "1" ||
-          satuan2.value ||
-          qty3.value !== "1" ||
-          satuan3.value ||
-          harga.value
-        ) {
-          if (!uraian.value) addError(uraian, "Uraian wajib diisi.");
-          if (!qty1.value) addError(qty1, "Qty 1 wajib diisi.");
-          if (!satuan1.value) addError(satuan1, "Satuan 1 wajib dipilih.");
-          // Qty 2 and Satuan 2 are optional based on existing UI, so no strict validation
-          // Qty 3 and Satuan 3 are optional based on existing UI, so no strict validation
-          if (!harga.value) addError(harga, "Harga Satuan wajib diisi.");
+        // An item is considered filled if it has a description
+        if (uraian.value) {
+            hasAtLeastOneItem = true;
+            if (!qty1.value || parseInt(qty1.value) <= 0) addError(qty1, "Qty harus > 0.");
+            if (!satuan1.value) addError(satuan1, "Satuan wajib dipilih.");
+            if (!harga.value || parseFloat(harga.value) <= 0) addError(harga, "Harga harus > 0.");
         }
-      });
-    };
+    });
 
-    validateSection("belanjaBarangContainer");
-    validateSection("belanjaJasaContainer");
-    validateSection("belanjaPerjalananContainer");
+    if (!hasAtLeastOneItem) {
+        showError("Harap tambahkan setidaknya satu item anggaran.");
+        isValid = false;
+    }
+
 
     if (!isValid) {
-      showError("Silakan perbaiki kesalahan pada form sebelum melanjutkan.");
+      showError("Silakan perbaiki kesalahan pada isian Rincian Anggaran Biaya.");
     }
 
     return isValid;
@@ -1514,7 +1237,7 @@ export function renderUsulanKakPage(path, userRole) {
         circle.style.background = "#00BCD4";
         circle.style.color = "#FFFFFF";
         circle.style.boxShadow = "0 4px 12px rgba(0, 188, 212, 0.4)";
-        circle.innerHTML = `<i class="${iconsForSteps[stepNum].class}">${iconsForSteps[stepNum].entity}</i>`;
+        circle.innerHTML = `${stepNum}`;
         text.style.color = "#00BCD4";
         if (subtext) subtext.style.color = "#00BCD4";
       } else {
@@ -1522,7 +1245,7 @@ export function renderUsulanKakPage(path, userRole) {
         circle.style.background = "#E5E7EB";
         circle.style.color = "#6B7280";
         circle.style.boxShadow = "none";
-        circle.innerHTML = `<i class="${iconsForSteps[stepNum].class}">${iconsForSteps[stepNum].entity}</i>`;
+        circle.innerHTML = `${stepNum}`;
         text.style.color = "#6B7280";
         if (subtext) subtext.style.color = "#9CA3AF";
       }
@@ -1541,25 +1264,43 @@ export function renderUsulanKakPage(path, userRole) {
   }
 
   // Initialize
-  function init() {
+  async function init() {
+    if (isInitialized) {
+        return;
+    }
+    isInitialized = true;
+
     loadDateRangePicker();
     updateMainStepDisplay();
     updateStepDisplay();
     attachEventListeners();
-    populateIkuDropdowns(); // Populate IKU dropdowns on init
-    populateSatuanDropdowns(); // Populate Satuan dropdowns on init
+    
+    // Clear dynamic containers initially to prevent duplicates on re-render
+    if(document.getElementById("penerimaManfaatContainer")) document.getElementById("penerimaManfaatContainer").innerHTML = '';
+    if(document.getElementById("tahapanPelaksanaanContainer")) document.getElementById("tahapanPelaksanaanContainer").innerHTML = '';
+    if(document.getElementById("indikatorKinerjaContainer")) document.getElementById("indikatorKinerjaContainer").innerHTML = '';
+    if(document.getElementById("ikuRenstraContainer")) document.getElementById("ikuRenstraContainer").innerHTML = '';
 
-    // Set initial visibility of remove buttons
-    updateRemoveButtonVisibility(document.getElementById("penerimaManfaatContainer"));
-    updateRemoveButtonVisibility(document.getElementById("tahapanPelaksanaanContainer"));
-    updateRemoveButtonVisibility(document.getElementById("indikatorKinerjaContainer"));
-    updateRemoveButtonVisibility(document.getElementById("ikuRenstraContainer"));
-    updateRemoveButtonVisibility(document.getElementById('belanjaBarangContainer'));
-    updateRemoveButtonVisibility(document.getElementById('belanjaJasaContainer'));
-    updateRemoveButtonVisibility(document.getElementById('belanjaPerjalananContainer'));
+    // Await all master data population before proceeding
+    await Promise.all([
+        populateIkuDropdowns(),
+        populateSatuanDropdowns(),
+        populateRabSections()
+    ]);
+    
+    if (isEditMode && kakId) {
+      await fetchAndPopulateKakData(kakId);
+    } else {
+      // Add default rows for create mode
+      addPenerimaManfaat();
+      addTahapanPelaksanaan();
+      addIndikatorKinerja();
+      addIkuField();
+    }
   }
 
-  // ==============================================  // API FUNCTIONS
+  // ==============================================
+  // API FUNCTIONS
   // ==============================================
   async function apiRequest(endpoint, options = {}) {
     const token =
@@ -1616,15 +1357,11 @@ export function renderUsulanKakPage(path, userRole) {
     } else if (diffDays < 365) {
       const months = Math.floor(diffDays / 30);
       const remainingDays = diffDays % 30;
-      return `${months} bulan ${
-        remainingDays > 0 ? `${remainingDays} hari` : ""
-      }`.trim();
+      return `${months} bulan ${remainingDays > 0 ? `${remainingDays} hari` : ""}`.trim();
     } else {
       const years = Math.floor(diffDays / 365);
       const remainingMonths = Math.floor((diffDays % 365) / 30);
-      return `${years} tahun ${
-        remainingMonths > 0 ? `${remainingMonths} bulan` : ""
-      }`.trim();
+      return `${years} tahun ${remainingMonths > 0 ? `${remainingMonths} bulan` : ""}`.trim();
     }
   }
 
@@ -1638,6 +1375,7 @@ export function renderUsulanKakPage(path, userRole) {
         "#ikuRenstraContainer select"
       );
       ikuSelects.forEach((select) => {
+        const currentValue = select.value;
         const isPlaceholder =
           select.options.length > 0 && select.options[0].value === "";
         while (select.options.length > (isPlaceholder ? 1 : 0)) {
@@ -1650,6 +1388,7 @@ export function renderUsulanKakPage(path, userRole) {
           option.textContent = iku.nama_iku;
           select.appendChild(option);
         });
+        select.value = currentValue;
       });
     } catch (error) {
       console.error("Error populating IKU dropdowns:", error);
@@ -1660,29 +1399,69 @@ export function renderUsulanKakPage(path, userRole) {
   // Populate Satuan dropdowns from API
   async function populateSatuanDropdowns() {
     try {
-      const response = await apiRequest("/master/satuan");
-      const satuanData = response.data;
+        const response = await apiRequest("/master/satuan");
+        const satuanData = response.data;
+        
+        const newSelects = document.querySelectorAll(".satuan-select:not(.populated)");
 
-      const satuanSelects = document.querySelectorAll(".satuan-select");
-      satuanSelects.forEach((select) => {
-        const isPlaceholder =
-          select.options.length > 0 && select.options[0].value === "";
-        while (select.options.length > (isPlaceholder ? 1 : 0)) {
-          select.remove(isPlaceholder ? 1 : 0);
-        }
+        newSelects.forEach(select => {
+            const currentValue = select.value;
+            // Clear existing options except placeholder
+            const placeholder = select.querySelector('option[value=""]');
+            select.innerHTML = '';
+            if (placeholder) {
+                select.appendChild(placeholder);
+            }
 
-        satuanData.forEach((satuan) => {
-          const option = document.createElement("option");
-          option.value = satuan.satuan_id;
-          option.textContent = satuan.nama_satuan;
-          select.appendChild(option);
+            satuanData.forEach(satuan => {
+                const option = document.createElement("option");
+                option.value = satuan.satuan_id;
+                option.textContent = satuan.nama_satuan;
+                select.appendChild(option);
+            });
+            select.value = currentValue;
+            select.classList.add('populated');
         });
-      });
     } catch (error) {
-      console.error("Error populating Satuan dropdowns:", error);
-      showError("Gagal memuat data Satuan. Silakan coba lagi.");
+        console.error("Error populating Satuan dropdowns:", error);
+        showError("Gagal memuat data Satuan. Silakan coba lagi.");
     }
   }
+
+  async function populateRabSections() {
+      try {
+          const response = await apiRequest("/master/kategori-belanja");
+          const kategoriData = response.data;
+          const rabContainer = document.getElementById('rab-container');
+          rabContainer.innerHTML = ''; // Clear existing
+
+          kategoriData.forEach(kategori => {
+              const section = document.createElement('div');
+              section.className = 'mb-10';
+              section.dataset.kategoriId = kategori.kategori_belanja_id;
+              
+              section.innerHTML = `
+                  <h5 class="mb-6 font-bold text-lg" style="color: #374151;">${kategori.nama}</h5>
+                  <div id="rab-items-container-${kategori.kategori_belanja_id}">
+                      <!-- New RAB items will be inserted here -->
+                  </div>
+                  <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4'," onclick="addRabItem(${kategori.kategori_belanja_id})">
+                      Tambah Item
+                  </button>
+              `;
+              rabContainer.appendChild(section);
+              // Add at least one item per category only in create mode
+              if (!isEditMode) {
+                addRabItem(kategori.kategori_belanja_id);
+              }
+          });
+
+      } catch (error) {
+          console.error("Error populating RAB sections:", error);
+          showError("Gagal memuat kategori belanja. Silakan coba lagi.");
+      }
+  }
+
 
   function collectFormData() {
     // Helper function to get values from a container of inputs (array of strings)
@@ -1698,7 +1477,7 @@ export function renderUsulanKakPage(path, userRole) {
     const getTargetData = () => {
       const container = document.getElementById("indikatorKinerjaContainer");
       if (!container) return [];
-      const rows = container.querySelectorAll(".flex.items-end.gap-4.mb-6"); // tambah .mb-6
+      const rows = container.querySelectorAll(".indikator-kinerja-item");
       return Array.from(rows)
         .map((row) => {
           const inputs = row.querySelectorAll("input, select");
@@ -1722,27 +1501,39 @@ export function renderUsulanKakPage(path, userRole) {
             persentase_target: parseFloat(inputs[1].value) || 0,
           };
         })
-        .filter((item) => item.iku_id || item.persentase_target);
+        .filter((item) => item.iku_id && item.persentase_target > 0);
     };
 
-    const getAnggaranItems = (containerId) => {
-      const container = document.getElementById(containerId);
-      if (!container) return [];
-      return Array.from(container.querySelectorAll(".grid"))
-        .map((row) => {
-          const inputs = row.querySelectorAll("input, select");
-          return {
-            uraian: inputs[0].value,
-            volume1: parseInt(inputs[1].value) || 1,
-            satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
-            volume2: parseInt(inputs[3].value) || 1,
-            satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
-            volume3: parseInt(inputs[5].value) || 1,
-            satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
-            harga_satuan: parseFloat(inputs[7].value) || 0,
-          };
-        })
-        .filter((item) => item.uraian || item.harga_satuan);
+    const getAnggaranItems = () => {
+        const rabItems = [];
+        const rabSections = document.querySelectorAll('#rab-container > div[data-kategori-id]');
+        
+        rabSections.forEach(section => {
+            const kategoriId = parseInt(section.dataset.kategoriId);
+            const items = section.querySelectorAll('.rab-item');
+            
+            items.forEach(item => {
+                const inputs = item.querySelectorAll("input, select");
+                const uraian = inputs[0].value;
+                const volume1 = parseInt(inputs[1].value) || 0;
+                const harga_satuan = parseFloat(inputs[7].value.replace(/[^0-9]/g, '')) || 0;
+
+                if (uraian && volume1 > 0 && harga_satuan > 0) {
+                    rabItems.push({
+                        kategori_belanja_id: kategoriId,
+                        uraian: uraian,
+                        volume1: volume1,
+                        satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
+                        volume2: parseInt(inputs[3].value) || null,
+                        satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
+                        volume3: parseInt(inputs[5].value) || null,
+                        satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
+                        harga_satuan: harga_satuan,
+                    });
+                }
+            });
+        });
+        return rabItems;
     };
 
     // Get date range from daterangepicker
@@ -1757,8 +1548,6 @@ export function renderUsulanKakPage(path, userRole) {
         .endDate.format("YYYY-MM-DD");
     }
 
-    const sasaranUtamaList = getDynamicListValues("sasaranUtamaContainer");
-    const manfaatList = getDynamicListValues("manfaatContainer");
     const indikatorKinerjaData = getTargetData();
 
     const formData = {
@@ -1774,7 +1563,6 @@ export function renderUsulanKakPage(path, userRole) {
         tanggal_selesai: tanggalSelesai || "",
         lokasi: "PNJ Depok",
 
-        // Assembled penerima_manfaat
         penerima_manfaat: Array.from(
           document.querySelectorAll(
             "#penerimaManfaatContainer .penerima-manfaat-item"
@@ -1786,7 +1574,6 @@ export function renderUsulanKakPage(path, userRole) {
           }))
           .filter((item) => item.sasaran_utama || item.manfaat),
 
-        // Transformed tahapan_pelaksanaan
         tahapan_pelaksanaan: getDynamicListValues(
           "tahapanPelaksanaanContainer"
         ).map((nama, index) => ({
@@ -1794,7 +1581,6 @@ export function renderUsulanKakPage(path, userRole) {
           urutan: index + 1,
         })),
 
-        // FIX: Include indikator_kinerja data here instead of empty array
         indikator_kinerja: indikatorKinerjaData.map((item) => ({
           bulan_indikator: item.bulan_indikator,
           deskripsi_target: item.deskripsi_target,
@@ -1802,17 +1588,8 @@ export function renderUsulanKakPage(path, userRole) {
         })),
       },
 
-      // These are top-level arrays for target_iku and rab
-      target_iku: getIkuRenstraData().map((item) => ({
-        iku_id: item.iku_id,
-        persentase_target: item.persentase_target,
-      })),
-
-      rab: [
-        ...getAnggaranItems("belanjaBarangContainer"),
-        ...getAnggaranItems("belanjaJasaContainer"),
-        ...getAnggaranItems("belanjaPerjalananContainer"),
-      ],
+      target_iku: getIkuRenstraData(),
+      rab: getAnggaranItems(),
     };
 
     console.log("Collected Form Data:", formData);
@@ -1825,14 +1602,25 @@ export function renderUsulanKakPage(path, userRole) {
     document.querySelectorAll(".progress-step-item").forEach((step) => {
       step.addEventListener("click", function () {
         const targetStep = parseInt(this.getAttribute("data-main-step"));
-        // Only allow navigation to completed or current step
-        if (targetStep <= mainStep) {
-          mainStep = targetStep;
-          if (mainStep === 1) {
-            currentStep = 1; // Reset to first sub-step when going back to step 1
-          }
-          updateMainStepDisplay();
-          updateStepDisplay();
+        
+        if (targetStep < mainStep) {
+            mainStep = targetStep;
+            if (mainStep === 1) {
+                currentStep = 1; 
+            }
+            updateMainStepDisplay();
+            updateStepDisplay();
+        } else if (targetStep === mainStep) {
+            // Do nothing if clicking the current step
+        } else { // targetStep > mainStep
+            // Validate current step before proceeding
+            if (mainStep === 1 && [1,2,3,4,5].every(validateKAKStep)) {
+                mainStep = targetStep;
+            } else if (mainStep === 2 && validateIkuStep()) {
+                mainStep = targetStep;
+            }
+            updateMainStepDisplay();
+            updateStepDisplay();
         }
       });
     });
@@ -1843,8 +1631,10 @@ export function renderUsulanKakPage(path, userRole) {
         const menuTarget = this.getAttribute("data-menu");
         const menuIndex = menuItems.indexOf(menuTarget);
         if (menuIndex !== -1) {
-          currentStep = menuIndex + 1;
-          updateStepDisplay();
+          if (validateKAKStep(currentStep)) {
+            currentStep = menuIndex + 1;
+            updateStepDisplay();
+          }
         }
       });
     });
@@ -1889,7 +1679,6 @@ export function renderUsulanKakPage(path, userRole) {
     }
 
     // Next button for Step 2 (IKU)
-    const btnNextIku = document.getElementById("btnNextIku");
     if (btnNextIku) {
       btnNextIku.addEventListener("click", () => {
         if (validateIkuStep()) {
@@ -1957,18 +1746,20 @@ export function renderUsulanKakPage(path, userRole) {
 
   // Dynamic Field Functions (Global scope)
 
-  window.addPenerimaManfaat = function () {
+  window.addPenerimaManfaat = function (itemData = null) {
     const container = document.getElementById("penerimaManfaatContainer");
     const newItem = document.createElement("div");
     newItem.className = "penerima-manfaat-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
+    const sasaran = itemData ? itemData.sasaran_utama : '';
+    const manfaat = itemData ? itemData.manfaat : '';
     newItem.innerHTML = `
       <div class="flex-1">
         <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-        <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran">
+        <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran" value="${sasaran}">
       </div>
       <div class="flex-1">
         <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
-        <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat">
+        <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat" value="${manfaat}">
       </div>
       <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
@@ -1981,12 +1772,12 @@ export function renderUsulanKakPage(path, userRole) {
     });
   };
 
-  window.addTahapanPelaksanaan = function () {
+  window.addTahapanPelaksanaan = function (value = '') {
     const container = document.getElementById("tahapanPelaksanaanContainer");
     const newItem = document.createElement("div");
     newItem.className = "tahapan-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
     newItem.innerHTML = `
-      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input" value="${value}">
       <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
       </button>
@@ -1997,29 +1788,32 @@ export function renderUsulanKakPage(path, userRole) {
         newItem.classList.remove('new-item-animation');
     });
   };
-
-  window.addIndikatorKinerja = function () {
+  
+  window.addIndikatorKinerja = function (itemData = null) {
     const container = document.getElementById("indikatorKinerjaContainer");
     const newItem = document.createElement("div");
     newItem.className = "indikator-kinerja-item dynamic-field-item new-item-animation flex items-end gap-4 mb-6";
+    const bulan = itemData ? itemData.bulan_indikator : '';
+    const indikator = itemData ? itemData.deskripsi_target : '';
+    const target = itemData ? itemData.persentase_target : '';
     newItem.innerHTML = `
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
         <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
           <option value="">Pilih Bulan</option>
-          <option value="Januari">Januari</option> <option value="Februari">Februari</option> <option value="Maret">Maret</option>
-          <option value="April">April</option> <option value="Mei">Mei</option> <option value="Juni">Juni</option>
-          <option value="Juli">Juli</option> <option value="Agustus">Agustus</option> <option value="September">September</option>
-          <option value="Oktober">Oktober</option> <option value="November">November</option> <option value="Desember">Desember</option>
+          <option value="Januari" ${bulan === 'Januari' ? 'selected' : ''}>Januari</option> <option value="Februari" ${bulan === 'Februari' ? 'selected' : ''}>Februari</option> <option value="Maret" ${bulan === 'Maret' ? 'selected' : ''}>Maret</option>
+          <option value="April" ${bulan === 'April' ? 'selected' : ''}>April</option> <option value="Mei" ${bulan === 'Mei' ? 'selected' : ''}>Mei</option> <option value="Juni" ${bulan === 'Juni' ? 'selected' : ''}>Juni</option>
+          <option value="Juli" ${bulan === 'Juli' ? 'selected' : ''}>Juli</option> <option value="Agustus" ${bulan === 'Agustus' ? 'selected' : ''}>Agustus</option> <option value="September" ${bulan === 'September' ? 'selected' : ''}>September</option>
+          <option value="Oktober" ${bulan === 'Oktober' ? 'selected' : ''}>Oktober</option> <option value="November" ${bulan === 'November' ? 'selected' : ''}>November</option> <option value="Desember" ${bulan === 'Desember' ? 'selected' : ''}>Desember</option>
         </select>
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input">
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input" value="${indikator}">
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input">
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input" value="${target}">
       </div>
       <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
@@ -2032,10 +1826,12 @@ export function renderUsulanKakPage(path, userRole) {
     });
   };
 
-  window.addIkuField = function () {
+  window.addIkuField = function (itemData = null) {
     const container = document.getElementById("ikuRenstraContainer");
     const newItem = document.createElement("div");
     newItem.className = "iku-item dynamic-field-item new-item-animation row-item mb-4"; // Added row-item and margin
+    const ikuId = itemData ? itemData.iku_id : '';
+    const persentase = itemData ? itemData.persentase_target : '';
     newItem.innerHTML = `
       <div class="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
         <div>
@@ -2045,9 +1841,10 @@ export function renderUsulanKakPage(path, userRole) {
           </select>
         </div>
         <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)
+          </label>
           <div class="flex gap-2 items-center">
-            <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100">
+            <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" value="${persentase}">
             <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
           </div>
         </div>
@@ -2057,18 +1854,107 @@ export function renderUsulanKakPage(path, userRole) {
       </div>
     `;
     container.appendChild(newItem);
-    populateIkuDropdowns(); // Re-populate for the new select
+    
     updateRemoveButtonVisibility(container);
      newItem.addEventListener('animationend', () => {
         newItem.classList.remove('new-item-animation');
     });
+    // Set selected IKU after the element is created and dropdowns are populated
+    populateIkuDropdowns().then(() => {
+        if (ikuId) {
+            newItem.querySelector('select').value = ikuId;
+        }
+    });
   };
+
+  window.addRabItem = function(kategoriId, itemData = null) {
+    const container = document.getElementById(`rab-items-container-${kategoriId}`);
+    if (!container) {
+        return;
+    }
+
+    const newItem = document.createElement('div');
+    newItem.className = 'rab-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg';
+    
+    const uraian = itemData ? itemData.uraian : '';
+    const vol1 = itemData ? itemData.volume1 : '0';
+    const sat1 = itemData ? itemData.satuan1_id : '';
+    const vol2 = itemData ? itemData.volume2 : '0';
+    const sat2 = itemData ? itemData.satuan2_id : '';
+    const vol3 = itemData ? itemData.volume3 : '0';
+    const sat3 = itemData ? itemData.satuan3_id : '';
+    const harga = itemData ? itemData.harga_satuan : '';
+    const inputStyle = `style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`;
+
+    newItem.innerHTML = `
+        <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Uraian" value="${uraian}" ${inputStyle}>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+                <input type="number" min="0" value="${vol1}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+                <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" ${inputStyle}>
+                    <option value="">Pilih Satuan</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+                <input type="number" min="0" value="${vol2}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
+                <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" ${inputStyle}>
+                    <option value="">Pilih Satuan</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+                <input type="number" min="0" value="${vol3}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
+                <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" ${inputStyle}>
+                    <option value="">Pilih Satuan</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Harga" value="${harga}" ${inputStyle}>
+            </div>
+            <div class="flex items-end pb-3">
+                <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+                    <span class="text-xl font-bold">−</span>
+                </button>
+            </div>
+        </div>
+    `;
+    container.appendChild(newItem);
+
+    // Populate dropdowns for the new item
+    populateSatuanDropdowns().then(() => {
+        const selects = newItem.querySelectorAll('.satuan-select');
+        if (sat1) selects[0].value = sat1;
+        if (sat2) selects[1].value = sat2;
+        if (sat3) selects[2].value = sat3;
+    });
+
+    updateRemoveButtonVisibility(container);
+    newItem.addEventListener('animationend', () => {
+        newItem.classList.remove('new-item-animation');
+    });
+  }
+
   // Increment/Decrement value functions
   window.incrementValue = function (btn, step) {
     const input = btn
       .closest(".relative")
       .querySelector('input[type="number"]');
-    const currentValue = parseInt(input.value) || 1;
+    const currentValue = parseInt(input.value) || 0;
     input.value = currentValue + step;
   };
 
@@ -2076,281 +1962,17 @@ export function renderUsulanKakPage(path, userRole) {
     const input = btn
       .closest(".relative")
       .querySelector('input[type="number"]');
-    const currentValue = parseInt(input.value) || 1;
-    const minValue = parseInt(input.min) || 1;
+    const currentValue = parseInt(input.value) || 0;
+    const minValue = parseInt(input.min) || 0;
     if (currentValue > minValue) {
       input.value = currentValue - step;
     }
-  };
-
-  window.addBelanjaBarang = function () {
-    const container = document.getElementById("belanjaBarangContainer");
-
-    // Save current values
-    const currentValues = [];
-    container.querySelectorAll(".belanja-barang-item").forEach((item) => {
-      const inputs = item.querySelectorAll("input, select");
-      currentValues.push({
-        uraian: inputs[0].value,
-        qty1: inputs[1].value,
-        satuan1: inputs[2].value,
-        qty2: inputs[3].value,
-        satuan2: inputs[4].value,
-        harga: inputs[5].value,
-      });
-    });
-
-    const newItem = document.createElement("div");
-    newItem.className = "belanja-barang-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg";
-    // Construct innerHTML dynamically for select elements
-    newItem.innerHTML = `
-      <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-          <div class="relative">
-            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-          <div class="relative">
-            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-          <div class="relative">
-            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <div class="flex items-end pb-3">
-          <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-            <span class="text-xl font-bold">−</span>
-          </button>
-        </div>
-      </div>
-    `;
-    container.appendChild(newItem);
-    updateRemoveButtonVisibility(container);
-    newItem.addEventListener('animationend', () => {
-        newItem.classList.remove('new-item-animation');
-    });
-
-    // Repopulate and restore values
-    populateSatuanDropdowns().then(() => {
-      const items = container.querySelectorAll(".belanja-barang-item");
-      currentValues.forEach((value, index) => {
-        if (items[index]) {
-          const inputs = items[index].querySelectorAll("input, select");
-          inputs[0].value = value.uraian;
-          inputs[1].value = value.qty1;
-          inputs[2].value = value.satuan1;
-          inputs[3].value = value.qty2;
-          inputs[4].value = value.satuan2;
-          inputs[5].value = value.harga;
-        }
-      });
-    });
-  };
-
-  window.addBelanjaJasa = function () {
-    const container = document.getElementById("belanjaJasaContainer");
-    const newItem = document.createElement("div");
-    newItem.className = "belanja-jasa-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg";
-    newItem.innerHTML = `
-      <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-          <div class="relative">
-            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-          <div class="relative">
-            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-          <div class="relative">
-            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <div class="flex items-end pb-3">
-          <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-            <span class="text-xl font-bold">−</span>
-          </button>
-        </div>
-      </div>
-    `;
-    container.appendChild(newItem);
-    updateRemoveButtonVisibility(container);
-    newItem.addEventListener('animationend', () => {
-        newItem.classList.remove('new-item-animation');
-    });
-    populateSatuanDropdowns(); // Populate dropdowns for new item
-  };
-
-  window.addBelanjaPerjalanan = function () {
-    const container = document.getElementById("belanjaPerjalananContainer");
-    const newItem = document.createElement("div");
-    newItem.className = "belanja-perjalanan-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg";
-    newItem.innerHTML = `
-      <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-          <div class="relative">
-            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-          <div class="relative">
-            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-          <div class="relative">
-            <input type="number" min="1" value="1" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" class="text-gray-400 hover:text-cyan-500 leading-none" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
-        </div>
-        <div class="flex items-end pb-3">
-          <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onmouseover="this.style.background='#DC2626';" onmouseout="this.style.background='#EF4444';" onclick="removeField(this)">
-            <span class="text-xl font-bold">−</span>
-          </button>
-        </div>
-      </div>
-    `;
-    container.appendChild(newItem);
-    updateRemoveButtonVisibility(container);
-    newItem.addEventListener('animationend', () => {
-        newItem.classList.remove('new-item-animation');
-    });
-    populateSatuanDropdowns(); // Populate dropdowns for new item
   };
 
   async function fetchAndPopulateKakData(id) {
     try {
       const response = await apiRequest(`/kak/${id}/data`);
       const kakData = response.data;
-
-      console.log("Fetched KAK Data:", kakData);
 
       // Populate Step 1: Gambaran Umum
       if (kakData.nama_kegiatan) {
@@ -2366,32 +1988,9 @@ export function renderUsulanKakPage(path, userRole) {
         const penerimaManfaatContainer = document.getElementById(
           "penerimaManfaatContainer"
         );
-
-        // Clear existing fields
         penerimaManfaatContainer.innerHTML = "";
-
         kakData.manfaat.forEach((item) => {
-          const newItem = document.createElement("div");
-          newItem.className =
-            "penerima-manfaat-item flex gap-4 items-start mb-4";
-          newItem.innerHTML = `
-            <div class="flex-1">
-              <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-              <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran" value="${
-                item.sasaran_utama || ""
-              }">
-            </div>
-            <div class="flex-1">
-              <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
-              <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat" value="${
-                item.manfaat || ""
-              }">
-            </div>
-            <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
-              <span class="text-xl font-bold">−</span>
-            </button>
-          `;
-          penerimaManfaatContainer.appendChild(newItem);
+          addPenerimaManfaat(item);
         });
       }
 
@@ -2406,14 +2005,9 @@ export function renderUsulanKakPage(path, userRole) {
           "tahapanPelaksanaanContainer"
         );
         tahapanContainer.innerHTML = "";
-
         kakData.tahapan.forEach((item) => {
           if (item.nama_tahapan) {
-            const tahapanDiv = createDynamicField(
-              item.nama_tahapan,
-              "removeField"
-            );
-            tahapanContainer.appendChild(tahapanDiv);
+            addTahapanPelaksanaan(item.nama_tahapan);
           }
         });
       }
@@ -2424,14 +2018,8 @@ export function renderUsulanKakPage(path, userRole) {
           "indikatorKinerjaContainer"
         );
         indikatorContainer.innerHTML = "";
-
         kakData.target.forEach((item) => {
-          const indikatorDiv = createIndikatorKinerjaField(
-            item.bulan_indikator || "",
-            item.deskripsi_target || "",
-            item.persentase_target || ""
-          );
-          indikatorContainer.appendChild(indikatorDiv);
+          addIndikatorKinerja(item);
         });
       }
 
@@ -2451,277 +2039,25 @@ export function renderUsulanKakPage(path, userRole) {
       if (kakData.iku && kakData.iku.length > 0) {
         const ikuContainer = document.getElementById("ikuRenstraContainer");
         ikuContainer.innerHTML = "";
-
         kakData.iku.forEach((item) => {
-          const ikuDiv = createIkuField(
-            item.iku_id || "",
-            item.persentase_target || ""
-          );
-          ikuContainer.appendChild(ikuDiv);
+          addIkuField(item);
         });
-
-        // Populate IKU dropdowns after creating fields
-        populateIkuDropdowns();
       }
 
       // Populate Main Step 3: RAB
       if (kakData.anggaran && kakData.anggaran.length > 0) {
-        // Clear existing containers
-        document.getElementById("belanjaBarangContainer").innerHTML = "";
-        document.getElementById("belanjaJasaContainer").innerHTML = "";
-        document.getElementById("belanjaPerjalananContainer").innerHTML = "";
+        // Clear any default rows added in create mode
+        const rabContainer = document.getElementById('rab-container');
+        rabContainer.querySelectorAll('.rab-item').forEach(item => item.remove());
 
-        // You might need logic to categorize anggaran into Barang/Jasa/Perjalanan
-        // For now, assuming all goes to belanjaBarangContainer
         kakData.anggaran.forEach((item) => {
-          const anggaranDiv = createAnggaranField(
-            item.uraian || "",
-            item.volume1 || 1,
-            item.satuan1_id || "",
-            item.volume2 || 1,
-            item.satuan2_id || "",
-            item.volume3 || 1,
-            item.satuan3_id || "",
-            item.harga_satuan || 0
-          );
-          document
-            .getElementById("belanjaBarangContainer")
-            .appendChild(anggaranDiv);
+          addRabItem(item.kategori_belanja_id, item);
         });
-
-        // Populate satuan dropdowns
-        populateSatuanDropdowns();
       }
     } catch (error) {
       console.error("Error fetching KAK data:", error);
       showError(`Gagal memuat data: ${error.message}`);
     }
-  }
-
-  function createDynamicField(value, removeFunction) {
-    const div = document.createElement("div");
-    div.className = "flex gap-4 items-start mb-4";
-    div.innerHTML = `
-      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
-        style="border-color: #E5E7EB; background: #FFFFFF;" 
-        onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
-        onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
-        placeholder="Input" value="${value}">
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" 
-        style="background: #EF4444; color: #FFFFFF;" 
-        onmouseover="this.style.background='#DC2626';" 
-        onmouseout="this.style.background='#EF4444';" 
-        onclick="${removeFunction}(this)">
-        <span class="text-xl font-bold">−</span>
-      </button>
-    `;
-    return div;
-  }
-
-  function createIndikatorKinerjaField(bulan, indikator, target) {
-    const div = document.createElement("div");
-    div.className = "flex items-end gap-4 mb-6";
-    div.innerHTML = `
-      <div class='w-full'>
-        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
-          style="border-color: #E5E7EB; background: #FFFFFF;" 
-          onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
-          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-          <option value="">Pilih Bulan</option>
-          <option value="Januari" ${
-            bulan === "Januari" ? "selected" : ""
-          }>Januari</option>
-          <option value="Februari" ${
-            bulan === "Februari" ? "selected" : ""
-          }>Februari</option>
-          <option value="Maret" ${
-            bulan === "Maret" ? "selected" : ""
-          }>Maret</option>
-          <option value="April" ${
-            bulan === "April" ? "selected" : ""
-          }>April</option>
-          <option value="Mei" ${bulan === "Mei" ? "selected" : ""}>Mei</option>
-          <option value="Juni" ${
-            bulan === "Juni" ? "selected" : ""
-          }>Juni</option>
-          <option value="Juli" ${
-            bulan === "Juli" ? "selected" : ""
-          }>Juli</option>
-          <option value="Agustus" ${
-            bulan === "Agustus" ? "selected" : ""
-          }>Agustus</option>
-          <option value="September" ${
-            bulan === "September" ? "selected" : ""
-          }>September</option>
-          <option value="Oktober" ${
-            bulan === "Oktober" ? "selected" : ""
-          }>Oktober</option>
-          <option value="November" ${
-            bulan === "November" ? "selected" : ""
-          }>November</option>
-          <option value="Desember" ${
-            bulan === "Desember" ? "selected" : ""
-          }>Desember</option>
-        </select>
-      </div>
-      <div class='w-full'>
-        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
-          style="border-color: #E5E7EB; background: #FFFFFF;" 
-          onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
-          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
-          placeholder="Input" value="${indikator}">
-      </div>
-      <div class='w-full'>
-        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
-          style="border-color: #E5E7EB; background: #FFFFFF;" 
-          onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
-          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
-          placeholder="Input" value="${target}">
-      </div>
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" 
-        style="background: #EF4444; color: #FFFFFF;" 
-        onmouseover="this.style.background='#DC2626';" 
-        onmouseout="this.style.background='#EF4444';" 
-        onclick="removeField(this)">
-        <span class="text-xl font-bold">−</span>
-      </button>
-    `;
-    return div;
-  }
-
-  function createIkuField(ikuId, persentase) {
-    const div = document.createElement("div");
-    div.className =
-      "grid grid-cols-[1fr_1fr_auto] gap-4 items-end mb-4 iku-item";
-    div.innerHTML = `
-      <div>
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
-          style="border-color: #E5E7EB; background: #FFFFFF;" 
-          onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
-          onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
-          <option value="">Input</option>
-        </select>
-      </div>
-      <div>
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Persentase Target</label>
-        <div class="flex gap-2 items-center">
-          <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" 
-            style="border-color: #E5E7EB; background: #FFFFFF;" 
-            onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" 
-            onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" 
-            placeholder="Input" value="${persentase}">
-          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-        </div>
-      </div>
-      <button type="button" class="border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" 
-        style="background: #EF4444; color: #FFFFFF;" 
-        onmouseover="this.style.background='#DC2626';" 
-        onmouseout="this.style.background='#EF4444';" 
-        onclick="removeIkuField(this)">
-        <span class="text-xl font-bold">−</span>
-      </button>
-    `;
-
-    // Set selected IKU after the element is created
-    setTimeout(() => {
-      const select = div.querySelector("select");
-      if (select && ikuId) {
-        select.value = ikuId;
-      }
-    }, 100);
-
-    return div;
-  }
-
-  function createAnggaranField(
-    uraian,
-    vol1,
-    sat1,
-    vol2,
-    sat2,
-    vol3,
-    sat3,
-    harga
-  ) {
-    const div = document.createElement("div");
-    div.className = "belanja-barang-item mb-8 p-6 rounded-lg";
-    div.innerHTML = `
-      <div class="grid grid-cols-[2fr_1fr_2fr_1fr_2fr_1fr_2fr_auto] gap-4 items-end">
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" value="${uraian}">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-          <div class="relative">
-            <input type="number" min="1" value="${vol1}" class="w-full px-4 py-3 border-2 rounded-lg text-sm">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-          <div class="relative">
-            <input type="number" min="1" value="${vol2}" class="w-full px-4 py-3 border-2 rounded-lg text-sm">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2 (Optional)</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-          <div class="relative">
-            <input type="number" min="1" value="${vol3}" class="w-full px-4 py-3 border-2 rounded-lg text-sm">
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
-              <button type="button" onclick="incrementValue(this, 1)">▲</button>
-              <button type="button" onclick="decrementValue(this, 1)">▼</button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3 (Optional)</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select">
-            <option value="">Input</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" value="${harga}">
-        </div>
-        <div class="flex items-end pb-3">
-          <button type="button" onclick="removeBelanjaItem(this, 'belanjaBarangContainer')">−</button>
-        </div>
-      </div>
-    `;
-
-    // Set selected satuan after creation
-    setTimeout(() => {
-      const selects = div.querySelectorAll("select");
-      if (selects[0] && sat1) selects[0].value = sat1;
-      if (selects[1] && sat2) selects[1].value = sat2;
-      if (selects[2] && sat3) selects[2].value = sat3;
-    }, 100);
-
-    return div;
   }
 
   // ==============================================
@@ -2732,24 +2068,6 @@ export function renderUsulanKakPage(path, userRole) {
       method: "PUT",
       body: JSON.stringify(data),
     });
-  }
-
-  // Modify the init function to load data if in edit mode
-  function init() {
-    loadDateRangePicker();
-    updateMainStepDisplay();
-    updateStepDisplay();
-    attachEventListeners();
-    populateIkuDropdowns();
-    populateSatuanDropdowns();
-
-    // Load existing data if in edit mode
-    if (isEditMode && kakId) {
-      // Wait for daterangepicker to initialize first
-      setTimeout(() => {
-        fetchAndPopulateKakData(kakId);
-      }, 500);
-    }
   }
 
   // Update the submit button handler
@@ -2814,7 +2132,7 @@ export function renderUsulanKakPage(path, userRole) {
           errorMessage += "\n" + formatErrors(error.details);
         }
         showError(errorMessage);
-        btnSubmitRab.disabled = false; // <-- juga perbaiki ini, seharusnya false bukan true
+        btnSubmitRab.disabled = false;
         btnSubmitRab.innerHTML = "Submit";
       }
     });
