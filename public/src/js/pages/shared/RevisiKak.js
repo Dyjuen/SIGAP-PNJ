@@ -9,9 +9,29 @@ export function renderRevisiKakPage(path, userRole) {
   const inputAttr = isPengusul ? "" : "readonly disabled";
   const inputStyle = isPengusul
     ? ""
-    : "border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default;";
+    : "color: #4B5563 !important; border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default; ";
   const pageContent = `
+    <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
     <style>
+    /* Daterangepicker theme overrides */
+    .daterangepicker { border-color: #00BCD4 !important; }
+    .daterangepicker .calendar-table { border-color: #E5F8FB !important; }
+    .daterangepicker td.active, .daterangepicker td.active:hover { background-color: #00BCD4 !important; border-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker td.in-range { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker td.available:hover { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker .ranges li.active { background-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker .ranges li:hover { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker td.start-date, .daterangepicker td.end-date { background-color: #00BCD4 !important; border-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker .drp-buttons .btn-primary { background-color: #00BCD4 !important; border-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker .drp-buttons .btn-primary:hover { background-color: #0097A7 !important; border-color: #0097A7 !important; }
+    .daterangepicker th.month { color: #00BCD4 !important; }
+    .daterangepicker td.off, .daterangepicker td.off.in-range, .daterangepicker td.off.start-date, .daterangepicker td.off.end-date { background-color: #F9FAFB !important; color: #9CA3AF !important; }
+    .daterangepicker select.monthselect, .daterangepicker select.yearselect { border-color: #E5E7EB !important; }
+    .daterangepicker select.monthselect:focus, .daterangepicker select.yearselect:focus { border-color: #00BCD4 !important; outline: none !important; box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1) !important; }
+    .daterangepicker .calendar-table .next span, .daterangepicker .calendar-table .prev span { border-color: #00BCD4 !important; }
+    .daterangepicker .calendar-table .next:hover, .daterangepicker .calendar-table .prev:hover { background-color: #E5F8FB !important; }
+    .daterangepicker td.today { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker td.today.active { background-color: #00BCD4 !important; color: #FFFFFF !important; }
       /* Comment button styling */
       .comment-icon {
         position: absolute;
@@ -262,7 +282,7 @@ export function renderRevisiKakPage(path, userRole) {
       /* RAB Grid */
       .grid-rab {
         display: grid;
-        grid-template-columns: 2.5fr 0.8fr 1.2fr 0.8fr 1.2fr 0.8fr 1.2fr 2.5fr 1.2fr 0.8fr 1.2fr 2.5fr;
+        grid-template-columns: 2.5fr 0.8fr 1.2fr 0.8fr 1.2fr 0.8fr 1.2fr 2.5fr;
         gap: 1rem;
         align-items: end;
       }
@@ -925,13 +945,12 @@ export function renderRevisiKakPage(path, userRole) {
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">2</div>
           <div class="text-left">
             <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Indikator Kinerja Utama</div>
-            <div class="progress-step-subtext text-xs" style="color: #9CA3AF;">& RENSTRA</div>
           </div>
         </div>
         <div class="progress-step-item flex items-center justify-center gap-3 px-4">
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">3</div>
           <div class="text-left">
-            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rincian Anggaran Biaya</div>
+            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rencana Anggaran Biaya</div>
           </div>
         </div>
       </div>
@@ -995,18 +1014,19 @@ export function renderRevisiKakPage(path, userRole) {
                 <!-- Step 2: Penerima Manfaat -->
                 <div class="step-content" id="penerima-manfaat">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Penerima Manfaat</h4>
-                  
-                  <div class="mb-8">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-                    <div id="sasaranUtamaContainer">
-                      <!-- Dynamic content will be injected here -->
+                  <div class="grid grid-cols-2 gap-6">
+                    <div class="mb-8">
+                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
+                      <div id="sasaranUtamaContainer">
+                        <!-- Dynamic content will be injected here -->
+                      </div>
                     </div>
-                  </div>
 
-                  <div class="mb-8">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
-                    <div id="manfaatContainer">
-                      <!-- Dynamic content will be injected here -->
+                    <div class="mb-8">
+                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
+                      <div id="manfaatContainer">
+                        <!-- Dynamic content will be injected here -->
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1049,25 +1069,15 @@ export function renderRevisiKakPage(path, userRole) {
                 <div class="step-content" id="kurun-waktu">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</h4>
                   
-                  <div class="grid grid-cols-2 gap-6">
-                    <div class="mb-6">
-                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Mulai</label>
-                      <div class="input-with-comment">
-                        <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="" data-field="tanggalMulai">
-                        <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="tanggalMulai" data-label="Tanggal Mulai">
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Periode Pelaksanaan</label>
+                    <div class="input-with-comment">
+                        <input type="text" id="kurunWaktu" class="form-control w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} placeholder="Pilih tanggal" data-field="kurunWaktu">
+                        <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="kurunWaktu" data-label="Kurun Waktu">
                           <i class="ti ti-message-circle-2">&#xeaed;</i>
                         </button>
-                      </div>
                     </div>
-                    <div class="mb-6">
-                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tanggal Selesai</label>
-                      <div class="input-with-comment">
-                        <input type="date" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="" data-field="tanggalSelesai">
-                        <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="tanggalSelesai" data-label="Tanggal Selesai">
-                          <i class="ti ti-message-circle-2">&#xeaed;</i>
-                        </button>
-                      </div>
-                    </div>
+                    <small class="text-gray-500 mt-1 block">Pilih tanggal mulai dan tanggal selesai</small>
                   </div>
                 </div>
               </div>
@@ -1089,7 +1099,7 @@ export function renderRevisiKakPage(path, userRole) {
       <!-- Main Step 2: IKU & Renstra -->
       <div class="main-step-content" id="main-step-2">
         <div class="bg-white rounded-xl shadow-lg p-8">
-          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama & Renstra</h4>
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama</h4>
           
           <div class="mb-8" id="ikuRenstraContainer">
             <!-- Dynamic content will be injected here -->
@@ -1110,7 +1120,7 @@ export function renderRevisiKakPage(path, userRole) {
       <!-- Main Step 3: RAB -->
       <div class="main-step-content" id="main-step-3">
         <div class="bg-white rounded-xl shadow-lg p-8">
-          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rincian Anggaran Biaya</h4>
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rencana Anggaran Biaya</h4>
           
           <!-- Belanja Barang -->
           <div class="mb-10">
@@ -1530,6 +1540,65 @@ export function renderRevisiKakPage(path, userRole) {
   `;
 
   // ==============================================
+  // DATE RANGE PICKER
+  // ==============================================
+  const loadDateRangePicker = () => {
+    // Load moment.js first
+    const momentScript = document.createElement("script");
+    momentScript.src = "/assets/vendor/libs/moment/moment.js";
+    momentScript.onload = () => {
+      // Then load daterangepicker
+      const daterangeScript = document.createElement("script");
+      daterangeScript.src = "/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js";
+      daterangeScript.onload = () => initializeDateRangePickers(usulanId);
+      document.head.appendChild(daterangeScript);
+    };
+    document.head.appendChild(momentScript);
+  };
+
+  function initializeDateRangePickers(kakId) {
+    if (typeof $ !== "undefined" && $.fn.daterangepicker) {
+      const pickerOptions = {
+        showDropdowns: true,
+        minYear: 2020,
+        maxYear: parseInt(moment().format("YYYY"), 10) + 5,
+        locale: {
+          format: "DD/MM/YYYY",
+          separator: " - ",
+          applyLabel: "Terapkan",
+          cancelLabel: "Batal",
+          fromLabel: "Dari",
+          toLabel: "Hingga",
+          customRangeLabel: "Kustom",
+          weekLabel: "W",
+          daysOfWeek: ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"],
+          monthNames: ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+          firstDay: 1,
+        },
+        opens: "right",
+      };
+
+      if (isPengusul) {
+        pickerOptions.startDate = moment();
+        pickerOptions.endDate = moment().add(7, "days");
+      }
+
+      $("#kurunWaktu").daterangepicker(pickerOptions);
+
+      if (!isPengusul) {
+        // For verifikator, we just want to display the date, not make it editable.
+        // Disabling the input is handled by inputAttr, but we remove the picker functionality
+        // to prevent the calendar from showing up at all.
+        $("#kurunWaktu").data('daterangepicker').remove();
+      }
+      
+      fetchAndPopulateData(kakId);
+    } else {
+        setTimeout(() => initializeDateRangePickers(kakId), 50);
+    }
+  }
+
+  // ==============================================
   // DATA FETCH AND POPULATE - FIXED VERSION
   // ==============================================
   async function fetchAndPopulateData(kakId) {
@@ -1558,17 +1627,13 @@ export function renderRevisiKakPage(path, userRole) {
       masterState.satuan = satuanResponse.data;
       const kakData = kakResponse.data;
 
-      // Simpan data KAK untuk digunakan saat submit
       kakDataState = kakData;
 
-      // === FIX 1: Populate fieldComments dari root level kakData ===
-      // Backend mengirim catatan langsung di root level dengan prefix catatan_
       const fieldMapping = {
         catatan_nama_kegiatan: "namaKegiatan",
         catatan_deskripsi_kegiatan: "gambaranUmum",
         catatan_metode_pelaksanaan: "metodePelaksanaan",
-        catatan_tanggal_mulai: "tanggalMulai",
-        catatan_tanggal_selesai: "tanggalSelesai",
+        catatan_kurun_waktu: "kurunWaktu",
       };
 
       for (const [backendKey, frontendKey] of Object.entries(fieldMapping)) {
@@ -1581,45 +1646,20 @@ export function renderRevisiKakPage(path, userRole) {
         }
       }
 
-      // === FIX 2: Populate rowComments dari array child tables ===
-      // Backend mengirim array langsung (manfaat, tahapan, target, iku, anggaran)
       const childTables = {
-        manfaat: {
-          array: kakData.manfaat,
-          idField: "manfaat_id",
-          tableName: "t_kak_manfaat",
-        },
-        tahapan: {
-          array: kakData.tahapan,
-          idField: "tahapan_id",
-          tableName: "t_kak_tahapan",
-        },
-        target: {
-          array: kakData.target,
-          idField: "target_id",
-          tableName: "t_kak_target",
-        },
-        iku: {
-          array: kakData.iku,
-          idField: "kak_iku_id",
-          tableName: "t_kak_iku",
-        },
-        anggaran: {
-          array: kakData.anggaran,
-          idField: "anggaran_id",
-          tableName: "t_kak_anggaran",
-        },
+        manfaat: { array: kakData.manfaat, idField: "manfaat_id", tableName: "t_kak_manfaat" },
+        tahapan: { array: kakData.tahapan, idField: "tahapan_id", tableName: "t_kak_tahapan" },
+        target: { array: kakData.target, idField: "target_id", tableName: "t_kak_target" },
+        iku: { array: kakData.iku, idField: "kak_iku_id", tableName: "t_kak_iku" },
+        anggaran: { array: kakData.anggaran, idField: "anggaran_id", tableName: "t_kak_anggaran" },
       };
 
-      for (const [key, config] of Object.entries(childTables)) {
+      for (const config of Object.values(childTables)) {
         if (config.array && config.array.length > 0) {
-          if (!rowComments[config.tableName]) {
-            rowComments[config.tableName] = {};
-          }
+          if (!rowComments[config.tableName]) rowComments[config.tableName] = {};
           config.array.forEach((item) => {
             if (item[config.idField] && item.catatan_verifikator) {
-              const pkValue = item[config.idField];
-              rowComments[config.tableName][pkValue] = item.catatan_verifikator;
+              rowComments[config.tableName][item[config.idField]] = item.catatan_verifikator;
             }
           });
         }
@@ -1627,17 +1667,22 @@ export function renderRevisiKakPage(path, userRole) {
 
       updateCommentCount();
 
-      // Populate form fields
-      document.querySelector('[data-field="namaKegiatan"]').value =
-        kakData.nama_kegiatan || "";
-      document.querySelector('[data-field="gambaranUmum"]').value =
-        kakData.deskripsi_kegiatan || "";
-      document.querySelector('[data-field="metodePelaksanaan"]').value =
-        kakData.metode_pelaksanaan || "";
-      document.querySelector('[data-field="tanggalMulai"]').value =
-        kakData.tanggal_mulai || "";
-      document.querySelector('[data-field="tanggalSelesai"]').value =
-        kakData.tanggal_selesai || "";
+      document.querySelector('[data-field="namaKegiatan"]').value = kakData.nama_kegiatan || "";
+      document.querySelector('[data-field="gambaranUmum"]').value = kakData.deskripsi_kegiatan || "";
+      document.querySelector('[data-field="metodePelaksanaan"]').value = kakData.metode_pelaksanaan || "";
+
+      // Populate Kurun Waktu
+      if (kakData.tanggal_mulai && kakData.tanggal_selesai) {
+        const startDate = moment(kakData.tanggal_mulai, "YYYY-MM-DD");
+        const endDate = moment(kakData.tanggal_selesai, "YYYY-MM-DD");
+        if (isPengusul && typeof $ !== "undefined" && $.fn.daterangepicker && $('#kurunWaktu').data('daterangepicker')) {
+            $('#kurunWaktu').data('daterangepicker').setStartDate(startDate);
+            $('#kurunWaktu').data('daterangepicker').setEndDate(endDate);
+        } else {
+            const formatted = `${startDate.format("DD/MM/YYYY")} - ${endDate.format("DD/MM/YYYY")}`;
+            document.getElementById('kurunWaktu').value = formatted;
+        }
+      }
 
       // Populate Sasaran & Manfaat
       const sasaranContainer = document.getElementById("sasaranUtamaContainer");
@@ -1647,78 +1692,43 @@ export function renderRevisiKakPage(path, userRole) {
       if (kakData.manfaat && kakData.manfaat.length > 0) {
         kakData.manfaat.forEach((item, index) => {
           if (item.sasaran_utama) {
-            sasaranContainer.innerHTML += createReadOnlyRow(
-              item.sasaran_utama,
-              index,
-              "t_kak_manfaat",
-              item.manfaat_id,
-              "manfaat_id"
-            );
+            sasaranContainer.innerHTML += createReadOnlyRow(item.sasaran_utama, index, "t_kak_manfaat", item.manfaat_id, "manfaat_id");
           }
           if (item.manfaat) {
-            manfaatContainer.innerHTML += createReadOnlyRow(
-              item.manfaat,
-              index,
-              "t_kak_manfaat",
-              item.manfaat_id,
-              "manfaat_id"
-            );
+            manfaatContainer.innerHTML += createReadOnlyRow(item.manfaat, index, "t_kak_manfaat", item.manfaat_id, "manfaat_id");
           }
         });
-        // Update comment buttons after DOM rendered
         kakData.manfaat.forEach((item) => {
           if (item.catatan_verifikator) {
-            updateCommentButton(
-              `.row-with-comment[data-pk-value="${item.manfaat_id}"] .row-comment-icon`,
-              item.catatan_verifikator
-            );
+            updateCommentButton(`.row-with-comment[data-pk-value="${item.manfaat_id}"] .row-comment-icon`, item.catatan_verifikator);
           }
         });
       }
 
       // Populate Tahapan
-      const tahapanContainer = document.getElementById(
-        "tahapanPelaksanaanContainer"
-      );
+      const tahapanContainer = document.getElementById("tahapanPelaksanaanContainer");
       tahapanContainer.innerHTML = "";
       if (kakData.tahapan && kakData.tahapan.length > 0) {
         kakData.tahapan.forEach((item, index) => {
-          tahapanContainer.innerHTML += createReadOnlyRow(
-            item.nama_tahapan,
-            index,
-            "t_kak_tahapan",
-            item.tahapan_id,
-            "tahapan_id"
-          );
+          tahapanContainer.innerHTML += createReadOnlyRow(item.nama_tahapan, index, "t_kak_tahapan", item.tahapan_id, "tahapan_id");
         });
         kakData.tahapan.forEach((item) => {
           if (item.catatan_verifikator) {
-            updateCommentButton(
-              `.row-with-comment[data-pk-value="${item.tahapan_id}"] .row-comment-icon`,
-              item.catatan_verifikator
-            );
+            updateCommentButton(`.row-with-comment[data-pk-value="${item.tahapan_id}"] .row-comment-icon`, item.catatan_verifikator);
           }
         });
       }
 
       // Populate Indikator Kinerja
-      const indikatorContainer = document.getElementById(
-        "indikatorKinerjaContainer"
-      );
+      const indikatorContainer = document.getElementById("indikatorKinerjaContainer");
       indikatorContainer.innerHTML = "";
       if (kakData.target && kakData.target.length > 0) {
         kakData.target.forEach((item, index) => {
-          indikatorContainer.innerHTML += createIndikatorKinerjaRow(
-            item,
-            index
-          );
+          indikatorContainer.innerHTML += createIndikatorKinerjaRow(item, index);
         });
         kakData.target.forEach((item) => {
           if (item.catatan_verifikator) {
-            updateCommentButton(
-              `.row-with-comment[data-pk-value="${item.target_id}"] .row-comment-icon`,
-              item.catatan_verifikator
-            );
+            updateCommentButton(`.row-with-comment[data-pk-value="${item.target_id}"] .row-comment-icon`, item.catatan_verifikator);
           }
         });
       }
@@ -1730,30 +1740,20 @@ export function renderRevisiKakPage(path, userRole) {
         kakData.iku.forEach((item, index) => {
           ikuContainer.innerHTML += createIkuRow(item, index);
         });
-        // Update buttons after render, using kak_iku_id or fallback to iku_id
         kakData.iku.forEach((item) => {
           if (item.catatan_verifikator) {
             const pkValue = item.kak_iku_id || item.iku_id;
-            updateCommentButton(
-              `.row-with-comment[data-pk-value="${pkValue}"] .row-comment-icon`,
-              item.catatan_verifikator
-            );
+            updateCommentButton(`.row-with-comment[data-pk-value="${pkValue}"] .row-comment-icon`, item.catatan_verifikator);
           }
         });
       }
 
       // Populate RAB
-      const belanjaBarangContainer = document.getElementById(
-        "belanjaBarangContainer"
-      );
+      const belanjaBarangContainer = document.getElementById("belanjaBarangContainer");
       belanjaBarangContainer.innerHTML = "";
-      const belanjaJasaContainer = document.getElementById(
-        "belanjaJasaContainer"
-      );
+      const belanjaJasaContainer = document.getElementById("belanjaJasaContainer");
       belanjaJasaContainer.innerHTML = "";
-      const belanjaPerjalananContainer = document.getElementById(
-        "belanjaPerjalananContainer"
-      );
+      const belanjaPerjalananContainer = document.getElementById("belanjaPerjalananContainer");
       belanjaPerjalananContainer.innerHTML = "";
 
       if (kakData.anggaran && kakData.anggaran.length > 0) {
@@ -1762,10 +1762,7 @@ export function renderRevisiKakPage(path, userRole) {
         });
         kakData.anggaran.forEach((item) => {
           if (item.catatan_verifikator) {
-            updateCommentButton(
-              `.row-with-comment[data-pk-value="${item.anggaran_id}"] .row-comment-icon`,
-              item.catatan_verifikator
-            );
+            updateCommentButton(`.row-with-comment[data-pk-value="${item.anggaran_id}"] .row-comment-icon`, item.catatan_verifikator);
           }
         });
       }
@@ -1782,7 +1779,7 @@ export function renderRevisiKakPage(path, userRole) {
     updateStepDisplay();
     attachEventListeners();
     updateCommentCount();
-    fetchAndPopulateData(usulanId);
+    loadDateRangePicker();
   }
 
   function updateMainStepDisplay() {
