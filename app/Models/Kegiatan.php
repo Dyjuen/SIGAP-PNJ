@@ -17,7 +17,6 @@ class Kegiatan extends Model
                     JOIN t_kak t ON k.kak_id = t.kak_id
                     JOIN m_users u ON t.pengusul_user_id = u.user_id
                     LEFT JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
-                    LEFT JOIN t_kegiatan_approval active_approval ON k.kegiatan_id = active_approval.kegiatan_id AND active_approval.status = 'Aktif'
                     LEFT JOIN t_kegiatan_approval ppk_approval ON k.kegiatan_id = ppk_approval.kegiatan_id AND ppk_approval.approval_level = 'PPK'
                     LEFT JOIN (
                         SELECT kegiatan_id, SUM(jumlah_dicairkan) as total_dicairkan
@@ -88,9 +87,7 @@ class Kegiatan extends Model
                         ks.nama_status,
                         ks.status_id,
                         (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_diusulkan,
-                        COALESCE(pencairan_sum.total_dicairkan, 0) as dana_dicairkan,
-                        active_approval.approval_level,
-                        active_approval.status as current_approval_status";
+                        COALESCE(pencairan_sum.total_dicairkan, 0) as dana_dicairkan";
         
         $page = $filters['page'] ?? 1;
         $perPage = $filters['per_page'] ?? 10;
@@ -117,22 +114,8 @@ class Kegiatan extends Model
             }
 
             foreach ($data as &$kegiatan) {
-                // Nest the full approval history
                 $kegiatan['approvals'] = $groupedApprovals[$kegiatan['kegiatan_id']] ?? [];
-                
-                // Create the current_approval object from the joined data
-                if (isset($kegiatan['approval_level'])) { 
-                    $kegiatan['current_approval'] = [
-                        'approval_level' => $kegiatan['approval_level'],
-                        'status' => $kegiatan['current_approval_status']
-                    ];
-                } else {
-                    $kegiatan['current_approval'] = null;
-                }
-                
-                // Remove redundant fields that are now nested or unused
-                unset($kegiatan['approval_level']);
-                unset($kegiatan['current_approval_status']);
+                $kegiatan['current_approval'] = $this->findCurrentApproval($kegiatan['kegiatan_id']);
             }
         }
 

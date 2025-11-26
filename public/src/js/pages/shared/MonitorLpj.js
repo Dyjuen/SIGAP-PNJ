@@ -334,7 +334,7 @@ function initializeDaftarLpj(userRole) {
   async function approveLpj(id) {
     Swal.fire({
       title: "Setujui LPJ?",
-      text: "Status akan berubah menjadi 'Setor Fisik'. Anda tidak dapat mengembalikan tindakan ini.",
+      text: "Anda yakin ingin menyetujui LPJ ini? Proses akan dilanjutkan ke tahap berikutnya.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Ya, Setujui!",

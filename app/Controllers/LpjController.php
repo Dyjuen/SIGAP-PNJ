@@ -421,24 +421,31 @@ class LpjController extends Controller
 
             $db->beginTransaction();
 
+            // 1. Mark the current 'Bendahara-LPJ' step as 'Disetujui'
             $approvalModel->update($lpjApproval['approval_kegiatan_id'], [
-                'status' => 'Setor Fisik',
-                'catatan' => 'LPJ disetujui secara digital. Menunggu penyerahan bukti fisik.',
+                'status' => 'Disetujui',
+                'catatan' => 'LPJ disetujui secara digital.',
                 'approver_user_id' => $this->user['user_id'],
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
             
-            // Notify the Pengusul
+            // 2. Find and activate the next step: 'Bendahara-Setor'
+            $nextApproval = $this->kegiatanModel->findNextApproval($kegiatanId, $lpjApproval['approval_kegiatan_id']);
+            if ($nextApproval && $nextApproval['approval_level'] === 'Bendahara-Setor') {
+                $this->kegiatanModel->updateApprovalStatus($nextApproval['approval_kegiatan_id'], 'Aktif', null, null);
+            }
+
+            // 3. Notify the Pengusul
             $notifikasiModel = new \App\Models\Notifikasi();
             $notifikasiModel->create([
                 'penerima_user_id' => $kegiatan['kak_pengusul_user_id'],
-                'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah disetujui. Silakan lakukan serah terima bukti fisik ke Bendahara.",
-                'link_tujuan' => "/pengusul/kegiatan/lpj",
+                'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah disetujui. Proses dilanjutkan ke tahap berikutnya.",
+                'link_tujuan' => "/pengusul/kegiatan",
             ]);
 
             $db->commit();
 
-            return Response::success(null, 'LPJ berhasil disetujui dan status diubah menjadi "Setor Fisik".');
+            return Response::success(null, 'LPJ berhasil disetujui dan alur kerja dilanjutkan ke tahap Bendahara Setor.');
 
         } catch (\Exception $e) {
             if ($db->inTransaction()) {

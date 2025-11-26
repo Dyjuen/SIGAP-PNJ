@@ -652,7 +652,7 @@ class KegiatanController
             );
 
             $this->logStatusModel->create([
-                'kegiatan_id' => $kegiatanId,
+                'kak_id' => $kegiatan['kak_id'],
                 'status_id_lama' => $kegiatan['status_id'],
                 'status_id_baru' => $kegiatan['status_id'],
                 'actor_user_id' => $this->userData['user_id'],
@@ -751,10 +751,10 @@ class KegiatanController
                 Response::error('Proses pencairan untuk kegiatan ini belum dimulai.', 400);
             }
 
-            // 4. Update the Bendahara-Cair step to 'Selesai'
+            // 4. Update the Bendahara-Cair step to 'Disetujui'
             $this->kegiatanModel->updateApprovalStatus(
                 $bendaharaCairApproval['approval_kegiatan_id'],
-                'Selesai', // A new status indicating completion
+                'Disetujui', // Changed from Selesai to Disetujui
                 $this->userData['user_id'],
                 'Proses pencairan dana telah selesai.'
             );
