@@ -1152,7 +1152,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         const approvedSteps = [];
 
         item.approvals.forEach(approval => {
-            if (approval.status === 'Disetujui' && approvalStepMapping[approval.approval_level]) {
+            if ((approval.status === 'Disetujui' || approval.status === 'Bendahara-Setor') && approvalStepMapping[approval.approval_level]) {
                 const mapping = approvalStepMapping[approval.approval_level];
                 dates[mapping.dateKey] = formatDate(approval.updated_at);
                 approvedSteps.push(mapping.step);

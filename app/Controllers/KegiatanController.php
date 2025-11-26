@@ -250,7 +250,7 @@ class KegiatanController
             $kegiatanId = $this->kegiatanModel->create($kegiatanData);
 
             // --- 6. Create Initial Approval Flow ---
-            $approvalLevels = ['PPK', 'Wadir2', 'Bendahara-Cair', 'Bendahara-LPJ'];
+            $approvalLevels = ['PPK', 'Wadir2', 'Bendahara-Cair', 'Bendahara-LPJ', 'Bendahara-Setor'];
             foreach ($approvalLevels as $level) {
                 $this->kegiatanModel->updateApproval($kegiatanId, [
                     'approval_level' => $level,

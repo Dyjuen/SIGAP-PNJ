@@ -10,7 +10,7 @@ final class AddSetorFisikToKegiatanApprovalStatus extends AbstractMigration
     {
         $table = $this->table('t_kegiatan_approval');
         $table->changeColumn('status', 'enum', [
-            'values' => ['Menunggu', 'Aktif', 'Disetujui', 'Revisi', 'Selesai', 'Setor Fisik'],
+            'values' => ['Menunggu', 'Aktif', 'Disetujui', 'Revisi', 'Selesai'],
             'default' => 'Menunggu'
         ])
         ->save();
