@@ -625,7 +625,7 @@ class KegiatanController
                 $this->kegiatanModel->updateStatus($kegiatanId, 5); // 5 = Revisi
 
                 $this->logStatusModel->create([
-                    'kak_id' => $kegiatan['kak_id'],
+                    'kegiatan_id' => $kegiatanId,
                     'status_id_lama' => $kegiatan['status_id'],
                     'status_id_baru' => 5,
                     'actor_user_id' => $this->userData['user_id'],
@@ -652,7 +652,7 @@ class KegiatanController
             );
 
             $this->logStatusModel->create([
-                'kak_id' => $kegiatan['kak_id'],
+                'kegiatan_id' => $kegiatanId,
                 'status_id_lama' => $kegiatan['status_id'],
                 'status_id_baru' => $kegiatan['status_id'],
                 'actor_user_id' => $this->userData['user_id'],
