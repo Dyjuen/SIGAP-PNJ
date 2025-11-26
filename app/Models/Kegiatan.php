@@ -230,9 +230,10 @@ class Kegiatan extends Model
                     k.tgl_batas_lpj,
                     CASE 
                         WHEN lpj_approval.status = 'Revisi' THEN 'Direvisi'
-                        WHEN ks.nama_status = 'Selesai' THEN 'Selesai'
-                        WHEN ks.nama_status = 'Revisi' THEN 'Direvisi'
-                        WHEN k.lpj_submitted_at IS NOT NULL THEN 'Diajukan'
+                        WHEN lpj_approval.status = 'Setor Fisik' THEN 'Setor Fisik'
+                        WHEN lpj_approval.status = 'Disetujui' THEN 'Selesai'
+                        WHEN lpj_approval.status = 'Aktif' THEN 'Diajukan'
+                        WHEN k.lpj_submitted_at IS NOT NULL AND lpj_approval.status IS NULL THEN 'Diajukan'
                         ELSE 'Menunggu Penyerahan'
                     END as status_lpj,
                     CASE 

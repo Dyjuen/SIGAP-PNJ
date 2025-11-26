@@ -387,4 +387,123 @@ class LpjController extends Controller
             return Response::error('Gagal submit ulang LPJ: ' . $e->getMessage(), 500);
         }
     }
+
+    /**
+     * Approve an LPJ and move its status to 'Setor Fisik'.
+     * POST /api/kegiatan/{kegiatan_id}/lpj/approve
+     */
+    public function approve($kegiatanId)
+    {
+        $db = $this->kegiatanModel->getDb();
+        try {
+            // Authorization: Only Bendahara can approve an LPJ
+            if (!in_array('Bendahara', $this->user['roles'])) {
+                return Response::forbidden('Hanya Bendahara yang dapat menyetujui LPJ.');
+            }
+
+            $kegiatanId = (int) $kegiatanId;
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
+            if (!$kegiatan) {
+                return Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            $approvalModel = new \App\Models\KegiatanApproval();
+            $lpjApproval = $approvalModel->findByKegiatanIdAndLevel($kegiatanId, 'Bendahara-LPJ');
+
+            if (!$lpjApproval) {
+                return Response::notFound('Alur persetujuan LPJ untuk kegiatan ini tidak ditemukan.');
+            }
+            
+            // Prevent re-approval if not in a pending state
+            if (!in_array($lpjApproval['status'], ['Aktif', 'Revisi'])) {
+                return Response::error('LPJ ini tidak dalam status yang dapat disetujui (status saat ini: '.$lpjApproval['status'].').', 400);
+            }
+
+            $db->beginTransaction();
+
+            $approvalModel->update($lpjApproval['approval_kegiatan_id'], [
+                'status' => 'Setor Fisik',
+                'catatan' => 'LPJ disetujui secara digital. Menunggu penyerahan bukti fisik.',
+                'approver_user_id' => $this->user['user_id'],
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+            
+            // Notify the Pengusul
+            $notifikasiModel = new \App\Models\Notifikasi();
+            $notifikasiModel->create([
+                'penerima_user_id' => $kegiatan['kak_pengusul_user_id'],
+                'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah disetujui. Silakan lakukan serah terima bukti fisik ke Bendahara.",
+                'link_tujuan' => "/pengusul/kegiatan/lpj",
+            ]);
+
+            $db->commit();
+
+            return Response::success(null, 'LPJ berhasil disetujui dan status diubah menjadi "Setor Fisik".');
+
+        } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            return Response::error('Gagal menyetujui LPJ: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Mark an LPJ as fully completed after physical submission.
+     * POST /api/kegiatan/{kegiatan_id}/lpj/complete
+     */
+    public function complete($kegiatanId)
+    {
+        $db = $this->kegiatanModel->getDb();
+        try {
+            // Authorization: Only Bendahara can complete an LPJ
+            if (!in_array('Bendahara', $this->user['roles'])) {
+                return Response::forbidden('Hanya Bendahara yang dapat menyelesaikan LPJ.');
+            }
+
+            $kegiatanId = (int) $kegiatanId;
+            $kegiatan = $this->kegiatanModel->find($kegiatanId);
+            if (!$kegiatan) {
+                return Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            $approvalModel = new \App\Models\KegiatanApproval();
+            $lpjApproval = $approvalModel->findByKegiatanIdAndLevel($kegiatanId, 'Bendahara-LPJ');
+
+            if (!$lpjApproval) {
+                return Response::notFound('Alur persetujuan LPJ untuk kegiatan ini tidak ditemukan.');
+            }
+
+            if ($lpjApproval['status'] !== 'Setor Fisik') {
+                return Response::error('LPJ hanya bisa diselesaikan jika statusnya "Setor Fisik".', 400);
+            }
+
+            $db->beginTransaction();
+
+            $approvalModel->update($lpjApproval['approval_kegiatan_id'], [
+                'status' => 'Disetujui',
+                'catatan' => 'Bukti fisik telah diterima dan LPJ dinyatakan selesai.',
+                'approver_user_id' => $this->user['user_id'],
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            // Notify the Pengusul
+            $notifikasiModel = new \App\Models\Notifikasi();
+            $notifikasiModel->create([
+                'penerima_user_id' => $kegiatan['kak_pengusul_user_id'],
+                'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah selesai dan disetujui sepenuhnya.",
+                'link_tujuan' => "/pengusul/kegiatan/lpj",
+            ]);
+
+            $db->commit();
+
+            return Response::success(null, 'LPJ telah ditandai selesai.');
+
+        } catch (\Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            return Response::error('Gagal menyelesaikan LPJ: ' . $e->getMessage(), 500);
+        }
+    }
 }

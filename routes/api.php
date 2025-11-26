@@ -265,6 +265,8 @@ $router->get('/kegiatan/{kegiatan_id}/lpj/review', 'LpjController@review');
 $router->post('/kegiatan/{kegiatan_id}/lpj', 'LpjController@submit');
 $router->post('/kegiatan/{kegiatan_id}/lpj/revise', 'LpjController@revise');
 $router->post('/kegiatan/{kegiatan_id}/lpj/resubmit', 'LpjController@resubmit');
+$router->post('/kegiatan/{kegiatan_id}/lpj/approve', 'LpjController@approve');
+$router->post('/kegiatan/{kegiatan_id}/lpj/complete', 'LpjController@complete');
 
 
 // ============================================

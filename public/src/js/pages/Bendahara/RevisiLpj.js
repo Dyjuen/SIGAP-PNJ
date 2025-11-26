@@ -38,7 +38,16 @@ export function renderRevisiLpjPage(path, userRole) {
 
   const formatCurrency = (amount) => {
     if (amount === null || amount === undefined) return "Rp 0";
-    const number = Number(String(amount).replace(/[^0-9]/g, ""));
+    // Convert to string to ensure replace works
+    let cleanAmount = String(amount);
+    // Remove all characters except digits and a single decimal point
+    // This handles values like "15000000.00" or "15000000"
+    cleanAmount = cleanAmount.replace(/[^0-9.]/g, "");
+
+    // Convert to float
+    const number = parseFloat(cleanAmount);
+    if (isNaN(number)) return "Rp 0"; // Handle cases where parsing fails
+
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
@@ -50,6 +59,7 @@ export function renderRevisiLpjPage(path, userRole) {
     satuan: [],
     anggaran: [],
     lampiran: [],
+    kegiatan_lpj_status: null, // New state for LPJ status
   };
 
   const pageContent = `
@@ -231,8 +241,14 @@ export function renderRevisiLpjPage(path, userRole) {
           isBendahara
             ? `
           <div class="flex gap-4">
-            <button class="btn btn-danger" id="btn-request-revision">
+            <button class="btn btn-danger" id="btn-request-revision" style="display: none;">
               <i class="ti ti-send"></i> Kirim Revisi
+            </button>
+            <button class="btn btn-success" id="btn-approve-lpj" style="display: none;">
+              <i class="ti ti-check"></i> Setuju
+            </button>
+            <button class="btn btn-primary" id="btn-complete-lpj" style="display: none;">
+              <i class="ti ti-check-double"></i> Selesaikan LPJ
             </button>
           </div>
         `
@@ -343,6 +359,9 @@ export function renderRevisiLpjPage(path, userRole) {
       state.satuan = satuanResponse.data;
       state.anggaran = anggaran;
       state.lampiran = lampiran;
+      state.kegiatan_lpj_status = kegiatan.lpj_status; // Populate new state
+
+      updateBendaharaButtonVisibility(kegiatan.lpj_status);
 
       document.getElementById("kegiatan-title").textContent =
         kegiatan.nama_kegiatan;
@@ -501,51 +520,41 @@ export function renderRevisiLpjPage(path, userRole) {
               </div>
               <div class="col-span-2">
                 <label class="block font-semibold mb-2 text-sm">Harga Satuan</label>
-                <input type="text" ${inputAttr} class="form-control form-control-sm realisasi-input" data-field="realisasi_harga_satuan" style="${inputStyle}" value="${formatCurrency(
-      item.realisasi_harga_satuan || item.harga_satuan || ""
+                <input type="text" ${inputAttr} class="form-control form-control-sm realisasi-input currency-input" data-field="realisasi_harga_satuan" style="${inputStyle}" value="${formatCurrency(
+      item.realisasi_harga_satuan || item.harga_satuan || 0
     )}">
               </div>
-            </div>
-        </div>
+              </div>
 
                 <div class="mt-4">
 
                     <h6 class="font-semibold text-xs text-gray-500 mb-2">BUKTI/LAMPIRAN:</h6>
 
-                    <div class="pl-4 border-l-2 border-gray-200 space-y-2 lampiran-list" data-anggaran-id="${item.anggaran_id}">
+                    <div class="pl-4 border-l-2 border-gray-200 space-y-2 lampiran-list" data-anggaran-id="${
+                      item.anggaran_id
+                    }">
 
                         ${
-
                           lampiran.length > 0
-
                             ? lampiran
 
                                 .map(
-
                                   (file) => `
 
                             <div class="lampiran-item ${
-
                               lampiranComments[file.lampiran_id]
-
                                 ? "has-comment"
-
                                 : ""
-
                             }" data-lampiran-id="${file.lampiran_id}">
 
                                <div class="lampiran-content">
 
                                  <i class="ti ti-file-text text-gray-400"></i>
 
-                                 <a href="/download.php?path=${
-
-                                   file.path_file_disimpan
-
-                                 }" target="_blank" class="text-blue-600 hover:underline text-sm">${
-
+                                                                  <a href="/download.php?id=${
+                                                                    file.lampiran_id
+                                                                  }" target="_blank" class="text-blue-600 hover:underline text-sm">${
                                     file.nama_file_asli
-
                                   }</a>
 
                                </div>
@@ -553,47 +562,35 @@ export function renderRevisiLpjPage(path, userRole) {
                                <div class="flex items-center gap-2">
 
                                                           ${
-
-                                                            isBendahara || isPengusul // Always show comment button for Pengusul
-
+                                                            isBendahara ||
+                                                            isPengusul // Always show comment button for Pengusul
                                                               ? `<button type="button" class="lampiran-comment-btn ${
-
-                                                                  lampiranComments[file.lampiran_id]
-
+                                                                  lampiranComments[
+                                                                    file
+                                                                      .lampiran_id
+                                                                  ]
                                                                     ? "has-comment"
-
                                                                     : ""
-
                                                                 }" data-lampiran-id="${
-
                                                                   file.lampiran_id
-
                                                                 }" data-filename="${
-
                                                                   file.nama_file_asli
-
                                                                 }" title="Komentar">
 
                                                                   <i class="ti ti-message-circle-2"></i>
 
                                                                 </button>`
-
                                                               : ""
-
                                                           }
 
                                  ${
-
                                    isPengusul
-
-                                   ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
+                                     ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
 
                                         <i class="ti ti-trash text-red-500"></i>
 
                                       </button>`
-
-                                   : ''
-
+                                     : ""
                                  }
 
                                </div>
@@ -601,22 +598,17 @@ export function renderRevisiLpjPage(path, userRole) {
                             </div>
 
                         `
-
                                 )
 
                                 .join("")
-
                             : '<p class="text-xs text-gray-400 italic no-files">Tidak ada bukti terlampir untuk item ini.</p>'
-
                         }
 
                     </div>
 
                     ${
-
                       isPengusul
-
-                      ? `
+                        ? `
 
                       <div class="mt-2">
 
@@ -629,9 +621,7 @@ export function renderRevisiLpjPage(path, userRole) {
                         </button>
 
                       </div>`
-
-                      : ''
-
+                        : ""
                     }
 
                 </div>
@@ -821,6 +811,95 @@ export function renderRevisiLpjPage(path, userRole) {
     }
   }
 
+  async function approveLpj() {
+    Swal.fire({
+      title: 'Setujui LPJ?',
+      text: "LPJ akan disetujui dan status akan menjadi 'Setor Fisik'.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Setujui!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Menyetujui LPJ...",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading()
+        });
+        try {
+          await apiRequest(`/kegiatan/${kegiatanId}/lpj/approve`, {
+            method: 'POST',
+            body: JSON.stringify({}) // No specific payload needed for now
+          });
+          await Swal.fire(
+            "Sukses",
+            "LPJ berhasil disetujui. Status LPJ adalah 'Setor Fisik'.",
+            "success"
+          );
+          window.location.reload(); // Reload page to update buttons and status
+        } catch (error) {
+          Swal.fire("Error", `Gagal menyetujui LPJ: ${error.message}`, "error");
+        }
+      }
+    });
+  }
+
+  async function completeLpj() {
+    Swal.fire({
+      title: 'Selesaikan LPJ?',
+      text: "LPJ akan ditandai sebagai selesai secara keseluruhan.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Selesaikan!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Menyelesaikan LPJ...",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading()
+        });
+        try {
+          await apiRequest(`/kegiatan/${kegiatanId}/lpj/complete`, {
+            method: 'POST',
+            body: JSON.stringify({}) // No specific payload needed for now
+          });
+          await Swal.fire(
+            "Sukses",
+            "LPJ berhasil ditandai sebagai selesai dan status approval kegiatan menjadi disetujui.",
+            "success"
+          );
+          window.location.reload(); // Reload page to update status
+        } catch (error) {
+          Swal.fire("Error", `Gagal menyelesaikan LPJ: ${error.message}`, "error");
+        }
+      }
+    });
+  }
+
+  function updateBendaharaButtonVisibility(status) {
+    if (!isBendahara) return;
+
+    const approveBtn = document.getElementById('btn-approve-lpj');
+    const completeBtn = document.getElementById('btn-complete-lpj');
+    const revisionBtn = document.getElementById('btn-request-revision');
+
+    // Hide all first to have a clean state
+    if (approveBtn) approveBtn.style.display = 'none';
+    if (completeBtn) completeBtn.style.display = 'none';
+    if (revisionBtn) revisionBtn.style.display = 'none';
+    
+    if (status === 'setor fisik') {
+        // Only show "Selesaikan" button
+        if (completeBtn) completeBtn.style.display = 'inline-block';
+    } else if (status !== 'disetujui' && status !== 'selesai') {
+        // For other non-final states, show approval and revision buttons
+        if (approveBtn) approveBtn.style.display = 'inline-block';
+        if (revisionBtn) revisionBtn.style.display = 'inline-block';
+    }
+    // If status is 'disetujui' or 'selesai', all buttons remain hidden.
+  }
+
   function attachEventListeners() {
     // Event delegation untuk button comment
     document.body.addEventListener("click", function (event) {
@@ -843,34 +922,46 @@ export function renderRevisiLpjPage(path, userRole) {
       if (revisionBtn) {
         revisionBtn.addEventListener("click", submitRevision);
       }
+      const approveBtn = document.getElementById('btn-approve-lpj');
+      if (approveBtn) {
+        approveBtn.addEventListener('click', approveLpj);
+      }
+      const completeBtn = document.getElementById('btn-complete-lpj');
+      if (completeBtn) {
+        completeBtn.addEventListener('click', completeLpj);
+      }
     }
 
     // Pengusul specific listeners
     if (isPengusul) {
-        // Handle clicks on dynamically added buttons
-        document.body.addEventListener('click', function(event) {
-            if (event.target.matches('.btn-add-lampiran')) {
-                const anggaranId = event.target.dataset.anggaranId;
-                document.querySelector(`.input-add-lampiran[data-anggaran-id="${anggaranId}"]`).click();
-            }
-            if (event.target.closest('.btn-delete-lampiran')) {
-                handleDeleteFile(event.target.closest('.btn-delete-lampiran'));
-            }
-            if (event.target.closest('.btn-cancel-new-lampiran')) {
-                handleCancelNewFile(event.target.closest('.btn-cancel-new-lampiran'));
-            }
-        });
-
-        document.body.addEventListener('change', function(event) {
-            if (event.target.matches('.input-add-lampiran')) {
-                handleFileSelect(event.target);
-            }
-        });
-
-        const resubmitBtn = document.getElementById('btn-resubmit-lpj');
-        if (resubmitBtn) {
-            resubmitBtn.addEventListener('click', resubmitLpj);
+      // Handle clicks on dynamically added buttons
+      document.body.addEventListener("click", function (event) {
+        if (event.target.matches(".btn-add-lampiran")) {
+          const anggaranId = event.target.dataset.anggaranId;
+          document
+            .querySelector(
+              `.input-add-lampiran[data-anggaran-id="${anggaranId}"]`
+            )
+            .click();
         }
+        if (event.target.closest(".btn-delete-lampiran")) {
+          handleDeleteFile(event.target.closest(".btn-delete-lampiran"));
+        }
+        if (event.target.closest(".btn-cancel-new-lampiran")) {
+          handleCancelNewFile(event.target.closest(".btn-cancel-new-lampiran"));
+        }
+      });
+
+      document.body.addEventListener("change", function (event) {
+        if (event.target.matches(".input-add-lampiran")) {
+          handleFileSelect(event.target);
+        }
+      });
+
+      const resubmitBtn = document.getElementById("btn-resubmit-lpj");
+      if (resubmitBtn) {
+        resubmitBtn.addEventListener("click", resubmitLpj);
+      }
     }
   }
 
@@ -881,43 +972,45 @@ export function renderRevisiLpjPage(path, userRole) {
   function handleDeleteFile(btn) {
     const lampiranId = btn.dataset.lampiranId;
     Swal.fire({
-      title: 'Anda yakin?',
+      title: "Anda yakin?",
       text: "File ini akan dihapus secara permanen saat Anda submit ulang.",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Ya, tandai untuk dihapus!',
-      cancelButtonText: 'Batal'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, tandai untuk dihapus!",
+      cancelButtonText: "Batal",
     }).then((result) => {
       if (result.isConfirmed) {
         filesToDelete.add(lampiranId);
-        const lampiranItem = btn.closest('.lampiran-item');
-        lampiranItem.style.opacity = '0.5';
-        lampiranItem.style.textDecoration = 'line-through';
+        const lampiranItem = btn.closest(".lampiran-item");
+        lampiranItem.style.opacity = "0.5";
+        lampiranItem.style.textDecoration = "line-through";
         btn.disabled = true;
       }
     });
   }
 
   function handleFileSelect(input) {
-      const anggaranId = input.dataset.anggaranId;
-      const files = Array.from(input.files);
-      
-      if (!newFiles[anggaranId]) {
-          newFiles[anggaranId] = [];
-      }
+    const anggaranId = input.dataset.anggaranId;
+    const files = Array.from(input.files);
 
-      const lampiranList = document.querySelector(`.lampiran-list[data-anggaran-id="${anggaranId}"]`);
-      
-      files.forEach(file => {
-          const fileIndex = newFiles[anggaranId].push(file) - 1;
-          
-          const pendingItem = document.createElement('div');
-          pendingItem.className = 'lampiran-item pending-lampiran';
-          pendingItem.dataset.anggaranId = anggaranId;
-          pendingItem.dataset.fileIndex = fileIndex;
-          pendingItem.innerHTML = `
+    if (!newFiles[anggaranId]) {
+      newFiles[anggaranId] = [];
+    }
+
+    const lampiranList = document.querySelector(
+      `.lampiran-list[data-anggaran-id="${anggaranId}"]`
+    );
+
+    files.forEach((file) => {
+      const fileIndex = newFiles[anggaranId].push(file) - 1;
+
+      const pendingItem = document.createElement("div");
+      pendingItem.className = "lampiran-item pending-lampiran";
+      pendingItem.dataset.anggaranId = anggaranId;
+      pendingItem.dataset.fileIndex = fileIndex;
+      pendingItem.innerHTML = `
               <div class="lampiran-content">
                   <i class="ti ti-clock text-blue-500"></i>
                   <span class="text-blue-700">${file.name}</span>
@@ -926,32 +1019,32 @@ export function renderRevisiLpjPage(path, userRole) {
                   <i class="ti ti-x text-red-500"></i>
               </button>
           `;
-          lampiranList.querySelector('.no-files')?.remove();
-          lampiranList.appendChild(pendingItem);
-      });
+      lampiranList.querySelector(".no-files")?.remove();
+      lampiranList.appendChild(pendingItem);
+    });
   }
 
   function handleCancelNewFile(btn) {
-      const pendingItem = btn.closest('.pending-lampiran');
-      const anggaranId = pendingItem.dataset.anggaranId;
-      const fileIndex = parseInt(pendingItem.dataset.fileIndex, 10);
+    const pendingItem = btn.closest(".pending-lampiran");
+    const anggaranId = pendingItem.dataset.anggaranId;
+    const fileIndex = parseInt(pendingItem.dataset.fileIndex, 10);
 
-      // Mark the file as null in the array instead of shifting indices
-      if (newFiles[anggaranId] && newFiles[anggaranId][fileIndex]) {
-          newFiles[anggaranId][fileIndex] = null;
-      }
-      
-      pendingItem.remove();
+    // Mark the file as null in the array instead of shifting indices
+    if (newFiles[anggaranId] && newFiles[anggaranId][fileIndex]) {
+      newFiles[anggaranId][fileIndex] = null;
+    }
+
+    pendingItem.remove();
   }
 
   async function resubmitLpj() {
     Swal.fire({
-      title: 'Submit Ulang LPJ?',
+      title: "Submit Ulang LPJ?",
       text: "Pastikan semua data realisasi dan lampiran sudah benar sebelum submit.",
-      icon: 'question',
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: 'Ya, Submit Ulang!',
-      cancelButtonText: 'Batal'
+      confirmButtonText: "Ya, Submit Ulang!",
+      cancelButtonText: "Batal",
     }).then((result) => {
       if (result.isConfirmed) {
         executeResubmission();
@@ -961,60 +1054,62 @@ export function renderRevisiLpjPage(path, userRole) {
 
   async function executeResubmission() {
     Swal.fire({
-        title: "Mengirim data...",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
+      title: "Mengirim data...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
     });
 
     const formData = new FormData();
-    
+
     // 1. Append files to delete
-    formData.append('files_to_delete', JSON.stringify(Array.from(filesToDelete)));
+    formData.append(
+      "files_to_delete",
+      JSON.stringify(Array.from(filesToDelete))
+    );
 
     // 2. Append realization data
     const realisasiData = {};
-    document.querySelectorAll('.realisasi-grid').forEach(grid => {
-        const anggaranId = grid.closest('[data-anggaran-id]').dataset.anggaranId;
-        realisasiData[anggaranId] = {};
-        grid.querySelectorAll('.realisasi-input').forEach(input => {
-            const field = input.dataset.field;
-            realisasiData[anggaranId][field] = input.value;
-        });
+    document.querySelectorAll(".realisasi-grid").forEach((grid) => {
+      const anggaranId = grid.closest("[data-anggaran-id]").dataset.anggaranId;
+      realisasiData[anggaranId] = {};
+      grid.querySelectorAll(".realisasi-input").forEach((input) => {
+        const field = input.dataset.field;
+        realisasiData[anggaranId][field] = input.value;
+      });
     });
-    formData.append('realisasi', JSON.stringify(realisasiData));
+    formData.append("realisasi", JSON.stringify(realisasiData));
 
     // 3. Append new files
     for (const anggaranId in newFiles) {
-        newFiles[anggaranId].forEach((file, index) => {
-            if (file) { // Check if file is not cancelled
-                formData.append(`bukti[${anggaranId}][]`, file, file.name);
-            }
-        });
+      newFiles[anggaranId].forEach((file, index) => {
+        if (file) {
+          // Check if file is not cancelled
+          formData.append(`bukti[${anggaranId}][]`, file, file.name);
+        }
+      });
     }
 
     try {
-        await apiRequest(`/kegiatan/${kegiatanId}/lpj/resubmit`, {
-            method: 'POST',
-            body: formData,
-        });
+      await apiRequest(`/kegiatan/${kegiatanId}/lpj/resubmit`, {
+        method: "POST",
+        body: formData,
+      });
 
-        await Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: 'LPJ telah berhasil disubmit ulang.'
-        });
+      await Swal.fire({
+        icon: "success",
+        title: "Berhasil!",
+        text: "LPJ telah berhasil disubmit ulang.",
+      });
 
-        window.location.href = '/pengusul/kegiatan/lpj';
-
+      window.location.href = "/pengusul/kegiatan/lpj";
     } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal',
-            text: `Terjadi kesalahan: ${error.message}`
-        });
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: `Terjadi kesalahan: ${error.message}`,
+      });
     }
   }
-
 
   init();
 }
