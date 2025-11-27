@@ -90,12 +90,13 @@ class Kegiatan extends Model
                     u.nama_lengkap as pengusul_nama,
                     k.tgl_batas_lpj,
                     CASE
-                        WHEN lpj_digital_approval.status = 'Aktif' THEN 'Menunggu'
-                        WHEN lpj_digital_approval.status = 'Revisi' THEN 'Revisi'
+                        WHEN k.lpj_submitted_at IS NULL THEN 'Menunggu Penyerahan'
+                        WHEN lpj_digital_approval.status = 'Aktif' THEN 'Diajukan'
+                        WHEN lpj_digital_approval.status = 'Revisi' THEN 'Direvisi'
+                        WHEN lpj_fisik_approval.status = 'Revisi' THEN 'Direvisi'
                         WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Aktif' THEN 'Setor Fisik'
-                        WHEN lpj_fisik_approval.status = 'Revisi' THEN 'Revisi'
                         WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Disetujui' THEN 'Selesai'
-                        ELSE 'Menunggu'
+                        ELSE 'Diajukan' -- If submitted but no other case matches, it's most likely in review.
                     END as status_lpj,
                     CASE
                         WHEN k.tgl_batas_lpj IS NOT NULL AND k.lpj_submitted_at IS NULL AND k.tgl_batas_lpj < NOW() THEN 'Terlambat'
@@ -487,12 +488,13 @@ class Kegiatan extends Model
                     u.nama_lengkap as pengusul_nama,
                     k.tgl_batas_lpj,
                     CASE
-                        WHEN lpj_digital_approval.status = 'Aktif' THEN 'Menunggu'
-                        WHEN lpj_digital_approval.status = 'Revisi' THEN 'Revisi'
+                        WHEN k.lpj_submitted_at IS NULL THEN 'Menunggu Penyerahan'
+                        WHEN lpj_digital_approval.status = 'Aktif' THEN 'Diajukan'
+                        WHEN lpj_digital_approval.status = 'Revisi' THEN 'Direvisi'
+                        WHEN lpj_fisik_approval.status = 'Revisi' THEN 'Direvisi'
                         WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Aktif' THEN 'Setor Fisik'
-                        WHEN lpj_fisik_approval.status = 'Revisi' THEN 'Revisi'
                         WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Disetujui' THEN 'Selesai'
-                        ELSE 'Menunggu'
+                        ELSE 'Diajukan' -- If submitted but no other case matches, it's most likely in review.
                     END as status_lpj,
                     CASE
                         WHEN k.tgl_batas_lpj IS NOT NULL AND k.lpj_submitted_at IS NULL AND k.tgl_batas_lpj < NOW() THEN 'Terlambat'

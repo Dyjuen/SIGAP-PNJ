@@ -178,17 +178,19 @@ function initializeDaftarLpj(userRole) {
           default:
             return `<span class="text-muted">-</span>`;
         }
-      } else if (isPengusul) {
-        switch (status) {
-          case "Menunggu Penyerahan":
-            return `<a href="/pengusul/kegiatan/lpj/new?kegiatan_id=${id}" data-link class="btn btn-sm btn-primary">Submit LPJ</a>`;
-          case "Direvisi":
-            return `<a href="/pengusul/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-warning">Kerjakan Revisi</a>`;
-          default:
-            // For 'Diajukan', 'Setor Fisik', 'Selesai', just show a detail link
-            return `<a href="/pengusul/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
-        }
-      }
+          } else if (isPengusul) {
+            switch (status) {
+              case "Menunggu Penyerahan":
+                return `<a href="/pengusul/kegiatan/lpj/new?kegiatan_id=${id}" data-link class="btn btn-sm btn-primary">Submit LPJ</a>`;
+              case "Direvisi":
+                return `<a href="/pengusul/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-warning">Kerjakan Revisi</a>`;
+              case "Diajukan":
+              case "Setor Fisik":
+              case "Selesai":
+                return `<a href="/pengusul/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
+              default:
+                return `<span class="text-muted">-</span>`;
+            }      }
       return "";
     }
   function calculateCountdown(deadline) {
@@ -304,13 +306,14 @@ function initializeDaftarLpj(userRole) {
   }
 
   function filterAndRender() {
+    let filteredData = state.kegiatan;
+
     if (state.filter === "all") {
-      state.filteredKegiatan = state.kegiatan;
+      filteredData = filteredData.filter((k) => k.status_lpj !== "Selesai");
     } else {
-      state.filteredKegiatan = state.kegiatan.filter(
-        (k) => k.status_lpj === state.filter
-      );
+      filteredData = filteredData.filter((k) => k.status_lpj === state.filter);
     }
+    state.filteredKegiatan = filteredData;
     renderTableRows();
   }
 
