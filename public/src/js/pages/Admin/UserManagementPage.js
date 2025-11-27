@@ -76,7 +76,7 @@ const pageContent = `
 
         /* ========== MODAL HEADER (FINAL ATTEMPT) ========== */
         .modal-header-gradient {
-            background: #00bcd4;
+            background: linear-gradient(135deg, #4dd0e1 0%, #00bcd4 100%); /* Cyan gradient */
             color: #1F2937;
             border: none;
             padding: 1.5rem 2rem;
@@ -103,8 +103,8 @@ const pageContent = `
             /* Absolute Positioning Approach */
             position: absolute;
             top: 50%;
-            right: 2.5rem; /* Shift a little to the left */
-            transform: translateY(calc(-50% + 4px)); /* Move down a little bit more */
+            right: 3rem !important; /* Force position */
+            transform: translateY(calc(-50% + 40px)); /* Move down even more */
             
             /* Styling */
             background: transparent;
@@ -113,7 +113,7 @@ const pageContent = `
             height: 36px; /* Smaller box */
             border-radius: 10px; /* Slightly smaller radius for smaller box */
             transition: all 0.2s ease-in-out;
-            border: 1px solid transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Visible glassy border */
             z-index: 10; /* High z-index */
 
             /* Flex properties for centering the SVG inside */
@@ -137,7 +137,7 @@ const pageContent = `
         .modal-header-gradient .btn-close svg {
             width: 1.25rem;
             height: 1.25rem;
-            stroke: #1F2937;
+            stroke: white; /* White 'X' icon */
             stroke-width: 2.5;
         }
 
