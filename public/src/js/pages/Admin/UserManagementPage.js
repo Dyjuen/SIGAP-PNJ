@@ -57,7 +57,7 @@ export function renderUserManagementPage(path, userRole) {
                     <th style="width: 80px;">No.</th>
                     <th>Nama Pengusul</th>
                     <th>Username</th>
-                    <th>Password</th>
+                    <th>Role</th>
                     <th style="text-align: center;">Status</th>
                     <th style="text-align: center;">Aksi</th>
                 </tr>
@@ -89,13 +89,27 @@ export function renderUserManagementPage(path, userRole) {
               <div class="row">
                 <div class="col mb-3">
                   <label for="editUsername" class="form-label">Username</label>
-                  <input type="text" id="editUsername" class="form-control" placeholder="Masukkan username" required>
+                  <input type="text" id="editUsername" class="form-control" placeholder="Masukkan username" required readonly>
                 </div>
               </div>
               <div class="row">
                 <div class="col mb-3">
                   <label for="editEmail" class="form-label">Email</label>
                   <input type="email" id="editEmail" class="form-control" placeholder="Masukkan email" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mb-3">
+                    <label for="editRole" class="form-label">Role</label>
+                    <select id="editRole" class="form-select" required>
+                        <option value="1">Admin</option>
+                        <option value="2">Verifikator</option>
+                        <option value="3">Pengusul</option>
+                        <option value="4">PPK</option>
+                        <option value="5">Wadir</option>
+                        <option value="6">Bendahara</option>
+                        <option value="7">Rektorat</option>
+                    </select>
                 </div>
               </div>
               <div class="row">
@@ -147,15 +161,8 @@ export function renderUserManagementPage(path, userRole) {
                 <label for="addRole" class="form-label">Role</label>
                 <select id="addRole" class="form-select" required>
                   <option value="">Pilih Role</option>
-                  <option value="Admin">Admin</option>
-                  <option value="User" selected>User</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="addStatus" class="form-label">Status</label>
-                <select id="addStatus" class="form-select" required>
-                  <option value="Aktif" selected>Aktif</option>
-                  <option value="Non-Aktif">Non-Aktif</option>
+                  <option value="1">Admin</option>
+                  <option value="3" selected>User</option>
                 </select>
               </div>
             </form>
@@ -179,12 +186,16 @@ export function renderUserManagementPage(path, userRole) {
   // API CONFIGURATION
   // ==============================================
   const API_CONFIG = {
-    baseURL: 'http://localhost:8000/api',
+    baseURL: '/api', // Use relative URL
     endpoints: {
-      createUser: '/users'
+      getUsers: '/admin/users',
+      createUser: '/admin/register',
+      updateUser: (userId) => `/admin/users/${userId}`,
+      deleteUser: (userId) => `/admin/users/${userId}`,
+      changePassword: (userId) => `/admin/users/${userId}/change-password`,
     },
     getAuthToken() {
-      return localStorage.getItem('authToken') || 
+      return localStorage.getItem('authToken') ||
              localStorage.getItem('token') ||
              sessionStorage.getItem('authToken') ||
              sessionStorage.getItem('token');
@@ -194,18 +205,11 @@ export function renderUserManagementPage(path, userRole) {
   // ==============================================
   // DATA & STATE
   // ==============================================
-  const users = [
-    { id: 1, nama: 'Ahmad Santoso', username: 'ahmad.s', email: 'ahmad.santoso@pnj.ac.id', password: '********', status: 'Aktif', role: 'User' },
-    { id: 2, nama: 'Dewi Lestari', username: 'dewi.l', email: 'dewi.lestari@pnj.ac.id', password: '********', status: 'Aktif', role: 'User' },
-    { id: 3, nama: 'Budi Prakoso', username: 'budi.p', email: 'budi.prakoso@pnj.ac.id', password: '********', status: 'Non-Aktif', role: 'User' },
-    { id: 4, nama: 'Siti Rahayu', username: 'siti.r', email: 'siti.rahayu@pnj.ac.id', password: '********', status: 'Aktif', role: 'Admin' },
-    { id: 5, nama: 'Rudi Hermawan', username: 'rudi.h', email: 'rudi.hermawan@pnj.ac.id', password: '********', status: 'Aktif', role: 'User' },
-    { id: 6, nama: 'Nina Wati', username: 'nina.w', email: 'nina.wati@pnj.ac.id', password: '********', status: 'Non-Aktif', role: 'User' },
-    { id: 7, nama: 'Eko Prasetyo', username: 'eko.p', email: 'eko.prasetyo@pnj.ac.id', password: '********', status: 'Aktif', role: 'User' },
-    { id: 8, nama: 'Maya Indah', username: 'maya.i', email: 'maya.indah@pnj.ac.id', password: '********', status: 'Non-Aktif', role: 'Admin' },
-  ];
+  let state = {
+    users: [],
+    currentUser: null,
+  };
 
-  let currentEditIndex = null;
   let editProfileModalInstance = null;
   let tambahAkunModalInstance = null;
 
@@ -258,6 +262,11 @@ export function renderUserManagementPage(path, userRole) {
     }
   }
 
+  // Generic API functions
+  async function getUsersAPI() {
+    return await apiRequest(API_CONFIG.endpoints.getUsers);
+  }
+
   async function createUserAPI(userData) {
     return await apiRequest(API_CONFIG.endpoints.createUser, {
       method: 'POST',
@@ -265,9 +274,75 @@ export function renderUserManagementPage(path, userRole) {
     });
   }
 
+  async function updateUserAPI(userId, userData) {
+    return await apiRequest(API_CONFIG.endpoints.updateUser(userId), {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async function deleteUserAPI(userId) {
+    return await apiRequest(API_CONFIG.endpoints.deleteUser(userId), {
+      method: 'DELETE',
+    });
+  }
+
+  async function changePasswordAPI(userId, passwordData) {
+    return await apiRequest(API_CONFIG.endpoints.changePassword(userId), {
+        method: 'PUT',
+        body: JSON.stringify(passwordData),
+    });
+  }
+
+
   // ==============================================
   // UI FUNCTIONS
   // ==============================================
+  
+  function showTableLoading() {
+    const tbody = document.getElementById('userTableBody');
+    if (tbody) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Memuat data pengguna...</p>
+          </td>
+        </tr>
+      `;
+    }
+  }
+  
+  async function fetchUsers() {
+    showTableLoading();
+    try {
+        const response = await getUsersAPI();
+        state.users = response.data.map(user => ({
+            ...user,
+            // Assuming the API returns roles as an array of strings
+            role: user.roles && user.roles.length > 0 ? user.roles[0] : 'Tidak ada role',
+            // Add a static status for now, as it's not in the API response
+            status: 'Aktif' 
+        }));
+        renderTableRows(state.users);
+        updateStats();
+    } catch (error) {
+        const tbody = document.getElementById('userTableBody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        <p class="text-danger">Gagal memuat data pengguna.</p>
+                        <p class="text-muted">${error.message || 'Silakan coba lagi nanti.'}</p>
+                    </td>
+                </tr>
+            `;
+        }
+        console.error("Fetch users error:", error);
+    }
+  }
   function showModalError(message, modalId = 'tambahAkunModal') {
     const errorDiv = document.getElementById(`${modalId === 'tambahAkunModal' ? 'tambahAkunError' : 'editProfileError'}`);
     if (errorDiv) {
@@ -311,36 +386,49 @@ export function renderUserManagementPage(path, userRole) {
     
     tbody.innerHTML = '';
 
+    if (data.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-5">
+                    <p>Tidak ada data pengguna untuk ditampilkan.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
     data.forEach((user, index) => {
-      const statusClass = user.status === 'Aktif' ? 'bg-label-success' : 'bg-label-danger';
+      // TODO: The user status is not yet available from the API.
+      // Defaulting to 'Aktif'. This needs to be updated once the API provides this information.
+      const status = user.status || 'Aktif';
+      const statusClass = status === 'Aktif' ? 'bg-label-success' : 'bg-label-danger';
       
       const row = document.createElement('tr');
+      row.dataset.userId = user.user_id;
+
       row.innerHTML = `
         <td style="text-align: center;">
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
         <td>
-          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${user.id}</span>
+          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${index + 1}</span>
         </td>
-        <td><strong>${user.nama}</strong></td>
+        <td><strong>${user.nama_lengkap}</strong><br><small>${user.email}</small></td>
         <td>${user.username}</td>
-        <td>${user.password}</td>
+        <td>${user.role}</td>
         <td style="text-align: center;">
-          <span class="badge ${statusClass}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${user.status}</span>
+          <span class="badge ${statusClass}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${status}</span>
         </td>
         <td style="text-align: center;">
           <button 
             class="btn btn-sm me-2 btn-edit-profile" 
-            data-index="${index}" 
-            data-email="${user.email}"
-            data-username="${user.username}"
-            data-name="${user.nama}"
+            data-id="${user.user_id}"
           >
             <i class="ti me-1">&#xeb04;</i> Edit Profil
           </button>
           <button 
             class="btn btn-sm btn-danger btn-delete" 
-            data-index="${index}"
+            data-id="${user.user_id}"
           >
             <i class="ti">&#xeb55;</i>
           </button>
@@ -369,10 +457,11 @@ export function renderUserManagementPage(path, userRole) {
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
-        const filteredUsers = users.filter(user => 
-          user.nama.toLowerCase().includes(searchTerm) ||
+        const filteredUsers = state.users.filter(user => 
+          user.nama_lengkap.toLowerCase().includes(searchTerm) ||
           user.username.toLowerCase().includes(searchTerm) ||
-          user.status.toLowerCase().includes(searchTerm)
+          user.email.toLowerCase().includes(searchTerm) ||
+          user.role.toLowerCase().includes(searchTerm)
         );
         renderTableRows(filteredUsers);
       });
@@ -397,23 +486,26 @@ export function renderUserManagementPage(path, userRole) {
   }
 
   function handleEditProfile(e) {
-    const btn = e.currentTarget;
-    const index = parseInt(btn.getAttribute('data-index'));
-    const email = btn.getAttribute('data-email');
-    const username = btn.getAttribute('data-username');
-    const name = btn.getAttribute('data-name');
-    
-    currentEditIndex = index;
-    
-    const editNamaEl = document.getElementById('editNama');
-    const editUsernameEl = document.getElementById('editUsername');
-    const editEmailEl = document.getElementById('editEmail');
-    const editPasswordEl = document.getElementById('editPassword');
+    const userId = e.currentTarget.dataset.id;
+    const user = state.users.find(u => u.user_id == userId);
 
-    if (editNamaEl) editNamaEl.value = name || '';
-    if (editUsernameEl) editUsernameEl.value = username || '';
-    if (editEmailEl) editEmailEl.value = email || '';
-    if (editPasswordEl) editPasswordEl.value = '';
+    if (!user) {
+      showError("User tidak ditemukan.");
+      return;
+    }
+
+    state.currentUser = { ...user };
+    
+    document.getElementById('editUserId').value = state.currentUser.user_id;
+    document.getElementById('editNama').value = state.currentUser.nama_lengkap;
+    document.getElementById('editUsername').value = state.currentUser.username;
+    document.getElementById('editEmail').value = state.currentUser.email;
+    document.getElementById('editPassword').value = '';
+
+    // Get role_id from role name
+    const roleMap = { 'Admin': 1, 'Verifikator': 2, 'Pengusul': 3, 'PPK': 4, 'Wadir': 5, 'Bendahara': 6, 'Rektorat': 7 };
+    const role_id = roleMap[state.currentUser.role] || 3; // Default to Pengusul
+    document.getElementById('editRole').value = role_id;
     
     if (!editProfileModalInstance) {
       if (typeof bootstrap !== 'undefined') {
@@ -428,65 +520,102 @@ export function renderUserManagementPage(path, userRole) {
 
   const btnSaveProfile = document.getElementById('btnSaveProfile');
   if (btnSaveProfile) {
-    btnSaveProfile.addEventListener('click', () => {
+    btnSaveProfile.addEventListener('click', async () => {
+      const userId = document.getElementById('editUserId').value;
       const newNama = document.getElementById('editNama').value.trim();
       const newUsername = document.getElementById('editUsername').value.trim();
       const newEmail = document.getElementById('editEmail').value.trim();
       const newPassword = document.getElementById('editPassword').value.trim();
+      const newRoleId = document.getElementById('editRole').value;
 
-      if (!newNama || !newUsername || !newEmail) {
-        showError('Nama, username, dan email tidak boleh kosong!');
+      if (!newNama || !newUsername || !newEmail || !newRoleId) {
+        showModalError('Nama, username, email, dan role tidak boleh kosong!', 'editProfileModal');
         return;
       }
+      
+      setButtonLoading('btnSaveProfile', true);
+      hideModalError('editProfileModal');
 
-      if (currentEditIndex !== null) {
-        users[currentEditIndex].nama = newNama;
-        users[currentEditIndex].username = newUsername;
-        users[currentEditIndex].email = newEmail;
+      try {
+        // Update user profile data
+        const profileData = {
+          nama_lengkap: newNama,
+          email: newEmail,
+          role_id: parseInt(newRoleId, 10),
+          // username cannot be updated as per backend limitations
+        };
+        const updatedUser = await updateUserAPI(userId, profileData);
+
+        // Update password if a new one is provided
         if (newPassword) {
-          users[currentEditIndex].password = newPassword;
+          if (newPassword.length < 8) {
+            throw { message: "Password minimal 8 karakter." };
+          }
+          await changePasswordAPI(userId, { 
+            new_password: newPassword,
+            new_password_confirmation: newPassword
+          });
         }
-        renderTableRows(users);
         
-        if (editProfileModalInstance) {
-          editProfileModalInstance.hide();
+        // Update state
+        const userIndex = state.users.findIndex(u => u.user_id == userId);
+        if (userIndex > -1) {
+          state.users[userIndex] = {
+            ...state.users[userIndex],
+            ...updatedUser.data,
+            role: updatedUser.data.roles[0], // API returns roles array
+          };
         }
-        
-        currentEditIndex = null;
-        document.getElementById('editProfileForm').reset();
+
+        renderTableRows(state.users);
+        editProfileModalInstance.hide();
         showSuccess("Profil berhasil diupdate!");
+
+      } catch (error) {
+        showModalError(error.message || "Gagal mengupdate profil.", 'editProfileModal');
+      } finally {
+        setButtonLoading('btnSaveProfile', false);
       }
     });
   }
 
   async function handleDelete(e) {
-  const btn = e.currentTarget;
-  const index = parseInt(btn.getAttribute("data-index"));
+    const btn = e.currentTarget;
+    const userId = btn.dataset.id;
 
-  const confirmed = await confirmAction(
-    "Yakin ingin menghapus?",
-    "Data user ini akan dihapus secara permanen."
-  );
+    const confirmed = await confirmAction(
+      "Yakin ingin menghapus?",
+      "Data user ini akan dihapus secara permanen."
+    );
 
-  if (confirmed) {
-    const row = btn.closest("tr");
-    row.style.transition = "all 0.3s";
-    row.style.opacity = "0";
-    row.style.transform = "translateX(-20px)";
+    if (confirmed) {
+      const row = btn.closest("tr");
+      row.style.transition = "all 0.3s";
+      row.style.opacity = "0";
+      row.style.transform = "translateX(-20px)";
 
-    setTimeout(() => {
-      users.splice(index, 1);
-      renderTableRows(users);
-      updateStats();
-      showSuccess("User berhasil dihapus!");
-    }, 300);
+      try {
+        await deleteUserAPI(userId);
+        state.users = state.users.filter(u => u.user_id != userId);
+        setTimeout(() => {
+          renderTableRows(state.users);
+          updateStats();
+          showSuccess("User berhasil dihapus!");
+        }, 300);
+      } catch (error) {
+        showError(error.message || "Gagal menghapus user.");
+        row.style.opacity = "1";
+        row.style.transform = "translateX(0)";
+      }
+    }
   }
-}
 
 
   function updateStats() {
-    const activeCount = users.filter(u => u.status === 'Aktif').length;
-    const inactiveCount = users.filter(u => u.status === 'Non-Aktif').length;
+    // TODO: The user status is not yet available from the API.
+    // This function should be updated once the API provides status information.
+    const activeCount = state.users.filter(u => (u.status || 'Aktif') === 'Aktif').length;
+    const inactiveCount = state.users.filter(u => (u.status || 'Aktif') === 'Non-Aktif').length;
     
     const activeEl = document.getElementById('activeUserCount');
     const inactiveEl = document.getElementById('inactiveUserCount');
@@ -523,11 +652,10 @@ export function renderUserManagementPage(path, userRole) {
       const username = document.getElementById('addUsername').value.trim();
       const email = document.getElementById('addEmail').value.trim();
       const password = document.getElementById('addPassword').value.trim();
-      const role = document.getElementById('addRole').value;
-      const status = document.getElementById('addStatus').value;
+      const roleId = document.getElementById('addRole').value;
 
       // Validasi form
-      if (!nama || !username || !email || !password || !role) {
+      if (!nama || !username || !email || !password || !roleId) {
         showModalError('Semua field harus diisi!', 'tambahAkunModal');
         return;
       }
@@ -539,9 +667,9 @@ export function renderUserManagementPage(path, userRole) {
         return;
       }
 
-      // Validasi password (minimal 6 karakter)
-      if (password.length < 6) {
-        showModalError('Password minimal 6 karakter!', 'tambahAkunModal');
+      // Validasi password (minimal 8 karakter)
+      if (password.length < 8) {
+        showModalError('Password minimal 8 karakter!', 'tambahAkunModal');
         return;
       }
 
@@ -551,76 +679,38 @@ export function renderUserManagementPage(path, userRole) {
         password: password,
         nama_lengkap: nama,
         email: email,
-        unit_kerja_id: 1,
-        role: role
+        role_id: parseInt(roleId, 10)
       };
 
       try {
-        // Show loading state
         setButtonLoading('btnSaveAkunBaru', true);
         hideModalError('tambahAkunModal');
 
-        // Call API
-        const response = await createUserAPI(userData);
-
-        console.log('User created successfully:', response);
-
-        // Tambahkan user baru ke array lokal
-        const newUser = {
-          id: response.user_id || response.data?.user_id || response.id || users.length + 1,
-          nama: response.nama_lengkap || userData.nama_lengkap,
-          username: response.username || userData.username,
-          email: response.email || userData.email,
-          password: '********',
-          role: role,
-          status: status
-        };
-
-        users.unshift(newUser);
+        await createUserAPI(userData);
         
-        // Update UI
-        renderTableRows(users);
-        updateStats();
+        await fetchUsers(); // Refresh the user list
         
-        // Close modal
         if (tambahAkunModalInstance) {
           tambahAkunModalInstance.hide();
         }
         
-        // Reset form
         document.getElementById('tambahAkunForm').reset();
-        
-        // Show success message
         showSuccess("Akun baru berhasil ditambahkan!");
 
       } catch (error) {
-        console.error('Error creating user:', error);
-        
-        // Handle different error types
         let errorMessage = 'Gagal menambahkan akun. ';
-        
-        if (error.status === 0) {
-          errorMessage = 'Tidak dapat terhubung ke server. Pastikan backend berjalan di ' + API_CONFIG.baseURL;
-        } else if (error.status === 400) {
-          errorMessage += error.message || 'Data tidak valid.';
-        } else if (error.status === 401) {
-          errorMessage += 'Sesi Anda telah berakhir. Silakan login kembali.';
-        } else if (error.status === 403) {
-          errorMessage += 'Anda tidak memiliki akses untuk menambahkan user.';
-        } else if (error.status === 409) {
+        if (error.status === 409) {
           errorMessage += 'Username atau email sudah terdaftar.';
-        } else if (error.status === 500) {
-          errorMessage += 'Terjadi kesalahan pada server.';
+        } else if (error.data && error.data.errors) {
+            const errors = Object.values(error.data.errors).flat();
+            errorMessage += errors.join(' ');
         } else if (error.message) {
-          errorMessage += error.message;
+            errorMessage += error.message;
         } else {
           errorMessage += 'Silakan coba lagi.';
         }
-        
         showModalError(errorMessage, 'tambahAkunModal');
-        
       } finally {
-        // Hide loading state
         setButtonLoading('btnSaveAkunBaru', false);
       }
     });
@@ -629,8 +719,7 @@ export function renderUserManagementPage(path, userRole) {
   // ==============================================
   // INITIALIZATION
   // ==============================================
-  renderTableRows(users);
-  updateStats();
+  fetchUsers();
 
   // Initialize Vuexy menu
   if (window.Helpers) {

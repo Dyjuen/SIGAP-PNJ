@@ -163,4 +163,38 @@ class AccountController
             Response::serverError('Gagal ubah password user: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Delete user by ID (Admin only)
+     * 
+     * DELETE /api/admin/users/{id}
+     * Header: Authorization: Bearer <token>
+     */
+    public function deleteUser($userId)
+    {
+        // Get authenticated user
+        $authUser = auth_user();
+        if (!$authUser) {
+            Response::unauthorized('User tidak terautentikasi.');
+        }
+
+        // Prevent admin from deleting their own account
+        if ((int)$userId === (int)$authUser['user_id']) {
+            Response::forbidden('Admin tidak dapat menghapus akunnya sendiri.');
+        }
+
+        // Check if user exists
+        $user = $this->userModel->findById($userId);
+        if (!$user) {
+            Response::notFound('User tidak ditemukan.');
+        }
+
+        try {
+            // Delete user
+            $this->userModel->deleteUser($userId);
+            Response::success(null, 'User berhasil dihapus.');
+        } catch (\Exception $e) {
+            Response::serverError('Gagal menghapus user: ' . $e->getMessage());
+        }
+    }
 }
