@@ -11,38 +11,39 @@ const pageContent = `
     <style>
         /* ========== DESIGN SYSTEM - TYPOGRAPHY ========== */
         :root {
-            --font-xs: 0.75rem;      /* 12px */
-            --font-sm: 0.875rem;     /* 14px */
-            --font-base: 1rem;       /* 16px */
-            --font-lg: 1.125rem;     /* 18px */
-            --font-xl: 1.25rem;      /* 20px */
-            --font-2xl: 1.5rem;      /* 24px */
+            --font-xs: 0.75rem;
+            --font-sm: 0.875rem;
+            --font-base: 1rem;
+            --font-lg: 1.125rem;
+            --font-xl: 1.25rem;
+            --font-2xl: 1.5rem;
             
             --weight-normal: 400;
             --weight-medium: 500;
             --weight-semibold: 600;
             --weight-bold: 700;
             
-            --primary-color: #33C8DA;
-            --primary-dark: #2BA9B8;
+            --primary-color: #00bcd4;
+            --primary-dark: #0097a7;
+            --primary-light: #4dd0e1;
         }
 
         /* ========== MODAL ANIMATIONS ========== */
-        @keyframes modalFadeIn {
+        @keyframes modalSlideIn {
             from {
                 opacity: 0;
-                transform: scale(0.9) translateY(-20px);
+                transform: translateY(-50px) scale(0.95);
             }
             to {
                 opacity: 1;
-                transform: scale(1) translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
 
-        @keyframes slideUp {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(15px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -52,283 +53,362 @@ const pageContent = `
 
         /* ========== MODAL BACKDROP ========== */
         .modal-backdrop.show {
-            opacity: 0.6 !important;
-            backdrop-filter: blur(4px);
+            opacity: 0.7 !important;
+            backdrop-filter: blur(8px);
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(0, 151, 167, 0.1));
         }
 
-        /* ========== MODAL CONTENT ========== */
+        /* ========== MODAL DIALOG ========== */
         .modal.show .modal-dialog {
-            animation: modalFadeIn 0.4s ease-out;
+            animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .modal-content {
             border: none !important;
-            border-radius: 1.5rem !important;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 24px !important;
+            box-shadow: 
+                0 0 0 1px rgba(0, 188, 212, 0.1),
+                0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                0 0 80px rgba(0, 188, 212, 0.15) !important;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(20px) !important;
+            background: #ffffff !important;
         }
 
-        /* ========== MODAL HEADER ========== */
+        /* ========== MODAL HEADER (FINAL ATTEMPT) ========== */
         .modal-header-gradient {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
+            background: #00bcd4;
+            color: #1F2937;
             border: none;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
+            padding: 1.5rem 2rem;
+            position: relative; /* Context for the absolute positioned button */
             display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-        }
-
-        .modal-header-gradient::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent);
-            pointer-events: none;
-        }
-
-        .modal-header-gradient > div:first-child {
-            flex: 1;
-            text-align: left;
+            align-items: center;
         }
 
         .modal-header-gradient .modal-title {
-            font-size: var(--font-2xl);
-            font-weight: var(--weight-bold);
-            letter-spacing: -0.02em;
-            position: relative;
-            z-index: 1;
-            margin-bottom: 0.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .modal-header-gradient .modal-title i {
-            font-size: var(--font-2xl);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1F2937;
+            line-height: 1.2;
         }
 
         .modal-header-gradient .modal-subtitle {
-            font-size: var(--font-sm);
-            font-weight: var(--weight-normal);
-            opacity: 0.95;
-            position: relative;
-            z-index: 1;
-            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #3e536e;
+            margin-top: 0.25rem;
         }
 
         .modal-header-gradient .btn-close {
+            /* Absolute Positioning Approach */
+            position: absolute;
+            top: 50%;
+            right: 2.5rem; /* Shift a little to the left */
+            transform: translateY(calc(-50% + 4px)); /* Move down a little bit more */
+            
+            /* Styling */
             background: transparent;
-            opacity: 1;
-            position: relative;
-            z-index: 1;
-            width: 2rem;
-            height: 2rem;
+            opacity: 0.7;
+            width: 36px; /* Smaller box */
+            height: 36px; /* Smaller box */
+            border-radius: 10px; /* Slightly smaller radius for smaller box */
+            transition: all 0.2s ease-in-out;
+            border: 1px solid transparent;
+            z-index: 10; /* High z-index */
+
+            /* Flex properties for centering the SVG inside */
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
         }
 
         .modal-header-gradient .btn-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: rotate(90deg);
+            /* Simple border-only hover effect */
+            opacity: 1;
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        /* This rule explicitly prevents any other CSS from adding an 'X' */
+        .modal-header-gradient .btn-close::before,
+        .modal-header-gradient .btn-close::after {
+            content: none !important;
         }
 
         .modal-header-gradient .btn-close svg {
             width: 1.25rem;
             height: 1.25rem;
-            stroke: white;
+            stroke: #1F2937;
             stroke-width: 2.5;
         }
 
-        /* ========== MODAL BODY ========== */
+        /* ========== MODAL BODY PREMIUM ========== */
         .modal-body-modern {
-            padding: 2rem !important;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
+            padding: 2.5rem !important;
+            background: linear-gradient(to bottom, #fafafa 0%, #ffffff 100%);
+            position: relative;
         }
 
-        /* ========== GLASS INPUT STYLE ========== */
+        .modal-body-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.2), transparent);
+        }
+
+        /* ========== PREMIUM INPUT DESIGN ========== */
         .glass-input-wrapper {
-            border-radius: 0.875rem;
-            border: 2px solid rgba(209, 213, 219, 0.5);
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(8px);
-            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 16px;
+            background: white;
+            border: 2px solid #E5E7EB;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             overflow: hidden;
-            display: flex;
-            align-items: center;
+        }
+
+        .glass-input-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .glass-input-wrapper:focus-within::before {
+            left: 100%;
         }
 
         .glass-input-wrapper:focus-within {
-            border-color: rgba(51, 200, 218, 0.7);
-            background: rgba(51, 200, 218, 0.05);
-            box-shadow: 0 0 0 4px rgba(51, 200, 218, 0.1);
+            border-color: var(--primary-color);
+            background: #F0F8FF;
+            box-shadow: 
+                0 0 0 4px rgba(33, 150, 243, 0.1),
+                0 5px 15px rgba(33, 150, 243, 0.15);
+            transform: translateY(-2px);
         }
 
         .glass-input-wrapper input,
         .glass-input-wrapper select {
-            background-color: transparent;
+            background: transparent;
             width: 100%;
-            padding: 0.875rem 1rem;
+            padding: 1rem 1.25rem;
             border: none;
             outline: none;
-            font-size: var(--font-base);
-            font-weight: var(--weight-normal);
-            color: #374151;
-            transition: all 0.3s ease;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1F2937;
+            transition: all 0.3s;
         }
 
         .glass-input-wrapper input::placeholder {
-            color: rgba(107, 114, 128, 0.6);
-            font-size: var(--font-sm);
-            font-weight: var(--weight-normal);
+            color: #9CA3AF;
+            font-weight: 400;
         }
 
         .glass-input-wrapper select {
             cursor: pointer;
-            font-weight: var(--weight-medium);
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%232196F3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 1rem center;
-            padding-right: 2.5rem;
+            padding-right: 3rem;
         }
 
-        /* ========== FORM LABEL ========== */
+        /* ========== MODERN LABEL ========== */
         .form-label-modern {
-            display: block;
-            color: #374151;
-            font-size: var(--font-sm);
-            font-weight: var(--weight-semibold);
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1F2937; /* Changed to match main header */
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0;
             line-height: 1;
+        }
+
+        .form-label-modern i {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(100, 181, 246, 0.1));
+            padding: 0.4rem;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .form-label-modern .required-star {
             color: #EF4444;
+            font-size: 1.1rem;
             margin-left: 0.25rem;
-            font-weight: var(--weight-bold);
         }
 
-        .form-label-modern i {
-            margin-right: 0.5rem;
-            opacity: 0.8;
-            font-size: var(--font-base);
-            vertical-align: middle;
-            display: inline-block;
-        }
-
-        /* ========== HELPER TEXT ========== */
+        /* ========== HELPER TEXT PREMIUM ========== */
         .helper-text {
-            font-size: var(--font-xs);
-            font-weight: var(--weight-normal);
+            font-size: 0.8rem;
             color: #6B7280;
-            margin-top: 0.5rem;
+            margin-top: 0.6rem;
             display: flex;
             align-items: center;
-            gap: 0.375rem;
-            line-height: 1.4;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(33, 150, 243, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
         }
 
         .helper-text i {
-            font-size: var(--font-sm);
-            opacity: 0.7;
-            flex-shrink: 0;
+            color: var(--primary-color);
+            font-size: 1rem;
         }
 
-        /* ========== ERROR ALERT IN MODAL ========== */
+        /* ========== ERROR ALERT PREMIUM ========== */
         .modal-error-alert {
-            background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
-            border: 1px solid #FCA5A5;
+            background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+            border: none;
             border-left: 4px solid #EF4444;
             color: #991B1B;
-            padding: 0.875rem 1rem;
-            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
             margin-bottom: 1.5rem;
             display: none;
-            backdrop-filter: blur(8px);
-            animation: slideUp 0.3s ease-out;
-            font-size: var(--font-sm);
-            font-weight: var(--weight-medium);
-            line-height: 1.5;
+            animation: fadeInUp 0.4s ease;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
         }
 
         .modal-error-alert.show {
             display: flex;
-            align-items: flex-start;
-            gap: 0.625rem;
-        }
-
-        .modal-error-alert i {
-            font-size: var(--font-lg);
-            flex-shrink: 0;
-            margin-top: 0.125rem;
-        }
-
-        .modal-error-alert span {
-            flex: 1;
-            line-height: 1.5;
-        }
-
-        /* ========== MODAL FOOTER ========== */
-        .modal-footer-modern {
-            padding: 1.25rem 2rem !important;
-            background: rgba(248, 250, 252, 0.8);
-            backdrop-filter: blur(10px);
-            border: none;
+            align-items: center;
             gap: 0.75rem;
         }
 
-        /* ========== MODERN BUTTONS ========== */
+        .modal-error-alert i {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* ========== MODAL FOOTER ULTRA MODERN ========== */
+        .modal-footer-modern {
+            padding: 1.75rem 2.5rem !important;
+            background: linear-gradient(to top, #fafafa, #ffffff);
+            border: none;
+            gap: 1rem;
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-footer-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.2), transparent);
+        }
+
+        /* ========== ULTRA MODERN BUTTONS ========== */
         .btn-modern-cancel {
+            background: white;
+            border: 2px solid #E5E7EB;
+            color: #6B7280;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.875rem 1.75rem;
+            border-radius: 14px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-modern-cancel::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
             background: rgba(107, 114, 128, 0.1);
-            border: 2px solid rgba(107, 114, 128, 0.3);
-            color: #4B5563;
-            font-weight: var(--weight-semibold);
-            font-size: var(--font-base);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.875rem;
-            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-modern-cancel:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-modern-cancel:hover {
-            background: rgba(107, 114, 128, 0.15);
-            border-color: rgba(107, 114, 128, 0.5);
+            border-color: #9CA3AF;
             color: #374151;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         .btn-modern-cancel i {
-            font-size: var(--font-lg);
-            margin-right: 0.375rem;
+            position: relative;
+            z-index: 1;
+            font-size: 1.1rem;
+            margin-right: 0.5rem;
+        }
+
+        .btn-modern-cancel span {
+            position: relative;
+            z-index: 1;
         }
 
         .btn-modern-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
             border: none;
             color: white;
-            font-weight: var(--weight-semibold);
-            font-size: var(--font-base);
-            padding: 0.75rem 1.75rem;
-            border-radius: 0.875rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.875rem 2rem;
+            border-radius: 14px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(51, 200, 218, 0.3);
+            box-shadow: 
+                0 4px 15px rgba(33, 150, 243, 0.4),
+                0 0 0 0 rgba(33, 150, 243, 0.5);
+            animation: buttonPulse 2s infinite;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% {
+                box-shadow: 
+                    0 4px 15px rgba(33, 150, 243, 0.4),
+                    0 0 0 0 rgba(33, 150, 243, 0.5);
+            }
+            50% {
+                box-shadow: 
+                    0 4px 20px rgba(33, 150, 243, 0.5),
+                    0 0 0 8px rgba(33, 150, 243, 0);
+            }
         }
 
         .btn-modern-primary::before {
@@ -338,8 +418,8 @@ const pageContent = `
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
         }
 
         .btn-modern-primary:hover::before {
@@ -347,45 +427,53 @@ const pageContent = `
         }
 
         .btn-modern-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(51, 200, 218, 0.4);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 8px 25px rgba(33, 150, 243, 0.5),
+                0 0 0 0 rgba(33, 150, 243, 0);
         }
 
         .btn-modern-primary:active {
-            transform: translateY(0);
+            transform: translateY(-1px) scale(0.98);
         }
 
-        .btn-modern-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .btn-modern-primary i,
+        .btn-modern-primary span {
+            position: relative;
+            z-index: 1;
         }
 
         .btn-modern-primary i {
-            font-size: var(--font-lg);
-            margin-right: 0.375rem;
+            font-size: 1.1rem;
+            margin-right: 0.5rem;
         }
 
-        /* ========== SPINNER ========== */
+        /* ========== SPINNER MODERN ========== */
         .spinner-border-modern {
-            width: 1rem;
-            height: 1rem;
-            border-width: 2px;
+            width: 1.1rem;
+            height: 1.1rem;
+            border-width: 2.5px;
             margin-left: 0.5rem;
         }
 
-        /* ========== FORM ANIMATION ========== */
+        /* ========== FORM STAGGERED ANIMATION ========== */
         .form-group-animate {
-            animation: slideUp 0.4s ease-out;
-            animation-fill-mode: both;
+            animation: fadeInUp 0.5s ease-out backwards;
         }
 
-        .form-group-animate:nth-child(1) { animation-delay: 0.05s; }
-        .form-group-animate:nth-child(2) { animation-delay: 0.1s; }
-        .form-group-animate:nth-child(3) { animation-delay: 0.15s; }
-        .form-group-animate:nth-child(4) { animation-delay: 0.2s; }
-        .form-group-animate:nth-child(5) { animation-delay: 0.25s; }
-        .form-group-animate:nth-child(6) { animation-delay: 0.3s; }
+        .form-group-animate:nth-child(1) { animation-delay: 0.1s; }
+        .form-group-animate:nth-child(2) { animation-delay: 0.15s; }
+        .form-group-animate:nth-child(3) { animation-delay: 0.2s; }
+        .form-group-animate:nth-child(4) { animation-delay: 0.25s; }
+        .form-group-animate:nth-child(5) { animation-delay: 0.3s; }
+        .form-group-animate:nth-child(6) { animation-delay: 0.35s; }
+
+        /* ========== READONLY INPUT STYLE ========== */
+        .glass-input-wrapper input[readonly] {
+            background: rgba(33, 150, 243, 0.05);
+            cursor: not-allowed;
+            color: #6B7280;
+        }
     </style>
 
     <div class="user-management-page">
@@ -458,7 +546,7 @@ const pageContent = `
           <div class="modal-header modal-header-gradient">
             <div>
               <h5 class="modal-title">
-                <i class="ti ti-user-edit"></i> Edit Profil User
+                <i class="ti ti-user-edit" style="display: none;"></i> Edit Profil User
               </h5>
               <p class="modal-subtitle mb-0">Perbarui informasi user yang dipilih</p>
             </div>
@@ -479,7 +567,7 @@ const pageContent = `
               <div class="row g-4">
                 <div class="col-md-6 form-group-animate">
                   <label for="editNama" class="form-label-modern">
-                    <i class="ti ti-user"></i>Nama Lengkap
+                    <i class="ti ti-user" style="display: none;"></i>Nama Lengkap
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="text" id="editNama" placeholder="Masukkan nama lengkap" required>
@@ -488,7 +576,7 @@ const pageContent = `
                 
                 <div class="col-md-6 form-group-animate">
                   <label for="editUsername" class="form-label-modern">
-                    <i class="ti ti-at"></i>Username
+                    <i class="ti ti-at" style="display: none;"></i>Username
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="text" id="editUsername" placeholder="Masukkan username" required readonly>
@@ -497,7 +585,7 @@ const pageContent = `
                 
                 <div class="col-12 form-group-animate">
                   <label for="editEmail" class="form-label-modern">
-                    <i class="ti ti-mail"></i>Email Address
+                    <i class="ti ti-mail" style="display: none;"></i>Email Address
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="email" id="editEmail" placeholder="contoh@email.com" required>
@@ -520,14 +608,10 @@ const pageContent = `
                 
                 <div class="col-12 form-group-animate">
                   <label for="editPassword" class="form-label-modern">
-                    <i class="ti ti-lock"></i>Password Baru
+                    <i class="ti ti-lock" style="display: none;"></i>Password Baru
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="password" id="editPassword" placeholder="Biarkan kosong jika tidak ingin mengubah">
-                  </div>
-                  <div class="helper-text">
-                    <i class="ti ti-info-circle"></i>
-                    <span>Kosongkan jika tidak ingin mengubah password</span>
                   </div>
                 </div>
               </div>
@@ -535,10 +619,9 @@ const pageContent = `
           </div>
           <div class="modal-footer modal-footer-modern">
             <button type="button" class="btn btn-modern-cancel" data-bs-dismiss="modal">
-              <i class="ti ti-x"></i> Batal
+              Batal
             </button>
             <button type="button" class="btn btn-modern-primary" id="btnSaveProfile">
-              <i class="ti ti-device-floppy"></i>
               <span class="button-text">Simpan Perubahan</span>
               <span class="spinner-border spinner-border-modern d-none" role="status" aria-hidden="true"></span>
             </button>
@@ -554,7 +637,7 @@ const pageContent = `
           <div class="modal-header modal-header-gradient">
             <div>
               <h5 class="modal-title">
-                <i class="ti ti-user-plus"></i> Tambah Akun Baru
+                <i class="ti ti-user-plus" style="display: none;"></i> Tambah Akun Baru
               </h5>
               <p class="modal-subtitle mb-0">Buat akun user baru untuk sistem</p>
             </div>
@@ -573,7 +656,7 @@ const pageContent = `
               <div class="row g-4">
                 <div class="col-md-6 form-group-animate">
                   <label for="addNama" class="form-label-modern">
-                    <i class="ti ti-user"></i>Nama Lengkap<span class="required-star">*</span>
+                    <i class="ti ti-user" style="display: none;"></i>Nama Lengkap<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="text" id="addNama" placeholder="Masukkan nama lengkap" required>
@@ -582,7 +665,7 @@ const pageContent = `
                 
                 <div class="col-md-6 form-group-animate">
                   <label for="addUsername" class="form-label-modern">
-                    <i class="ti ti-at"></i>Username<span class="required-star">*</span>
+                    <i class="ti ti-at" style="display: none;"></i>Username<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="text" id="addUsername" placeholder="Masukkan username" required>
@@ -591,42 +674,34 @@ const pageContent = `
                 
                 <div class="col-12 form-group-animate">
                   <label for="addEmail" class="form-label-modern">
-                    <i class="ti ti-mail"></i>Email Address<span class="required-star">*</span>
+                    <i class="ti ti-mail" style="display: none;"></i>Email Address<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="email" id="addEmail" placeholder="contoh@email.com" required>
                   </div>
                 </div>
                 
-                <div class="col-12 form-group-animate">
-                  <label for="addPassword" class="form-label-modern">
-                    <i class="ti ti-lock"></i>Password<span class="required-star">*</span>
-                  </label>
-                  <div class="glass-input-wrapper">
-                    <input type="password" id="addPassword" placeholder="Minimal 6 karakter" required>
-                  </div>
-                  <div class="helper-text">
-                    <i class="ti ti-info-circle"></i>
-                    <span>Password harus minimal 6 karakter</span>
-                  </div>
-                </div>
-                
                 <div class="col-md-6 form-group-animate">
                   <label for="addRole" class="form-label-modern">
-                    <i class="ti ti-shield"></i>Role<span class="required-star">*</span>
+                    <i class="ti ti-shield" style="display: none;"></i>Role<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
                     <select id="addRole" required>
                       <option value="">Pilih Role</option>
-                      <option value="Admin">Admin</option>
-                      <option value="User" selected>User</option>
+                      <option value="1">Admin</option>
+                      <option value="2">Verifikator</option>
+                      <option value="3">Pengusul</option>
+                      <option value="4">PPK</option>
+                      <option value="5">Wadir</option>
+                      <option value="6">Bendahara</option>
+                      <option value="7">Rektorat</option>
                     </select>
                   </div>
                 </div>
                 
                 <div class="col-md-6 form-group-animate">
                   <label for="addStatus" class="form-label-modern">
-                    <i class="ti ti-toggle-right"></i>Status<span class="required-star">*</span>
+                    <i class="ti ti-toggle-right" style="display: none;"></i>Status<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
                     <select id="addStatus" required>
@@ -635,15 +710,23 @@ const pageContent = `
                     </select>
                   </div>
                 </div>
+
+                <div class="col-12 form-group-animate">
+                  <label for="addPassword" class="form-label-modern">
+                    <i class="ti ti-lock" style="display: none;"></i>Password<span class="required-star">*</span>
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="password" id="addPassword" placeholder="Minimal 6 karakter" required>
+                  </div>
+                </div>
               </div>
             </form>
           </div>
           <div class="modal-footer modal-footer-modern">
             <button type="button" class="btn btn-modern-cancel" data-bs-dismiss="modal">
-              <i class="ti ti-x"></i> Batal
+              Batal
             </button>
             <button type="button" class="btn btn-modern-primary" id="btnSaveAkunBaru">
-              <i class="ti ti-check"></i>
               <span class="button-text">Simpan Akun</span>
               <span class="spinner-border spinner-border-modern d-none" role="status" aria-hidden="true"></span>
             </button>

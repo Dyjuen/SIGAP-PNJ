@@ -33,7 +33,7 @@
   --bs-gray-700: #6d6b77;
   --bs-gray-800: #595564;
   --bs-gray-900: #444050;
-  --bs-primary: #7367f0;
+  --bs-primary: #00bcd4;
   --bs-secondary: #808390;
   --bs-success: #28c76f;
   --bs-info: #00bad1;
@@ -100,7 +100,7 @@
   --bs-tertiary-bg: #dfdfe3;
   --bs-tertiary-bg-rgb: 223, 223, 227;
   --bs-heading-color: #444050;
-  --bs-link-color: #7367f0;
+  --bs-link-color: #00bcd4;
   --bs-link-color-rgb: 115, 103, 240;
   --bs-link-decoration: none;
   --bs-link-hover-color: #685dd8;
@@ -3392,8 +3392,8 @@ textarea.form-control-lg {
 
 .btn-primary {
   --bs-btn-color: #fff;
-  --bs-btn-bg: #7367f0;
-  --bs-btn-border-color: #7367f0;
+  --bs-btn-bg: #00bcd4;
+  --bs-btn-border-color: #00bcd4;
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: #685dd8;
   --bs-btn-hover-border-color: #5c52c0;
@@ -3403,8 +3403,8 @@ textarea.form-control-lg {
   --bs-btn-active-border-color: #564db4;
   --bs-btn-active-shadow: none;
   --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: #7367f0;
-  --bs-btn-disabled-border-color: #7367f0;
+  --bs-btn-disabled-bg: #00bcd4;
+  --bs-btn-disabled-border-color: #00bcd4;
 }
 
 .btn-secondary {
@@ -3544,19 +3544,19 @@ textarea.form-control-lg {
 }
 
 .btn-outline-primary {
-  --bs-btn-color: #7367f0;
-  --bs-btn-border-color: #7367f0;
+  --bs-btn-color: #00bcd4;
+  --bs-btn-border-color: #00bcd4;
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #7367f0;
-  --bs-btn-hover-border-color: #7367f0;
+  --bs-btn-hover-bg: #00bcd4;
+  --bs-btn-hover-border-color: #00bcd4;
   --bs-btn-focus-shadow-rgb: 115, 103, 240;
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #7367f0;
-  --bs-btn-active-border-color: #7367f0;
+  --bs-btn-active-bg: #00bcd4;
+  --bs-btn-active-border-color: #00bcd4;
   --bs-btn-active-shadow: none;
-  --bs-btn-disabled-color: #7367f0;
+  --bs-btn-disabled-color: #00bcd4;
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #7367f0;
+  --bs-btn-disabled-border-color: #00bcd4;
   --bs-gradient: none;
 }
 
@@ -5363,7 +5363,7 @@ textarea.form-control-lg {
   --bs-progress-border-radius: 3.125rem;
   --bs-progress-box-shadow: var(--bs-box-shadow-inset);
   --bs-progress-bar-color: var(--bs-white);
-  --bs-progress-bar-bg: #7367f0;
+  --bs-progress-bar-bg: #00bcd4;
   --bs-progress-bar-transition: width 0.6s ease;
   display: flex;
   height: var(--bs-progress-height);
@@ -8046,7 +8046,7 @@ textarea.form-control-lg {
   --bs-gray-700: #acabc1;
   --bs-gray-800: #bdbcd3;
   --bs-gray-900: #cfcde4;
-  --bs-primary: #7367f0;
+  --bs-primary: #00bcd4;
   --bs-secondary: #808390;
   --bs-success: #28c76f;
   --bs-info: #00bad1;
@@ -8081,7 +8081,7 @@ textarea.form-control-lg {
 /*
 ? styles specifically for apex-chart dark variant */
 .apexcharts-theme-dark {
-  --bs-primary: #7367f0;
+  --bs-primary: #00bcd4;
   --bs-secondary: #808390;
   --bs-success: #28c76f;
   --bs-info: #00bad1;
