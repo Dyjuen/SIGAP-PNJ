@@ -178,6 +178,70 @@ export function renderRevisiKakPage(path, userRole) {
         background: rgba(0, 188, 212, 0.1) !important;
       }
       
+      /* Menu button dengan revisi */
+      .menu-button.has-revision {
+        border-color: #FCA5A5 !important;
+        background: linear-gradient(135deg, rgba(254, 242, 242, 0.8) 0%, rgba(254, 226, 226, 0.6) 100%) !important;
+        position: relative;
+      }
+      
+      /* Icon background jadi MERAH kalau ada revisi */
+      .menu-button.has-revision .w-8 {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+      }
+      
+      /* Override shimmer effect untuk revisi - MERAH */
+      .menu-button.has-revision::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.3), transparent);
+        transition: left 0.6s ease;
+      }
+      
+      .menu-button.has-revision:hover::before {
+        left: 100%;
+      }
+      
+      @keyframes pulse-warning {
+        0%, 100% {
+          transform: translateY(-50%) scale(1);
+          box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        }
+        50% {
+          transform: translateY(-50%) scale(1.1);
+          box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
+        }
+      }
+      
+      .menu-button.has-revision .font-semibold {
+        color: #EF4444 !important;
+      }
+      
+      /* Hover text color untuk revisi tetap merah */
+      .menu-button.has-revision:hover .font-semibold {
+        color: #DC2626 !important;
+      }
+      
+      .menu-button.has-revision.active {
+        border-color: #EF4444 !important;
+        background: linear-gradient(135deg, rgba(254, 226, 226, 0.9) 0%, rgba(252, 165, 165, 0.7) 100%) !important;
+      }
+      
+      @keyframes pulse-revision {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+        }
+      }
+      
       /* Step content */
       .step-content {
         display: none;
@@ -1815,6 +1879,11 @@ export function renderRevisiKakPage(path, userRole) {
     attachEventListeners();
     updateCommentCount();
     loadDateRangePicker();
+    
+    // Update menu button revision status on page load
+    setTimeout(() => {
+      updateMenuButtonRevisionStatus();
+    }, 100);
   }
 
   function updateMainStepDisplay() {
@@ -2037,6 +2106,10 @@ export function renderRevisiKakPage(path, userRole) {
     const camelCaseKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
     updateCommentButton(`.row-comment-icon[data-field="${camelCaseKey}"]`, comment);
     updateCommentCount();
+    
+    // Update menu button revision status
+    updateMenuButtonRevisionStatus();
+    
     fieldCommentModalInstance.hide();
     Swal.fire({
       icon: "success",
@@ -2145,6 +2218,9 @@ export function renderRevisiKakPage(path, userRole) {
       updateCommentButton(selector, comment);
 
       updateCommentCount();
+      
+      // Update menu button revision status
+      updateMenuButtonRevisionStatus();
 
       rowCommentModalInstance.hide();
 
@@ -2176,6 +2252,35 @@ export function renderRevisiKakPage(path, userRole) {
         btn.parentElement.classList.toggle("has-row-comment", !!comment);
       }
     }
+    
+    // Update menu button status
+    updateMenuButtonRevisionStatus();
+  }
+
+  // Fungsi untuk mengecek dan update status menu button jika ada revisi di section-nya
+  function updateMenuButtonRevisionStatus() {
+    // Mapping section ID ke menu button data-menu
+    const sectionMenuMap = {
+      'gambaran-umum': 'gambaran-umum',
+      'penerima-manfaat': 'penerima-manfaat',
+      'strategi-pencapaian': 'strategi-pencapaian',
+      'indikator-kinerja': 'indikator-kinerja',
+      'kurun-waktu': 'kurun-waktu'
+    };
+
+    // Cek setiap section
+    Object.keys(sectionMenuMap).forEach(sectionId => {
+      const section = document.getElementById(sectionId);
+      const menuButton = document.querySelector(`.menu-button[data-menu="${sectionMenuMap[sectionId]}"]`);
+      
+      if (section && menuButton) {
+        // Cek apakah ada comment button dengan class 'has-comment' di dalam section
+        const hasRevision = section.querySelector('.has-comment, .has-row-comment') !== null;
+        
+        // Toggle class 'has-revision' pada menu button
+        menuButton.classList.toggle('has-revision', hasRevision);
+      }
+    });
   }
 
   function updateCommentCount() {
