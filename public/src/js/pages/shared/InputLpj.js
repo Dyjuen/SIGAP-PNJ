@@ -219,6 +219,126 @@ export function renderInputLpjPage(path, userRole) {
       .modal-body {
         padding: 2rem;
       }
+
+      /* Row Comment Modal Styling - SAME AS REVISIKAK */
+      #rowCommentModal .modal-dialog {
+        max-width: 750px;
+      }
+
+      #rowCommentModal .modal-content {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+
+      #rowCommentModal .modal-header {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        border: none;
+        padding: 1.75rem 2rem;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 1rem;
+        flex-wrap: nowrap;
+      }
+
+      #rowCommentModal .modal-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0 !important;
+        flex: 1;
+        white-space: nowrap;
+      }
+
+      #rowCommentModal .modal-title i {
+        font-size: 2rem;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      }
+
+      /* Custom close button - PERFECT VERSION */
+      #rowCommentModal .btn-close {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        opacity: 1;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        margin: -4px 0 0 0;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      #rowCommentModal .btn-close:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: rotate(90deg) scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      /* X marks using pseudo-elements - PERFECT CROSS */
+      #rowCommentModal .btn-close::before,
+      #rowCommentModal .btn-close::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 2.5px;
+        background: white;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      }
+
+      #rowCommentModal .btn-close::before {
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+
+      #rowCommentModal .btn-close::after {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+
+      #rowCommentModal .btn-close:hover::before,
+      #rowCommentModal .btn-close:hover::after {
+        background: white;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+      }
+
+      /* Remove default Bootstrap close button styles */
+      #rowCommentModal .btn-close:focus {
+        box-shadow: none;
+        outline: none;
+      }
+
+      #rowCommentModal .modal-body {
+        padding: 2rem;
+        max-height: 60vh;
+        overflow-y: auto;
+        background: linear-gradient(to bottom, #FAFAFA 0%, #F5F5F5 100%);
+      }
+
+      /* Completely hide scrollbar */
+      #rowCommentModal .modal-body::-webkit-scrollbar {
+        display: none;
+      }
+
+      #rowCommentModal .modal-body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
       
       /* Input fields (from StepUsulanKak.js) */
       input[type="text"],
@@ -1124,9 +1244,10 @@ export function renderInputLpjPage(path, userRole) {
     <div class="modal fade" id="rowCommentModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              Catatan Revisi untuk <span id="rowCommentLabel" style="color: #00BCD4; font-weight: 700;"></span>
+          <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+            <h5 class="modal-title" style="margin: 0; flex: 1;">
+              <i class="ti ti-message-dots">&#xeaee;</i>
+              Catatan Revisi untuk <span id="rowCommentLabel" style="color: white; font-weight: 800;"></span>
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -1147,12 +1268,12 @@ export function renderInputLpjPage(path, userRole) {
               isBendahara && !isViewOnly ? "display: none;" : ""
             }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan dari Bendahara</label>
-              <div class="p-3 rounded-lg" style="background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A;" id="rowCommentDisplayText"></div>
+              <div class="p-3 rounded-lg" style="background: #FEF2F2; color: #374151; border-left: 4px solid #EF4444;" id="rowCommentDisplayText"></div>
             </div>
             
             <div class="info-box mt-4">
               <div class="info-box-text">
-                <i class="ti ti-info-circle"></i> 
+                <i class="ti ti-info-circle">&#xeac5;</i> 
                 ${
                   isBendahara && !isViewOnly
                     ? "Berikan masukan yang jelas dan konstruktif untuk membantu pengusul."
@@ -1162,10 +1283,12 @@ export function renderInputLpjPage(path, userRole) {
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Tutup</button>
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+              <i class="ti ti-x">&#xeb55;</i> Batal
+            </button>
             ${
               isBendahara && !isViewOnly
-                ? `<button type="button" class="btn btn-primary" onclick="window.saveRowComment()">Simpan Catatan</button>`
+                ? `<button type="button" class="btn btn-primary" onclick="window.saveRowComment()"><i class="ti ti-check">&#xea5e;</i> Simpan Catatan</button>`
                 : ""
             }
           </div>
