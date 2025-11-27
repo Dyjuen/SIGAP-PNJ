@@ -91,6 +91,15 @@ export function renderInputLpjPage(path, userRole) {
         margin-bottom: 1rem;
         transition: all 0.3s ease;
         background: white;
+        animation: fadeInLeft 0.5s ease-out forwards;
+        opacity: 0;
+      }
+
+      .row-with-comment:nth-child(odd) {
+        animation-delay: 0.1s;
+      }
+      .row-with-comment:nth-child(even) {
+        animation-delay: 0.2s;
       }
       
       .row-with-comment:hover {
@@ -210,18 +219,38 @@ export function renderInputLpjPage(path, userRole) {
         padding: 2rem;
       }
       
-      .form-control {
-        border: 2px solid #E5E7EB;
-        border-radius: 12px;
-        padding: 1rem;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
+      /* Input fields (from StepUsulanKak.js) */
+      input[type="text"],
+      input[type="number"],
+      textarea,
+      select {
+        width: 100%; /* w-full */
+        padding: 0.75rem 1rem; /* px-4 py-3 */
+        border: 2px solid #E5E7EB; /* border-2 border-gray-200 */
+        border-radius: 0.5rem; /* rounded-lg */
+        font-size: 0.875rem; /* text-sm */
+        transition: all 0.3s ease; /* transition-all duration-300 */
+        outline: none; /* focus:outline-none */
+        background: #FFFFFF;
       }
-      
-      .form-control:focus {
-        border-color: #00BCD4;
-        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
-        outline: none;
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      textarea:focus,
+      select:focus {
+        border-color: #00BCD4; /* focus:border-cyan-500 */
+        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1); /* focus:ring-4 focus:ring-cyan-100 */
+      }
+
+      /* Disabled/Readonly states */
+      input:disabled,
+      input[readonly],
+      select:disabled,
+      textarea:disabled,
+      textarea[readonly] {
+        background: #E9E9E9;
+        cursor: not-allowed;
+        border-color: #C0C0C0;
       }
       
       /* Action buttons */
@@ -279,13 +308,96 @@ export function renderInputLpjPage(path, userRole) {
       /* RAB Grid */
       .grid-rab {
         display: grid;
-        grid-template-columns: 2.5fr 0.8fr 1.2fr 0.8fr 1.2fr 0.8fr 1.2fr 2.5fr;
-        gap: 1rem;
+        grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr 0.5fr;
+        gap: 0.75rem;
         align-items: end;
       }
+
+      .grid-rab-header {
+        display: grid;
+        grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr 0.5fr;
+        gap: 0.75rem;
+        align-items: end;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #E5E7EB;
+      }
       
-      /* Comment count badge */
-      .comment-count {
+      /* Unified Action Icons */
+      .action-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+      .action-icon:hover {
+          transform: translateY(-2px) scale(1.05);
+      }
+      .action-icon i {
+          font-size: 1.5rem;
+          transition: all 0.3s ease;
+      }
+      .action-icon:hover i {
+        transform: rotate(10deg);
+      }
+
+      .upload-icon {
+          background: #E0F7FA;
+          color: #00ACC1;
+          border-color: #B2EBF2;
+      }
+      .upload-icon:hover {
+          background: #00ACC1;
+          color: white;
+          box-shadow: 0 4px 12px rgba(0, 172, 193, 0.3);
+      }
+
+      .delete-icon {
+        width: 32px;
+        height: 32px;
+        background: #FFEBEE;
+        color: #E53935;
+        border-color: #FFCDD2;
+        margin-left: 0.5rem;
+      }
+      .delete-icon:hover {
+          background: #E53935;
+          color: white;
+          box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+      }
+      .delete-icon i {
+          font-size: 1.2rem;
+      }
+      
+                /* Remove Button (from StepUsulanKak.js) */
+                .remove-button {
+                  border: 0;
+                  width: 38px;
+                  height: 38px;
+                  border-radius: 10px;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  transition: all 0.3s ease;
+                  background: #EF4444; /* Red-500 */
+                  color: #FFFFFF;
+                  font-size: 1.5rem; /* For the '−' character */
+                }
+                .remove-button:hover {
+                  transform: scale(1.1);
+                  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                }
+                /* Remove button specific animation override */
+                .remove-button::after {
+                  display: none; /* Disable ripple for remove button */
+                }
+                
+                /* Comment count badge */      .comment-count {
         position: fixed;
         bottom: 2rem;
         left: 50%;
@@ -544,18 +656,53 @@ export function renderInputLpjPage(path, userRole) {
         animation-delay: 0.2s;
       }
 
-      /* Input fields */
-      input[readonly], textarea[readonly], select[disabled] {
-        transition: all 0.7s ease;
+      /* Dynamic field animations (from StepUsulanKak.js) */
+      .dynamic-field-item {
+          transition: all 0.4s ease-in-out;
+          overflow: hidden;
+      }
+  
+      .dynamic-field-item.new-item-animation {
+          animation: slide-in 0.4s ease-out;
+      }
+      
+      @keyframes slide-in {
+          from {
+              opacity: 0;
+              transform: translateY(-20px);
+              max-height: 0;
+          }
+          to {
+              opacity: 1;
+              transform: translateY(0);
+              max-height: 500px; /* Adjust based on content */
+          }
+      }
+  
+      .dynamic-field-item.removing {
+        animation: slide-out 0.4s ease-out forwards;
+      }
+  
+      @keyframes slide-out {
+          from {
+              opacity: 1;
+              transform: translateY(0);
+              max-height: 500px; /* Adjust based on content */
+          }
+          to {
+              opacity: 0;
+              transform: translateY(-20px);
+              max-height: 0;
+              margin-top: 0;
+              margin-bottom: 0;
+              padding-top: 0;
+              padding-bottom: 0;
+              border: none;
+          }
       }
 
-      input[readonly]:hover, textarea[readonly]:hover, select[disabled]:hover {
-        border-color: rgba(0, 188, 212, 0.4) !important;
-        box-shadow: 
-          0 8px 24px rgba(0, 188, 212, 0.12),
-          0 0 0 1px rgba(0, 188, 212, 0.1);
-        transform: scale(1.01);
-      }
+      /* Input fields */
+
 
       /* Enhanced button animations */
       button {
@@ -788,13 +935,15 @@ export function renderInputLpjPage(path, userRole) {
       }
 
       /* Bonus: Input subtle lift + shadow + glow on hover */
-      .border-hover-draw:hover input[readonly],
-      .border-hover-draw:hover textarea[readonly] {
+      .border-hover-draw:hover input,
+      .border-hover-draw:hover textarea,
+      .border-hover-draw:hover select {
         border-color: rgba(0, 188, 212, 0.4) !important;
         box-shadow: 
           0 8px 24px rgba(0, 188, 212, 0.12),
           0 0 0 1px rgba(0, 188, 212, 0.1);
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* No transform: scale(1.01); */
       }
 
       /* ====== MAIN STEP CONTENT - Border Drawing + Pop-Up ====== */
@@ -1035,26 +1184,30 @@ export function renderInputLpjPage(path, userRole) {
 
   let rowComments = {}; // { anggaran_id: "comment text" }
   let currentCommentTarget = null;
-    let rowCommentModalInstance = null;
+  let rowCommentModalInstance = null;
   let fileStore = {}; // { anggaran_id: [File, File, ...] }
-  
-    const formatCurrency = (amount) => {
-      if (amount === null || amount === undefined) return "Rp 0";
-      const number = Number(amount);
-      return new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0,
-      }).format(number);
-    };
-    
-    // --- API FUNCTIONS ---
+
+  const formatCurrency = (amount) => {
+    if (amount === null || amount === undefined) return "Rp 0";
+    const number = Number(amount);
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(number);
+  };
+
+  // --- API FUNCTIONS ---
   async function apiRequest(endpoint, options = {}) {
     const token =
       localStorage.getItem("auth_token") ||
       sessionStorage.getItem("auth_token");
     if (!token) {
-      Swal.fire({ icon: 'error', title: 'Otentikasi Gagal', text: "Silakan login kembali." });
+      Swal.fire({
+        icon: "error",
+        title: "Otentikasi Gagal",
+        text: "Silakan login kembali.",
+      });
       window.location.hash = "#/login";
       return;
     }
@@ -1071,7 +1224,7 @@ export function renderInputLpjPage(path, userRole) {
       return data;
     } catch (error) {
       console.error("API Request Error:", error);
-      Swal.fire({ icon: 'error', title: 'API Error', text: error.message });
+      Swal.fire({ icon: "error", title: "API Error", text: error.message });
       throw error;
     }
   }
@@ -1111,14 +1264,19 @@ export function renderInputLpjPage(path, userRole) {
   // --- RENDER FUNCTIONS ---
   function renderRABSections() {
     const container = document.getElementById("rabSectionsContainer");
-    if (!container || !state.lpjData || !state.lpjData.anggaran_items || state.lpjData.anggaran_items.length === 0) {
+    if (
+      !container ||
+      !state.lpjData ||
+      !state.lpjData.anggaran_items ||
+      state.lpjData.anggaran_items.length === 0
+    ) {
       container.innerHTML = `<div class="text-center text-red-500 p-8">Tidak ada item anggaran untuk ditampilkan.</div>`;
       return;
     }
 
     // Group items by category
     const groupedItems = state.lpjData.anggaran_items.reduce((acc, item) => {
-      const category = item.nama_kategori || 'Lain-lain';
+      const category = item.nama_kategori || "Lain-lain";
       if (!acc[category]) {
         acc[category] = [];
       }
@@ -1130,8 +1288,8 @@ export function renderInputLpjPage(path, userRole) {
 
     // Render items for each category
     for (const category in groupedItems) {
-      const categoryTitle = document.createElement('h4');
-      categoryTitle.className = 'text-xl font-semibold mb-4 mt-6 text-gray-700';
+      const categoryTitle = document.createElement("h4");
+      categoryTitle.className = "text-xl font-semibold mb-4 mt-6 text-gray-700";
       categoryTitle.textContent = category;
       container.appendChild(categoryTitle);
 
@@ -1139,7 +1297,7 @@ export function renderInputLpjPage(path, userRole) {
         const section = document.createElement("div");
         // Add comment-related classes
         const comment = rowComments[item.anggaran_id];
-        section.className = `row-with-comment border-hover-draw ${
+        section.className = `rab-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg ${
           comment ? "has-row-comment" : ""
         }`;
         section.dataset.rowType = "t_kegiatan_anggaran_realisasi";
@@ -1158,151 +1316,251 @@ export function renderInputLpjPage(path, userRole) {
   }
 
   function getSatuanOptions(selectedValue) {
-    const defaultOption = `<option value="" ${selectedValue == null || selectedValue === '' ? "selected" : ""}></option>`;
-    return defaultOption + state.satuan
-      .map(
-        (s) =>
-          `<option value="${s.satuan_id}" ${
-            s.satuan_id == selectedValue ? "selected" : ""
-          }>${s.nama_satuan}</option>`
-      )
-      .join("");
+    const defaultOption = `<option value="" ${
+      selectedValue == null || selectedValue === "" ? "selected" : ""
+    }></option>`;
+    return (
+      defaultOption +
+      state.satuan
+        .map(
+          (s) =>
+            `<option value="${s.satuan_id}" ${
+              s.satuan_id == selectedValue ? "selected" : ""
+            }>${s.nama_satuan}</option>`
+        )
+        .join("")
+    );
   }
 
-  window.deleteUploadedFile = async function(button, fileId) {
+  window.deleteUploadedFile = async function (button, fileId) {
     // Placeholder for backend deletion
     console.log(`Request to delete file with ID: ${fileId}`);
     Swal.fire({
-        title: "Fungsi Belum Tersedia",
-        text: "Menghapus file yang sudah di-upload dari server akan diimplementasikan.",
-        icon: "info"
+      title: "Fungsi Belum Tersedia",
+      text: "Menghapus file yang sudah di-upload dari server akan diimplementasikan.",
+      icon: "info",
     });
     // On success, you would remove the parent element:
     // button.parentElement.remove();
-  }
+  };
 
   function getSectionHTML(item, index) {
     const realisasiItem =
       state.lpjData?.realisasi?.find(
         (r) => r.anggaran_id === item.anggaran_id
       ) || {};
+
     const rabHargaFormatted = formatCurrency(item.harga_satuan);
+
     const realisasiHargaFormatted = formatCurrency(realisasiItem.harga_satuan);
 
-    const normalInputStyle = "border-color: #E5E7EB; background: white;";
-    const disabledInputStyle = "border-color: #C0C0C0 !important; background: #E9E9E9 !important; cursor: not-allowed;";
     const inputAttr = isBendahara ? "readonly disabled" : "";
-    const currentInputStyle = isBendahara ? disabledInputStyle : normalInputStyle;
+
+    const commonInputClasses = "w-full px-4 py-3 border-2 rounded-lg text-sm";
+
+    const commonInputStyle = `border-color: #E5E7EB; background: #FFFFFF;`;
+
+    const commonOnfocusBlur = `onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 44px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`; // Changed 0 0 0 4px to 0 0 0 44px
+
+    const disabledInputStyleAttr = `style="background: #E9E9E9; cursor: not-allowed; border-color: #C0C0C0;"`;
+
+    const enabledInputStyleAttr = `style="${commonInputStyle}" ${commonOnfocusBlur}`;
+
+    const currentInputStyleAttr = isBendahara
+      ? disabledInputStyleAttr
+      : enabledInputStyleAttr;
 
     return `
-      ${
-        isBendahara
-          ? `<button class="row-comment-icon" onclick="window.openRowCommentModal(this)" data-label="Item Anggaran #${
-              index + 1
-            }"><i class="ti ti-message-circle-2"></i></button>`
-          : ""
-      }
-      ${
-        isPengusul && rowComments[item.anggaran_id]
-          ? `<button class="row-comment-icon" onclick="window.openRowCommentModal(this)" data-label="Item Anggaran #${
-              index + 1
-            }"><i class="ti ti-message-circle-2"></i></button>`
-          : ""
-      }
 
-      <!-- RAB Section (Disabled) -->
-      <div class="mb-6">
-        <h5 class="mb-4 font-bold text-lg" style="color: #374151;">Rencana Anggaran Biaya (KAK)</h5>
-        <div class="grid grid-cols-12 gap-4 items-end mb-4">
-          <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" disabled class="form-control" style="${disabledInputStyle}" value="${
-            item.uraian || ""
-          }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" disabled class="form-control" style="${disabledInputStyle}" value="${
-            item.volume1 || ""
-          }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select disabled class="form-control" style="${disabledInputStyle}">${getSatuanOptions(
-            item.satuan1_id
-          )}</select></div>
-          <div><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" disabled class="form-control" style="${disabledInputStyle}" value="${
-            item.volume2 || ""
-          }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select disabled class="form-control" style="${disabledInputStyle}">${getSatuanOptions(
-            item.satuan2_id
-          )}</select></div>
-          <div><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" disabled class="form-control" style="${disabledInputStyle}" value="${
-            item.volume3 || ""
-          }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select disabled class="form-control" style="${disabledInputStyle}">${getSatuanOptions(
-            item.satuan3_id
-          )}</select></div>
-          <div><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" disabled class="form-control" style="${disabledInputStyle}" value="${rabHargaFormatted}"></div>
+        ${
+          isBendahara
+            ? `<button class="row-comment-icon" onclick="window.openRowCommentModal(this)" data-label="Item Anggaran #${
+                index + 1
+              }"><i class="ti ti-message-circle-2"></i></button>`
+            : ""
+        }
+
+        ${
+          isPengusul && rowComments[item.anggaran_id]
+            ? `<button class="row-comment-icon" onclick="window.openRowCommentModal(this)" data-label="Item Anggaran #${
+                index + 1
+              }"><i class="ti ti-message-circle-2"></i></button>`
+            : ""
+        }
+
+  
+
+        <!-- RAB Section (Disabled) -->
+
+        <div class="mb-6">
+
+          <h5 class="mb-4 font-bold text-lg" style="color: #374151;">Rencana Anggaran Biaya (KAK)</h5>
+
+          <div class="grid-rab-header">
+
+            <label class="block font-semibold text-sm">Uraian</label>
+
+            <label class="block font-semibold text-sm">Qty 1</label>
+
+            <label class="block font-semibold text-sm">Satuan 1</label>
+
+            <label class="block font-semibold text-sm">Qty 2</label>
+
+            <label class="block font-semibold text-sm">Satuan 2</label>
+
+            <label class="block font-semibold text-sm">Qty 3</label>
+
+            <label class="block font-semibold text-sm">Satuan 3</label>
+
+            <label class="block font-semibold text-sm">Harga Satuan</label>
+
+            <span></span>
+
+          </div>
+
+          <div class="grid grid-cols-[3fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr_0.5fr] gap-4 items-end mt-2">
+
+              <div><input type="text" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
+      item.uraian || ""
+    }"></div>
+
+              <div><input type="number" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
+      item.volume1 || ""
+    }"></div>
+
+              <div><select disabled class="${commonInputClasses}" ${disabledInputStyleAttr}>${getSatuanOptions(
+      item.satuan1_id
+    )}</select></div>
+
+              <div><input type="number" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
+      item.volume2 || ""
+    }"></div>
+
+              <div><select disabled class="${commonInputClasses}" ${disabledInputStyleAttr}>${getSatuanOptions(
+      item.satuan2_id
+    )}</select></div>
+
+              <div><input type="number" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
+      item.volume3 || ""
+    }"></div>
+
+              <div><select disabled class="${commonInputClasses}" ${disabledInputStyleAttr}>${getSatuanOptions(
+      item.satuan3_id
+    )}</select></div>
+
+              <div><input type="text" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${rabHargaFormatted}"></div>
+
+              <span></span>
+
+          </div>
+
         </div>
-      </div>
 
-      <!-- Realisasi Section -->
-      <div>
-        <h5 class="mb-4 font-bold text-lg" style="color: #00BCD4;">Realisasi Pertanggungjawaban (LPJ)</h5>
-        <div class="grid grid-cols-12 gap-4 items-end mb-4 realisasi-grid">
-          <div><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${
+  
+
+        <!-- Realisasi Section -->
+
+        <div>
+
+          <h5 class="mb-4 font-bold text-lg" style="color: #00BCD4;">Realisasi Pertanggungjawaban (LPJ)</h5>
+
+          <div class="grid grid-cols-[3fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr_0.5fr] gap-4 items-end realisasi-grid">
+
+              <div><input type="text" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
       item.realisasi_uraian || item.uraian || ""
     }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" min="0" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${
+
+              <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
       item.realisasi_volume1 || item.volume1 || ""
     }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select ${inputAttr} class="form-control" style="${currentInputStyle}">${getSatuanOptions(
+
+              <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr}>${getSatuanOptions(
       item.realisasi_satuan1_id || item.satuan1_id
-    )}</select></div>
-          
-          <div><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" min="0" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${
+    )}</select>
+
+              </div>
+
+              <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
       item.realisasi_volume2 || item.volume2 || ""
     }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select ${inputAttr} class="form-control" style="${currentInputStyle}">${getSatuanOptions(
+
+              <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr}>${getSatuanOptions(
       item.realisasi_satuan2_id || item.satuan2_id
     )}</select></div>
-          
-          <div><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" min="0" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${
+
+              <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
       item.realisasi_volume3 || item.volume3 || ""
     }"></div>
-          <div><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select ${inputAttr} class="form-control" style="${currentInputStyle}">${getSatuanOptions(
+
+              <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr}>${getSatuanOptions(
       item.realisasi_satuan3_id || item.satuan3_id
     )}</select></div>
 
-          <div><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${formatCurrency(item.realisasi_harga_satuan || item.harga_satuan || "")}"></div>
-          
-          ${
-            isPengusul
-              ? `
-          <div class="flex items-end">
-            <label class="cursor-pointer">
-              <input type="file" multiple class="hidden" onchange="window.handleFileUpload(this)" data-anggaran-id="${item.anggaran_id}">
-              <div class="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-105 border-0" style="background: #00BCD4; color: #FFFFFF;">
-                <i class="ti ti-upload text-xl"></i>
-              </div>
-            </label>
-          </div>`
-              : ""
-          }
+         
+
+              <div><input type="text" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${formatCurrency(
+      item.realisasi_harga_satuan || item.harga_satuan || ""
+    )}"></div>
+
+            
+
+            ${
+              isPengusul
+                ? `
+
+                          <label class="cursor-pointer flex items-center justify-center">
+
+                            <input type="file" multiple class="hidden" onchange="window.handleFileUpload(this)" data-anggaran-id="${item.anggaran_id}">
+
+                            <div class="remove-button w-full h-auto py-2 flex-shrink-0" style="background: #00BCD4;"><!-- Upload button styled like remove-button -->
+
+                              <i class="ti ti-upload text-white text-xl"></i>
+
+                            </div>
+
+                          </label>`
+                : "<div></div>"
+            }
+
+          </div>
+
+          <div class="uploaded-files-container mt-4 grid grid-cols-1 gap-2">
+
+              ${(item.bukti || [])
+
+                .map(
+                  (file) => `
+
+                  <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200">
+
+                      <a href="${
+                        file.path_file_disimpan
+                      }" target="_blank" class="text-sm truncate flex-1 text-blue-500 hover:underline">📎 ${
+                    file.nama_file_asli
+                  }</a>
+
+                      ${
+                        isPengusul
+                          ? `<button type="button" class="remove-button" onclick="window.deleteUploadedFile(this, ${file.lampiran_id})">
+
+                              <span class="text-xl font-bold">−</span>
+
+                             </button>`
+                          : ""
+                      }
+
+                  </div>
+
+              `
+                )
+
+                .join("")}
+
+          </div>
+
         </div>
-        <div class="uploaded-files-container mt-4 grid grid-cols-1 gap-2">
-            ${(item.bukti || [])
-              .map(
-                (file) => `
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200">
-                    <a href="${file.path_file_disimpan}" target="_blank" class="text-sm truncate flex-1 text-blue-500 hover:underline">📎 ${
-                  file.nama_file_asli
-                }</a>
-                    ${
-                      isPengusul
-                        ? `<button type="button" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center transition-all bg-red-500 text-white" onclick="window.deleteUploadedFile(this, ${file.lampiran_id})">×</button>`
-                        : ""
-                    }
-                </div>
-            `
-              )
-              .join("")}
-        </div>
-      </div>
-    `;
+
+      `;
   }
 
   function renderActionButtons() {
@@ -1337,8 +1595,8 @@ export function renderInputLpjPage(path, userRole) {
     container.innerHTML = buttons;
     attachActionListeners();
   }
-  
-    // --- COMMENTING LOGIC ---
+
+  // --- COMMENTING LOGIC ---
   function updateCommentCount() {
     const count = Object.keys(rowComments).length;
     const badge = document.getElementById("commentCountBadge");
@@ -1360,26 +1618,26 @@ export function renderInputLpjPage(path, userRole) {
     let allItemsHaveFiles = true;
 
     // First, clear any previous error styles
-    rabSections.forEach(section => {
-      section.style.border = '';
+    rabSections.forEach((section) => {
+      section.style.border = "";
     });
 
     for (const section of rabSections) {
-        const anggaranId = section.dataset.pkValue;
-        if (!fileStore[anggaranId] || fileStore[anggaranId].length === 0) {
-            allItemsHaveFiles = false;
-            section.style.border = '2px solid red';
-            // We don't break, so we can highlight all failing items
-        }
+      const anggaranId = section.dataset.pkValue;
+      if (!fileStore[anggaranId] || fileStore[anggaranId].length === 0) {
+        allItemsHaveFiles = false;
+        section.style.border = "2px solid red";
+        // We don't break, so we can highlight all failing items
+      }
     }
 
     if (!allItemsHaveFiles) {
-        Swal.fire({ 
-            icon: 'error', 
-            title: 'Validasi Gagal', 
-            text: 'Setiap uraian harus memiliki minimal satu file bukti yang diupload.' 
-        });
-        return; // Stop the submission
+      Swal.fire({
+        icon: "error",
+        title: "Validasi Gagal",
+        text: "Setiap uraian harus memiliki minimal satu file bukti yang diupload.",
+      });
+      return; // Stop the submission
     }
     // --- END VALIDATION ---
 
@@ -1392,10 +1650,14 @@ export function renderInputLpjPage(path, userRole) {
         method: "POST",
         body: formData,
       });
-      Swal.fire({ icon: 'success', title: 'Sukses', text: 'LPJ berhasil disubmit.'});
-      window.location.hash = "#/pengusul/kegiatan/lpj";
+      await Swal.fire({ icon: 'success', title: 'Sukses', text: 'LPJ berhasil disubmit.'});
+      window.location.href = "/pengusul/kegiatan/lpj";
     } catch (error) {
-      Swal.fire({ icon: 'error', title: 'Gagal', text: `Gagal submit LPJ: ${error.message}`});
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: `Gagal submit LPJ: ${error.message}`,
+      });
     } finally {
       button.disabled = false;
       button.innerHTML = `${
@@ -1414,10 +1676,18 @@ export function renderInputLpjPage(path, userRole) {
         method: "POST",
         body: JSON.stringify(payload),
       });
-      Swal.fire({ icon: 'success', title: 'Sukses', text: 'Revisi berhasil dikirim.'});
+      Swal.fire({
+        icon: "success",
+        title: "Sukses",
+        text: "Revisi berhasil dikirim.",
+      });
       window.location.hash = "#/bendahara/lpj";
     } catch (error) {
-      Swal.fire({ icon: 'error', title: 'Gagal', text: `Gagal mengirim revisi: ${error.message}`});
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: `Gagal mengirim revisi: ${error.message}`,
+      });
     } finally {
       button.disabled = false;
       button.innerHTML = "Kirim Revisi";
@@ -1443,9 +1713,19 @@ export function renderInputLpjPage(path, userRole) {
       button.innerHTML = "Menyetujui...";
       try {
         await apiRequest(`/lpj/${kegiatanId}/approve`, { method: "POST" });
-                    Swal.fire({ icon: 'success', title: 'Sukses', text: 'LPJ berhasil disetujui.'});        window.location.hash = "#/bendahara/lpj";
+        Swal.fire({
+          icon: "success",
+          title: "Sukses",
+          text: "LPJ berhasil disetujui.",
+        });
+        window.location.hash = "#/bendahara/lpj";
       } catch (error) {
-                    Swal.fire({ icon: 'error', title: 'Gagal', text: `Gagal menyetujui LPJ: ${error.message}`});        button.disabled = false;
+        Swal.fire({
+          icon: "error",
+          title: "Gagal",
+          text: `Gagal menyetujui LPJ: ${error.message}`,
+        });
+        button.disabled = false;
         button.innerHTML = "Setujui LPJ";
       }
     }
@@ -1453,24 +1733,27 @@ export function renderInputLpjPage(path, userRole) {
 
   function collectLpjData() {
     const formData = new FormData();
-    const rabSections = document.querySelectorAll(".row-with-comment");
+    const rabSections = document.querySelectorAll(".rab-item");
 
     rabSections.forEach((section) => {
       const anggaranId = section.dataset.pkValue;
       const realisasiGrid = section.querySelector(".realisasi-grid");
 
       const uraian = realisasiGrid.querySelector('input[type="text"]').value;
-      const numberInputs = realisasiGrid.querySelectorAll('input[type="number"]');
-      const selectInputs = realisasiGrid.querySelectorAll('select');
+      const numberInputs = realisasiGrid.querySelectorAll(
+        'input[type="number"]'
+      );
+      const selectInputs = realisasiGrid.querySelectorAll("select");
 
-      const volume1 = numberInputs[0] ? numberInputs[0].value : '';
-      const satuan1_id = selectInputs[0] ? selectInputs[0].value : '';
-      const volume2 = numberInputs[1] ? numberInputs[1].value : '';
-      const satuan2_id = selectInputs[1] ? selectInputs[1].value : '';
-      const volume3 = numberInputs[2] ? numberInputs[2].value : '';
-      const satuan3_id = selectInputs[2] ? selectInputs[2].value : '';
+      const volume1 = numberInputs[0] ? numberInputs[0].value : "";
+      const satuan1_id = selectInputs[0] ? selectInputs[0].value : "";
+      const volume2 = numberInputs[1] ? numberInputs[1].value : "";
+      const satuan2_id = selectInputs[1] ? selectInputs[1].value : "";
+      const volume3 = numberInputs[2] ? numberInputs[2].value : "";
+      const satuan3_id = selectInputs[2] ? selectInputs[2].value : "";
 
-      const harga_satuan_input = realisasiGrid.querySelector('input[value*="Rp"]');
+      const harga_satuan_input =
+        realisasiGrid.querySelector('input[value*="Rp"]');
       const harga_satuan = harga_satuan_input.value.replace(/[^0-9]/g, "");
 
       formData.append(`realisasi[${anggaranId}][uraian]`, uraian);
@@ -1484,7 +1767,7 @@ export function renderInputLpjPage(path, userRole) {
 
       // Append files from the fileStore
       if (fileStore[anggaranId] && fileStore[anggaranId].length > 0) {
-        fileStore[anggaranId].forEach(file => {
+        fileStore[anggaranId].forEach((file) => {
           formData.append(`bukti[${anggaranId}][]`, file);
         });
       }
@@ -1562,12 +1845,14 @@ export function renderInputLpjPage(path, userRole) {
   }
 
   // --- EVENT HANDLERS & INITIALIZATION ---
-  window.removeFile = function(button, anggaranId, fileName) {
+  window.removeFile = function (button, anggaranId, fileName) {
     // Remove from UI
     button.parentElement.remove();
     // Remove from fileStore
     if (fileStore[anggaranId]) {
-      fileStore[anggaranId] = fileStore[anggaranId].filter(f => f.name !== fileName);
+      fileStore[anggaranId] = fileStore[anggaranId].filter(
+        (f) => f.name !== fileName
+      );
     }
   };
 
@@ -1577,22 +1862,32 @@ export function renderInputLpjPage(path, userRole) {
     const container = input.closest(".realisasi-grid").nextElementSibling;
 
     const MAX_SIZE = 10485760; // 10 MB
-    const ALLOWED_TYPES = ['jpg', 'jpeg', 'png', 'pdf'];
+    const ALLOWED_TYPES = ["jpg", "jpeg", "png", "pdf"];
 
     if (!fileStore[anggaranId]) {
       fileStore[anggaranId] = [];
     }
 
     files.forEach((file) => {
-      const extension = file.name.split('.').pop().toLowerCase();
-      
+      const extension = file.name.split(".").pop().toLowerCase();
+
       // Validation
       if (file.size > MAX_SIZE) {
-        Swal.fire({ icon: 'error', title: 'File Ditolak', text: `Ukuran file "${file.name}" terlalu besar. Maksimal 10MB.`});
+        Swal.fire({
+          icon: "error",
+          title: "File Ditolak",
+          text: `Ukuran file "${file.name}" terlalu besar. Maksimal 10MB.`,
+        });
         return;
       }
       if (!ALLOWED_TYPES.includes(extension)) {
-        Swal.fire({ icon: 'error', title: 'File Ditolak', text: `Tipe file "${file.name}" tidak diizinkan. Hanya ${ALLOWED_TYPES.join(', ')}.`});
+        Swal.fire({
+          icon: "error",
+          title: "File Ditolak",
+          text: `Tipe file "${
+            file.name
+          }" tidak diizinkan. Hanya ${ALLOWED_TYPES.join(", ")}.`,
+        });
         return;
       }
 
@@ -1600,8 +1895,8 @@ export function renderInputLpjPage(path, userRole) {
       fileStore[anggaranId].push(file);
       const fileItem = document.createElement("div");
       fileItem.className =
-        "flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200";
-      fileItem.innerHTML = `<span class="text-sm truncate flex-1" style="color: #374151;">📎 ${file.name}</span><button type="button" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center transition-all bg-red-500 text-white" onclick="window.removeFile(this, '${anggaranId}', '${file.name}')">×</button>`;
+        "flex items-center justify-between p-2 bg-blue-50 rounded-lg border border-blue-200";
+      fileItem.innerHTML = `<span class="text-sm truncate flex-1 text-blue-600">📎 ${file.name}</span><button type="button" class="remove-button " onclick="window.removeFile(this, '${anggaranId}', '${file.name}')"><span class="text-xl font-bold">−</span></button>`;
       container.appendChild(fileItem);
     });
     input.value = "";
