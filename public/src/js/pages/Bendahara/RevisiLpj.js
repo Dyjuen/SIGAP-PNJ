@@ -242,6 +242,126 @@ export function renderRevisiLpjPage(path, userRole) {
         outline: none;
       }
 
+      /* Comment Detail Modal Styling - SAME AS REVISIKAK */
+      #lampiranCommentModal .modal-dialog {
+        max-width: 750px;
+      }
+
+      #lampiranCommentModal .modal-content {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+
+      #lampiranCommentModal .modal-header {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        border: none;
+        padding: 1.75rem 2rem;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 1rem;
+        flex-wrap: nowrap;
+      }
+
+      #lampiranCommentModal .modal-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0 !important;
+        flex: 1;
+        white-space: nowrap;
+      }
+
+      #lampiranCommentModal .modal-title i {
+        font-size: 2rem;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      }
+
+      /* Custom close button - PERFECT VERSION */
+      #lampiranCommentModal .btn-close {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        opacity: 1;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        margin: -4px 0 0 0;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      #lampiranCommentModal .btn-close:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: rotate(90deg) scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      /* X marks using pseudo-elements - PERFECT CROSS */
+      #lampiranCommentModal .btn-close::before,
+      #lampiranCommentModal .btn-close::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 2.5px;
+        background: white;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      }
+
+      #lampiranCommentModal .btn-close::before {
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+
+      #lampiranCommentModal .btn-close::after {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+
+      #lampiranCommentModal .btn-close:hover::before,
+      #lampiranCommentModal .btn-close:hover::after {
+        background: white;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+      }
+
+      /* Remove default Bootstrap close button styles */
+      #lampiranCommentModal .btn-close:focus {
+        box-shadow: none;
+        outline: none;
+      }
+
+      #lampiranCommentModal .modal-body {
+        padding: 2rem;
+        max-height: 60vh;
+        overflow-y: auto;
+        background: linear-gradient(to bottom, #FAFAFA 0%, #F5F5F5 100%);
+      }
+
+      /* Completely hide scrollbar */
+      #lampiranCommentModal .modal-body::-webkit-scrollbar {
+        display: none;
+      }
+
+      #lampiranCommentModal .modal-body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
       .action-buttons {
         background: white;
         border-radius: 16px;
@@ -353,38 +473,43 @@ export function renderRevisiLpjPage(path, userRole) {
     <div class="modal fade" id="lampiranCommentModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Catatan Revisi untuk <span id="lampiranCommentLabel" class="font-bold text-teal-700"></span></h5>
+          <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+            <h5 class="modal-title" style="margin: 0; flex: 1;">
+              <i class="ti ti-message-dots">&#xeaee;</i>
+              Catatan Revisi untuk <span id="lampiranCommentLabel" style="color: white; font-weight: 800;"></span>
+            </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
-              <label class="form-label">Nama File</label>
-              <div class="p-3 rounded-lg bg-gray-100" id="lampiranFileName" style="word-break: break-all;"></div>
+              <label class="form-label font-semibold" style="color: #374151;">Nama File</label>
+              <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="lampiranFileName"></div>
             </div>
             <div id="lampiranCommentInputContainer" style="${
               isPengusul ? "display: none;" : ""
             }">
-              <label class="form-label">Catatan Revisi</label>
-              <textarea id="lampiranCommentInput" class="form-control" rows="4" placeholder="Tuliskan catatan revisi..."></textarea>
+              <label class="form-label font-semibold" style="color: #374151;">Catatan Revisi</label>
+              <textarea id="lampiranCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi untuk lampiran ini..."></textarea>
             </div>
             <div id="lampiranCommentDisplayContainer" style="${
               isBendahara ? "display: none;" : ""
             }">
-              <label class="form-label">Catatan dari Bendahara</label>
-              <div class="p-3 rounded-lg bg-teal-50 border border-teal-200" id="lampiranCommentDisplayText"></div>
+              <label class="form-label font-semibold" style="color: #374151;">Catatan dari Bendahara</label>
+              <div class="p-3 rounded-lg" style="background: #FEF2F2; color: #374151; border-left: 4px solid #EF4444;" id="lampiranCommentDisplayText"></div>
             </div>
             <div class="info-box">
               <div class="info-box-text">
-                <i class="ti ti-info-circle"></i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki lampiran.
+                <i class="ti ti-info-circle">&#xeac5;</i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki lampiran.
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Tutup</button>
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+              <i class="ti ti-x">&#xeb55;</i> Batal
+            </button>
             ${
               isBendahara
-                ? '<button type="button" class="btn btn-primary" id="saveLampiranCommentBtn">Simpan Catatan</button>'
+                ? '<button type="button" class="btn btn-primary" id="saveLampiranCommentBtn"><i class="ti ti-check">&#xea5e;</i> Simpan Catatan</button>'
                 : ""
             }
           </div>
