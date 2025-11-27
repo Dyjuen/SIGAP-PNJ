@@ -112,6 +112,11 @@ export function renderRevisiKakPage(path, userRole) {
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
       }
       
+      .row-with-comment.has-row-comment input,
+      .row-with-comment.has-row-comment textarea {
+        background-color: #FFFFFF !important;
+      }
+      
       .row-comment-icon {
         position: absolute;
         right: 1rem;
@@ -149,7 +154,8 @@ export function renderRevisiKakPage(path, userRole) {
         color: white;
       }
       
-      .row-with-comment .input-with-comment input {
+      .row-with-comment .input-with-comment input,
+      .row-with-comment .input-with-comment textarea {
         padding-right: 12px !important;
       }
       
@@ -992,9 +998,11 @@ export function renderRevisiKakPage(path, userRole) {
 
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nama Kegiatan</label>
-                    <div class="input-with-comment">
-                      <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="" data-field="namaKegiatan">
-                      <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="namaKegiatan" data-label="Nama Kegiatan">
+                    <div class="row-with-comment">
+                      <div class="input-with-comment" style="padding-right: 60px;">
+                        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="" data-field="namaKegiatan">
+                      </div>
+                      <button class="row-comment-icon" onclick="openFieldCommentModal(this)" data-field="namaKegiatan" data-label="Nama Kegiatan">
                         <i class="ti ti-message-circle-2">&#xeaed;</i>
                       </button>
                     </div>
@@ -1002,9 +1010,11 @@ export function renderRevisiKakPage(path, userRole) {
 
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Gambaran Umum Kegiatan</label>
-                    <div class="input-with-comment">
-                      <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${inputStyle}" ${inputAttr} data-field="gambaranUmum"></textarea>
-                      <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="gambaranUmum" data-label="Gambaran Umum Kegiatan">
+                    <div class="row-with-comment">
+                      <div class="input-with-comment" style="padding-right: 60px;">
+                        <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${inputStyle}" ${inputAttr} data-field="gambaranUmum"></textarea>
+                      </div>
+                      <button class="row-comment-icon" onclick="openFieldCommentModal(this)" data-field="gambaranUmum" data-label="Gambaran Umum Kegiatan">
                         <i class="ti ti-message-circle-2">&#xeaed;</i>
                       </button>
                     </div>
@@ -1037,9 +1047,11 @@ export function renderRevisiKakPage(path, userRole) {
                   
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Metode Pelaksanaan</label>
-                    <div class="input-with-comment">
-                      <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${inputStyle}" ${inputAttr} data-field="metodePelaksanaan"></textarea>
-                      <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="metodePelaksanaan" data-label="Metode Pelaksanaan">
+                    <div class="row-with-comment">
+                      <div class="input-with-comment" style="padding-right: 60px;">
+                        <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${inputStyle}" ${inputAttr} data-field="metodePelaksanaan"></textarea>
+                      </div>
+                      <button class="row-comment-icon" onclick="openFieldCommentModal(this)" data-field="metodePelaksanaan" data-label="Metode Pelaksanaan">
                         <i class="ti ti-message-circle-2">&#xeaed;</i>
                       </button>
                     </div>
@@ -1071,9 +1083,11 @@ export function renderRevisiKakPage(path, userRole) {
                   
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Periode Pelaksanaan</label>
-                    <div class="input-with-comment">
-                        <input type="text" id="kurunWaktu" class="form-control w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} placeholder="Pilih tanggal" data-field="kurunWaktu">
-                        <button class="comment-icon" onclick="openFieldCommentModal(this)" data-field="kurunWaktu" data-label="Kurun Waktu">
+                    <div class="row-with-comment">
+                    <div class="input-with-comment" style="padding-right: 60px;">
+                            <input type="text" id="kurunWaktu" class="form-control w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} placeholder="Pilih tanggal" data-field="kurunWaktu">
+                        </div>
+                        <button class="row-comment-icon" onclick="openFieldCommentModal(this)" data-field="kurunWaktu" data-label="Kurun Waktu">
                           <i class="ti ti-message-circle-2">&#xeaed;</i>
                         </button>
                     </div>
@@ -1304,18 +1318,7 @@ export function renderRevisiKakPage(path, userRole) {
   let fieldCommentModalInstance = null;
   let rowCommentModalInstance = null;
 
-  function updateCommentButton(selector, comment) {
-    const btn = document.querySelector(selector);
-    if (!btn) {
-      return;
-    }
-    const row = btn.closest('.row-with-comment');
-    const hasComment = comment && comment.trim() !== '';
-    btn.classList.toggle('has-comment', hasComment);
-    if (row) {
-      row.classList.toggle('has-row-comment', hasComment);
-    }
-  }
+
 
   let masterState = {
     iku: [],
@@ -1638,7 +1641,7 @@ export function renderRevisiKakPage(path, userRole) {
         if (kakData[backendKey]) {
           fieldComments[toSnakeCase(frontendKey)] = kakData[backendKey];
           updateCommentButton(
-            `.comment-icon[data-field="${frontendKey}"]`,
+            `.row-comment-icon[data-field="${frontendKey}"]`,
             kakData[backendKey]
           );
         }
@@ -1656,7 +1659,11 @@ export function renderRevisiKakPage(path, userRole) {
         if (config.array && config.array.length > 0) {
           if (!rowComments[config.tableName]) rowComments[config.tableName] = {};
           config.array.forEach((item) => {
-            const pk = item[config.idField];
+            // Use fallback ID for IKU to match UI generation
+            const pk = (config.tableName === 't_kak_iku') 
+              ? (item.kak_iku_id || item.iku_id) 
+              : item[config.idField];
+
             if (!pk) return;
 
             if (config.tableName === 't_kak_manfaat') {
@@ -1708,10 +1715,10 @@ export function renderRevisiKakPage(path, userRole) {
         });
         kakData.manfaat.forEach((item) => {
           if (item.catatan_sasaran_utama) {
-            updateCommentButton(`.row-with-comment[data-pk-value="${item.manfaat_id}"][data-field-name="sasaran_utama"] .row-comment-icon`, item.catatan_sasaran_utama);
+            updateCommentButton(`.row-with-comment[data-row-type="t_kak_manfaat"][data-pk-value="${item.manfaat_id}"][data-field-name="sasaran_utama"] .row-comment-icon`, item.catatan_sasaran_utama);
           }
           if (item.catatan_manfaat) {
-            updateCommentButton(`.row-with-comment[data-pk-value="${item.manfaat_id}"][data-field-name="manfaat"] .row-comment-icon`, item.catatan_manfaat);
+            updateCommentButton(`.row-with-comment[data-row-type="t_kak_manfaat"][data-pk-value="${item.manfaat_id}"][data-field-name="manfaat"] .row-comment-icon`, item.catatan_manfaat);
           }
         });
       }
@@ -1725,7 +1732,7 @@ export function renderRevisiKakPage(path, userRole) {
         });
         kakData.tahapan.forEach((item) => {
           if (item.catatan_verifikator) {
-            updateCommentButton(`.row-with-comment[data-pk-value="${item.tahapan_id}"] .row-comment-icon`, item.catatan_verifikator);
+            updateCommentButton(`.row-with-comment[data-row-type="t_kak_tahapan"][data-pk-value="${item.tahapan_id}"] .row-comment-icon`, item.catatan_verifikator);
           }
         });
       }
@@ -1739,7 +1746,7 @@ export function renderRevisiKakPage(path, userRole) {
         });
         kakData.target.forEach((item) => {
           if (item.catatan_verifikator) {
-            updateCommentButton(`.row-with-comment[data-pk-value="${item.target_id}"] .row-comment-icon`, item.catatan_verifikator);
+            updateCommentButton(`.row-with-comment[data-row-type="t_kak_target"][data-pk-value="${item.target_id}"] .row-comment-icon`, item.catatan_verifikator);
           }
         });
       }
@@ -1754,7 +1761,7 @@ export function renderRevisiKakPage(path, userRole) {
         kakData.iku.forEach((item) => {
           if (item.catatan_verifikator) {
             const pkValue = item.kak_iku_id || item.iku_id;
-            updateCommentButton(`.row-with-comment[data-pk-value="${pkValue}"] .row-comment-icon`, item.catatan_verifikator);
+            updateCommentButton(`.row-with-comment[data-row-type="t_kak_iku"][data-pk-value="${pkValue}"] .row-comment-icon`, item.catatan_verifikator);
           }
         });
       }
@@ -1789,7 +1796,7 @@ export function renderRevisiKakPage(path, userRole) {
             // After appending, update comment buttons for the items in this category
             anggaranForKategori.forEach((item) => {
                 if (item.catatan_verifikator) {
-                    updateCommentButton(`.row-with-comment[data-pk-value="${item.anggaran_id}"] .row-comment-icon`, item.catatan_verifikator);
+                    updateCommentButton(`.row-with-comment[data-row-type="t_kak_anggaran"][data-pk-value="${item.anggaran_id}"] .row-comment-icon`, item.catatan_verifikator);
                 }
             });
         }
@@ -1933,9 +1940,9 @@ export function renderRevisiKakPage(path, userRole) {
     const currentFieldValueEl = document.getElementById("currentFieldValue");
 
     fieldCommentLabelEl.textContent = fieldLabel;
-    const input = btn
-      .closest(".input-with-comment")
-      .querySelector("input, textarea");
+    let container = btn.closest(".row-with-comment");
+    if (!container) container = btn.closest(".input-with-comment");
+    const input = container.querySelector("input, textarea");
     currentFieldValueEl.textContent = (input ? input.value : "") || "(Kosong)";
 
     if (isVerifikator) {
@@ -2028,7 +2035,7 @@ export function renderRevisiKakPage(path, userRole) {
 
     // Convert snake_case back to camelCase for selector
     const camelCaseKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
-    updateCommentButton(`.comment-icon[data-field="${camelCaseKey}"]`, comment);
+    updateCommentButton(`.row-comment-icon[data-field="${camelCaseKey}"]`, comment);
     updateCommentCount();
     fieldCommentModalInstance.hide();
     Swal.fire({
@@ -2119,7 +2126,7 @@ export function renderRevisiKakPage(path, userRole) {
 
       
 
-      let selector = `.row-with-comment[data-pk-value="${pk}"]`;
+      let selector = `.row-with-comment[data-row-type="${table}"][data-pk-value="${pk}"]`;
 
       if (field) {
 
