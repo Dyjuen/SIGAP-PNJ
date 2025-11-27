@@ -123,6 +123,61 @@ class KegiatanController
     }
 
     /**
+     * Get riwayat kegiatan based on user role
+     * 
+     * GET /api/kegiatan/riwayat
+     */
+    public function getRiwayat()
+    {
+        try {
+            // Get query parameters for filtering, searching, and pagination
+            $filters = [
+                'search' => $_GET['search'] ?? null,
+                'tanggal_mulai' => $_GET['tanggal_mulai'] ?? null,
+                'tanggal_selesai' => $_GET['tanggal_selesai'] ?? null,
+                'page' => isset($_GET['page']) ? (int)$_GET['page'] : 1,
+                'per_page' => isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10
+            ];
+
+            $userId = $this->userData['user_id'];
+            $roles = $this->userData['roles'] ?? [];
+
+            // Tentukan filter berdasarkan role
+            if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
+                // Pengusul: hanya KAK miliknya yang sudah disetujui verifikator
+                $filters['pengusul_user_id'] = $userId;
+                
+            } elseif ($this->hasRole('PPK')) {
+                // PPK: kegiatan yang sudah dia approve
+                $filters['approver_user_id'] = $userId;
+                $filters['approval_level'] = 'PPK';
+                
+            } elseif ($this->hasRole('Wadir')) {
+                // Wadir: kegiatan yang sudah dia approve
+                $filters['approver_user_id'] = $userId;
+                $filters['approval_level'] = 'Wadir2';
+                
+            } elseif ($this->hasRole('Bendahara')) {
+                // Bendahara: kegiatan yang sudah dia approve (semua level bendahara)
+                $filters['approver_user_id'] = $userId;
+                $filters['approval_level'] = 'Bendahara'; // akan match Bendahara-Cair, Bendahara-LPJ, dll
+                
+            } elseif ($this->hasRole('Verifikator') || $this->hasRole('Rektorat') || $this->hasRole('Admin')) {
+                // Verifikator/Rektorat/Admin: tampilkan semua
+                // No additional filter
+            }
+
+            // Get riwayat with filters
+            $result = $this->kegiatanModel->getRiwayatWithFilters($filters);
+
+            Response::success($result, 'Data riwayat berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil data riwayat: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
      * Get kegiatan detail for LPJ input
      * 
      * GET /api/kegiatan/{id}/detail

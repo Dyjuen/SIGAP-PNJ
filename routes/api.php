@@ -228,6 +228,7 @@ $router->get('/kegiatan', 'KegiatanController@index');
 $router->post('/kegiatan', 'KegiatanController@create');
 $router->get('/kegiatan/{id}', 'KegiatanController@show');
 $router->get('/kegiatan/{id}/detail', 'KegiatanController@getDetail');
+$router->get('/kegiatan/riwayat', 'KegiatanController@getRiwayat');
 
 // Status Workflow
 $router->post('/kegiatan/{id}/submit', 'KegiatanController@submit');

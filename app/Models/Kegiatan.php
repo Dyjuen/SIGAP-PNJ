@@ -23,7 +23,7 @@ class Kegiatan extends Model
                         FROM t_pencairan_dana
                         GROUP BY kegiatan_id
                     ) pencairan_sum ON k.kegiatan_id = pencairan_sum.kegiatan_id";
-        
+
         $whereSql = " WHERE 1=1";
 
         if (!empty($filters['status_id'])) {
@@ -32,7 +32,7 @@ class Kegiatan extends Model
         }
         if (!empty($filters['search'])) {
             $whereSql .= " AND t.nama_kegiatan LIKE ?";
-            $params[] = '%' . $filters['search'] . '%'; 
+            $params[] = '%' . $filters['search'] . '%';
         }
         if (!empty($filters['user_id'])) {
             $whereSql .= " AND t.pengusul_user_id = ?";
@@ -88,16 +88,16 @@ class Kegiatan extends Model
                         ks.status_id,
                         (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_diusulkan,
                         COALESCE(pencairan_sum.total_dicairkan, 0) as dana_dicairkan";
-        
+
         $page = $filters['page'] ?? 1;
         $perPage = $filters['per_page'] ?? 10;
         $offset = ($page - 1) * $perPage;
-        
+
         $finalParams = array_merge($params, [$perPage, $offset]);
         $paginationSql = " ORDER BY k.created_at DESC LIMIT ? OFFSET ?";
-        
+
         $sql = $mainSelect . " " . $baseSql . $whereSql . $paginationSql;
-        
+
         $data = $this->query($sql, $finalParams)->fetchAll(PDO::FETCH_ASSOC);
 
         // Augment data with full approval history and structure the current_approval object
@@ -130,6 +130,131 @@ class Kegiatan extends Model
         ];
     }
 
+
+
+    public function getRiwayatWithFilters(array $filters)
+    {
+        $params = [];
+
+        // Base SQL - ambil dari KAK yang sudah disetujui verifikator
+        $baseSql = "FROM t_kak kak
+                LEFT JOIN t_kegiatan k ON kak.kak_id = k.kak_id
+                JOIN m_users u ON kak.pengusul_user_id = u.user_id
+                JOIN m_kegiatan_status ks ON kak.status_id = ks.status_id
+                LEFT JOIN t_kegiatan_approval ka ON k.kegiatan_id = ka.kegiatan_id";
+
+        // WHERE clause - hanya KAK yang sudah disetujui verifikator
+        $whereSql = " WHERE kak.status_id >= 3"; // Status 3 ke atas (Disetujui Verifikator, dan seterusnya)
+
+        // Filter berdasarkan pengusul (untuk role Pengusul)
+        if (!empty($filters['pengusul_user_id'])) {
+            $whereSql .= " AND kak.pengusul_user_id = ?";
+            $params[] = $filters['pengusul_user_id'];
+        }
+
+        // Filter berdasarkan approver (untuk PPK, Wadir, Bendahara)
+        if (!empty($filters['approver_user_id'])) {
+            $whereSql .= " AND ka.approver_user_id = ? AND ka.status = 'Disetujui'";
+            $params[] = $filters['approver_user_id'];
+
+            // Filter approval level
+            if (!empty($filters['approval_level'])) {
+                if ($filters['approval_level'] === 'Bendahara') {
+                    // Match semua level bendahara
+                    $whereSql .= " AND ka.approval_level LIKE 'Bendahara%'";
+                } else {
+                    $whereSql .= " AND ka.approval_level = ?";
+                    $params[] = $filters['approval_level'];
+                }
+            }
+        }
+
+        // Filter search
+        if (!empty($filters['search'])) {
+            $whereSql .= " AND kak.nama_kegiatan LIKE ?";
+            $params[] = '%' . $filters['search'] . '%';
+        }
+
+        // Filter tanggal
+        if (!empty($filters['tanggal_mulai'])) {
+            $whereSql .= " AND kak.tanggal_mulai >= ?";
+            $params[] = $filters['tanggal_mulai'];
+        }
+        if (!empty($filters['tanggal_selesai'])) {
+            $whereSql .= " AND kak.tanggal_selesai <= ?";
+            $params[] = $filters['tanggal_selesai'];
+        }
+
+        // Group by untuk menghindari duplikat karena multiple approval
+        $groupBy = " GROUP BY kak.kak_id";
+
+        // Count total records
+        $countSql = "SELECT COUNT(DISTINCT kak.kak_id) " . $baseSql . $whereSql;
+        $totalRecords = $this->query($countSql, $params)->fetchColumn();
+
+        // Main query
+        $mainSelect = "SELECT 
+                    kak.kak_id,
+                    kak.nama_kegiatan,
+                    kak.tanggal_mulai,
+                    kak.tanggal_selesai,
+                    kak.lokasi,
+                    kak.created_at as tanggal_dibuat,
+                    u.nama_lengkap as pengusul_nama,
+                    ks.nama_status,
+                    ks.status_id,
+                    k.kegiatan_id,
+                    k.created_at as tanggal_diajukan_kegiatan,
+                    (SELECT SUM(ta.jumlah_diusulkan) 
+                     FROM t_kak_anggaran ta 
+                     WHERE ta.kak_id = kak.kak_id) as total_anggaran,
+                    CASE 
+                        WHEN k.kegiatan_id IS NOT NULL THEN 'Sudah Diajukan Kegiatan'
+                        ELSE 'Belum Diajukan Kegiatan'
+                    END as status_pengajuan_kegiatan";
+
+        // Pagination
+        $page = $filters['page'] ?? 1;
+        $perPage = $filters['per_page'] ?? 10;
+        $offset = ($page - 1) * $perPage;
+
+        $paginationSql = " ORDER BY kak.created_at DESC LIMIT ? OFFSET ?";
+        $finalParams = array_merge($params, [$perPage, $offset]);
+
+        $sql = $mainSelect . " " . $baseSql . $whereSql . $groupBy . $paginationSql;
+
+        $data = $this->query($sql, $finalParams)->fetchAll(PDO::FETCH_ASSOC);
+
+        // Tambahkan info approval untuk setiap kegiatan (jika ada)
+        foreach ($data as &$item) {
+            if ($item['kegiatan_id']) {
+                $sqlApprovals = "SELECT 
+                                ka.approval_level,
+                                ka.status,
+                                ka.approver_user_id,
+                                u.nama_lengkap as approver_nama,
+                                ka.created_at as tanggal_approval
+                            FROM t_kegiatan_approval ka
+                            LEFT JOIN m_users u ON ka.approver_user_id = u.user_id
+                            WHERE ka.kegiatan_id = ?
+                            ORDER BY ka.approval_kegiatan_id ASC";
+
+                $item['approval_history'] = $this->query($sqlApprovals, [$item['kegiatan_id']])->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                $item['approval_history'] = [];
+            }
+        }
+
+        return [
+            'data' => $data,
+            'pagination' => [
+                'total' => (int) $totalRecords,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'last_page' => ceil($totalRecords / $perPage)
+            ]
+        ];
+    }
     public function getKegiatanForPDF($kegiatanId)
     {
         $sql = "SELECT 
@@ -141,7 +266,7 @@ class Kegiatan extends Model
                 JOIN t_kak t ON k.kak_id = t.kak_id
                 JOIN m_users u ON t.pengusul_user_id = u.user_id
                 WHERE k.kegiatan_id = ?";
-        
+
         $kegiatan = $this->query($sql, [$kegiatanId])->fetch(PDO::FETCH_ASSOC);
         if ($kegiatan) {
             $sqlAnggaran = "SELECT ka.*, kb.nama as nama_kategori
@@ -160,7 +285,7 @@ class Kegiatan extends Model
         }
         return $kegiatan;
     }
-    
+
     public function find($id)
     {
         $sql = "SELECT
@@ -208,7 +333,7 @@ class Kegiatan extends Model
                 FROM t_kegiatan k
                 JOIN t_kak t ON k.kak_id = t.kak_id
                 JOIN m_kegiatan_status ks ON t.status_id = ks.status_id";
-        
+
         $params = [];
         if ($userId) {
             $sql .= " WHERE t.pengusul_user_id = ?";
@@ -221,7 +346,7 @@ class Kegiatan extends Model
     public function getLpjWithFilters(array $filters)
     {
         $params = [];
-                $sql = "SELECT
+        $sql = "SELECT
                             k.kegiatan_id,
                             t.nama_kegiatan,
                             u.nama_lengkap as pengusul_nama,
@@ -255,16 +380,16 @@ class Kegiatan extends Model
             $sql .= " AND t.pengusul_user_id = ?";
             $params[] = $filters['unit_pengusul'];
         }
-        
+
         $countSql = "SELECT COUNT(*) FROM ({$sql}) as count_table";
         $totalRecords = $this->query($countSql, $params)->fetchColumn();
-        
+
         $page = $filters['page'] ?? 1;
         $perPage = $filters['per_page'] ?? 10;
         $offset = ($page - 1) * $perPage;
 
         $sql .= " ORDER BY k.tgl_batas_lpj DESC LIMIT ? OFFSET ?";
-        
+
         $finalParams = array_merge($params, [$perPage, $offset]);
 
         $data = $this->query($sql, $finalParams)->fetchAll(PDO::FETCH_ASSOC);
@@ -299,7 +424,7 @@ class Kegiatan extends Model
         $sql = "UPDATE t_kegiatan_approval 
                 SET status = :status, approver_user_id = :user_id, catatan = :catatan, updated_at = NOW()
                 WHERE approval_kegiatan_id = :approval_id";
-        
+
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             'status' => $status,
@@ -316,7 +441,7 @@ class Kegiatan extends Model
                 AND approval_kegiatan_id > :current_approval_id
                 ORDER BY approval_kegiatan_id ASC
                 LIMIT 1";
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'kegiatan_id' => $kegiatanId,
@@ -330,7 +455,7 @@ class Kegiatan extends Model
     {
         $sql = "INSERT INTO t_kegiatan_approval (kegiatan_id, approval_level, approver_user_id, status, catatan)
                 VALUES (:kegiatan_id, :approval_level, :approver_user_id, :status, :catatan)";
-        
+
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             'kegiatan_id' => $kegiatanId,
@@ -346,7 +471,7 @@ class Kegiatan extends Model
                 SET status = 'Aktif', updated_at = NOW()
                 WHERE kegiatan_id = :kegiatan_id 
                 AND approval_level = 'Bendahara-LPJ'";
-        
+
         $stmt = $this->db->prepare($sql);
         return $stmt->execute(['kegiatan_id' => $kegiatanId]);
     }
