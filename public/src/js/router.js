@@ -48,6 +48,7 @@ const roleBasedRoutes = {
     "/settings": renderNotFoundPage,
     "/riwayat/detail/": renderDetailKegiatanPage,
     "/kegiatan/detail/": renderDetailKegiatanPage,
+    "/kegiatan/lpj/detail/": renderInputLpjPage,
   },
   Pengusul: {
     "/dashboard": renderPengusulDashboardPage,
@@ -65,6 +66,7 @@ const roleBasedRoutes = {
     "/usulan/revisi/": renderRevisiKakPage,
     "/pengaturan": renderNotFoundPage,
     "/kegiatan/detail/": renderDetailKegiatanPage,
+    "/kegiatan/lpj/detail/": renderInputLpjPage,
   },
   Verifikator: {
     "/dashboard": renderDashboardVerifikator,
@@ -74,6 +76,7 @@ const roleBasedRoutes = {
     "/pengaturan": renderNotFoundPage,
     "/revisi/": renderRevisiKakPage,
     "/kegiatan/detail/": renderDetailKegiatanPage,
+    "/kegiatan/lpj/detail/": renderInputLpjPage,
   },
   Wadir: {
     "/dashboard": renderWadirDashboardPage,
@@ -83,6 +86,7 @@ const roleBasedRoutes = {
     "/riwayat": renderRiwayatKAKPage,
     "/riwayat/detail/": renderDetailKegiatanPage,
     "/pengaturan": renderNotFoundPage,
+    "/kegiatan/lpj/detail/": renderInputLpjPage,
   },
   PPK: {
     "/dashboard": renderPpkDashboardPage,
@@ -92,6 +96,7 @@ const roleBasedRoutes = {
     "/riwayat": renderRiwayatKAKPage,
     "/riwayat/detail/": renderDetailKegiatanPage,
     "/pengaturan": renderNotFoundPage,
+    "/kegiatan/lpj/detail/": renderInputLpjPage,
   },
   Bendahara: {
     "/dashboard": renderBendaharaDashboardPage,
@@ -103,6 +108,7 @@ const roleBasedRoutes = {
     "/riwayat/detail/": renderDetailKegiatanPage,
     "/pengaturan": renderNotFoundPage,
     "/kegiatan/detail/": renderDetailKegiatanPage,
+    "/kegiatan/lpj/detail/": renderInputLpjPage,
   },
 };
 

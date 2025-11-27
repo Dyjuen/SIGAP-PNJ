@@ -3,6 +3,7 @@
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderInputLpjPage(path, userRole) {
+  const isViewOnly = path.includes("/lpj/detail");
   const isPengusul = userRole.toLowerCase() === "pengusul";
   const isBendahara = userRole.toLowerCase() === "bendahara";
 
@@ -1086,10 +1087,12 @@ export function renderInputLpjPage(path, userRole) {
       <div class="flex justify-center mb-8">
         <div class="flex items-center gap-3 px-6 py-4 rounded-full" style="background: rgba(0, 188, 212, 0.1);">
           <div id="pageIcon" class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg" style="background: #00BCD4;">
-            <i class="ti ti-file-pencil"></i>
+            <i class="ti ti-${
+              isViewOnly || isBendahara ? "eye" : "file-pencil"
+            }"></i>
           </div>
           <span id="pageTitle" class="font-semibold text-base" style="color: #00BCD4;">
-            Input Laporan Pertanggungjawaban
+            ${isViewOnly ? "Detail" : "Input"} Laporan Pertanggungjawaban
           </span>
         </div>
       </div>
@@ -1134,14 +1137,14 @@ export function renderInputLpjPage(path, userRole) {
             </div>
             
             <div id="rowCommentInputContainer" style="${
-              isPengusul ? "display: none;" : ""
+              isPengusul || isViewOnly ? "display: none;" : ""
             }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
               <textarea id="rowCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi untuk item ini..."></textarea>
             </div>
             
             <div id="rowCommentDisplayContainer" style="${
-              isBendahara ? "display: none;" : ""
+              isBendahara && !isViewOnly ? "display: none;" : ""
             }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan dari Bendahara</label>
               <div class="p-3 rounded-lg" style="background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A;" id="rowCommentDisplayText"></div>
@@ -1151,7 +1154,7 @@ export function renderInputLpjPage(path, userRole) {
               <div class="info-box-text">
                 <i class="ti ti-info-circle"></i> 
                 ${
-                  isBendahara
+                  isBendahara && !isViewOnly
                     ? "Berikan masukan yang jelas dan konstruktif untuk membantu pengusul."
                     : "Perhatikan catatan dari bendahara untuk memperbaiki LPJ Anda."
                 }
@@ -1161,7 +1164,7 @@ export function renderInputLpjPage(path, userRole) {
           <div class="modal-footer">
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Tutup</button>
             ${
-              isBendahara
+              isBendahara && !isViewOnly
                 ? `<button type="button" class="btn btn-primary" onclick="window.saveRowComment()">Simpan Catatan</button>`
                 : ""
             }
@@ -1176,6 +1179,7 @@ export function renderInputLpjPage(path, userRole) {
   // --- STATE MANAGEMENT ---
   const state = {
     kegiatan: null,
+    kegiatanId: null,
     satuan: [],
     lpjData: null, // To hold existing LPJ data if in revision mode
     isLoading: true,
@@ -1354,7 +1358,7 @@ export function renderInputLpjPage(path, userRole) {
 
     const realisasiHargaFormatted = formatCurrency(realisasiItem.harga_satuan);
 
-    const inputAttr = isBendahara ? "readonly disabled" : "";
+    const inputAttr = isBendahara || isViewOnly ? "readonly disabled" : "";
 
     const commonInputClasses = "w-full px-4 py-3 border-2 rounded-lg text-sm";
 
@@ -1366,28 +1370,19 @@ export function renderInputLpjPage(path, userRole) {
 
     const enabledInputStyleAttr = `style="${commonInputStyle}" ${commonOnfocusBlur}`;
 
-    const currentInputStyleAttr = isBendahara
+    const currentInputStyleAttr = isBendahara || isViewOnly
       ? disabledInputStyleAttr
       : enabledInputStyleAttr;
 
     return `
 
         ${
-          isBendahara
+          (isBendahara && !isViewOnly) || ((isPengusul || isViewOnly) && rowComments[item.anggaran_id])
             ? `<button class="row-comment-icon" onclick="window.openRowCommentModal(this)" data-label="Item Anggaran #${
                 index + 1
               }"><i class="ti ti-message-circle-2"></i></button>`
             : ""
         }
-
-        ${
-          isPengusul && rowComments[item.anggaran_id]
-            ? `<button class="row-comment-icon" onclick="window.openRowCommentModal(this)" data-label="Item Anggaran #${
-                index + 1
-              }"><i class="ti ti-message-circle-2"></i></button>`
-            : ""
-        }
-
   
 
         <!-- RAB Section (Disabled) -->
@@ -1505,7 +1500,7 @@ export function renderInputLpjPage(path, userRole) {
             
 
             ${
-              isPengusul
+              isPengusul && !isViewOnly
                 ? `
 
                           <label class="cursor-pointer flex items-center justify-center">
@@ -1540,7 +1535,7 @@ export function renderInputLpjPage(path, userRole) {
                   }</a>
 
                       ${
-                        isPengusul
+                        isPengusul && !isViewOnly
                           ? `<button type="button" class="remove-button" onclick="window.deleteUploadedFile(this, ${file.lampiran_id})">
 
                               <span class="text-xl font-bold">−</span>
@@ -1568,7 +1563,9 @@ export function renderInputLpjPage(path, userRole) {
     let buttons = "";
     const backButton = `<button id="backButton" class="btn-back"><span>←</span> Kembali</button>`;
 
-    if (isPengusul) {
+    if (isViewOnly) {
+      buttons = backButton;
+    } else if (isPengusul) {
       if (state.status === "new" || state.status === "revisi") {
         buttons = `
           ${backButton}
@@ -1581,9 +1578,7 @@ export function renderInputLpjPage(path, userRole) {
       } else {
         buttons = backButton;
       }
-    }
-
-    if (isBendahara) {
+    } else if (isBendahara) {
       buttons = `
         ${backButton}
         <div class="flex gap-4">
@@ -1798,14 +1793,14 @@ export function renderInputLpjPage(path, userRole) {
       "currentRowValue"
     ).innerHTML = `<strong>${rabUraian}</strong> <br> <small>RAB: ${rabHarga}</small>`;
 
-    if (isBendahara) {
+    if (isBendahara && !isViewOnly) {
       document.getElementById("rowCommentInputContainer").style.display =
         "block";
       document.getElementById("rowCommentDisplayContainer").style.display =
         "none";
       document.getElementById("rowCommentInput").value = commentText;
     } else {
-      // Pengusul
+      // Pengusul or ViewOnly
       document.getElementById("rowCommentInputContainer").style.display =
         "none";
       document.getElementById("rowCommentDisplayContainer").style.display =
@@ -1903,35 +1898,42 @@ export function renderInputLpjPage(path, userRole) {
   };
 
   function attachActionListeners() {
-    const kegiatanId = new URLSearchParams(window.location.search).get(
-      "kegiatan_id"
-    );
     const backButton = document.getElementById("backButton");
     if (backButton)
       backButton.addEventListener("click", () => window.history.back());
 
-    if (isPengusul) {
+    if (isPengusul && !isViewOnly) {
       const submitLpjButton = document.getElementById("submitLpjButton");
       if (submitLpjButton)
-        submitLpjButton.addEventListener("click", () => submitLpj(kegiatanId));
+        submitLpjButton.addEventListener("click", () => submitLpj(state.kegiatanId));
     }
-    if (isBendahara) {
+    if (isBendahara && !isViewOnly) {
       const submitReviewButton = document.getElementById("submitReviewButton");
       const approveLpjButton = document.getElementById("approveLpjButton");
       if (submitReviewButton)
         submitReviewButton.addEventListener("click", () =>
-          submitReview(kegiatanId)
+          submitReview(state.kegiatanId)
         );
       if (approveLpjButton)
         approveLpjButton.addEventListener("click", () =>
-          approveLpj(kegiatanId)
+          approveLpj(state.kegiatanId)
         );
     }
   }
 
   async function initializeApp() {
     const params = new URLSearchParams(window.location.search);
-    const kegiatanId = params.get("kegiatan_id");
+    let kegiatanId = params.get("kegiatan_id");
+
+    if (!kegiatanId) {
+      const pathSegments = path.split('/');
+      const idFromPath = pathSegments[pathSegments.length - 1];
+      if (idFromPath && !isNaN(idFromPath)) {
+          kegiatanId = idFromPath;
+      }
+    }
+    
+    state.kegiatanId = kegiatanId;
 
     if (!kegiatanId) {
       document.getElementById(
@@ -1943,13 +1945,16 @@ export function renderInputLpjPage(path, userRole) {
     await Promise.all([fetchSatuan(), fetchLpjDetail(kegiatanId)]);
 
     state.isLoading = false;
-    document.getElementById(
-      "pageTitle"
-    ).textContent = `LPJ: ${state.kegiatan.nama_kegiatan}`;
-    if (isBendahara) {
-      document.getElementById("pageIcon").innerHTML =
-        '<i class="ti ti-eye"></i>';
+    
+    // Set dynamic page title based on context
+    const pageTitleElement = document.querySelector('.input-lpj-page #pageTitle');
+    const dynamicTitleElement = document.getElementById("pageTitle"); // This is the one in the colored box, but it is the same.
+    if(isViewOnly){
+        if(pageTitleElement) pageTitleElement.textContent = `Detail LPJ: ${state.kegiatan.nama_kegiatan}`;
+    } else {
+        if(dynamicTitleElement) dynamicTitleElement.textContent = `LPJ: ${state.kegiatan.nama_kegiatan}`;
     }
+
 
     renderRABSections();
     renderActionButtons();
