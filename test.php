@@ -6,7 +6,7 @@ use App\Services\Mailer;
 $mailer = new Mailer();
 
 // Test email
-$html = $mailer->renderTemplate('kak-submitted', [
+$html = $mailer->renderTemplate('lpj-reminder-h1', [
     'nama_kegiatan' => 'Kegiatan Test',
     'pengusul_nama' => 'Dr. Budi Santoso',
     'kak_id' => 123,
@@ -15,7 +15,7 @@ $html = $mailer->renderTemplate('kak-submitted', [
 ]);
 
 $result = $mailer->send(
-    'duia.putra12@gmail.com',
+    'ahmadraihan1801@gmail.com',
     'Test Email - SIGAP PNJ',
     $html
 );

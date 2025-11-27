@@ -1,31 +1,10 @@
 <?php
-$emailContent = <<<HTML
-<div class="greeting">
-    Halo <strong>{$pengusul_nama}</strong>,
-</div>
-
-<div class="content">
-    Mohon maaf, KAK Anda telah ditolak oleh verifikator. Silakan baca catatan berikut:
-</div>
-
-<div class="alert-box alert-danger">
-    <strong>❌ Alasan Penolakan:</strong><br>
-    {$catatan}
-</div>
-
-<div class="info-box">
-    <strong>ID KAK:</strong> #{$kak_id}<br>
-    <strong>Kegiatan:</strong> {$nama_kegiatan}
-</div>
-
-<div class="content">
-    Anda bisa membuat KAK baru atau menghubungi tim verifikator untuk mendiskusikan keputusan ini.
-</div>
-
-<div class="content">
-    Terima kasih atas pemahaman Anda.
-</div>
-HTML;
+$emailData = [
+    'title' => 'KAK Ditolak',
+    'status_color' => '#dc3545',
+    'icon_text' => '✗',
+    'body' => "Mohon maaf <strong>{$pengusul_nama}</strong>,<br><br>KAK Anda untuk kegiatan \"<strong>{$nama_kegiatan}</strong>\" telah ditolak.<br><br><strong>Alasan Penolakan:</strong> " . ($catatan ?? '') . "<br><br>Anda bisa membuat KAK baru atau menghubungi tim verifikator untuk mendiskusikan keputusan ini."
+];
 
 $subject = "❌ KAK Ditolak";
 require __DIR__ . '/_base.php';

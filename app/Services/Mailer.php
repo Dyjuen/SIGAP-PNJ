@@ -5,6 +5,15 @@ namespace App\Services;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+/**
+ * Email Service using PHPMailer
+ * 
+ * Image URLs in emails:
+ * - Emails require absolute URLs (http://domain.com/path/image.png)
+ * - Set APP_URL environment variable for production
+ * - Images must be publicly accessible via HTTP
+ * - Logo URL is automatically added to all templates
+ */
 class Mailer
 {
     private $mail;
@@ -126,6 +135,12 @@ class Mailer
         if (!file_exists($templatePath)) {
             throw new Exception("Email template not found: {$templateName}");
         }
+
+        // Add base URL for email assets (images, etc)
+        // Change this to your production domain when deploying
+        $baseUrl = getenv('APP_URL') ?: 'http://localhost';
+        $data['logoUrl'] = $data['logoUrl'] ?? $baseUrl . '/assets/img/logo/logo.svg';
+        $data['baseUrl'] = $baseUrl;
 
         extract($data);
         ob_start();

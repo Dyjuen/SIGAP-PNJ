@@ -1,26 +1,13 @@
 <?php
-ob_start();
-?>
+$emailData = [
+    'title' => 'Pengingat LPJ H-1',
+    'status_color' => '#dc3545',
+    'icon_text' => '1',
+    'body' => "Halo <strong>{$pengusul_nama}</strong>,<br><br>Ini adalah pengingat bahwa Laporan Pertanggungjawaban (LPJ) untuk kegiatan \"<strong>{$nama_kegiatan}</strong>\" harus diserahkan besok.",
+    'button_text' => 'Lihat Detail Kegiatan',
+    'button_link' => $actionLink
+];
 
-<p class="greeting">Halo <strong><?= htmlspecialchars($pengusul_nama ?? 'User', ENT_QUOTES, 'UTF-8') ?></strong>,</p>
-
-<p class="content">
-    Ini adalah pengingat bahwa Laporan Pertanggungjawaban (LPJ) untuk kegiatan:
-    <br><strong>"<?= htmlspecialchars($nama_kegiatan ?? '[Nama Kegiatan]', ENT_QUOTES, 'UTF-8') ?>"</strong>
-    <br>harus diserahkan besok.
-</p>
-
-<div class="button-container">
-    <a href="<?= htmlspecialchars($actionLink ?? '#', ENT_QUOTES, 'UTF-8') ?>" class="button">Lihat Detail Kegiatan</a>
-</div>
-
-<hr class="divider">
-
-<p style="font-size: 12px; color: #888; text-align: center;">
-    ID Kegiatan Anda adalah #<?= htmlspecialchars($kegiatan_id ?? '0', ENT_QUOTES, 'UTF-8') ?>.
-</p>
-
-<?php
-$emailContent = ob_get_clean();
+$subject = "Pengingat LPJ H-1";
 require __DIR__ . '/_base.php';
 ?>

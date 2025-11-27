@@ -1,178 +1,135 @@
-<!-- Ini adalah template base yang akan digunakan semua email -->
-<!-- Simpan di: app/Views/emails/_base.php -->
-
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $subject ?? 'SIGAP PNJ'; ?></title>
     <style>
-        * { margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
         }
-        .email-container {
+        .container {
+            width: 100%;
+            padding: 40px 0;
+        }
+        .card {
+            width: 90%;
             max-width: 600px;
             margin: 0 auto;
             background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
-        .email-header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 30px 20px;
+        .icon-bubble {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #ffffff;
             text-align: center;
+            line-height: 52px;
+            position: absolute;
+            top: -30px;
+            left: 20px;
         }
-        .email-header img {
-            max-height: 50px;
-            margin-bottom: 10px;
-        }
-        .email-header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin: 0;
-        }
-        .email-body {
-            padding: 30px 20px;
-        }
-        .greeting {
-            font-size: 16px;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .greeting strong {
-            color: #1e3c72;
+        .icon-bubble span {
+            font-size: 30px;
+            font-weight: normal;
         }
         .content {
-            font-size: 14px;
-            line-height: 1.8;
-            color: #555;
-            margin: 20px 0;
+            padding: 60px 40px 40px 40px;
         }
-        .alert-box {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-            border-left: 4px solid;
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0 0 20px 0;
         }
-        .alert-info {
-            background-color: #e3f2fd;
-            border-color: #2196F3;
-            color: #0d47a1;
-        }
-        .alert-warning {
-            background-color: #fff3e0;
-            border-color: #ff9800;
-            color: #e65100;
-        }
-        .alert-danger {
-            background-color: #ffebee;
-            border-color: #f44336;
-            color: #b71c1c;
-        }
-        .alert-success {
-            background-color: #e8f5e9;
-            border-color: #4caf50;
-            color: #1b5e20;
-        }
-        .button {
-            display: inline-block;
-            padding: 12px 30px;
-            background-color: #2a5298;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 600;
-            margin: 20px 0;
-            transition: background-color 0.3s;
-        }
-        .button:hover {
-            background-color: #1e3c72;
+        .body-text {
+            font-size: 16px;
+            color: #333333;
+            line-height: 1.6;
+            margin: 0 0 30px 0;
         }
         .button-container {
             text-align: center;
+            margin-bottom: 30px;
         }
-        .info-box {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-            font-size: 14px;
-        }
-        .info-box strong {
-            color: #1e3c72;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .divider {
-            border: none;
-            border-top: 1px solid #ddd;
-            margin: 20px 0;
-        }
-        .email-footer {
-            background-color: #f5f5f5;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #888;
-            border-top: 1px solid #ddd;
-        }
-        .footer-link {
-            color: #2a5298;
+        .button {
+            color: #ffffff;
+            padding: 14px 40px;
+            border-radius: 12px;
             text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            display: inline-block;
         }
-        .footer-link:hover {
-            text-decoration: underline;
-        }
-        .highlight {
-            color: #2a5298;
-            font-weight: 600;
-        }
-        .table-data {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
+        .footer-text {
             font-size: 14px;
+            color: #333333;
+            margin: 0 0 8px 0;
         }
-        .table-data td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+        .footer-text strong {
+            font-weight: bold;
+            color: #000000;
         }
-        .table-data td:first-child {
-            font-weight: 600;
-            color: #1e3c72;
-            width: 40%;
+        .bottom-section {
+            text-align: center;
+            padding-top: 40px;
         }
-        @media (max-width: 600px) {
-            .email-container { border-radius: 0; }
-            .email-body { padding: 20px 15px; }
-            .button { padding: 10px 20px; font-size: 14px; }
+        .logo {
+            width: 60px;
+            margin: 0 auto 20px auto;
+        }
+        .phone-number {
+            font-size: 14px;
+            color: #000000;
+            font-weight: normal;
+            margin: 0 0 10px 0;
+        }
+        .address {
+            font-size: 12px;
+            color: #888888;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <div class="email-header">
-            <img src="../../../public/assets/img/logo/logo_pnj.png" alt="Logo PNJ" style="max-height: 50px;">
-            <h1>SIGAP PNJ</h1>
+    <div class="container">
+        <div class="card">
+            <div class="icon-bubble" style="border: 4px solid <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;">
+                <span style="color: <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;"><?php echo $emailData['icon_text'] ?? '!'; ?></span>
+            </div>
+            <div class="content">
+                <?php if (isset($emailData['title'])): ?>
+                    <h1 class="title" style="color: <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;"><?php echo $emailData['title']; ?></h1>
+                <?php endif; ?>
+                
+                <?php if (isset($emailData['body'])): ?>
+                    <p class="body-text"><?php echo $emailData['body']; ?></p>
+                <?php endif; ?>
+
+                <?php if (isset($emailData['button_text']) && isset($emailData['button_link'])): ?>
+                    <div class="button-container">
+                        <a href="<?php echo $emailData['button_link']; ?>" class="button" style="background-color: <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;"><?php echo $emailData['button_text']; ?></a>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($emailData['footer_line1'])): ?>
+                    <p class="footer-text"><?php echo $emailData['footer_line1']; ?></p>
+                <?php endif; ?>
+                
+                <?php if (isset($emailData['footer_line2'])): ?>
+                    <p class="footer-text"><?php echo $emailData['footer_line2']; ?></p>
+                <?php endif; ?>
+            </div>
         </div>
-        <div class="email-body">
-            <?php echo $emailContent; ?>
-        </div>
-        <div class="email-footer">
-            <p>Sistem Informasi Gratifikasi Administrasi Publik - Politeknik Negeri Jakarta</p>
-            <p>
-                <a href="https://pnj.ac.id" class="footer-link">pnj.ac.id</a> | 
-                <a href="mailto:sigap@pnj.ac.id" class="footer-link">sigap@pnj.ac.id</a>
-            </p>
-            <p style="margin-top: 15px; color: #aaa;">© 2025 PNJ. Semua hak dilindungi.</p>
+        <div class="bottom-section">
+            <img src="http://localhost/assets/img/logo.svg" alt="Logo" class="logo">
+            <p class="phone-number">+123 456 789</p>
+            <p class="address">Lorem ipsum dolor sit<br>amet, consectetur adipiscing elit,</p>
         </div>
     </div>
 </body>

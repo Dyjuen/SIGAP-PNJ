@@ -1,26 +1,13 @@
 <?php
-ob_start();
-?>
+$emailData = [
+    'title' => 'Kegiatan Disetujui PPK',
+    'status_color' => '#28a745',
+    'icon_text' => '✓',
+    'body' => "Halo <strong>{$pengusul_nama}</strong>,<br><br>Kegiatan Anda \"<strong>{$nama_kegiatan}</strong>\" telah disetujui oleh PPK.",
+    'button_text' => 'Lihat Detail Kegiatan',
+    'button_link' => $actionLink
+];
 
-<p class="greeting">Halo <strong><?= htmlspecialchars($pengusul_nama ?? 'User', ENT_QUOTES, 'UTF-8') ?></strong>,</p>
-
-<p class="content">
-    Kegiatan Anda:
-    <br><strong>"<?= htmlspecialchars($nama_kegiatan ?? '[Nama Kegiatan]', ENT_QUOTES, 'UTF-8') ?>"</strong>
-    <br>telah disetujui oleh PPK.
-</p>
-
-<div class="button-container">
-    <a href="<?= htmlspecialchars($actionLink ?? '#', ENT_QUOTES, 'UTF-8') ?>" class="button">Lihat Detail Kegiatan</a>
-</div>
-
-<hr class="divider">
-
-<p style="font-size: 12px; color: #888; text-align: center;">
-    ID Kegiatan Anda adalah #<?= htmlspecialchars($kegiatan_id ?? '0', ENT_QUOTES, 'UTF-8') ?>.
-</p>
-
-<?php
-$emailContent = ob_get_clean();
+$subject = "✅ Kegiatan Disetujui PPK";
 require __DIR__ . '/_base.php';
 ?>

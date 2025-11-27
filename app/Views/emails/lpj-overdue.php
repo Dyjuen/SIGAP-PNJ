@@ -1,26 +1,13 @@
 <?php
-ob_start();
-?>
+$emailData = [
+    'title' => 'LPJ Melebihi Batas Waktu',
+    'status_color' => '#dc3545',
+    'icon_text' => '✗',
+    'body' => "Halo <strong>{$pengusul_nama}</strong>,<br><br>Laporan Pertanggungjawaban (LPJ) untuk kegiatan \"<strong>{$nama_kegiatan}</strong>\" telah melewati batas waktu pengumpulan.",
+    'button_text' => 'Lihat Detail Kegiatan',
+    'button_link' => $actionLink
+];
 
-<p class="greeting">Halo <strong><?= htmlspecialchars($pengusul_nama ?? 'User', ENT_QUOTES, 'UTF-8') ?></strong>,</p>
-
-<p class="content">
-    Laporan Pertanggungjawaban (LPJ) untuk kegiatan:
-    <br><strong>"<?= htmlspecialchars($nama_kegiatan ?? '[Nama Kegiatan]', ENT_QUOTES, 'UTF-8') ?>"</strong>
-    <br>telah melewati batas waktu pengumpulan.
-</p>
-
-<div class="button-container">
-    <a href="<?= htmlspecialchars($actionLink ?? '#', ENT_QUOTES, 'UTF-8') ?>" class="button">Lihat Detail Kegiatan</a>
-</div>
-
-<hr class="divider">
-
-<p style="font-size: 12px; color: #888; text-align: center;">
-    ID Kegiatan Anda adalah #<?= htmlspecialchars($kegiatan_id ?? '0', ENT_QUOTES, 'UTF-8') ?>.
-</p>
-
-<?php
-$emailContent = ob_get_clean();
+$subject = "LPJ Melebihi Batas Waktu";
 require __DIR__ . '/_base.php';
 ?>
