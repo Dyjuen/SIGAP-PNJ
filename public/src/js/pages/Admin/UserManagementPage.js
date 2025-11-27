@@ -5,18 +5,401 @@ import { adminSidebar } from '../../layout/sidebars/adminSidebar.js';
 
 export function renderUserManagementPage(path, userRole) {
 
-  const pageContent = `
+// Ganti bagian modal di UserManagementPage.js dengan kode berikut:
+
+const pageContent = `
+    <style>
+        /* ========== DESIGN SYSTEM - TYPOGRAPHY ========== */
+        :root {
+            --font-xs: 0.75rem;      /* 12px */
+            --font-sm: 0.875rem;     /* 14px */
+            --font-base: 1rem;       /* 16px */
+            --font-lg: 1.125rem;     /* 18px */
+            --font-xl: 1.25rem;      /* 20px */
+            --font-2xl: 1.5rem;      /* 24px */
+            
+            --weight-normal: 400;
+            --weight-medium: 500;
+            --weight-semibold: 600;
+            --weight-bold: 700;
+            
+            --primary-color: #33C8DA;
+            --primary-dark: #2BA9B8;
+        }
+
+        /* ========== MODAL ANIMATIONS ========== */
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== MODAL BACKDROP ========== */
+        .modal-backdrop.show {
+            opacity: 0.6 !important;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ========== MODAL CONTENT ========== */
+        .modal.show .modal-dialog {
+            animation: modalFadeIn 0.4s ease-out;
+        }
+
+        .modal-content {
+            border: none !important;
+            border-radius: 1.5rem !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+        }
+
+        /* ========== MODAL HEADER ========== */
+        .modal-header-gradient {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .modal-header-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent);
+            pointer-events: none;
+        }
+
+        .modal-header-gradient > div:first-child {
+            flex: 1;
+            text-align: left;
+        }
+
+        .modal-header-gradient .modal-title {
+            font-size: var(--font-2xl);
+            font-weight: var(--weight-bold);
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-header-gradient .modal-title i {
+            font-size: var(--font-2xl);
+        }
+
+        .modal-header-gradient .modal-subtitle {
+            font-size: var(--font-sm);
+            font-weight: var(--weight-normal);
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            margin: 0;
+        }
+
+        .modal-header-gradient .btn-close {
+            background: transparent;
+            opacity: 1;
+            position: relative;
+            z-index: 1;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .modal-header-gradient .btn-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-header-gradient .btn-close svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            stroke: white;
+            stroke-width: 2.5;
+        }
+
+        /* ========== MODAL BODY ========== */
+        .modal-body-modern {
+            padding: 2rem !important;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        /* ========== GLASS INPUT STYLE ========== */
+        .glass-input-wrapper {
+            border-radius: 0.875rem;
+            border: 2px solid rgba(209, 213, 219, 0.5);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .glass-input-wrapper:focus-within {
+            border-color: rgba(51, 200, 218, 0.7);
+            background: rgba(51, 200, 218, 0.05);
+            box-shadow: 0 0 0 4px rgba(51, 200, 218, 0.1);
+        }
+
+        .glass-input-wrapper input,
+        .glass-input-wrapper select {
+            background-color: transparent;
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: none;
+            outline: none;
+            font-size: var(--font-base);
+            font-weight: var(--weight-normal);
+            color: #374151;
+            transition: all 0.3s ease;
+            line-height: 1.5;
+        }
+
+        .glass-input-wrapper input::placeholder {
+            color: rgba(107, 114, 128, 0.6);
+            font-size: var(--font-sm);
+            font-weight: var(--weight-normal);
+        }
+
+        .glass-input-wrapper select {
+            cursor: pointer;
+            font-weight: var(--weight-medium);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        /* ========== FORM LABEL ========== */
+        .form-label-modern {
+            display: block;
+            color: #374151;
+            font-size: var(--font-sm);
+            font-weight: var(--weight-semibold);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+            line-height: 1;
+        }
+
+        .form-label-modern .required-star {
+            color: #EF4444;
+            margin-left: 0.25rem;
+            font-weight: var(--weight-bold);
+        }
+
+        .form-label-modern i {
+            margin-right: 0.5rem;
+            opacity: 0.8;
+            font-size: var(--font-base);
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        /* ========== HELPER TEXT ========== */
+        .helper-text {
+            font-size: var(--font-xs);
+            font-weight: var(--weight-normal);
+            color: #6B7280;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            line-height: 1.4;
+        }
+
+        .helper-text i {
+            font-size: var(--font-sm);
+            opacity: 0.7;
+            flex-shrink: 0;
+        }
+
+        /* ========== ERROR ALERT IN MODAL ========== */
+        .modal-error-alert {
+            background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+            border: 1px solid #FCA5A5;
+            border-left: 4px solid #EF4444;
+            color: #991B1B;
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            backdrop-filter: blur(8px);
+            animation: slideUp 0.3s ease-out;
+            font-size: var(--font-sm);
+            font-weight: var(--weight-medium);
+            line-height: 1.5;
+        }
+
+        .modal-error-alert.show {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.625rem;
+        }
+
+        .modal-error-alert i {
+            font-size: var(--font-lg);
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        .modal-error-alert span {
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        /* ========== MODAL FOOTER ========== */
+        .modal-footer-modern {
+            padding: 1.25rem 2rem !important;
+            background: rgba(248, 250, 252, 0.8);
+            backdrop-filter: blur(10px);
+            border: none;
+            gap: 0.75rem;
+        }
+
+        /* ========== MODERN BUTTONS ========== */
+        .btn-modern-cancel {
+            background: rgba(107, 114, 128, 0.1);
+            border: 2px solid rgba(107, 114, 128, 0.3);
+            color: #4B5563;
+            font-weight: var(--weight-semibold);
+            font-size: var(--font-base);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-cancel:hover {
+            background: rgba(107, 114, 128, 0.15);
+            border-color: rgba(107, 114, 128, 0.5);
+            color: #374151;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-modern-cancel i {
+            font-size: var(--font-lg);
+            margin-right: 0.375rem;
+        }
+
+        .btn-modern-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            color: white;
+            font-weight: var(--weight-semibold);
+            font-size: var(--font-base);
+            padding: 0.75rem 1.75rem;
+            border-radius: 0.875rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(51, 200, 218, 0.3);
+        }
+
+        .btn-modern-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-modern-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-modern-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(51, 200, 218, 0.4);
+        }
+
+        .btn-modern-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-modern-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-modern-primary i {
+            font-size: var(--font-lg);
+            margin-right: 0.375rem;
+        }
+
+        /* ========== SPINNER ========== */
+        .spinner-border-modern {
+            width: 1rem;
+            height: 1rem;
+            border-width: 2px;
+            margin-left: 0.5rem;
+        }
+
+        /* ========== FORM ANIMATION ========== */
+        .form-group-animate {
+            animation: slideUp 0.4s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group-animate:nth-child(1) { animation-delay: 0.05s; }
+        .form-group-animate:nth-child(2) { animation-delay: 0.1s; }
+        .form-group-animate:nth-child(3) { animation-delay: 0.15s; }
+        .form-group-animate:nth-child(4) { animation-delay: 0.2s; }
+        .form-group-animate:nth-child(5) { animation-delay: 0.25s; }
+        .form-group-animate:nth-child(6) { animation-delay: 0.3s; }
+    </style>
+
     <div class="user-management-page">
+        <h2 class="text-4xl font-bold text-gray-800 mb-4 header-animation">Manajemen User</h2>
         <div class="row g-4 mb-4">
             <div class="col-sm-6 col-xl-6">
-                <div class="card stat-card-active">
+                <div class="card stat-card-active card-animation">
                 <div class="card-body">
                     <div class="d-flex align-items-start justify-content-between">
                     <div class="content-left">
                         <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Akun</span>
                         <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total User Aktif</h4>
                         <div class="d-flex align-items-end mt-2">
-                        <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="activeUserCount">0</h1>
+                        <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="activeUserCount" data-target="0">0</h1>
                         <small style="font-size: 15px; font-weight: 500; opacity: 0.9;">Users</small>
                         </div>
                     </div>
@@ -25,14 +408,14 @@ export function renderUserManagementPage(path, userRole) {
                 </div>
             </div>
             <div class="col-sm-6 col-xl-6">
-                <div class="card stat-card-inactive">
+                <div class="card stat-card-inactive card-animation">
                 <div class="card-body">
                     <div class="d-flex align-items-start justify-content-between">
                     <div class="content-left">
                         <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Akun</span>
                         <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total Non-Aktif</h4>
                         <div class="d-flex align-items-end mt-2">
-                        <h1 class="mb-0 me-2" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="inactiveUserCount">0</h1>
+                        <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="inactiveUserCount" data-target="0">0</h1>
                         <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">Users</small>
                         </div>
                     </div>
@@ -62,42 +445,64 @@ export function renderUserManagementPage(path, userRole) {
                     <th style="text-align: center;">Aksi</th>
                 </tr>
                 </thead>
-                <tbody id="userTableBody">
+                <tbody id="userTableBody" class="table-animation">
                 </tbody>
             </table>
         </div>
     </div>
 
+    <!-- ========== MODAL EDIT PROFIL ========== -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalCenterTitle">Edit Profil</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-header modal-header-gradient">
+            <div>
+              <h5 class="modal-title">
+                <i class="ti ti-user-edit"></i> Edit Profil User
+              </h5>
+              <p class="modal-subtitle mb-0">Perbarui informasi user yang dipilih</p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
-          <div class="modal-body">
-            <div id="editProfileError" class="alert alert-danger" style="display: none;"></div>
+          <div class="modal-body modal-body-modern">
+            <div id="editProfileError" class="modal-error-alert">
+              <i class="ti ti-alert-circle"></i>
+              <span></span>
+            </div>
             <form id="editProfileForm">
               <input type="hidden" id="editUserId">
               
-              <div class="row">
-                <div class="col mb-3">
-                  <label for="editNama" class="form-label">Nama</label>
-                  <input type="text" id="editNama" class="form-control" placeholder="Masukkan nama" required>
+              <div class="row g-4">
+                <div class="col-md-6 form-group-animate">
+                  <label for="editNama" class="form-label-modern">
+                    <i class="ti ti-user"></i>Nama Lengkap
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="text" id="editNama" placeholder="Masukkan nama lengkap" required>
+                  </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col mb-3">
-                  <label for="editUsername" class="form-label">Username</label>
-                  <input type="text" id="editUsername" class="form-control" placeholder="Masukkan username" required readonly>
+                
+                <div class="col-md-6 form-group-animate">
+                  <label for="editUsername" class="form-label-modern">
+                    <i class="ti ti-at"></i>Username
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="text" id="editUsername" placeholder="Masukkan username" required readonly>
+                  </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col mb-3">
-                  <label for="editEmail" class="form-label">Email</label>
-                  <input type="email" id="editEmail" class="form-control" placeholder="Masukkan email" required>
+                
+                <div class="col-12 form-group-animate">
+                  <label for="editEmail" class="form-label-modern">
+                    <i class="ti ti-mail"></i>Email Address
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="email" id="editEmail" placeholder="contoh@email.com" required>
+                  </div>
                 </div>
-              </div>
               <div class="row">
                 <div class="col mb-3">
                     <label for="editRole" class="form-label">Role</label>
@@ -112,66 +517,135 @@ export function renderUserManagementPage(path, userRole) {
                     </select>
                 </div>
               </div>
-              <div class="row">
-                <div class="col mb-3">
-                  <label for="editPassword" class="form-label">Password</label>
-                  <input type="password" id="editPassword" class="form-control" placeholder="Masukkan password baru (biarkan kosong jika tidak diubah)" >
+                
+                <div class="col-12 form-group-animate">
+                  <label for="editPassword" class="form-label-modern">
+                    <i class="ti ti-lock"></i>Password Baru
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="password" id="editPassword" placeholder="Biarkan kosong jika tidak ingin mengubah">
+                  </div>
+                  <div class="helper-text">
+                    <i class="ti ti-info-circle"></i>
+                    <span>Kosongkan jika tidak ingin mengubah password</span>
+                  </div>
                 </div>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="button" class="btn btn-primary" id="btnSaveProfile">
-              <span class="button-text">Selesai</span>
-              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+          <div class="modal-footer modal-footer-modern">
+            <button type="button" class="btn btn-modern-cancel" data-bs-dismiss="modal">
+              <i class="ti ti-x"></i> Batal
+            </button>
+            <button type="button" class="btn btn-modern-primary" id="btnSaveProfile">
+              <i class="ti ti-device-floppy"></i>
+              <span class="button-text">Simpan Perubahan</span>
+              <span class="spinner-border spinner-border-modern d-none" role="status" aria-hidden="true"></span>
             </button>
           </div>
         </div>
       </div>
     </div>
     
+    <!-- ========== MODAL TAMBAH AKUN ========== -->
     <div class="modal fade" id="tambahAkunModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalCenterTitleTambah">Tambah Akun Baru</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-header modal-header-gradient">
+            <div>
+              <h5 class="modal-title">
+                <i class="ti ti-user-plus"></i> Tambah Akun Baru
+              </h5>
+              <p class="modal-subtitle mb-0">Buat akun user baru untuk sistem</p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
-          <div class="modal-body">
-            <div id="tambahAkunError" class="alert alert-danger" style="display: none;"></div>
+          <div class="modal-body modal-body-modern">
+            <div id="tambahAkunError" class="modal-error-alert">
+              <i class="ti ti-alert-circle"></i>
+              <span></span>
+            </div>
             <form id="tambahAkunForm">
-              <div class="mb-3">
-                <label for="addNama" class="form-label">Nama Pengusul</label>
-                <input type="text" id="addNama" class="form-control" placeholder="Masukkan nama" required>
-              </div>
-              <div class="mb-3">
-                <label for="addUsername" class="form-label">Username</label>
-                <input type="text" id="addUsername" class="form-control" placeholder="Masukkan username" required>
-              </div>
-              <div class="mb-3">
-                <label for="addEmail" class="form-label">Email</label>
-                <input type="email" id="addEmail" class="form-control" placeholder="Masukkan email" required>
-              </div>
-              <div class="mb-3">
-                <label for="addPassword" class="form-label">Password</label>
-                <input type="password" id="addPassword" class="form-control" placeholder="Masukkan password" required>
-              </div>
-              <div class="mb-3">
-                <label for="addRole" class="form-label">Role</label>
-                <select id="addRole" class="form-select" required>
-                  <option value="">Pilih Role</option>
-                  <option value="1">Admin</option>
-                  <option value="3" selected>User</option>
-                </select>
+              <div class="row g-4">
+                <div class="col-md-6 form-group-animate">
+                  <label for="addNama" class="form-label-modern">
+                    <i class="ti ti-user"></i>Nama Lengkap<span class="required-star">*</span>
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="text" id="addNama" placeholder="Masukkan nama lengkap" required>
+                  </div>
+                </div>
+                
+                <div class="col-md-6 form-group-animate">
+                  <label for="addUsername" class="form-label-modern">
+                    <i class="ti ti-at"></i>Username<span class="required-star">*</span>
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="text" id="addUsername" placeholder="Masukkan username" required>
+                  </div>
+                </div>
+                
+                <div class="col-12 form-group-animate">
+                  <label for="addEmail" class="form-label-modern">
+                    <i class="ti ti-mail"></i>Email Address<span class="required-star">*</span>
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="email" id="addEmail" placeholder="contoh@email.com" required>
+                  </div>
+                </div>
+                
+                <div class="col-12 form-group-animate">
+                  <label for="addPassword" class="form-label-modern">
+                    <i class="ti ti-lock"></i>Password<span class="required-star">*</span>
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="password" id="addPassword" placeholder="Minimal 6 karakter" required>
+                  </div>
+                  <div class="helper-text">
+                    <i class="ti ti-info-circle"></i>
+                    <span>Password harus minimal 6 karakter</span>
+                  </div>
+                </div>
+                
+                <div class="col-md-6 form-group-animate">
+                  <label for="addRole" class="form-label-modern">
+                    <i class="ti ti-shield"></i>Role<span class="required-star">*</span>
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <select id="addRole" required>
+                      <option value="">Pilih Role</option>
+                      <option value="Admin">Admin</option>
+                      <option value="User" selected>User</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="col-md-6 form-group-animate">
+                  <label for="addStatus" class="form-label-modern">
+                    <i class="ti ti-toggle-right"></i>Status<span class="required-star">*</span>
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <select id="addStatus" required>
+                      <option value="Aktif" selected>Aktif</option>
+                      <option value="Non-Aktif">Non-Aktif</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="button" class="btn btn-primary" id="btnSaveAkunBaru">
+          <div class="modal-footer modal-footer-modern">
+            <button type="button" class="btn btn-modern-cancel" data-bs-dismiss="modal">
+              <i class="ti ti-x"></i> Batal
+            </button>
+            <button type="button" class="btn btn-modern-primary" id="btnSaveAkunBaru">
+              <i class="ti ti-check"></i>
               <span class="button-text">Simpan Akun</span>
-              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+              <span class="spinner-border spinner-border-modern d-none" role="status" aria-hidden="true"></span>
             </button>
           </div>
         </div>
@@ -346,11 +820,14 @@ export function renderUserManagementPage(path, userRole) {
   function showModalError(message, modalId = 'tambahAkunModal') {
     const errorDiv = document.getElementById(`${modalId === 'tambahAkunModal' ? 'tambahAkunError' : 'editProfileError'}`);
     if (errorDiv) {
-      errorDiv.textContent = message;
-      errorDiv.style.display = 'block';
+      const span = errorDiv.querySelector('span');
+      if (span) {
+        span.textContent = message;
+      }
+      errorDiv.classList.add('show');
       
       setTimeout(() => {
-        errorDiv.style.display = 'none';
+        errorDiv.classList.remove('show');
       }, 5000);
     }
   }
@@ -358,7 +835,7 @@ export function renderUserManagementPage(path, userRole) {
   function hideModalError(modalId = 'tambahAkunModal') {
     const errorDiv = document.getElementById(`${modalId === 'tambahAkunModal' ? 'tambahAkunError' : 'editProfileError'}`);
     if (errorDiv) {
-      errorDiv.style.display = 'none';
+      errorDiv.classList.remove('show');
     }
   }
 
@@ -404,6 +881,7 @@ export function renderUserManagementPage(path, userRole) {
       const statusClass = status === 'Aktif' ? 'bg-label-success' : 'bg-label-danger';
       
       const row = document.createElement('tr');
+      row.style.animationDelay = `${0.2 + index * 0.1}s`; // Staggered animation
       row.dataset.userId = user.user_id;
 
       row.innerHTML = `
@@ -411,7 +889,7 @@ export function renderUserManagementPage(path, userRole) {
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
         <td>
-          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${index + 1}</span>
+          <span class="number-badge">${index + 1}</span>
         </td>
         <td><strong>${user.nama_lengkap}</strong><br><small>${user.email}</small></td>
         <td>${user.username}</td>
@@ -620,8 +1098,49 @@ export function renderUserManagementPage(path, userRole) {
     const activeEl = document.getElementById('activeUserCount');
     const inactiveEl = document.getElementById('inactiveUserCount');
     
-    if (activeEl) activeEl.textContent = activeCount;
-    if (inactiveEl) inactiveEl.textContent = inactiveCount;
+    if (activeEl) {
+      activeEl.setAttribute('data-target', activeCount);
+    }
+    if (inactiveEl) {
+      inactiveEl.setAttribute('data-target', inactiveCount);
+    }
+  }
+
+  // ==============================================
+  // ANIMATION FUNCTIONS
+  // ==============================================
+  
+  // Counter Animation
+  function animateCounter(element) {
+    const target = parseInt(element.getAttribute('data-target'));
+    const duration = 2000; // 2 seconds
+    const increment = target / (duration / 16); // 60 FPS
+    let current = 0;
+
+    const updateCounter = () => {
+      current += increment;
+      if (current < target) {
+        element.textContent = Math.floor(current);
+        requestAnimationFrame(updateCounter);
+      } else {
+        element.textContent = target;
+      }
+    };
+
+    // Start after a delay to match card animation
+    setTimeout(() => {
+      updateCounter();
+    }, 500);
+  }
+
+  // Initialize all counters
+  function initCounters() {
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach((counter, index) => {
+      setTimeout(() => {
+        animateCounter(counter);
+      }, index * 100);
+    });
   }
 
   // ==============================================
@@ -720,6 +1239,10 @@ export function renderUserManagementPage(path, userRole) {
   // INITIALIZATION
   // ==============================================
   fetchUsers();
+
+  setTimeout(() => {
+    initCounters();
+  }, 100);
 
   // Initialize Vuexy menu
   if (window.Helpers) {
