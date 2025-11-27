@@ -148,48 +148,59 @@ class MasterDataSeeder extends AbstractSeed
         // ============================================
         // 8. USERS
         // ============================================
-        $users = [
-            [
-                'username' => 'admin', 'password_hash' => password_hash('admin123', PASSWORD_BCRYPT),
-                'nama_lengkap' => 'Administrator', 'email' => 'admin@pnj.ac.id', 'role_id' => 1
-            ],
-            [
-                'username' => 'verifikator', 'password_hash' => password_hash('verif123', PASSWORD_BCRYPT),
-                'nama_lengkap' => 'Verifikator Keuangan', 'email' => 'verifikator@pnj.ac.id', 'role_id' => 2
-            ],
-            [
-                'username' => 'pengusul', 'password_hash' => password_hash('pengusul123', PASSWORD_BCRYPT),
-                'nama_lengkap' => 'Dr. Budi Santoso', 'email' => 'pengusul@pnj.ac.id', 'role_id' => 3
-            ],
-            [
-                'username' => 'ppk', 'password_hash' => password_hash('ppk123', PASSWORD_BCRYPT),
-                'nama_lengkap' => 'Siti Aminah, S.E.', 'email' => 'ppk@pnj.ac.id', 'role_id' => 4
-            ],
-            [
-                'username' => 'wadir2', 'password_hash' => password_hash('wadir2123', PASSWORD_BCRYPT),
-                'nama_lengkap' => 'Prof. Dr. Ir. Widodo', 'email' => 'wadir2@pnj.ac.id', 'role_id' => 5
-            ],
-            [
-                'username' => 'bendahara', 'password_hash' => password_hash('bendahara123', PASSWORD_BCRYPT),
-                'nama_lengkap' => 'Rina Wijayanti, S.Ak', 'email' => 'bendahara@pnj.ac.id', 'role_id' => 6
-            ],
-            [
-                'username' => 'rektorat', 'password_hash' => password_hash('rektorat123', PASSWORD_BCRYPT),
-                'nama_lengkap' => 'Rektorat PNJ', 'email' => 'rektorat@pnj.ac.id', 'role_id' => 7
-            ]
-        ];
+        $users = [];
+        $defaultPassword = '123';
+
+        // Role IDs
+        $adminRole = 1;
+        $verifikatorRole = 2;
+        $pengusulRole = 3;
+        $ppkRole = 4;
+        $wadirRole = 5;
+        $bendaharaRole = 6;
+        $rektoratRole = 7;
+
+        // --- Preserve Main Users to keep IDs for KegiatanSeeder ---
+        // 1. Admin
+        $users[] = ['username' => 'admin', 'password_hash' => password_hash('admin123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Administrator', 'email' => 'admin@pnj.ac.id', 'role_id' => $adminRole];
+        // 2. Verifikator
+        $users[] = ['username' => 'verifikator', 'password_hash' => password_hash('verif123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Verifikator Keuangan', 'email' => 'verifikator@pnj.ac.id', 'role_id' => $verifikatorRole];
+        // 3. Pengusul
+        $users[] = ['username' => 'pengusul', 'password_hash' => password_hash('pengusul123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Dr. Budi Santoso', 'email' => 'pengusul@pnj.ac.id', 'role_id' => $pengusulRole];
+        // 4. PPK
+        $users[] = ['username' => 'ppk', 'password_hash' => password_hash('ppk123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Siti Aminah, S.E.', 'email' => 'ppk@pnj.ac.id', 'role_id' => $ppkRole];
+        // 5. Wadir
+        $users[] = ['username' => 'wadir', 'password_hash' => password_hash('wadir123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Prof. Dr. Ir. Widodo', 'email' => 'wadir@pnj.ac.id', 'role_id' => $wadirRole];
+        // 6. Bendahara
+        $users[] = ['username' => 'bendahara', 'password_hash' => password_hash('bendahara123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Rina Wijayanti, S.Ak', 'email' => 'bendahara@pnj.ac.id', 'role_id' => $bendaharaRole];
+        // 7. Rektorat
+        $users[] = ['username' => 'rektorat', 'password_hash' => password_hash('rektorat123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Rektorat PNJ', 'email' => 'rektorat@pnj.ac.id', 'role_id' => $rektoratRole];
+        
+        // --- Add Additional Dummy Users ---
+        // Add 9 more Pengusul (total 10)
+        for ($i = 2; $i <= 10; $i++) {
+            $users[] = ['username' => 'pengusul'.$i, 'password_hash' => password_hash('pengusul'.$i.$defaultPassword, PASSWORD_BCRYPT), 'nama_lengkap' => 'Dosen Pengusul '.$i, 'email' => 'pengusul'.$i.'@pnj.ac.id', 'role_id' => $pengusulRole];
+        }
+        // Add 4 more Verifikator (total 5)
+        for ($i = 2; $i <= 5; $i++) {
+            $users[] = ['username' => 'verifikator'.$i, 'password_hash' => password_hash('verifikator'.$i.$defaultPassword, PASSWORD_BCRYPT), 'nama_lengkap' => 'Staf Verifikator '.$i, 'email' => 'verifikator'.$i.'@pnj.ac.id', 'role_id' => $verifikatorRole];
+        }
+        // Add 2 more PPK (total 3)
+        for ($i = 2; $i <= 3; $i++) {
+            $users[] = ['username' => 'ppk'.$i, 'password_hash' => password_hash('ppk'.$i.$defaultPassword, PASSWORD_BCRYPT), 'nama_lengkap' => 'Pejabat PPK '.$i, 'email' => 'ppk'.$i.'@pnj.ac.id', 'role_id' => $ppkRole];
+        }
+        // Add 2 more Wadir (total 3)
+        for ($i = 2; $i <= 3; $i++) {
+             $users[] = ['username' => 'wadir'.$i, 'password_hash' => password_hash('wadir'.$i.$defaultPassword, PASSWORD_BCRYPT), 'nama_lengkap' => 'Wakil Direktur '.$i, 'email' => 'wadir'.$i.'@pnj.ac.id', 'role_id' => $wadirRole];
+        }
+
         $this->table('m_users')->insert($users)->saveData();
 
         echo "✅ Master data seeded successfully!\n";
         echo "   - Roles, Tipe Kegiatan, Status, Satuan, Mata Anggaran, IKU, Kategori Belanja, Users\n";
         echo "\n";
-        echo "🔑 Login Credentials:\n";
-        echo "   Admin:       username: admin       password: admin123\n";
-        echo "   Verifikator: username: verifikator password: verif123\n";
-        echo "   Pengusul:    username: pengusul    password: pengusul123\n";
-        echo "   PPK:         username: ppk         password: ppk123\n";
-        echo "   Wadir 2:     username: wadir2      password: wadir2123\n";
-        echo "   Bendahara:   username: bendahara   password: bendahara123\n";
-        echo "   Rektorat:    username: rektorat    password: rektorat123\n";
+        echo "🔑 Login Credentials have been created as requested.\n";
+        echo "   The primary users (admin, pengusul, verifikator, etc.) retain their original passwords.\n";
+        echo "   Additional dummy users (e.g., pengusul2, ppk3) have a password of their username followed by '123'.\n";
     }
 }
