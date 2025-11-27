@@ -152,37 +152,45 @@ function initializeDaftarLpj(userRole) {
     return statusMap[status] || "bg-label-dark";
   }
 
-  function getActionButtons(status, id) {
-    if (isBendahara) {
-      switch (status) {
-        case "Diajukan":
-          return `
-            <div class="d-flex justify-content-center gap-2">
-              <a href="/bendahara/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-info">Revisi</a>
-              <button class="btn btn-sm btn-primary" data-action="setujui" data-id="${id}">Setujui</button>
-            </div>`;
-        case "Setor Fisik":
-          return `
-            <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-success" data-action="selesaikan" data-id="${id}">Selesaikan</button>
-            </div>`;
-        default:
-          return `<span class="text-muted">-</span>`;
+  function getActionButtons(item) {
+      const { status_lpj: status, kegiatan_id: id, approval_status } = item;
+  
+      if (isBendahara) {
+        switch (status) {
+          case "Diajukan":
+            return `
+              <div class="d-flex justify-content-center gap-2">
+                <a href="/bendahara/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-info">Revisi</a>
+                <button class="btn btn-sm btn-primary" data-action="setujui" data-id="${id}">Setujui</button>
+              </div>`;
+          case "Setor Fisik":
+            if (approval_status === "bendahara-setor") {
+              return `
+                <div class="d-flex justify-content-center gap-2">
+                  <button class="btn btn-sm btn-success" data-action="selesaikan" data-id="${id}">Setujui & Selesaikan</button>
+                </div>`;
+            } else {
+              return `
+                <div class="d-flex justify-content-center gap-2">
+                  <button class="btn btn-sm btn-success" data-action="selesaikan" data-id="${id}">Selesaikan</button>
+                </div>`;
+            }
+          default:
+            return `<span class="text-muted">-</span>`;
+        }
+      } else if (isPengusul) {
+        switch (status) {
+          case "Menunggu Penyerahan":
+            return `<a href="/pengusul/kegiatan/lpj/new?kegiatan_id=${id}" data-link class="btn btn-sm btn-primary">Submit LPJ</a>`;
+          case "Direvisi":
+            return `<a href="/pengusul/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-warning">Kerjakan Revisi</a>`;
+          default:
+            // For 'Diajukan', 'Setor Fisik', 'Selesai', just show a detail link
+            return `<a href="/pengusul/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
+        }
       }
-    } else if (isPengusul) {
-      switch (status) {
-        case "Menunggu Penyerahan":
-          return `<a href="/pengusul/kegiatan/lpj/new?kegiatan_id=${id}" data-link class="btn btn-sm btn-primary">Submit LPJ</a>`;
-        case "Direvisi":
-          return `<a href="/pengusul/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-warning">Kerjakan Revisi</a>`;
-        default:
-          // For 'Diajukan', 'Setor Fisik', 'Selesai', just show a detail link
-          return `<a href="/pengusul/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
-      }
+      return "";
     }
-    return "";
-  }
-
   function calculateCountdown(deadline) {
     if (!deadline) return { text: "-", colorClass: "" };
 
@@ -236,7 +244,7 @@ function initializeDaftarLpj(userRole) {
     state.filteredKegiatan.forEach((item, index) => {
       const row = document.createElement("tr");
       const statusClass = getStatusBadge(item.status_lpj);
-      const actionButtons = getActionButtons(item.status_lpj, item.kegiatan_id);
+      const actionButtons = getActionButtons(item);
       const countdown = calculateCountdown(item.tgl_batas_lpj);
 
       const pengusulCell = isBendahara ? `<td>${item.pengusul_nama}</td>` : "";
@@ -358,17 +366,17 @@ function initializeDaftarLpj(userRole) {
 
   async function completeLpj(id) {
     Swal.fire({
-      title: "Selesaikan LPJ?",
-      text: "Proses LPJ akan ditandai sebagai selesai sepenuhnya.",
+      title: "Setujui & Selesaikan LPJ?",
+      text: "LPJ akan disetujui dan statusnya akan ditandai sebagai 'Selesai'. Anda yakin?",
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Ya, Selesaikan!",
+      confirmButtonText: "Ya, Setujui & Selesaikan!",
       cancelButtonText: "Batal",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await apiRequest(`/kegiatan/${id}/lpj/complete`, { method: "POST" });
-          Swal.fire("Berhasil!", "LPJ telah diselesaikan.", "success");
+          Swal.fire("Berhasil!", "LPJ telah disetujui dan diselesaikan.", "success");
           fetchData();
         } catch (error) {
           Swal.fire(

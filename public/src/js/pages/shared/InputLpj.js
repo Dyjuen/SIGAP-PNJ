@@ -8,8 +8,28 @@ export function renderInputLpjPage(path, userRole) {
 
   // Bendahara sees read-only inputs. Pengusul can edit if status is 'Perlu Revisi' or new.
   const pageContent = `
+    <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
     <style>
-      /* Comment styles from RevisiKak.js */
+    /* Daterangepicker theme overrides */
+    .daterangepicker { border-color: #00BCD4 !important; }
+    .daterangepicker .calendar-table { border-color: #E5F8FB !important; }
+    .daterangepicker td.active, .daterangepicker td.active:hover { background-color: #00BCD4 !important; border-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker td.in-range { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker td.available:hover { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker .ranges li.active { background-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker .ranges li:hover { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker td.start-date, .daterangepicker td.end-date { background-color: #00BCD4 !important; border-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker .drp-buttons .btn-primary { background-color: #00BCD4 !important; border-color: #00BCD4 !important; color: #FFFFFF !important; }
+    .daterangepicker .drp-buttons .btn-primary:hover { background-color: #0097A7 !important; border-color: #0097A7 !important; }
+    .daterangepicker th.month { color: #00BCD4 !important; }
+    .daterangepicker td.off, .daterangepicker td.off.in-range, .daterangepicker td.off.start-date, .daterangepicker td.off.end-date { background-color: #F9FAFB !important; color: #9CA3AF !important; }
+    .daterangepicker select.monthselect, .daterangepicker select.yearselect { border-color: #E5E7EB !important; }
+    .daterangepicker select.monthselect:focus, .daterangepicker select.yearselect:focus { border-color: #00BCD4 !important; outline: none !important; box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1) !important; }
+    .daterangepicker .calendar-table .next span, .daterangepicker .calendar-table .prev span { border-color: #00BCD4 !important; }
+    .daterangepicker .calendar-table .next:hover, .daterangepicker .calendar-table .prev:hover { background-color: #E5F8FB !important; }
+    .daterangepicker td.today { background-color: #E5F8FB !important; color: #374151 !important; }
+    .daterangepicker td.today.active { background-color: #00BCD4 !important; color: #FFFFFF !important; }
+      /* Comment button styling */
       .comment-icon {
         position: absolute;
         right: 12px;
@@ -28,46 +48,72 @@ export function renderInputLpjPage(path, userRole) {
         transition: all 0.3s ease;
         z-index: 10;
       }
+      
       .comment-icon:hover {
         background: #00BCD4;
         color: white;
         transform: translateY(-50%) scale(1.1);
       }
+      
       .comment-icon.has-comment {
         background: #FEE2E2;
         color: #EF4444;
         border-color: #FCA5A5;
         animation: pulse-comment 2s infinite;
       }
+      
       .comment-icon.has-comment:hover {
         background: #EF4444;
         color: white;
       }
+      
       @keyframes pulse-comment {
         0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
         50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
       }
+      
+      .input-with-comment {
+        position: relative;
+      }
+      
+      .input-with-comment input,
+      .input-with-comment textarea,
+      .input-with-comment select {
+        padding-right: 52px !important;
+      }
+      
+      /* Row comment styling */
       .row-with-comment {
         position: relative;
-        padding: 1.5rem;
+        padding: 1rem;
         border: 2px solid #E5E7EB;
         border-radius: 12px;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         transition: all 0.3s ease;
         background: white;
       }
+      
       .row-with-comment:hover {
         border-color: #00BCD4;
         box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
+        transform: translateY(-2px);
       }
+      
       .row-with-comment.has-row-comment {
         background: #FEF2F2;
         border-color: #FCA5A5;
       }
+      
+      .row-with-comment.has-row-comment:hover {
+        border-color: #EF4444;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+      }
+      
       .row-comment-icon {
         position: absolute;
-        right: 1.5rem;
-        top: 1.5rem;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
         width: 36px;
         height: 36px;
         background: #E0F7FA;
@@ -81,24 +127,809 @@ export function renderInputLpjPage(path, userRole) {
         transition: all 0.3s ease;
         z-index: 10;
       }
+      
       .row-comment-icon:hover {
         background: #00BCD4;
         color: white;
-        transform: scale(1.1);
+        transform: translateY(-50%) scale(1.1);
       }
+      
       .row-comment-icon.has-comment {
-        background: #FEE2E2;
+        background: #FEE2F2;
         color: #EF4444;
         border-color: #FCA5A5;
         animation: pulse-comment 2s infinite;
       }
-      .modal-content { border-radius: 16px; border: none; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-      .modal-header { border-bottom: 2px solid #F3F4F6; padding: 1.5rem; }
-      .modal-body { padding: 2rem; }
-      .form-control { border: 2px solid #E5E7EB; border-radius: 12px; padding: 1rem; font-size: 0.95rem; transition: all 0.3s ease; }
-      .form-control:focus { border-color: #00BCD4; box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1); outline: none; }
-      .info-box { padding: 1rem; border-radius: 8px; background: #EFF6FF; border-left: 4px solid #3B82F6; margin-top: 1rem; }
-      .info-box-text { font-size: 0.875rem; color: #1E40AF; }
+      
+      .row-comment-icon.has-comment:hover {
+        background: #EF4444;
+        color: white;
+      }
+      
+      .row-with-comment .input-with-comment input {
+        padding-right: 12px !important;
+      }
+      
+      /* Progress Steps */
+      .progress-step-item {
+        cursor: default;
+      }
+      
+      .progress-step-circle {
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
+      }
+      
+      /* Menu buttons */
+      .menu-button {
+        transition: all 0.3s ease;
+      }
+      
+      .menu-button.active {
+        border-color: #00BCD4 !important;
+        background: rgba(0, 188, 212, 0.1) !important;
+      }
+      
+      /* Step content */
+      .step-content {
+        display: none;
+      }
+      
+      .step-content.active {
+        display: block;
+      }
+      
+      .main-step-content {
+        display: none;
+      }
+      
+      .main-step-content.active {
+        display: block;
+      }
+      
+      /* Modal styling */
+      .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      
+      .modal-header {
+        border-bottom: 2px solid #F3F4F6;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%);
+        border-radius: 16px 16px 0 0;
+      }
+      
+      .modal-title {
+        color: #374151;
+        font-weight: 700;
+        font-size: 1.25rem;
+      }
+      
+      .modal-body {
+        padding: 2rem;
+      }
+      
+      .form-control {
+        border: 2px solid #E5E7EB;
+        border-radius: 12px;
+        padding: 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+      }
+      
+      .form-control:focus {
+        border-color: #00BCD4;
+        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+        outline: none;
+      }
+      
+      /* Action buttons */
+      .action-buttons {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 4px solid #EF4444;
+      }
+      
+      .btn-primary-action {
+        padding: 1rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .btn-revise {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        color: white;
+      }
+      
+      .btn-revise:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+      }
+      
+      .btn-back {
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        background: #F3F4F6;
+        color: #6B7280;
+        font-weight: 600;
+        border: 2px solid #E5E7EB;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .btn-back:hover {
+        background: #E5E7EB;
+        color: #374151;
+      }
+      
+      /* RAB Grid */
+      .grid-rab {
+        display: grid;
+        grid-template-columns: 2.5fr 0.8fr 1.2fr 0.8fr 1.2fr 0.8fr 1.2fr 2.5fr;
+        gap: 1rem;
+        align-items: end;
+      }
+      
+      /* Comment count badge */
+      .comment-count {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      .comment-count i {
+        font-size: 1.5rem;
+      }
+      
+      .info-box {
+        padding: 1rem;
+        border-radius: 8px;
+        background: #EFF6FF;
+        border-left: 4px solid #3B82F6;
+        margin-top: 1rem;
+      }
+      
+      .info-box-text {
+        font-size: 0.875rem;
+        color: #1E40AF;
+      }
+
+      /* ====== ANIMATION SYSTEM FROM DUMMYINPUTREADONLY ====== */
+      
+      /* Keyframe Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes fadeInRight {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      /* Progress Steps Enhanced */
+      .progress-step-item {
+        cursor: pointer;
+        animation: fadeIn 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      .progress-step-item:hover {
+        transform: translateY(-3px); 
+      }
+      
+      .progress-step-circle {
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
+        transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);        
+      }
+
+      .progress-step-item:hover .progress-step-circle {
+        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
+        transform: rotate(360deg);
+      }
+      
+      /* Menu buttons - SMOOTH ROTATION LIKE STEPPER! */
+      .menu-button {
+        transition: all 0.4s ease-in-out;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .menu-button:hover::before {
+        left: 100%;
+      }
+
+      .menu-button:hover {
+        transform: translateY(-3px); 
+      }
+
+      .menu-button.active {
+        border-color: #00BCD4 !important;
+        background: rgba(0, 188, 212, 0.1) !important;
+      }
+
+      /* ICON ROTATION - SAME AS STEPPER CIRCLE! */
+      .menu-button .w-8 {
+        transition: all 0.8s cubic-bezier(0.050, 0.600, 0.165, 1.025);
+      }
+
+      .menu-button:hover .w-8 {
+        transform: rotate(360deg);
+      }
+
+      /* IMPORTANT: DISABLE transform for icon inside menu button! */
+      .menu-button .w-8 .ti {
+        transition: none !important;
+        transform: none !important;
+      }
+
+      .menu-button:hover .w-8 .ti {
+        transform: none !important;
+        /* Icon rotates with parent (.w-8), not independently! */
+      }
+
+      /* Text transition */
+      .menu-button .font-semibold {
+        transition: color 0.3s ease;
+      }
+
+      .menu-button:hover .font-semibold {
+        color: #00ACC1;
+      }
+      
+      /* Step content */
+      .step-content {
+        display: none;
+      }
+      
+      .step-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      /* Card animations */
+      .bg-white.rounded-xl.shadow-lg {
+        animation: slideInUp 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      .bg-white.rounded-xl.shadow-lg:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-5px);
+      }
+      
+      /* Row item animations */
+      .row-item {
+        animation: fadeInLeft 0.5s ease-out;
+        transition: all 0.8s cubic-bezier(0.050, 0.600, 0.165, 1.025);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .row-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.1), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .row-item:hover::before {
+        left: 100%;
+      }
+
+      .row-item:hover {
+        transform: translateX(5px) scale(1.02);
+      }
+
+      .row-item:nth-child(odd) {
+        animation-delay: 0.1s;
+      }
+
+      .row-item:nth-child(even) {
+        animation-delay: 0.2s;
+      }
+
+      /* Input fields */
+      input[readonly], textarea[readonly], select[disabled] {
+        transition: all 0.7s ease;
+      }
+
+      input[readonly]:hover, textarea[readonly]:hover, select[disabled]:hover {
+        border-color: rgba(0, 188, 212, 0.4) !important;
+        box-shadow: 
+          0 8px 24px rgba(0, 188, 212, 0.12),
+          0 0 0 1px rgba(0, 188, 212, 0.1);
+        transform: scale(1.01);
+      }
+
+      /* Enhanced button animations */
+      button {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+      }
+
+      button:active::after {
+        width: 300px;
+        height: 300px;
+      }
+
+      button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 188, 212, 0.3);
+      }
+
+      button:active {
+        transform: translateY(-1px);
+      }
+
+      /* Labels */
+      label {
+        transition: all 0.7s ease;
+        display: inline-block;
+      }
+
+      /* Headers */
+      h4, h5 {
+        animation: fadeInDown 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      /* Backdrop */
+      .backdrop-blur-md {
+        animation: slideInDown 0.6s ease-out;
+        transition: all 0.7s ease;
+      }
+
+      .backdrop-blur-md:hover {
+        backdrop-filter: blur(20px) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+      }
+
+      /* Loading shimmer effect */
+      .shimmer {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite;
+      }
+
+      /* Stagger animations for grid items */
+      .grid > * {
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      .grid > *:nth-child(1) { animation-delay: 0.1s; }
+      .grid > *:nth-child(2) { animation-delay: 0.2s; }
+      .grid > *:nth-child(3) { animation-delay: 0.3s; }
+      .grid > *:nth-child(4) { animation-delay: 0.4s; }
+      .grid > *:nth-child(5) { animation-delay: 0.5s; }
+      .grid > *:nth-child(6) { animation-delay: 0.6s; }
+
+      /* Smooth scroll */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Container animations */
+      .flex.gap-8 > * {
+        animation: fadeInRight 0.6s ease-out;
+      }
+
+      .flex.gap-8 > *:first-child {
+        animation: fadeInLeft 0.6s ease-out;
+      }
+
+      /* Icon animations */
+      .ti {
+        transition: all 0.3s ease;
+        display: inline-block;
+      }
+
+      button:hover .ti {
+        transform: scale(1.2) rotate(10deg);
+      }
+
+      /* ====== BORDER DRAWING ANIMATION - SUPER SMOOTH VERSION ====== */
+      .border-hover-draw {
+        position: relative;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Subtle pop-up effect on hover */
+      .border-hover-draw:hover {
+        transform: translateY(-4px) scale(1.01);
+      }
+
+      .border-hover-draw::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        padding: 2px;
+        background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        
+        /* Default state: hidden at center-bottom */
+        clip-path: polygon(
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%
+        );
+        
+        /* Smooth reverse animation by default */
+        animation: borderDrawReverse 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      }
+
+      /* Forward animation on hover - SUPER SMOOTH */
+      .border-hover-draw:hover::before {
+        animation: borderDrawForward 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      }
+
+      /* ====== FORWARD ANIMATION (Mouse IN) ====== */
+      /* Bottom → Left/Right → Top */
+      @keyframes borderDrawForward {
+        0% {
+          /* Start: center-bottom point */
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+        
+        30% {
+          /* Bottom line expands smoothly left-right */
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+        
+        70% {
+          /* Left & right borders rise together to top (SMOOTH!) */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+        
+        100% {
+          /* Complete: full border with slight overshoot */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+      }
+
+      /* ====== REVERSE ANIMATION (Mouse OUT) ====== */
+      /* Top → Left/Right → Bottom */
+      @keyframes borderDrawReverse {
+        0% {
+          /* Start: full border */
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+        
+        30% {
+          /* Top line & left-right borders collapse smoothly */
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+        
+        70% {
+          /* Bottom line starts shrinking to center */
+          clip-path: polygon(
+            25% 100%, 25% 100%, 
+            25% 100%, 50% 100%, 
+            50% 100%, 75% 100%, 
+            75% 100%, 75% 100%
+          );
+        }
+        
+        100% {
+          /* End: disappears at center-bottom */
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+      }
+
+      /* Bonus: Input subtle lift + shadow + glow on hover */
+      .border-hover-draw:hover input[readonly],
+      .border-hover-draw:hover textarea[readonly] {
+        border-color: rgba(0, 188, 212, 0.4) !important;
+        box-shadow: 
+          0 8px 24px rgba(0, 188, 212, 0.12),
+          0 0 0 1px rgba(0, 188, 212, 0.1);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* ====== MAIN STEP CONTENT - Border Drawing + Pop-Up ====== */
+      .main-step-content {
+        display: none;
+        position: relative;
+      }
+
+      .main-step-content.active {
+        display: block;
+        animation: 
+          fadeIn 0.6s ease-out,
+          popUpEntry 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Wrapper for border animation */
+      .main-step-content.active > .bg-white {
+        position: relative;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Border drawing effect (smoother to match .border-hover-draw) */
+      .main-step-content.active > .bg-white::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 16px;
+        padding: 2px;
+        background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0;
+
+        /* Default hidden (center-bottom) */
+        clip-path: polygon(
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%, 
+          50% 100%, 50% 100%
+        );
+
+        /* Smoother animation + slightly longer for natural page load feel */
+        animation: 
+          mainStepBorderDraw 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.15s forwards,
+          borderFadeIn 0.35s ease-out 0.15s forwards;
+      }
+
+      /* Pop-up subtle on hover */
+      .main-step-content.active > .bg-white:hover {
+        transform: translateY(-6px) scale(1.005);
+      }
+
+      .main-step-content.active > .bg-white:hover::before {
+        opacity: 1;
+      }
+
+      /* Pop-up entry animation */
+      @keyframes popUpEntry {
+        0% {
+          opacity: 0;
+          transform: translateY(30px) scale(0.95);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Border drawing for main step */
+      @keyframes mainStepBorderDraw {
+        /* 0%: hidden center-bottom */
+        0% {
+          clip-path: polygon(
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%, 
+            50% 100%, 50% 100%
+          );
+        }
+
+        /* 20%: bottom expands smoothly left-right */
+        20% {
+          clip-path: polygon(
+            0% 100%, 0% 100%, 
+            0% 100%, 50% 100%, 
+            50% 100%, 100% 100%, 
+            100% 100%, 100% 100%
+          );
+        }
+
+        /* 45%: sides start rising (soft corner formation) */
+        45% {
+          clip-path: polygon(
+            0% 100%, 0% 65%, 
+            0% 65%, 50% 65%, 
+            50% 65%, 100% 65%, 
+            100% 65%, 100% 100%
+          );
+        }
+
+        /* 75%: sides rise higher (near final) */
+        75% {
+          clip-path: polygon(
+            0% 100%, 0% 30%, 
+            0% 30%, 50% 30%, 
+            50% 30%, 100% 30%, 
+            100% 30%, 100% 100%
+          );
+        }
+
+        /* 100%: complete border */
+        100% {
+          clip-path: polygon(
+            0% 100%, 0% 0%, 
+            0% 0%, 50% 0%, 
+            50% 0%, 100% 0%, 
+            100% 0%, 100% 100%
+          );
+        }
+      }
+
+      /* Border fade in */
+      @keyframes borderFadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 0.8;
+        }
+      }
     </style>
 
     <div class="input-lpj-page">
@@ -115,15 +946,25 @@ export function renderInputLpjPage(path, userRole) {
       </div>
 
       <!-- Main Content -->
-      <div class="bg-white rounded-xl shadow-lg p-8">
-        <div id="rabSectionsContainer">
-          <div class="text-center p-8">Loading...</div>
+      <div class="main-step-content active">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <div id="rabSectionsContainer">
+            <div class="text-center p-8">Loading...</div>
+          </div>
         </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+          <div id="actionButtonsContainer" class="flex justify-between w-full">
+            <!-- Buttons will be rendered by JS -->
+          </div>
+      </div>
 
-        <!-- Action Buttons -->
-        <div id="actionButtonsContainer" class="flex justify-between mt-8">
-          <!-- Buttons will be rendered by JS -->
-        </div>
+      <!-- Comment Count Badge -->
+      <div class="comment-count" id="commentCountBadge" style="display: none;">
+        <i class="ti ti-message-dots">&#xeaee;</i>
+        <span id="commentCountText">0 Catatan</span>
       </div>
     </div>
 
@@ -298,7 +1139,7 @@ export function renderInputLpjPage(path, userRole) {
         const section = document.createElement("div");
         // Add comment-related classes
         const comment = rowComments[item.anggaran_id];
-        section.className = `row-with-comment ${
+        section.className = `row-with-comment border-hover-draw ${
           comment ? "has-row-comment" : ""
         }`;
         section.dataset.rowType = "t_kegiatan_anggaran_realisasi";
@@ -373,28 +1214,28 @@ export function renderInputLpjPage(path, userRole) {
       <div class="mb-6">
         <h5 class="mb-4 font-bold text-lg" style="color: #374151;">Rencana Anggaran Biaya (KAK)</h5>
         <div class="grid grid-cols-12 gap-4 items-end mb-4">
-          <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${
+          <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" disabled class="form-control" style="${disabledInputStyle}" value="${
             item.uraian || ""
           }"></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${
+          <div><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" disabled class="form-control" style="${disabledInputStyle}" value="${
             item.volume1 || ""
           }"></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}">${getSatuanOptions(
+          <div><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select disabled class="form-control" style="${disabledInputStyle}">${getSatuanOptions(
             item.satuan1_id
           )}</select></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${
+          <div><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" disabled class="form-control" style="${disabledInputStyle}" value="${
             item.volume2 || ""
           }"></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}">${getSatuanOptions(
+          <div><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select disabled class="form-control" style="${disabledInputStyle}">${getSatuanOptions(
             item.satuan2_id
           )}</select></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${
+          <div><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" disabled class="form-control" style="${disabledInputStyle}" value="${
             item.volume3 || ""
           }"></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}">${getSatuanOptions(
+          <div><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select disabled class="form-control" style="${disabledInputStyle}">${getSatuanOptions(
             item.satuan3_id
           )}</select></div>
-          <div class="col-span-2"><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" disabled class="w-full px-4 py-3 border-2 rounded-lg text-sm cursor-not-allowed" style="${disabledInputStyle}" value="${rabHargaFormatted}"></div>
+          <div><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" disabled class="form-control" style="${disabledInputStyle}" value="${rabHargaFormatted}"></div>
         </div>
       </div>
 
@@ -402,36 +1243,36 @@ export function renderInputLpjPage(path, userRole) {
       <div>
         <h5 class="mb-4 font-bold text-lg" style="color: #00BCD4;">Realisasi Pertanggungjawaban (LPJ)</h5>
         <div class="grid grid-cols-12 gap-4 items-end mb-4 realisasi-grid">
-          <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
+          <div><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${
       item.realisasi_uraian || item.uraian || ""
     }"></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
+          <div><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" min="0" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${
       item.realisasi_volume1 || item.volume1 || ""
     }"></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}">${getSatuanOptions(
+          <div><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select ${inputAttr} class="form-control" style="${currentInputStyle}">${getSatuanOptions(
       item.realisasi_satuan1_id || item.satuan1_id
     )}</select></div>
           
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
+          <div><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" min="0" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${
       item.realisasi_volume2 || item.volume2 || ""
     }"></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}">${getSatuanOptions(
+          <div><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select ${inputAttr} class="form-control" style="${currentInputStyle}">${getSatuanOptions(
       item.realisasi_satuan2_id || item.satuan2_id
     )}</select></div>
           
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" min="0" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${
+          <div><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" min="0" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${
       item.realisasi_volume3 || item.volume3 || ""
     }"></div>
-          <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}">${getSatuanOptions(
+          <div><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select ${inputAttr} class="form-control" style="${currentInputStyle}">${getSatuanOptions(
       item.realisasi_satuan3_id || item.satuan3_id
     )}</select></div>
 
-          <div class="col-span-2"><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" ${inputAttr} class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${currentInputStyle}" value="${formatCurrency(item.realisasi_harga_satuan || item.harga_satuan || "")}"></div>
+          <div><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" ${inputAttr} class="form-control" style="${currentInputStyle}" value="${formatCurrency(item.realisasi_harga_satuan || item.harga_satuan || "")}"></div>
           
           ${
             isPengusul
               ? `
-          <div class="col-span-1 flex items-end">
+          <div class="flex items-end">
             <label class="cursor-pointer">
               <input type="file" multiple class="hidden" onchange="window.handleFileUpload(this)" data-anggaran-id="${item.anggaran_id}">
               <div class="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-105 border-0" style="background: #00BCD4; color: #FFFFFF;">
@@ -467,13 +1308,13 @@ export function renderInputLpjPage(path, userRole) {
   function renderActionButtons() {
     const container = document.getElementById("actionButtonsContainer");
     let buttons = "";
-    const backButton = `<button id="backButton" class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;"><span>←</span> Kembali</button>`;
+    const backButton = `<button id="backButton" class="btn-back"><span>←</span> Kembali</button>`;
 
     if (isPengusul) {
       if (state.status === "new" || state.status === "revisi") {
         buttons = `
           ${backButton}
-          <button id="submitLpjButton" class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;">
+          <button id="submitLpjButton" class="btn-primary-action" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); color: #FFFFFF;">
             ${
               state.status === "revisi" ? "Submit Revisi LPJ" : "Submit LPJ"
             } <span>✓</span>
@@ -488,13 +1329,28 @@ export function renderInputLpjPage(path, userRole) {
       buttons = `
         ${backButton}
         <div class="flex gap-4">
-          <button id="submitReviewButton" class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: #F59E0B; color: #FFFFFF;">Kirim Revisi</button>
-          <button id="approveLpjButton" class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: #10B981; color: #FFFFFF;">Setujui LPJ</button>
+          <button id="submitReviewButton" class="btn-primary-action btn-revise">Kirim Revisi</button>
+          <button id="approveLpjButton" class="btn-primary-action" style="background: linear-gradient(135deg, #10B981 0%, #0F9D58 100%); color: #FFFFFF;">Setujui LPJ</button>
         </div>
       `;
     }
     container.innerHTML = buttons;
     attachActionListeners();
+  }
+  
+    // --- COMMENTING LOGIC ---
+  function updateCommentCount() {
+    const count = Object.keys(rowComments).length;
+    const badge = document.getElementById("commentCountBadge");
+    const text = document.getElementById("commentCountText");
+    if (badge && text) {
+      if (count > 0) {
+        text.textContent = `${count} Catatan`;
+        badge.style.display = "flex";
+      } else {
+        badge.style.display = "none";
+      }
+    }
   }
 
   // --- DATA COLLECTION & SUBMISSION ---

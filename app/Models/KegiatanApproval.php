@@ -63,4 +63,23 @@ class KegiatanApproval extends Model
         
         return $stmt->fetch();
     }
+
+    /**
+     * Find the currently active approval step for a given kegiatan ID.
+     *
+     * @param int $kegiatanId The ID of the kegiatan.
+     * @return array|false The approval record or false if not found.
+     */
+    public function findActiveByKegiatanId(int $kegiatanId)
+    {
+        $sql = "SELECT * FROM {$this->table} 
+                WHERE kegiatan_id = :kegiatan_id 
+                AND status = 'Aktif' 
+                LIMIT 1";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['kegiatan_id' => $kegiatanId]);
+        
+        return $stmt->fetch();
+    }
 }

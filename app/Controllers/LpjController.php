@@ -475,19 +475,22 @@ class LpjController extends Controller
             }
 
             $approvalModel = new \App\Models\KegiatanApproval();
-            $lpjApproval = $approvalModel->findByKegiatanIdAndLevel($kegiatanId, 'Bendahara-LPJ');
+            // Find the current active approval step for the kegiatan
+            $activeApproval = $approvalModel->findActiveByKegiatanId($kegiatanId);
 
-            if (!$lpjApproval) {
-                return Response::notFound('Alur persetujuan LPJ untuk kegiatan ini tidak ditemukan.');
+            if (!$activeApproval) {
+                return Response::error('Tidak ada alur persetujuan yang sedang aktif untuk kegiatan ini.', 400);
             }
 
-            if ($lpjApproval['status'] !== 'Setor Fisik') {
-                return Response::error('LPJ hanya bisa diselesaikan jika statusnya "Setor Fisik".', 400);
+            // New Validation: LPJ can only be completed if the approval is at the 'Bendahara-Setor' level.
+            if ($activeApproval['approval_level'] !== 'Bendahara-Setor') {
+                return Response::error('LPJ hanya bisa diselesaikan jika alur persetujuan berada di level "Bendahara-Setor".', 400);
             }
 
             $db->beginTransaction();
 
-            $approvalModel->update($lpjApproval['approval_kegiatan_id'], [
+            // Mark the 'Bendahara-Setor' step as 'Disetujui', completing the LPJ workflow.
+            $approvalModel->update($activeApproval['approval_kegiatan_id'], [
                 'status' => 'Disetujui',
                 'catatan' => 'Bukti fisik telah diterima dan LPJ dinyatakan selesai.',
                 'approver_user_id' => $this->user['user_id'],
