@@ -10,7 +10,7 @@ class Kegiatan extends Model
     protected $table = 't_kegiatan';
     protected $primaryKey = 'kegiatan_id';
 
-    public function getAllWithFilters(array $filters)
+    public function getDashboardMonitoringKegiatan(array $filters)
     {
         $params = [];
         $baseSql = "FROM t_kegiatan k
@@ -18,11 +18,142 @@ class Kegiatan extends Model
                     JOIN m_users u ON t.pengusul_user_id = u.user_id
                     LEFT JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
                     LEFT JOIN t_kegiatan_approval ppk_approval ON k.kegiatan_id = ppk_approval.kegiatan_id AND ppk_approval.approval_level = 'PPK'
+                    LEFT JOIN t_kegiatan_approval active_approval ON k.kegiatan_id = active_approval.kegiatan_id AND active_approval.status IN ('Aktif', 'Revisi')
                     LEFT JOIN (
                         SELECT kegiatan_id, SUM(jumlah_dicairkan) as total_dicairkan
                         FROM t_pencairan_dana
                         GROUP BY kegiatan_id
                     ) pencairan_sum ON k.kegiatan_id = pencairan_sum.kegiatan_id";
+
+        $whereSql = " WHERE 1=1";
+
+        if (!empty($filters['status_id'])) {
+            $whereSql .= " AND t.status_id = ?";
+            $params[] = $filters['status_id'];
+        }
+        if (!empty($filters['search'])) {
+            $whereSql .= " AND t.nama_kegiatan LIKE ?";
+            $params[] = '%' . $filters['search'] . '%';
+        }
+        if (!empty($filters['user_id'])) {
+            $whereSql .= " AND t.pengusul_user_id = ?";
+            $params[] = $filters['user_id'];
+        }
+        if (!empty($filters['unit_pengusul'])) {
+            $whereSql .= " AND t.pengusul_user_id = ?";
+            $params[] = $filters['unit_pengusul'];
+        }
+
+        // Count total records
+        $countSql = "SELECT COUNT(DISTINCT k.kegiatan_id) " . $baseSql . $whereSql;
+        $totalRecords = $this->query($countSql, $params)->fetchColumn();
+
+        // Main query
+        $mainSelect = "SELECT 
+                        k.kegiatan_id,
+                        t.nama_kegiatan,
+                        u.nama_lengkap as pengusul_nama,
+                        ks.nama_status,
+                        ks.status_id,
+                        COALESCE(active_approval.approval_level, ks.nama_status) as status_saat_ini,
+                        active_approval.status as status_approval_aktif,
+                        COALESCE(pencairan_sum.total_dicairkan, 0) as dana_dicairkan";
+
+        $page = $filters['page'] ?? 1;
+        $perPage = $filters['per_page'] ?? 10;
+        $offset = ($page - 1) * $perPage;
+
+        $finalParams = array_merge($params, [$perPage, $offset]);
+        $paginationSql = " ORDER BY k.created_at DESC LIMIT ? OFFSET ?";
+
+        $sql = $mainSelect . " " . $baseSql . $whereSql . $paginationSql;
+
+        $data = $this->query($sql, $finalParams)->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'data' => $data,
+            'pagination' => [
+                'total' => (int) $totalRecords,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'last_page' => ceil($totalRecords / $perPage)
+            ]
+        ];
+    }
+
+    public function getDashboardMonitoringLpj(array $filters)
+    {
+        $params = [];
+        $sql = "SELECT
+                    k.kegiatan_id,
+                    t.nama_kegiatan,
+                    u.nama_lengkap as pengusul_nama,
+                    k.tgl_batas_lpj,
+                    CASE
+                        WHEN lpj_digital_approval.status = 'Aktif' THEN 'Menunggu'
+                        WHEN lpj_digital_approval.status = 'Revisi' THEN 'Revisi'
+                        WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Aktif' THEN 'Setor Fisik'
+                        WHEN lpj_fisik_approval.status = 'Revisi' THEN 'Revisi'
+                        WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Disetujui' THEN 'Selesai'
+                        ELSE 'Menunggu'
+                    END as status_lpj,
+                    CASE
+                        WHEN k.tgl_batas_lpj IS NOT NULL AND k.lpj_submitted_at IS NULL AND k.tgl_batas_lpj < NOW() THEN 'Terlambat'
+                        ELSE 'Tepat Waktu'
+                    END as status_ketepatan
+                FROM t_kegiatan k
+                JOIN t_kak t ON k.kak_id = t.kak_id
+                JOIN m_users u ON t.pengusul_user_id = u.user_id
+                JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
+                LEFT JOIN t_kegiatan_approval lpj_digital_approval ON k.kegiatan_id = lpj_digital_approval.kegiatan_id AND lpj_digital_approval.approval_level = 'Bendahara-LPJ'
+                LEFT JOIN t_kegiatan_approval lpj_fisik_approval ON k.kegiatan_id = lpj_fisik_approval.kegiatan_id AND lpj_fisik_approval.approval_level = 'Bendahara-Setor'
+                WHERE k.tgl_batas_lpj IS NOT NULL
+                  AND (
+                      lpj_digital_approval.status IN ('Aktif', 'Revisi', 'Disetujui') 
+                      OR lpj_fisik_approval.status IN ('Aktif', 'Revisi', 'Disetujui')
+                  )";
+
+        if (!empty($filters['search'])) {
+            $sql .= " AND t.nama_kegiatan LIKE ?";
+            $params[] = '%' . $filters['search'] . '%';
+        }
+        if (!empty($filters['unit_pengusul'])) {
+            $sql .= " AND t.pengusul_user_id = ?";
+            $params[] = $filters['unit_pengusul'];
+        }
+
+        $countSql = "SELECT COUNT(*) FROM ({$sql}) as count_table";
+        $totalRecords = $this->query($countSql, $params)->fetchColumn();
+
+        $page = $filters['page'] ?? 1;
+        $perPage = $filters['per_page'] ?? 10;
+        $offset = ($page - 1) * $perPage;
+
+        $sql .= " ORDER BY k.tgl_batas_lpj DESC LIMIT ? OFFSET ?";
+
+        $finalParams = array_merge($params, [$perPage, $offset]);
+
+        $data = $this->query($sql, $finalParams)->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'data' => $data,
+            'pagination' => [
+                'total' => (int) $totalRecords,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'last_page' => ceil($totalRecords / $perPage)
+            ]
+        ];
+    }
+
+    public function getAllWithFilters(array $filters)
+    {
+        $params = [];
+        $baseSql = "FROM t_kegiatan k
+                    JOIN t_kak t ON k.kak_id = t.kak_id
+                    JOIN m_users u ON t.pengusul_user_id = u.user_id
+                    LEFT JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
+                    LEFT JOIN t_kegiatan_approval ppk_approval ON k.kegiatan_id = ppk_approval.kegiatan_id AND ppk_approval.approval_level = 'PPK'";
 
         $whereSql = " WHERE 1=1";
 
@@ -58,21 +189,17 @@ class Kegiatan extends Model
             $whereSql .= " AND t.tipe_kegiatan_id = ?";
             $params[] = $filters['kategori_kegiatan'];
         }
-        if (!empty($filters['status'])) { // Added this filter
+        if (!empty($filters['status'])) { 
             $whereSql .= " AND ks.nama_status = ?";
             $params[] = $filters['status'];
         }
-        if (!empty($filters['approval_level'])) {
-            $whereSql .= " AND active_approval.approval_level = ?";
-            $params[] = $filters['approval_level'];
-        }
 
-        // Count total records - This also needs $baseSql and $whereSql
-        $countSql = "SELECT COUNT(k.kegiatan_id) " . $baseSql . $whereSql;
+        // Count total records
+        $countSql = "SELECT COUNT(DISTINCT k.kegiatan_id) " . $baseSql . $whereSql;
         $totalRecords = $this->query($countSql, $params)->fetchColumn();
 
 
-        // Main query with direct join for active approval and disbursement sum
+        // Main query
         $mainSelect = "SELECT 
                         k.kegiatan_id,
                         k.pelaksana_manual,
@@ -86,8 +213,7 @@ class Kegiatan extends Model
                         u.nama_lengkap as pengusul_nama,
                         ks.nama_status,
                         ks.status_id,
-                        (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_diusulkan,
-                        COALESCE(pencairan_sum.total_dicairkan, 0) as dana_dicairkan";
+                        (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_diusulkan";
 
         $page = $filters['page'] ?? 1;
         $perPage = $filters['per_page'] ?? 10;
@@ -100,7 +226,7 @@ class Kegiatan extends Model
 
         $data = $this->query($sql, $finalParams)->fetchAll(PDO::FETCH_ASSOC);
 
-        // Augment data with full approval history and structure the current_approval object
+        // Augment data with full approval history
         $kegiatanIds = array_map(fn($k) => $k['kegiatan_id'], $data);
 
         if (!empty($kegiatanIds)) {
@@ -340,8 +466,7 @@ class Kegiatan extends Model
                     COUNT(CASE WHEN ks.nama_status = 'Draft' THEN 1 END) as total_draft,
                     COUNT(CASE WHEN ks.nama_status = 'Review Verifikator' THEN 1 END) as total_review_verifikator,
                     COUNT(CASE WHEN ks.nama_status = 'Revisi' THEN 1 END) as total_revisi
-                FROM t_kegiatan k
-                JOIN t_kak t ON k.kak_id = t.kak_id
+                FROM t_kak t
                 JOIN m_kegiatan_status ks ON t.status_id = ks.status_id";
 
         $params = [];
@@ -357,30 +482,33 @@ class Kegiatan extends Model
     {
         $params = [];
         $sql = "SELECT
-                            k.kegiatan_id,
-                            t.nama_kegiatan,
-                            u.nama_lengkap as pengusul_nama,
-                            k.tgl_batas_lpj,
-                                                CASE
-                                                    WHEN lpj_digital_approval.status = 'Aktif' AND k.lpj_submitted_at IS NULL THEN 'Menunggu Penyerahan'
-                                                    WHEN lpj_digital_approval.status = 'Aktif' AND k.lpj_submitted_at IS NOT NULL THEN 'Diajukan'
-                                                    WHEN lpj_digital_approval.status = 'Revisi' THEN 'Direvisi'
-                                                    WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status IN ('Aktif', 'Revisi') THEN 'Setor Fisik'
-                                                    WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Disetujui' THEN 'Selesai'
-                                                    ELSE 'Tidak Diketahui'
-                                                END as status_lpj,                            CASE
-                                WHEN k.tgl_batas_lpj IS NOT NULL AND k.lpj_submitted_at IS NULL AND k.tgl_batas_lpj < NOW() THEN 'Terlambat'
-                                ELSE 'Tepat Waktu'
-                            END as status_ketepatan
-                        FROM t_kegiatan k
-                        JOIN t_kak t ON k.kak_id = t.kak_id
-                        JOIN m_users u ON t.pengusul_user_id = u.user_id
-                        JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
-                                        LEFT JOIN t_kegiatan_approval lpj_digital_approval ON k.kegiatan_id = lpj_digital_approval.kegiatan_id AND lpj_digital_approval.approval_level = 'Bendahara-LPJ'
-                                        LEFT JOIN t_kegiatan_approval lpj_fisik_approval ON k.kegiatan_id = lpj_fisik_approval.kegiatan_id AND lpj_fisik_approval.approval_level = 'Bendahara-Setor'
-                                        WHERE k.tgl_batas_lpj IS NOT NULL
-                                          AND lpj_digital_approval.approval_level = 'Bendahara-LPJ'
-                                          AND lpj_digital_approval.status IN ('Aktif', 'Revisi', 'Disetujui')";
+                    k.kegiatan_id,
+                    t.nama_kegiatan,
+                    u.nama_lengkap as pengusul_nama,
+                    k.tgl_batas_lpj,
+                    CASE
+                        WHEN lpj_digital_approval.status = 'Aktif' THEN 'Menunggu'
+                        WHEN lpj_digital_approval.status = 'Revisi' THEN 'Revisi'
+                        WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Aktif' THEN 'Setor Fisik'
+                        WHEN lpj_fisik_approval.status = 'Revisi' THEN 'Revisi'
+                        WHEN lpj_digital_approval.status = 'Disetujui' AND lpj_fisik_approval.status = 'Disetujui' THEN 'Selesai'
+                        ELSE 'Menunggu'
+                    END as status_lpj,
+                    CASE
+                        WHEN k.tgl_batas_lpj IS NOT NULL AND k.lpj_submitted_at IS NULL AND k.tgl_batas_lpj < NOW() THEN 'Terlambat'
+                        ELSE 'Tepat Waktu'
+                    END as status_ketepatan
+                FROM t_kegiatan k
+                JOIN t_kak t ON k.kak_id = t.kak_id
+                JOIN m_users u ON t.pengusul_user_id = u.user_id
+                JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
+                LEFT JOIN t_kegiatan_approval lpj_digital_approval ON k.kegiatan_id = lpj_digital_approval.kegiatan_id AND lpj_digital_approval.approval_level = 'Bendahara-LPJ'
+                LEFT JOIN t_kegiatan_approval lpj_fisik_approval ON k.kegiatan_id = lpj_fisik_approval.kegiatan_id AND lpj_fisik_approval.approval_level = 'Bendahara-Setor'
+                WHERE k.tgl_batas_lpj IS NOT NULL
+                  AND (
+                      lpj_digital_approval.status IN ('Aktif', 'Revisi', 'Disetujui') 
+                      OR lpj_fisik_approval.status IN ('Aktif', 'Revisi', 'Disetujui')
+                  )";
 
         if (!empty($filters['search'])) {
             $sql .= " AND t.nama_kegiatan LIKE ?";

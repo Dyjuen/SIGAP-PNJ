@@ -1,6 +1,7 @@
 // frontend/src/pages/Pengusul/DashboardPage.js
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
+import { authService } from "../../api/authService.js";
 
 export function renderPengusulDashboardPage(path, userRole) {
   const dashboardContent = `
@@ -492,7 +493,7 @@ export function renderPengusulDashboardPage(path, userRole) {
               </div>
             </div>
             <div class="flex justify-end items-end">
-              <h1 class="text-7xl font-bold mb-0 counter" data-target="10">0</h1>
+              <h1 class="text-7xl font-bold mb-0 counter" id="stat-draft" data-target="0">0</h1>
             </div>
           </div>
         </div>
@@ -507,7 +508,7 @@ export function renderPengusulDashboardPage(path, userRole) {
               </div>
             </div>
             <div class="flex justify-end items-end">
-              <h1 class="text-7xl font-bold mb-0 counter" data-target="10">0</h1>
+              <h1 class="text-7xl font-bold mb-0 counter" id="stat-diajukan" data-target="0">0</h1>
             </div>
           </div>
         </div>
@@ -522,7 +523,7 @@ export function renderPengusulDashboardPage(path, userRole) {
               </div>
             </div>
             <div class="flex justify-end items-end">
-              <h1 class="text-7xl font-bold mb-0 counter" data-target="10">0</h1>
+              <h1 class="text-7xl font-bold mb-0 counter" id="stat-revisi" data-target="0">0</h1>
             </div>
           </div>
         </div>
@@ -531,12 +532,14 @@ export function renderPengusulDashboardPage(path, userRole) {
           <div class="rounded-xl">
             <div class="w-full flex justify-between items-center">
               <h3 class="text-xl font-bold text-gray-800 mb-4">Daftar Template</h3>
-              <p class="text-sm text-gray-400 underline pr-4 mb-2">
+              <p class="text-sm text-gray-400 underline pr-4 mb-2 cursor-pointer" onclick="window.location.href='/pengusul/panduan'">
                 Lihat Semua
               </p>
             </div>
             <div class="space-y-3" id="templateList">
-              <!-- Will be populated by JS -->
+              <div class="skeleton h-12 w-full rounded-xl"></div>
+              <div class="skeleton h-12 w-full rounded-xl"></div>
+              <div class="skeleton h-12 w-full rounded-xl"></div>
             </div>
           </div>
         </div>
@@ -561,7 +564,9 @@ export function renderPengusulDashboardPage(path, userRole) {
                 </tr>
               </thead>
               <tbody id="monitoringKegiatanTable">
-                <!-- Will be populated by JS -->
+                <tr><td colspan="3" class="text-center"><div class="skeleton h-8 w-full rounded"></div></td></tr>
+                <tr><td colspan="3" class="text-center"><div class="skeleton h-8 w-full rounded"></div></td></tr>
+                <tr><td colspan="3" class="text-center"><div class="skeleton h-8 w-full rounded"></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -581,7 +586,9 @@ export function renderPengusulDashboardPage(path, userRole) {
                 </tr>
               </thead>
               <tbody id="monitoringLpjTable">
-                <!-- Will be populated by JS -->
+                <tr><td colspan="3" class="text-center"><div class="skeleton h-8 w-full rounded"></div></td></tr>
+                <tr><td colspan="3" class="text-center"><div class="skeleton h-8 w-full rounded"></div></td></tr>
+                <tr><td colspan="3" class="text-center"><div class="skeleton h-8 w-full rounded"></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -592,7 +599,7 @@ export function renderPengusulDashboardPage(path, userRole) {
         <div class="bg-white rounded-xl p-6 shadow-sm">
           <h3 class="text-2xl font-bold text-gray-800 mb-2">Video Panduan</h3>
           <p class="text-gray-500 mb-6">Panduan dalam menggunakan SIGAP</p>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="videoList">
             <div class="video-placeholder">
               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -617,82 +624,101 @@ export function renderPengusulDashboardPage(path, userRole) {
   renderDashboardLayout(dashboardContent, userRole);
 
   // ==============================================
-  // DATA
+  // DATA & FALLBACKS
   // ==============================================
-  const monitoringKegiatanData = [
-    {
-      no: 1,
-      name: "(Nama Kegiatan)",
-      subtitle: "Pengusul",
-      status: "Uang Muka",
-      countdown: "03",
-    },
-    {
-      no: 2,
-      name: "(Nama Kegiatan)",
-      subtitle: "Pengusul",
-      status: "Uang Muka",
-      countdown: "03",
-    },
-    {
-      no: 3,
-      name: "(Nama Kegiatan)",
-      subtitle: "Pengusul",
-      status: "Uang Muka",
-      countdown: "03",
-    },
-    {
-      no: 4,
-      name: "(Nama Kegiatan)",
-      subtitle: "Pengusul",
-      status: "Uang Muka",
-      countdown: "03",
-    },
+  const defaultTemplates = [
+    { name: "Template LPJ Lomba", icon: "eye", url: "#" },
+    { name: "Template Proposal", icon: "eye", url: "#" },
+    { name: "Template Surat Pengantar", icon: "eye", url: "#" },
   ];
 
-  const monitoringLpjData = [
-    {
-      no: 1,
-      name: "(Nama Kegiatan yang PANJANG)",
-      subtitle: "Pengusul",
-      status: "Menunggu",
-      detail: "11 jam 10 menit",
-    },
-    {
-      no: 2,
-      name: "(Nama Kegiatan)",
-      subtitle: "Pengusul",
-      status: "Diajukan",
-    },
-    {
-      no: 3,
-      name: "(Nama Kegiatan)",
-      subtitle: "Pengusul",
-      status: "Direvisi",
-    },
-    {
-      no: 4,
-      name: "(Nama Kegiatan)",
-      subtitle: "Pengusul",
-      status: "Setor Fisik",
-    },
-  ];
+  // ==============================================
+  // FETCH DATA
+  // ==============================================
+  
+  async function fetchDashboardData() {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
 
-  const templates = [
-    { name: "Template LPJ Lomba", icon: "eye" },
-    { name: "Template LPJ Lomba", icon: "eye" },
-    { name: "Template LPJ Lomba", icon: "eye" },
-  ];
+      const headers = {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      };
+
+      // 1. Fetch Statistics
+      fetch('/api/dashboard/summary', { headers })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data) {
+            updateStatCards(data.data);
+          }
+        })
+        .catch(err => console.error("Error fetching stats:", err));
+
+      // 2. Fetch Monitoring Kegiatan
+      fetch('/api/dashboard/kegiatan?per_page=5&page=1', { headers })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const items = data.data.data || data.data; // Handle pagination or simple array
+                renderMonitoringKegiatan(Array.isArray(items) ? items : []);
+            } else {
+                renderMonitoringKegiatan([]);
+            }
+        })
+        .catch(err => {
+            console.error("Error fetching kegiatan:", err);
+            renderMonitoringKegiatan([]);
+        });
+
+      // 3. Fetch Monitoring LPJ
+      fetch('/api/dashboard/lpj?per_page=5&page=1', { headers })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                 const items = data.data.data || data.data;
+                 renderMonitoringLpj(Array.isArray(items) ? items : []);
+            } else {
+                 renderMonitoringLpj([]);
+            }
+        })
+        .catch(err => {
+            console.error("Error fetching LPJ:", err);
+            renderMonitoringLpj([]);
+        });
+
+      // 4. Fetch Templates (with fallback)
+      fetch('/api/dashboard/template', { headers })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data && data.data.length > 0) {
+            renderTemplates(data.data);
+          } else {
+            renderTemplates(defaultTemplates);
+          }
+        })
+        .catch(err => {
+          console.warn("Error fetching templates, using default:", err);
+          renderTemplates(defaultTemplates);
+        });
+
+    } catch (error) {
+      console.error("Dashboard fetch error:", error);
+    }
+  }
 
   // ==============================================
   // ANIMATION FUNCTIONS
   // ==============================================
   
-  // Counter Animation
   function animateCounter(element) {
     const target = parseInt(element.getAttribute('data-target'));
-    const duration = 2000; // 2 seconds
-    const increment = target / (duration / 16); // 60 FPS
+    const duration = 2000; 
+    const increment = target / (duration / 16); 
     let current = 0;
 
     const updateCounter = () => {
@@ -705,46 +731,90 @@ export function renderPengusulDashboardPage(path, userRole) {
       }
     };
 
-    // Start after a delay to match card animation
     setTimeout(() => {
       updateCounter();
     }, 500);
   }
 
-  // Initialize all counters
-  function initCounters() {
-    const counters = document.querySelectorAll('.counter');
-    counters.forEach((counter, index) => {
-      setTimeout(() => {
-        animateCounter(counter);
-      }, index * 100);
-    });
-  }
-
   // ==============================================
   // RENDER FUNCTIONS
   // ==============================================
-  function renderMonitoringKegiatan() {
+
+  function updateStatCards(stats) {
+    const draftEl = document.getElementById('stat-draft');
+    const diajukanEl = document.getElementById('stat-diajukan');
+    const revisiEl = document.getElementById('stat-revisi');
+
+    if (draftEl) draftEl.setAttribute('data-target', stats.draft || 0);
+    if (diajukanEl) diajukanEl.setAttribute('data-target', stats.diajukan || 0);
+    if (revisiEl) revisiEl.setAttribute('data-target', stats.revisi || 0);
+
+    // Re-trigger animations
+    [draftEl, diajukanEl, revisiEl].forEach(el => {
+      if (el) animateCounter(el);
+    });
+  }
+
+  function renderMonitoringKegiatan(items) {
     const tbody = document.getElementById("monitoringKegiatanTable");
     if (!tbody) return;
 
     tbody.innerHTML = "";
-    monitoringKegiatanData.forEach((item) => {
+    
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-gray-500">Belum ada kegiatan.</td></tr>`;
+        return;
+    }
+
+    items.forEach((item, index) => {
+      // Logic for status text and color
+      let rawStatus = item.status_saat_ini || item.nama_status || 'Menunggu';
+      let displayStatus = rawStatus;
+      let statusColor = 'bg-cyan-500';
+
+      // Helper to prettify level names
+      const formatLevel = (level) => {
+        if (level === 'Wadir2') return 'Wadir II';
+        if (level === 'Bendahara-Cair') return 'Bendahara (Pencairan)';
+        if (level === 'Bendahara-LPJ') return 'Bendahara (LPJ)';
+        if (level === 'Bendahara-Setor') return 'Bendahara (Setor)';
+        return level;
+      };
+
+      // Check if it's an active approval flow
+      if (item.status_approval_aktif === 'Aktif') {
+        displayStatus = `Menunggu ${formatLevel(rawStatus)}`;
+        statusColor = 'bg-blue-500'; // Color for waiting/active
+      } 
+      else if (item.status_approval_aktif === 'Revisi' || rawStatus === 'Revisi') {
+        displayStatus = `Revisi (${formatLevel(rawStatus)})`;
+        statusColor = 'bg-orange-500';
+      }
+      else if (rawStatus === 'Draft') {
+        statusColor = 'bg-gray-400';
+      }
+      else if (rawStatus === 'Selesai') {
+        statusColor = 'bg-green-500';
+      }
+      else if (rawStatus === 'Ditolak') {
+        statusColor = 'bg-red-500';
+      }
+
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>
-          <span class="number-badge">${item.no}</span>
+          <span class="number-badge">${index + 1}</span>
         </td>
         <td>
-          <div class="font-semibold text-gray-800">${item.name}</div>
-          <div class="text-sm text-cyan-500">${item.subtitle}</div>
+          <div class="font-semibold text-gray-800">${item.nama_kegiatan || '-'}</div>
+          <div class="text-sm text-cyan-500">${item.unit_pengusul_nama || 'Pengusul'}</div>
         </td>
         <td>
           <div class="flex items-center">
-            <span class="status-indicator bg-cyan-500"></span>
+            <span class="status-indicator ${statusColor}"></span>
             <div>
-              <div class="status-text font-semibold text-gray-700">${item.countdown}</div>
-              <div class="status-text">${item.status}</div>
+              <div class="status-text font-semibold text-gray-700">${displayStatus}</div>
+              <!-- <div class="status-text text-xs text-gray-400">Update: ${item.updated_at ? new Date(item.updated_at).toLocaleDateString() : '-'}</div> -->
             </div>
           </div>
         </td>
@@ -753,34 +823,42 @@ export function renderPengusulDashboardPage(path, userRole) {
     });
   }
 
-  function renderMonitoringLpj() {
+  function renderMonitoringLpj(items) {
     const tbody = document.getElementById("monitoringLpjTable");
     if (!tbody) return;
 
     tbody.innerHTML = "";
-    monitoringLpjData.forEach((item) => {
+
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-gray-500">Belum ada LPJ.</td></tr>`;
+        return;
+    }
+
+    items.forEach((item, index) => {
+      // Map backend statuses to frontend colors
+      const status = item.status_lpj || 'Menunggu';
       const statusColors = {
-        Menunggu: "text-orange-600",
-        Diajukan: "text-orange-600",
-        Direvisi: "text-blue-600",
-        "Setor Fisik": "text-red-600",
+        "Menunggu": "text-orange-600",
+        "Revisi": "text-red-600",
+        "Setor Fisik": "text-indigo-600", 
+        "Selesai": "text-green-600",
       };
-      const statusColor = statusColors[item.status] || "text-gray-600";
+      const statusColor = statusColors[status] || "text-gray-600";
 
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>
-          <span class="number-badge">${item.no}</span>
+          <span class="number-badge">${index + 1}</span>
         </td>
         <td>
-          <div class="font-semibold text-gray-800">${item.name}</div>
-          <div class="text-sm text-cyan-500">${item.subtitle}</div>
+          <div class="font-semibold text-gray-800">${item.nama_kegiatan || '-'}</div>
+          <div class="text-sm text-cyan-500">${item.unit_pengusul_nama || 'Pengusul'}</div>
         </td>
         <td>
-          <div class="font-semibold ${statusColor}">${item.status}</div>
+          <div class="font-semibold ${statusColor}">${status}</div>
           ${
-            item.detail
-              ? `<div class="text-xs text-gray-500">${item.detail}</div>`
+            item.tgl_batas_lpj
+              ? `<div class="text-xs text-gray-500">Deadline: ${new Date(item.tgl_batas_lpj).toLocaleDateString()}</div>`
               : ""
           }
         </td>
@@ -789,7 +867,7 @@ export function renderPengusulDashboardPage(path, userRole) {
     });
   }
 
-  function renderTemplates() {
+  function renderTemplates(templates) {
     const container = document.getElementById("templateList");
     if (!container) return;
 
@@ -799,15 +877,15 @@ export function renderPengusulDashboardPage(path, userRole) {
       templateCard.className = "template-card";
       templateCard.innerHTML = `
         <div class="flex justify-between items-center py-1 px-4 rounded-xl">
-          <span class="text-cyan-400 font-medium text-md">${template.name}</span>
+          <span class="text-cyan-400 font-medium text-md">${template.name || template.judul}</span>
           <div class="flex">
-            <button class="btn-action-icon" title="Preview">
+            <button class="btn-action-icon" title="Preview" onclick="window.open('${template.file_path || template.url || '#'}', '_blank')">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
               </svg>
             </button>
-            <button class="btn-action-icon" title="Download">
+            <button class="btn-action-icon" title="Download" onclick="window.open('${template.file_path || template.url || '#'}', '_blank')">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -818,29 +896,6 @@ export function renderPengusulDashboardPage(path, userRole) {
         </div>
       `;
       container.appendChild(templateCard);
-    });
-
-    // Add event listeners with ripple effect
-    container.querySelectorAll(".btn-action-icon").forEach((btn) => {
-      btn.addEventListener("click", function (e) {
-        const action = this.getAttribute("title");
-        
-        // Create ripple effect
-        const ripple = document.createElement("span");
-        ripple.style.position = "absolute";
-        ripple.style.borderRadius = "50%";
-        ripple.style.background = "rgba(0, 188, 212, 0.6)";
-        ripple.style.width = ripple.style.height = "100%";
-        ripple.style.animation = "ripple 0.6s ease-out";
-        ripple.style.pointerEvents = "none";
-        
-        this.appendChild(ripple);
-        
-        setTimeout(() => ripple.remove(), 600);
-        
-        // Show notification with animation
-        showNotification(`${action} template`);
-      });
     });
   }
 
@@ -1003,13 +1058,13 @@ export function renderPengusulDashboardPage(path, userRole) {
   // ==============================================
   // INITIALIZATION
   // ==============================================
-  renderMonitoringKegiatan();
-  renderMonitoringLpj();
-  renderTemplates();
+  
+  // Load initial data
+  fetchDashboardData();
 
   // Initialize animations after content is rendered
   setTimeout(() => {
-    initCounters();
+    // initCounters(); // Handled by updateStatCards now
     initScrollAnimations();
     initSmoothScroll();
     initButtonEffects();

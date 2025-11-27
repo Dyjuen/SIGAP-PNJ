@@ -49,7 +49,35 @@ class DashboardController
         }
     }
 
-    // Metode lain untuk dashboard (getKegiatan, getLpj, dll.) akan ditambahkan di sini.
+    /**
+     * GET /dashboard/kegiatan
+     * Mengambil data monitoring kegiatan khusus untuk dashboard.
+     */
+    public function getMonitoringKegiatan()
+    {
+        try {
+            $kegiatanModel = new Kegiatan();
+
+            $filters = [
+                'search' => $_GET['search'] ?? null,
+                'unit_pengusul' => $_GET['unit_pengusul'] ?? null,
+                'page' => isset($_GET['page']) ? (int)$_GET['page'] : 1,
+                'per_page' => isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10
+            ];
+            
+            // Pengusul hanya bisa lihat kegiatan sendiri
+            if (isset($this->userData['roles']) && in_array('Pengusul', $this->userData['roles']) && !in_array('Admin', $this->userData['roles'])) {
+                $filters['unit_pengusul'] = $this->userData['user_id'];
+            }
+
+            $result = $kegiatanModel->getDashboardMonitoringKegiatan($filters);
+
+            Response::success($result, 'Data monitoring kegiatan berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil data kegiatan: ' . $e->getMessage(), 500);
+        }
+    }
 
     /**
      * GET /dashboard/lpj
@@ -72,7 +100,7 @@ class DashboardController
                 $filters['unit_pengusul'] = $this->userData['user_id'];
             }
 
-            $result = $kegiatanModel->getLpjWithFilters($filters);
+            $result = $kegiatanModel->getDashboardMonitoringLpj($filters);
 
             Response::success($result, 'Data monitoring LPJ berhasil diambil.');
 
