@@ -1144,7 +1144,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       'Wadir2': { step: 2, dateKey: 'accWD2' },
       'Bendahara-Cair': { step: 3, dateKey: 'uangMuka' },
       'Bendahara-LPJ': { step: 4, dateKey: 'lpj' },
-      'Setor-Fisik': { step: 5, dateKey: 'setorFisik' }
+      'Bendahara-Setor': { step: 5, dateKey: 'setorFisik' }
     };
     
     return apiData.map(item => {
