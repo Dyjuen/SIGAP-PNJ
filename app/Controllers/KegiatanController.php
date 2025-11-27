@@ -160,7 +160,7 @@ class KegiatanController
             } elseif ($this->hasRole('Bendahara')) {
                 // Bendahara: kegiatan yang sudah dia approve (semua level bendahara)
                 $filters['approver_user_id'] = $userId;
-                $filters['approval_level'] = 'Bendahara'; // akan match Bendahara-Cair, Bendahara-LPJ, dll
+                $filters['approval_level'] = 'Bendahara-Setor'; // akan match Bendahara-Cair, Bendahara-LPJ, dll
                 
             } elseif ($this->hasRole('Verifikator') || $this->hasRole('Rektorat') || $this->hasRole('Admin')) {
                 // Verifikator/Rektorat/Admin: tampilkan semua
@@ -707,7 +707,7 @@ class KegiatanController
             );
 
             $this->logStatusModel->create([
-                'kak_id' => $kegiatan['kak_id'],
+                'kegiatan_id' => $kegiatanId,
                 'status_id_lama' => $kegiatan['status_id'],
                 'status_id_baru' => $kegiatan['status_id'],
                 'actor_user_id' => $this->userData['user_id'],

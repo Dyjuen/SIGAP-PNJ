@@ -231,6 +231,12 @@ export function renderRiwayatKAKPage(path, userRole) {
         color: white;
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
       }
+      
+      .badge-lpj {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
 
       .status-icon {
         width: 14px;
@@ -444,7 +450,11 @@ export function renderRiwayatKAKPage(path, userRole) {
       menunggu: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Menunggu" },
       pending: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Menunggu" },
       revisi: { class: "badge-revision", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`, text: "Revisi" },
-      revision: { class: "badge-revision", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`, text: "Revisi" }
+      revision: { class: "badge-revision", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`, text: "Revisi" },
+      disetujui_verifikator: { class: "badge-approved", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`, text: "Disetujui Verifikator" },
+      proses_pencairan: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Proses Pencairan" },
+      menunggu_lpj: { class: "badge-lpj", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`, text: "Menunggu LPJ" },
+      selesai: { class: "badge-approved", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`, text: "Selesai" }
     };
 
     const config = statusConfig[statusString] || statusConfig.pending;
@@ -458,11 +468,9 @@ export function renderRiwayatKAKPage(path, userRole) {
     const tbody = document.getElementById("riwayatTableBody");
     if (!tbody) return;
 
-    const startIndex = (state.currentPage - 1) * state.itemsPerPage;
-    const endIndex = startIndex + state.itemsPerPage;
-    const paginatedData = state.kakData.slice(startIndex, endIndex);
+    const paginatedData = state.kakData;
 
-    if (paginatedData.length === 0 && state.totalEntries === 0) {
+    if (paginatedData.length === 0) {
       tbody.innerHTML = `
         <tr>
           <td colspan="7">
@@ -486,7 +494,8 @@ export function renderRiwayatKAKPage(path, userRole) {
     tbody.innerHTML = "";
 
     paginatedData.forEach((item, index) => {
-      const globalIndex = startIndex + index + 1;
+      // Calculate global index based on current page
+      const globalIndex = (state.currentPage - 1) * state.itemsPerPage + index + 1;
       const isChecked = state.selectedItems.has(item.id);
 
       const row = document.createElement("tr");
@@ -577,6 +586,7 @@ export function renderRiwayatKAKPage(path, userRole) {
     document.querySelectorAll(".btn-view").forEach((btn) => {
       btn.addEventListener("click", function () {
         const id = this.getAttribute("data-id");
+        // Navigate to detail page using kak_id (which is mapped to id)
         window.navigateTo(`/${userRole}/riwayat/detail/${id}`);
       });
     });
@@ -701,9 +711,8 @@ export function renderRiwayatKAKPage(path, userRole) {
 
   function changePage(page) {
     if (page < 1 || page > state.totalPages) return;
-    state.currentPage = page;
-    renderTableRows();
-    setupPagination();
+    // Call fetch to get new page data
+    fetchKAKData(page);
   }
 
   function updatePaginationInfo() {
@@ -734,7 +743,7 @@ export function renderRiwayatKAKPage(path, userRole) {
     setupPagination();
   }
 
-  async function fetchKAKData() {
+  async function fetchKAKData(page = 1) {
     const tbody = document.getElementById("riwayatTableBody");
     if (tbody) {
         tbody.innerHTML = '<tr><td colspan="7" class="text-center p-5">Memuat data...</td></tr>';
@@ -748,7 +757,8 @@ export function renderRiwayatKAKPage(path, userRole) {
             return;
         }
 
-        const response = await fetch('/api/kak', {
+        // Call the new endpoint with pagination parameters
+        const response = await fetch(`/api/kegiatan/riwayat?page=${page}&per_page=${state.itemsPerPage}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -761,20 +771,27 @@ export function renderRiwayatKAKPage(path, userRole) {
 
         const result = await response.json();
         
-        const mappedData = result.data.map(item => ({
-            id: item.id,
-            nama_kak: item.nama_kak,
-            pengusul: item.pengusul_nama,
+        // Map the data from the new API structure
+        // The API returns { data: { data: [...], pagination: {...} }, ... }
+        // Based on KegiatanController::getRiwayat logic:
+        // Response::success($result, ...) where $result has 'data' and 'pagination' keys.
+        // So result.data from fetch will be { data: [], pagination: {} }
+        
+        const mappedData = result.data.data.map(item => ({
+            id: item.kak_id, // Use kak_id as the primary ID for links/view
+            nama_kak: item.nama_kegiatan, // Map nama_kegiatan to nama_kak
+            pengusul: item.pengusul_nama, // Map pengusul_nama to pengusul
             tanggal_dibuat: new Date(item.tanggal_dibuat).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-            tanggal_disetujui: item.tanggal_disetujui ? new Date(item.tanggal_disetujui).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : null,
-            status: item.status
+            // Handle tanggal_disetujui if needed, currently null
+            tanggal_disetujui: null, 
+            status: item.nama_status // Map nama_status to status
         }));
 
         updateState({
             kakData: mappedData,
-            totalEntries: mappedData.length,
-            totalPages: Math.ceil(mappedData.length / state.itemsPerPage),
-            currentPage: 1
+            totalEntries: result.data.pagination.total,
+            totalPages: result.data.pagination.last_page,
+            currentPage: result.data.pagination.current_page
         });
 
     } catch (error) {
@@ -791,7 +808,7 @@ export function renderRiwayatKAKPage(path, userRole) {
   // INITIALIZATION
   // ==============================================
   async function initializePage() {
-    await fetchKAKData();
+    await fetchKAKData(1);
     if (window.Helpers) {
       window.Helpers.init();
     }
