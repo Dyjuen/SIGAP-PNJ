@@ -316,8 +316,8 @@ export const adminSidebar = `
   }
   
   #sidebar-toggle:hover {
-    background: #e2e8f0;
-    color: #4338ca;
+    background: #e0f7fa;
+    color: #00bcd4;
   }
   
   #sidebar-toggle svg {
@@ -360,8 +360,8 @@ export const adminSidebar = `
   }
 
   .menu-link:hover {
-    background: #eef2ff;
-    color: #4338ca;
+    background: #e0f7fa;
+    color: #00bcd4;
     transform: translateX(2px);
   }
 
@@ -464,7 +464,7 @@ export const adminSidebar = `
   }
   
   .user-profile-card {
-    background: #eef2ff;
+    background: #e0f7fa;
     border-radius: 0.375rem;
     padding: 0;
     cursor: pointer;
@@ -477,7 +477,7 @@ export const adminSidebar = `
   }
   
   .user-profile-card:hover {
-    background: #e0f2fe;
+    background: #b2ebf2;
     transform: translateX(2px);
   }
   
@@ -577,7 +577,7 @@ export const adminSidebar = `
     top: 100%;
     left: 0;
     right: 0;
-    background: #e0f2fe;
+    background: #b2ebf2;
     border-radius: 0 0 0.375rem 0.375rem;
     z-index: 10;
   }
