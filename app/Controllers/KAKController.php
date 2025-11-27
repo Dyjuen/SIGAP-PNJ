@@ -371,16 +371,16 @@ class KAKController
 
             if (!empty($input['rab'])) {
                 foreach ($input['rab'] as $r) {
-                    $v1 = !empty($r['volume1']) ? (float)$r['volume1'] : 1;
-                    $v2 = !empty($r['volume2']) ? (float)$r['volume2'] : 1;
-                    $v3 = !empty($r['volume3']) ? (float)$r['volume3'] : 1;
+                    $v1 = isset($r['volume1']) && $r['volume1'] !== '' ? (float)$r['volume1'] : null;
+                    $v2 = isset($r['volume2']) && $r['volume2'] !== '' ? (float)$r['volume2'] : null;
+                    $v3 = isset($r['volume3']) && $r['volume3'] !== '' ? (float)$r['volume3'] : null;
                     $harga = (float)($r['harga_satuan'] ?? 0);
-                    $jumlah = $v1 * $v2 * $v3 * $harga;
+                    $jumlah = ($v1 ?? 1) * ($v2 ?? 1) * ($v3 ?? 1) * $harga;
 
                     $this->db->query("
                         INSERT INTO t_kak_anggaran
-                        (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, catatan_verifikator)
-                        VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, NULL)
+                        (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, kategori_belanja_id, catatan_verifikator)
+                        VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, :kat, NULL)
                     ");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':u', $r['uraian']);
@@ -392,6 +392,7 @@ class KAKController
                     $this->db->bind(':s3', $r['satuan3_id'] ?? null);
                     $this->db->bind(':h', $harga);
                     $this->db->bind(':j', $jumlah);
+                    $this->db->bind(':kat', $r['kategori_belanja_id']);
                     $this->db->execute();
                 }
             }
@@ -529,13 +530,13 @@ class KAKController
         
             if (!empty($input['rab'])) {
                 foreach ($input['rab'] as $r) {
-                    $v1 = !empty($r['volume1']) ? (float)$r['volume1'] : 1;
-                    $v2 = !empty($r['volume2']) ? (float)$r['volume2'] : 1;
-                    $v3 = !empty($r['volume3']) ? (float)$r['volume3'] : 1;
+                    $v1 = isset($r['volume1']) && $r['volume1'] !== '' ? (float)$r['volume1'] : null;
+                    $v2 = isset($r['volume2']) && $r['volume2'] !== '' ? (float)$r['volume2'] : null;
+                    $v3 = isset($r['volume3']) && $r['volume3'] !== '' ? (float)$r['volume3'] : null;
                     $harga = (float)($r['harga_satuan'] ?? 0);
-                    $jumlah = $v1 * $v2 * $v3 * $harga;
+                    $jumlah = ($v1 ?? 1) * ($v2 ?? 1) * ($v3 ?? 1) * $harga;
 
-                    $this->db->query("INSERT INTO t_kak_anggaran (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, catatan_verifikator) VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, NULL)");
+                    $this->db->query("INSERT INTO t_kak_anggaran (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, kategori_belanja_id, catatan_verifikator) VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, :kat, NULL)");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':u', $r['uraian']);
                     $this->db->bind(':v1', $v1);
@@ -546,6 +547,7 @@ class KAKController
                     $this->db->bind(':s3', $r['satuan3_id'] ?? null);
                     $this->db->bind(':h', $harga);
                     $this->db->bind(':j', $jumlah);
+                    $this->db->bind(':kat', $r['kategori_belanja_id']);
                     $this->db->execute();
                 }
             }
@@ -667,6 +669,8 @@ class KAKController
                     // FIX: Remap inconsistent frontend field name to correct DB column name
                     if ($field === 'gambaran_umum') {
                         $field = 'deskripsi_kegiatan';
+                    } else if ($field === 'kurun_waktu') {
+                        $field = 'tanggal';
                     }
 
                     $col = "catatan_" . $field;
@@ -679,40 +683,42 @@ class KAKController
 
             if (!empty($input['anak'])) {
                 foreach ($input['anak'] as $table => $rows) {
-                    $pk = [
+                    $pkMap = [
                         't_kak_manfaat' => 'manfaat_id',
                         't_kak_tahapan' => 'tahapan_id',
                         't_kak_target'  => 'target_id',
                         't_kak_anggaran' => 'anggaran_id',
                         't_kak_iku'     => 'iku_id'
-                    ][$table] ?? null;
-
-                    if (!$pk) continue;
+                    ];
+            
+                    if (!isset($pkMap[$table])) continue;
+                    $pkColumn = $pkMap[$table];
 
                     foreach ($rows as $r) {
-                        // Special handling untuk t_kak_manfaat dengan 2 field catatan
+                        $recordId = $r['id'];
+                        
                         if ($table === 't_kak_manfaat') {
+                            $recordId = strtok($r['id'], '_');
                             $catatanManfaat = $r['catatan_manfaat'] ?? null;
                             $catatanSasaran = $r['catatan_sasaran_utama'] ?? null;
                             
                             $db->query("
                                 UPDATE $table 
                                 SET catatan_manfaat = :cm, catatan_sasaran_utama = :cs
-                                WHERE $pk = :pk AND kak_id = :id
+                                WHERE $pkColumn = :pk
                             ");
                             $db->bind(':cm', $catatanManfaat);
                             $db->bind(':cs', $catatanSasaran);
-                            $db->bind(':pk', $r['id']);
-                            $db->bind(':id', $id);
+                            $db->bind(':pk', $recordId);
                             $db->execute();
                         } else {
-                            // Untuk tabel lain tetap pakai catatan_verifikator
+                            // Standard handling for all other tables
                             $db->query("
                                 UPDATE $table SET catatan_verifikator = :c 
-                                WHERE $pk = :pk AND kak_id = :id
+                                WHERE $pkColumn = :pk AND kak_id = :id
                             ");
                             $db->bind(':c', $r['catatan_verifikator']);
-                            $db->bind(':pk', $r['id']);
+                            $db->bind(':pk', $recordId);
                             $db->bind(':id', $id);
                             $db->execute();
                         }
@@ -753,8 +759,8 @@ class KAKController
 
             Response::success(null, "KAK berhasil dikembalikan untuk revisi.");
         } catch (\Exception $e) {
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
+            if ($db->inTransaction()) {
+                $db->rollBack();
             }
             Response::error('Gagal meminta revisi KAK: ' . $e->getMessage(), 500);
         }

@@ -526,7 +526,7 @@ export function renderUsulanKakPage(path, userRole) {
             3
           </div>
           <div class="text-left">
-            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rincian Anggaran Biaya</div>
+            <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rencana Anggaran Biaya</div>
           </div>
         </div>
 
@@ -670,7 +670,7 @@ export function renderUsulanKakPage(path, userRole) {
       <!-- Main Step 3: Rincian Anggaran Biaya -->
       <div class="main-step-content" id="main-step-3">
         <div class="bg-white rounded-xl shadow-lg p-8">
-          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rincian Anggaran Biaya</h4>
+          <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rencana Anggaran Biaya</h4>
           
           <div id="rab-container">
             <!-- Dynamic RAB sections will be injected here -->
@@ -1168,7 +1168,7 @@ export function renderUsulanKakPage(path, userRole) {
 
 
     if (!isValid) {
-      showError("Silakan perbaiki kesalahan pada isian Rincian Anggaran Biaya.");
+      showError("Silakan perbaiki kesalahan pada isian Rencana Anggaran Biaya.");
     }
 
     return isValid;
@@ -1196,13 +1196,13 @@ export function renderUsulanKakPage(path, userRole) {
     if (!ikuValid) {
       mainStep = 2;
       updateMainStepDisplay();
-      showError("Terdapat kesalahan pada isian IKU & Renstra.");
+      showError("Terdapat kesalahan pada isian IKU.");
       return false;
     }
     if (!rabValid) {
       mainStep = 3;
       updateMainStepDisplay();
-      showError("Terdapat kesalahan pada isian Rincian Anggaran Biaya.");
+      showError("Terdapat kesalahan pada isian Rencana Anggaran Biaya.");
       return false;
     }
 

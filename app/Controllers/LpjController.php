@@ -191,7 +191,7 @@ class LpjController extends Controller
             $data['kegiatan'] = $kegiatan;
 
             // Fetch budget items (anggaran) for the associated KAK
-            $data['anggaran'] = $this->kakAnggaranModel->findAllBy('kak_id', $kegiatan['kak_id']);
+            $data['anggaran'] = $this->kakAnggaranModel->getAnggaranWithKategoriByKakId($kegiatan['kak_id']);
 
             // Fetch attachments (lampiran) associated with the budget items
             $anggaranIds = array_map(fn($item) => $item['anggaran_id'], $data['anggaran']);

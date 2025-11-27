@@ -947,9 +947,7 @@ export function renderRevisiLpjPage(path, userRole) {
         if (event.target.closest(".btn-delete-lampiran")) {
           handleDeleteFile(event.target.closest(".btn-delete-lampiran"));
         }
-        if (event.target.closest(".btn-cancel-new-lampiran")) {
-          handleCancelNewFile(event.target.closest(".btn-cancel-new-lampiran"));
-        }
+
       });
 
       document.body.addEventListener("change", function (event) {
@@ -967,7 +965,7 @@ export function renderRevisiLpjPage(path, userRole) {
 
   // --- Resubmission Logic for Pengusul ---
   const filesToDelete = new Set();
-  const newFiles = {}; // Structure: { anggaran_id: [File, File, ...] }
+  const fileStore = {}; // Structure: { anggaran_id: [File, File, ...] }
 
   function handleDeleteFile(btn) {
     const lampiranId = btn.dataset.lampiranId;
@@ -995,16 +993,39 @@ export function renderRevisiLpjPage(path, userRole) {
     const anggaranId = input.dataset.anggaranId;
     const files = Array.from(input.files);
 
-    if (!newFiles[anggaranId]) {
-      newFiles[anggaranId] = [];
+    if (!fileStore[anggaranId]) {
+      fileStore[anggaranId] = [];
     }
 
     const lampiranList = document.querySelector(
       `.lampiran-list[data-anggaran-id="${anggaranId}"]`
     );
 
+    const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
     files.forEach((file) => {
-      const fileIndex = newFiles[anggaranId].push(file) - 1;
+      // Validate file type
+      if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Tipe File Tidak Didukung',
+          text: `File "${file.name}" tidak dapat diunggah. Hanya file JPG, PNG, atau PDF yang diizinkan.`,
+        });
+        return; // Skip this file
+      }
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Ukuran File Terlalu Besar',
+          text: `File "${file.name}" (${(file.size / (1024 * 1024)).toFixed(2)} MB) melebihi batas maksimal 10 MB.`,
+        });
+        return; // Skip this file
+      }
+
+      const fileIndex = fileStore[anggaranId].push(file) - 1;
 
       const pendingItem = document.createElement("div");
       pendingItem.className = "lampiran-item pending-lampiran";
@@ -1015,8 +1036,8 @@ export function renderRevisiLpjPage(path, userRole) {
                   <i class="ti ti-clock text-blue-500"></i>
                   <span class="text-blue-700">${file.name}</span>
               </div>
-              <button type="button" class="btn-cancel-new-lampiran" title="Batal upload">
-                  <i class="ti ti-x text-red-500"></i>
+              <button type="button" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center transition-all bg-red-500 text-white" title="Batal upload" onclick="window.cancelNewFile(this, '${anggaranId}', ${fileIndex})">
+                  <i class="ti ti-x"></i>
               </button>
           `;
       lampiranList.querySelector(".no-files")?.remove();
@@ -1024,18 +1045,33 @@ export function renderRevisiLpjPage(path, userRole) {
     });
   }
 
-  function handleCancelNewFile(btn) {
-    const pendingItem = btn.closest(".pending-lampiran");
-    const anggaranId = pendingItem.dataset.anggaranId;
-    const fileIndex = parseInt(pendingItem.dataset.fileIndex, 10);
 
-    // Mark the file as null in the array instead of shifting indices
-    if (newFiles[anggaranId] && newFiles[anggaranId][fileIndex]) {
-      newFiles[anggaranId][fileIndex] = null;
+
+  window.cancelNewFile = function(button, anggaranId, fileIndex) {
+    // Remove from UI
+    button.closest(".pending-lampiran").remove();
+
+    // Remove from fileStore by filtering
+    if (fileStore[anggaranId] && fileStore[anggaranId][fileIndex]) {
+      // Filter out the file at the specific index
+      // Using slice to create new array for immutability if preferred, or direct filter
+      fileStore[anggaranId] = fileStore[anggaranId].filter((_, idx) => idx !== fileIndex);
+
+      // If after filtering, the array for this anggaranId is empty, delete the entry
+      if (fileStore[anggaranId].length === 0) {
+        delete fileStore[anggaranId];
+      }
     }
 
-    pendingItem.remove();
-  }
+    // Check if there are no files remaining for this anggaran_id and potentially re-add the "no files" message
+    const lampiranList = document.querySelector(`.lampiran-list[data-anggaran-id="${anggaranId}"]`);
+    if (lampiranList && lampiranList.children.length === 0) {
+      const noFilesText = document.createElement("p");
+      noFilesText.className = "text-xs text-gray-400 italic no-files";
+      noFilesText.textContent = "Tidak ada bukti terlampir untuk item ini.";
+      lampiranList.appendChild(noFilesText);
+    }
+  };
 
   async function resubmitLpj() {
     Swal.fire({
@@ -1080,8 +1116,8 @@ export function renderRevisiLpjPage(path, userRole) {
     formData.append("realisasi", JSON.stringify(realisasiData));
 
     // 3. Append new files
-    for (const anggaranId in newFiles) {
-      newFiles[anggaranId].forEach((file, index) => {
+    for (const anggaranId in fileStore) {
+      fileStore[anggaranId].forEach((file, index) => {
         if (file) {
           // Check if file is not cancelled
           formData.append(`bukti[${anggaranId}][]`, file, file.name);

@@ -144,6 +144,16 @@ if ($method === 'PUT' && preg_match('/^\/admin\/users\/(\d+)\/change-password$/'
     exit;
 }
 
+// DELETE /api/admin/users/{id} (Admin only)
+if ($method === 'DELETE' && preg_match('/^\/admin\/users\/(\d+)$/', $uri, $matches)) {
+    $roleMiddleware = new RoleMiddleware(['Admin']);
+    $roleMiddleware->handle();
+    
+    $controller = new AccountController();
+    $controller->deleteUser($matches[1]);
+    exit;
+}
+
 // =====================================================
 // 8. KAK (KERANGKA ACUAN KERJA) ROUTES
 // =====================================================
