@@ -88,10 +88,10 @@ export function renderRevisiKakPage(path, userRole) {
       /* Row comment styling */
       .row-with-comment {
         position: relative;
-        padding: 1rem;
+        padding: 0.75rem;
         border: 2px solid #E5E7EB;
         border-radius: 12px;
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
         transition: all 0.3s ease;
         background: white;
       }
@@ -119,9 +119,8 @@ export function renderRevisiKakPage(path, userRole) {
       
       .row-comment-icon {
         position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
+        right: 0.75rem;
+        top: 0.75rem;
         width: 36px;
         height: 36px;
         background: #E0F7FA;
@@ -139,7 +138,7 @@ export function renderRevisiKakPage(path, userRole) {
       .row-comment-icon:hover {
         background: #00BCD4;
         color: white;
-        transform: translateY(-50%) scale(1.1);
+        transform: scale(1.1);
       }
       
       .row-comment-icon.has-comment {
@@ -154,9 +153,18 @@ export function renderRevisiKakPage(path, userRole) {
         color: white;
       }
       
+      .row-with-comment .input-with-comment {
+        padding-right: 50px !important;
+      }
+      
       .row-with-comment .input-with-comment input,
       .row-with-comment .input-with-comment textarea {
         padding-right: 12px !important;
+      }
+      
+      .row-with-comment .grid,
+      .row-with-comment .grid-rab {
+        padding-right: 50px !important;
       }
       
       /* Progress Steps */
@@ -1319,7 +1327,7 @@ export function renderRevisiKakPage(path, userRole) {
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nama Kegiatan</label>
                     <div class="row-with-comment">
-                      <div class="input-with-comment" style="padding-right: 60px;">
+                      <div class="input-with-comment">
                         <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="" data-field="namaKegiatan">
                       </div>
                       <button class="row-comment-icon" onclick="openFieldCommentModal(this)" data-field="namaKegiatan" data-label="Nama Kegiatan">
@@ -1331,7 +1339,7 @@ export function renderRevisiKakPage(path, userRole) {
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Gambaran Umum Kegiatan</label>
                     <div class="row-with-comment">
-                      <div class="input-with-comment" style="padding-right: 60px;">
+                      <div class="input-with-comment">
                         <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${inputStyle}" ${inputAttr} data-field="gambaranUmum"></textarea>
                       </div>
                       <button class="row-comment-icon" onclick="openFieldCommentModal(this)" data-field="gambaranUmum" data-label="Gambaran Umum Kegiatan">
@@ -1368,7 +1376,7 @@ export function renderRevisiKakPage(path, userRole) {
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Metode Pelaksanaan</label>
                     <div class="row-with-comment">
-                      <div class="input-with-comment" style="padding-right: 60px;">
+                      <div class="input-with-comment">
                         <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="${inputStyle}" ${inputAttr} data-field="metodePelaksanaan"></textarea>
                       </div>
                       <button class="row-comment-icon" onclick="openFieldCommentModal(this)" data-field="metodePelaksanaan" data-label="Metode Pelaksanaan">
@@ -1404,7 +1412,7 @@ export function renderRevisiKakPage(path, userRole) {
                   <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Periode Pelaksanaan</label>
                     <div class="row-with-comment">
-                    <div class="input-with-comment" style="padding-right: 60px;">
+                    <div class="input-with-comment">
                             <input type="text" id="kurunWaktu" class="form-control w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} placeholder="Pilih tanggal" data-field="kurunWaktu">
                         </div>
                         <button class="row-comment-icon" onclick="openFieldCommentModal(this)" data-field="kurunWaktu" data-label="Kurun Waktu">
@@ -1550,11 +1558,6 @@ export function renderRevisiKakPage(path, userRole) {
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Verifikator</label>
               <div class="p-3 rounded-lg" style="background: #E0F7FA; color: #374151;" id="fieldCommentDisplayText"></div>
             </div>
-            <div class="info-box">
-              <div class="info-box-text">
-                <i class="ti ti-info-circle">&#xeac5;</i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki usulan.
-              </div>
-            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
@@ -1600,11 +1603,6 @@ export function renderRevisiKakPage(path, userRole) {
             }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Verifikator</label>
               <div class="p-3 rounded-lg" style="background: #E0F7FA; color: #374151;" id="rowCommentDisplayText"></div>
-            </div>
-            <div class="info-box">
-              <div class="info-box-text">
-                <i class="ti ti-info-circle">&#xeac5;</i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki usulan.
-              </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -1714,7 +1712,7 @@ export function renderRevisiKakPage(path, userRole) {
     const fieldAttr = fieldName ? `data-field-name="${fieldName}"` : '';
     return `
     <div class="row-with-comment" data-row-type="${type}" data-pk-name="${pkName}" data-pk-value="${pkValue}" ${fieldAttr}>
-      <div class="input-with-comment" style="padding-right: 60px;">
+      <div class="input-with-comment">
         <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${value}">
       </div>
       <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="${
@@ -1731,7 +1729,7 @@ export function renderRevisiKakPage(path, userRole) {
     <div class="row-with-comment" data-row-type="t_kak_target" data-pk-name="target_id" data-pk-value="${
       item.target_id
     }">
-      <div class="grid grid-cols-3 gap-4" style="padding-right: 60px;">
+      <div class="grid grid-cols-3 gap-4">
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
@@ -1763,7 +1761,7 @@ export function renderRevisiKakPage(path, userRole) {
     <div class="row-with-comment" data-row-type="t_kak_iku" data-pk-name="kak_iku_id" data-pk-value="${
       item.kak_iku_id || item.iku_id
     }">
-      <div class="grid grid-cols-2 gap-4" style="padding-right: 60px;">
+      <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${getNameById(
@@ -1823,7 +1821,7 @@ export function renderRevisiKakPage(path, userRole) {
     <div class="row-with-comment" data-row-type="t_kak_anggaran" data-pk-name="anggaran_id" data-pk-value="${
       item.anggaran_id
     }">
-      <div class="grid-rab" style="padding-right: 60px;">
+      <div class="grid-rab">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
                     <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
@@ -2498,19 +2496,10 @@ export function renderRevisiKakPage(path, userRole) {
       rowCommentModalInstance.hide();
 
       Swal.fire({
-
-        toast: true,
-
-        position: "top-end",
-
         icon: "success",
-
-        title: "Catatan disimpan!",
-
-        showConfirmButton: false,
-
+        title: "Tersimpan!",
         timer: 1500,
-
+        showConfirmButton: false,
       });
 
     };

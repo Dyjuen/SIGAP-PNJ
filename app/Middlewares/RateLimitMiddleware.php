@@ -12,6 +12,8 @@ class RateLimitMiddleware implements Middleware
     private $prefix;
     private $useApcu = false;
 
+    private $enabled = true;
+
     /**
      * Constructor
      * 
@@ -25,6 +27,11 @@ class RateLimitMiddleware implements Middleware
         $this->decayMinutes = $decayMinutes;
         $this->prefix = $prefix;
         $this->useApcu = function_exists('apcu_enabled') && apcu_enabled();
+
+        // Disable rate limiting in development environment
+        if (getenv('APP_ENV') === 'development') {
+            $this->enabled = false;
+        }
     }
 
     /**
@@ -32,6 +39,10 @@ class RateLimitMiddleware implements Middleware
      */
     public function handle(): void
     {
+        if (!$this->enabled) {
+            return;
+        }
+
         if ($this->useApcu) {
             $this->handleApcuBased();
         } else {

@@ -515,7 +515,9 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       </div>
 
       <!-- Alert Container -->
-      <div id="pageAlertContainer" class="mb-3" style="display: none;"></div>
+      <div class="container-xxl">
+        <div id="pageAlertContainer" style="display: none; margin-bottom: 1.5rem;"></div>
+      </div>
 
       <!-- Main Table Card -->
       <div class="card card-datatable table-responsive p-0">
