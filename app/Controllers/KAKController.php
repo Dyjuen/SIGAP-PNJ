@@ -50,11 +50,11 @@ class KAKController
             $rows = $this->db->resultSet();
 
             Response::success($rows);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             Response::error($e->getMessage());
         }
     }
-    
+
     public function download()
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -196,13 +196,13 @@ class KAKController
             $childTables = [
                 'manfaat'   => "SELECT * FROM t_kak_manfaat WHERE kak_id=:id",
                 'tahapan'   => "SELECT * FROM t_kak_tahapan WHERE kak_id=:id ORDER BY urutan ASC",
-                            'indikator' => "SELECT * FROM t_kak_indikator WHERE kak_id=:id",
-                            'target'    => "SELECT * FROM t_kak_target WHERE kak_id=:id",
-                            'iku'       => "SELECT tki.*, mi.kode_iku, mi.nama_iku 
+                'indikator' => "SELECT * FROM t_kak_indikator WHERE kak_id=:id",
+                'target'    => "SELECT * FROM t_kak_target WHERE kak_id=:id",
+                'iku'       => "SELECT tki.*, mi.kode_iku, mi.nama_iku 
                                                 FROM t_kak_iku tki 
                                                 LEFT JOIN m_iku mi ON tki.iku_id = mi.iku_id 
                                                 WHERE tki.kak_id = :id",
-                            'anggaran'  => "
+                'anggaran'  => "
                                 SELECT 
                                     a.*, 
                                     s.nama_satuan,
@@ -213,7 +213,7 @@ class KAKController
                                 LEFT JOIN m_kategori_belanja kb ON kb.kategori_belanja_id = a.kategori_belanja_id
                                 WHERE a.kak_id=:id
                             ",
-                        ];
+            ];
             $data = [
                 "kak" => $kak
             ];
@@ -256,13 +256,20 @@ class KAKController
             $data['approval'] = $this->db->resultSet();
 
             Response::success($data, 'Detail KAK berhasil diambil.');
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             Response::error('Gagal mengambil detail KAK: ' . $e->getMessage(), 500);
         }
     }
 
     public function store()
     {
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+
+        file_put_contents("debug_store.log", "STORE HIT\n", FILE_APPEND);
+        file_put_contents("debug_store.log", print_r($_POST, true), FILE_APPEND);
+        file_put_contents("debug_store.log", file_get_contents('php://input') . "\n\n", FILE_APPEND);
+
         try {
             if (!$this->userData) Response::unauthorized();
             $pengusul = $this->userData['user_id'];
@@ -283,14 +290,15 @@ class KAKController
 
             $sql = "
                 INSERT INTO t_kak 
-                (nama_kegiatan, deskripsi_kegiatan, metode_pelaksanaan, kurun_waktu_pelaksanaan,
-                 tanggal_mulai, tanggal_selesai, lokasi, pengusul_user_id, status_id)
+                (nama_kegiatan, tipe_kegiatan_id, deskripsi_kegiatan, metode_pelaksanaan, kurun_waktu_pelaksanaan,
+                tanggal_mulai, tanggal_selesai, lokasi, pengusul_user_id, status_id)
                 VALUES 
-                (:nama, :desk, :metode, :kurun, :mulai, :selesai, :lokasi, :user, 1)
+                (:nama, :tipe, :desk, :metode, :kurun, :mulai, :selesai, :lokasi, :user, 1)
             ";
 
             $this->db->query($sql);
             $this->db->bind(':nama', $k['nama_kegiatan']);
+            $this->db->bind(':tipe', $k['tipe_kegiatan_id']);
             $this->db->bind(':desk', $k['deskripsi_kegiatan']);
             $this->db->bind(':metode', $k['metode_pelaksanaan']);
             $this->db->bind(':kurun', $k['kurun_waktu_pelaksanaan']);
@@ -415,22 +423,22 @@ class KAKController
         try {
             if (!$this->userData) Response::unauthorized();
             $pengusul = $this->userData['user_id'];
-        
+
             // Check if KAK exists and belongs to user
             $this->db->query("SELECT * FROM t_kak WHERE kak_id = :id AND pengusul_user_id = :user");
             $this->db->bind(':id', $id);
             $this->db->bind(':user', $pengusul);
             $existingKak = $this->db->single();
-        
+
             if (!$existingKak) {
                 Response::notFound("KAK tidak ditemukan atau Anda tidak memiliki akses.");
             }
-        
+
             // Only allow update if status is Draft (1), Ditolak (4), or Revisi (5)
             if (!in_array($existingKak['status_id'], [1, 4, 5])) {
                 Response::error("KAK hanya dapat diupdate jika statusnya Draft, Ditolak, atau Revisi.", 400);
             }
-        
+
             $input = json_decode(file_get_contents('php://input'), true);
             if (!$input || !isset($input['kak'])) {
                 Response::badRequest("Format JSON tidak valid");
@@ -440,15 +448,16 @@ class KAKController
             if (!$validator->validateKAKData($input)) {
                 Response::validationError($validator->getErrors());
             }
-        
+
             $k = $input['kak'];
-        
+
             $this->db->beginTransaction();
-        
+
             // Update main KAK table
             $sql = "
                 UPDATE t_kak 
                 SET nama_kegiatan = :nama,
+                    tipe_kegiatan_id,  = :tipe,
                     deskripsi_kegiatan = :desk,
                     metode_pelaksanaan = :metode,
                     kurun_waktu_pelaksanaan = :kurun,
@@ -458,9 +467,10 @@ class KAKController
                     updated_at = NOW()
                 WHERE kak_id = :id
             ";
-        
+
             $this->db->query($sql);
             $this->db->bind(':nama', $k['nama_kegiatan']);
+            $this->db->bind(':tipe', $k['tipe_kegiatan_id']);
             $this->db->bind(':desk', $k['deskripsi_kegiatan']);
             $this->db->bind(':metode', $k['metode_pelaksanaan']);
             $this->db->bind(':kurun', $k['kurun_waktu_pelaksanaan']);
@@ -469,7 +479,7 @@ class KAKController
             $this->db->bind(':lokasi', $k['lokasi']);
             $this->db->bind(':id', $id);
             $this->db->execute();
-        
+
             // Delete and re-insert child records
             $childTables = [
                 't_kak_manfaat',
@@ -479,13 +489,13 @@ class KAKController
                 't_kak_target',
                 't_kak_anggaran'
             ];
-        
+
             foreach ($childTables as $table) {
                 $this->db->query("DELETE FROM $table WHERE kak_id = :id");
                 $this->db->bind(':id', $id);
                 $this->db->execute();
             }
-        
+
             // Re-insert data (same logic as store method)
             if (!empty($k['penerima_manfaat'])) {
                 foreach ($k['penerima_manfaat'] as $m) {
@@ -496,7 +506,7 @@ class KAKController
                     $this->db->execute();
                 }
             }
-        
+
             if (!empty($k['tahapan_pelaksanaan'])) {
                 foreach ($k['tahapan_pelaksanaan'] as $t) {
                     $this->db->query("INSERT INTO t_kak_tahapan (kak_id, nama_tahapan, urutan) VALUES (:id, :nama, :urut)");
@@ -506,7 +516,7 @@ class KAKController
                     $this->db->execute();
                 }
             }
-        
+
             if (!empty($k['indikator_kinerja'])) {
                 foreach ($k['indikator_kinerja'] as $i) {
                     $this->db->query("INSERT INTO t_kak_target (kak_id, bulan_indikator, deskripsi_target, persentase_target) VALUES (:id, :bulan, :desk, :p)");
@@ -517,7 +527,7 @@ class KAKController
                     $this->db->execute();
                 }
             }
-        
+
             if (!empty($input['target_iku'])) {
                 foreach ($input['target_iku'] as $iku) {
                     $this->db->query("INSERT INTO t_kak_iku (kak_id, iku_id, persentase_target) VALUES (:id, :iku, :p)");
@@ -527,7 +537,7 @@ class KAKController
                     $this->db->execute();
                 }
             }
-        
+
             if (!empty($input['rab'])) {
                 foreach ($input['rab'] as $r) {
                     $v1 = isset($r['volume1']) && $r['volume1'] !== '' ? (float)$r['volume1'] : null;
@@ -551,9 +561,9 @@ class KAKController
                     $this->db->execute();
                 }
             }
-        
+
             $this->db->commit();
-        
+
             Response::success(["kak_id" => $id], "KAK berhasil diperbarui.");
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
@@ -665,8 +675,8 @@ class KAKController
 
             if (!empty($input['catatan_kak'])) {
                 foreach ($input['catatan_kak'] as $field => $note) {
-                    
-                    // FIX: Remap inconsistent frontend field name to correct DB column name
+
+                    // FIX: Remap inconsistent frontend field name
                     if ($field === 'gambaran_umum') {
                         $field = 'deskripsi_kegiatan';
                     } else if ($field === 'kurun_waktu') {
@@ -690,18 +700,18 @@ class KAKController
                         't_kak_anggaran' => 'anggaran_id',
                         't_kak_iku'     => 'iku_id'
                     ];
-            
+
                     if (!isset($pkMap[$table])) continue;
                     $pkColumn = $pkMap[$table];
 
                     foreach ($rows as $r) {
                         $recordId = $r['id'];
-                        
+
                         if ($table === 't_kak_manfaat') {
                             $recordId = strtok($r['id'], '_');
                             $catatanManfaat = $r['catatan_manfaat'] ?? null;
                             $catatanSasaran = $r['catatan_sasaran_utama'] ?? null;
-                            
+
                             $db->query("
                                 UPDATE $table 
                                 SET catatan_manfaat = :cm, catatan_sasaran_utama = :cs
@@ -793,6 +803,7 @@ class KAKController
             if (!empty($input['kak'])) {
                 $allowed = [
                     'nama_kegiatan',
+                    'tipe_kegiatan_id',
                     'deskripsi_kegiatan',
                     'sasaran_utama',
                     'metode_pelaksanaan',
@@ -944,6 +955,7 @@ class KAKController
 
             $fields = [
                 'catatan_nama_kegiatan',
+                'catatan_tipe_kegiatan',
                 'catatan_deskripsi_kegiatan',
                 'catatan_sasaran_utama',
                 'catatan_metode_pelaksanaan',
@@ -1132,7 +1144,7 @@ class KAKController
                 't_kak_log_status',
                 't_kak_approval'
             ];
-        
+
             foreach ($childTables as $table) {
                 $db->query("DELETE FROM $table WHERE kak_id = :id");
                 $this->db->bind(':id', $id);

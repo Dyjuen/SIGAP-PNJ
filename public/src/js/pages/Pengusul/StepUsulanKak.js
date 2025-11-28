@@ -6,8 +6,8 @@ export function renderUsulanKakPage(path, userRole) {
   const pathSegments = path.split("/").filter((segment) => segment);
   const kakId =
     pathSegments.length > 2 &&
-    pathSegments[1] === "usulan" &&
-    /^\d+$/.test(pathSegments[2]) // Check if the ID is a number
+      pathSegments[1] === "usulan" &&
+      /^\d+$/.test(pathSegments[2]) // Check if the ID is a number
       ? pathSegments[2]
       : null;
   const isEditMode = kakId !== null;
@@ -573,6 +573,15 @@ export function renderUsulanKakPage(path, userRole) {
                   </div>
 
                   <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">
+                      Tipe Kegiatan <span class="text-red-500">*</span>
+                    </label>
+                    <select id="tipeKegiatan" class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';">
+                      <option value="">Pilih Tipe Kegiatan</option>
+                    </select>
+                  </div>
+  
+                  <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Gambaran Umum Kegiatan</label>
                     <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 min-h-[200px] resize-y" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input" id="gambaranUmum"></textarea>
                   </div>
@@ -997,6 +1006,10 @@ export function renderUsulanKakPage(path, userRole) {
       if (!namaKegiatan.value)
         addError(namaKegiatan, "Nama Kegiatan wajib diisi.");
 
+      const tipeKegiatan = document.getElementById("tipeKegiatan");
+      if (!tipeKegiatan.value)
+        addError(tipeKegiatan, "Tipe Kegiatan wajib dipilih.");
+
       const gambaranUmum = document.getElementById("gambaranUmum");
       if (!gambaranUmum.value)
         addError(gambaranUmum, "Gambaran Umum Kegiatan wajib diisi.");
@@ -1054,16 +1067,16 @@ export function renderUsulanKakPage(path, userRole) {
         isValid = false;
       }
     } else if (step === 5) {
-        // Kurun Waktu
-        const kurunWaktu = document.getElementById("kurunWaktu");
-        if (!kurunWaktu.value) {
-            addError(kurunWaktu, "Kurun Waktu Pelaksanaan wajib diisi.");
-        } else {
-            const startDate = $("#kurunWaktu").data('daterangepicker').startDate;
-            if (startDate.isBefore(moment(), 'day')) {
-                addError(kurunWaktu, "Tanggal mulai tidak boleh lebih awal dari hari ini.");
-            }
+      // Kurun Waktu
+      const kurunWaktu = document.getElementById("kurunWaktu");
+      if (!kurunWaktu.value) {
+        addError(kurunWaktu, "Kurun Waktu Pelaksanaan wajib diisi.");
+      } else {
+        const startDate = $("#kurunWaktu").data('daterangepicker').startDate;
+        if (startDate.isBefore(moment(), 'day')) {
+          addError(kurunWaktu, "Tanggal mulai tidak boleh lebih awal dari hari ini.");
         }
+      }
     }
 
     if (!isValid) {
@@ -1081,8 +1094,8 @@ export function renderUsulanKakPage(path, userRole) {
     document
       .querySelectorAll("#main-step-2 .is-invalid")
       .forEach((el) => {
-          el.classList.remove("is-invalid");
-          el.style.borderColor = "#E5E7EB";
+        el.classList.remove("is-invalid");
+        el.style.borderColor = "#E5E7EB";
       });
 
     const addError = (el, message) => {
@@ -1123,6 +1136,40 @@ export function renderUsulanKakPage(path, userRole) {
     return isValid;
   }
 
+  async function populateTipeKegiatanDropdown() {
+    try {
+      const response = await apiRequest("/master/tipe-kegiatan");
+      const tipeKegiatanData = response.data;
+
+      const selectElement = document.getElementById("tipeKegiatan");
+      if (!selectElement) return;
+
+      const currentValue = selectElement.value;
+
+      // Clear existing options except placeholder
+      const placeholder = selectElement.querySelector('option[value=""]');
+      selectElement.innerHTML = '';
+      if (placeholder) {
+        selectElement.appendChild(placeholder);
+      }
+
+      tipeKegiatanData.forEach(tipe => {
+        const option = document.createElement("option");
+        option.value = tipe.tipe_kegiatan_id;
+        option.textContent = tipe.nama_tipe;
+        selectElement.appendChild(option);
+      });
+
+      // Restore previous value if exists
+      if (currentValue) {
+        selectElement.value = currentValue;
+      }
+    } catch (error) {
+      console.error("Error populating Tipe Kegiatan dropdown:", error);
+      showError("Gagal memuat data Tipe Kegiatan. Silakan coba lagi.");
+    }
+  }
+
   function validateRabStep() {
     let isValid = true;
     document
@@ -1146,24 +1193,24 @@ export function renderUsulanKakPage(path, userRole) {
     const rabItems = document.querySelectorAll("#rab-container .rab-item");
     let hasAtLeastOneItem = false;
     rabItems.forEach((item) => {
-        const inputs = item.querySelectorAll("input, select");
-        const uraian = inputs[0];
-        const qty1 = inputs[1];
-        const satuan1 = inputs[2];
-        const harga = inputs[7];
+      const inputs = item.querySelectorAll("input, select");
+      const uraian = inputs[0];
+      const qty1 = inputs[1];
+      const satuan1 = inputs[2];
+      const harga = inputs[7];
 
-        // An item is considered filled if it has a description
-        if (uraian.value) {
-            hasAtLeastOneItem = true;
-            if (!qty1.value || parseInt(qty1.value) <= 0) addError(qty1, "Qty harus > 0.");
-            if (!satuan1.value) addError(satuan1, "Satuan wajib dipilih.");
-            if (!harga.value || parseFloat(harga.value) <= 0) addError(harga, "Harga harus > 0.");
-        }
+      // An item is considered filled if it has a description
+      if (uraian.value) {
+        hasAtLeastOneItem = true;
+        if (!qty1.value || parseInt(qty1.value) <= 0) addError(qty1, "Qty harus > 0.");
+        if (!satuan1.value) addError(satuan1, "Satuan wajib dipilih.");
+        if (!harga.value || parseFloat(harga.value) <= 0) addError(harga, "Harga harus > 0.");
+      }
     });
 
     if (!hasAtLeastOneItem) {
-        showError("Harap tambahkan setidaknya satu item anggaran.");
-        isValid = false;
+      showError("Harap tambahkan setidaknya satu item anggaran.");
+      isValid = false;
     }
 
 
@@ -1266,28 +1313,30 @@ export function renderUsulanKakPage(path, userRole) {
   // Initialize
   async function init() {
     if (isInitialized) {
-        return;
+      return;
     }
     isInitialized = true;
 
+    loadTipeKegiatan();
     loadDateRangePicker();
     updateMainStepDisplay();
     updateStepDisplay();
     attachEventListeners();
-    
+
     // Clear dynamic containers initially to prevent duplicates on re-render
-    if(document.getElementById("penerimaManfaatContainer")) document.getElementById("penerimaManfaatContainer").innerHTML = '';
-    if(document.getElementById("tahapanPelaksanaanContainer")) document.getElementById("tahapanPelaksanaanContainer").innerHTML = '';
-    if(document.getElementById("indikatorKinerjaContainer")) document.getElementById("indikatorKinerjaContainer").innerHTML = '';
-    if(document.getElementById("ikuRenstraContainer")) document.getElementById("ikuRenstraContainer").innerHTML = '';
+    if (document.getElementById("penerimaManfaatContainer")) document.getElementById("penerimaManfaatContainer").innerHTML = '';
+    if (document.getElementById("tahapanPelaksanaanContainer")) document.getElementById("tahapanPelaksanaanContainer").innerHTML = '';
+    if (document.getElementById("indikatorKinerjaContainer")) document.getElementById("indikatorKinerjaContainer").innerHTML = '';
+    if (document.getElementById("ikuRenstraContainer")) document.getElementById("ikuRenstraContainer").innerHTML = '';
 
     // Await all master data population before proceeding
     await Promise.all([
-        populateIkuDropdowns(),
-        populateSatuanDropdowns(),
-        populateRabSections()
+      populateTipeKegiatanDropdown(),
+      populateIkuDropdowns(),
+      populateSatuanDropdowns(),
+      populateRabSections()
     ]);
-    
+
     if (isEditMode && kakId) {
       await fetchAndPopulateKakData(kakId);
     } else {
@@ -1399,48 +1448,48 @@ export function renderUsulanKakPage(path, userRole) {
   // Populate Satuan dropdowns from API
   async function populateSatuanDropdowns() {
     try {
-        const response = await apiRequest("/master/satuan");
-        const satuanData = response.data;
-        
-        const newSelects = document.querySelectorAll(".satuan-select:not(.populated)");
+      const response = await apiRequest("/master/satuan");
+      const satuanData = response.data;
 
-        newSelects.forEach(select => {
-            const currentValue = select.value;
-            // Clear existing options except placeholder
-            const placeholder = select.querySelector('option[value=""]');
-            select.innerHTML = '';
-            if (placeholder) {
-                select.appendChild(placeholder);
-            }
+      const newSelects = document.querySelectorAll(".satuan-select:not(.populated)");
 
-            satuanData.forEach(satuan => {
-                const option = document.createElement("option");
-                option.value = satuan.satuan_id;
-                option.textContent = satuan.nama_satuan;
-                select.appendChild(option);
-            });
-            select.value = currentValue;
-            select.classList.add('populated');
+      newSelects.forEach(select => {
+        const currentValue = select.value;
+        // Clear existing options except placeholder
+        const placeholder = select.querySelector('option[value=""]');
+        select.innerHTML = '';
+        if (placeholder) {
+          select.appendChild(placeholder);
+        }
+
+        satuanData.forEach(satuan => {
+          const option = document.createElement("option");
+          option.value = satuan.satuan_id;
+          option.textContent = satuan.nama_satuan;
+          select.appendChild(option);
         });
+        select.value = currentValue;
+        select.classList.add('populated');
+      });
     } catch (error) {
-        console.error("Error populating Satuan dropdowns:", error);
-        showError("Gagal memuat data Satuan. Silakan coba lagi.");
+      console.error("Error populating Satuan dropdowns:", error);
+      showError("Gagal memuat data Satuan. Silakan coba lagi.");
     }
   }
 
   async function populateRabSections() {
-      try {
-          const response = await apiRequest("/master/kategori-belanja");
-          const kategoriData = response.data;
-          const rabContainer = document.getElementById('rab-container');
-          rabContainer.innerHTML = ''; // Clear existing
+    try {
+      const response = await apiRequest("/master/kategori-belanja");
+      const kategoriData = response.data;
+      const rabContainer = document.getElementById('rab-container');
+      rabContainer.innerHTML = ''; // Clear existing
 
-          kategoriData.forEach(kategori => {
-              const section = document.createElement('div');
-              section.className = 'mb-10';
-              section.dataset.kategoriId = kategori.kategori_belanja_id;
-              
-              section.innerHTML = `
+      kategoriData.forEach(kategori => {
+        const section = document.createElement('div');
+        section.className = 'mb-10';
+        section.dataset.kategoriId = kategori.kategori_belanja_id;
+
+        section.innerHTML = `
                   <h5 class="mb-6 font-bold text-lg" style="color: #374151;">${kategori.nama}</h5>
                   <div id="rab-items-container-${kategori.kategori_belanja_id}">
                       <!-- New RAB items will be inserted here -->
@@ -1449,17 +1498,17 @@ export function renderUsulanKakPage(path, userRole) {
                       Tambah Item
                   </button>
               `;
-              rabContainer.appendChild(section);
-              // Add at least one item per category only in create mode
-              if (!isEditMode) {
-                addRabItem(kategori.kategori_belanja_id);
-              }
-          });
+        rabContainer.appendChild(section);
+        // Add at least one item per category only in create mode
+        if (!isEditMode) {
+          addRabItem(kategori.kategori_belanja_id);
+        }
+      });
 
-      } catch (error) {
-          console.error("Error populating RAB sections:", error);
-          showError("Gagal memuat kategori belanja. Silakan coba lagi.");
-      }
+    } catch (error) {
+      console.error("Error populating RAB sections:", error);
+      showError("Gagal memuat kategori belanja. Silakan coba lagi.");
+    }
   }
 
 
@@ -1505,35 +1554,35 @@ export function renderUsulanKakPage(path, userRole) {
     };
 
     const getAnggaranItems = () => {
-        const rabItems = [];
-        const rabSections = document.querySelectorAll('#rab-container > div[data-kategori-id]');
-        
-        rabSections.forEach(section => {
-            const kategoriId = parseInt(section.dataset.kategoriId);
-            const items = section.querySelectorAll('.rab-item');
-            
-            items.forEach(item => {
-                const inputs = item.querySelectorAll("input, select");
-                const uraian = inputs[0].value;
-                const volume1 = parseInt(inputs[1].value) || 0;
-                const harga_satuan = parseFloat(inputs[7].value.replace(/[^0-9]/g, '')) || 0;
+      const rabItems = [];
+      const rabSections = document.querySelectorAll('#rab-container > div[data-kategori-id]');
 
-                if (uraian && volume1 > 0 && harga_satuan > 0) {
-                    rabItems.push({
-                        kategori_belanja_id: kategoriId,
-                        uraian: uraian,
-                        volume1: volume1,
-                        satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
-                        volume2: parseInt(inputs[3].value) || null,
-                        satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
-                        volume3: parseInt(inputs[5].value) || null,
-                        satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
-                        harga_satuan: harga_satuan,
-                    });
-                }
+      rabSections.forEach(section => {
+        const kategoriId = parseInt(section.dataset.kategoriId);
+        const items = section.querySelectorAll('.rab-item');
+
+        items.forEach(item => {
+          const inputs = item.querySelectorAll("input, select");
+          const uraian = inputs[0].value;
+          const volume1 = parseInt(inputs[1].value) || 0;
+          const harga_satuan = parseFloat(inputs[7].value.replace(/[^0-9]/g, '')) || 0;
+
+          if (uraian && volume1 > 0 && harga_satuan > 0) {
+            rabItems.push({
+              kategori_belanja_id: kategoriId,
+              uraian: uraian,
+              volume1: volume1,
+              satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
+              volume2: parseInt(inputs[3].value) || null,
+              satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
+              volume3: parseInt(inputs[5].value) || null,
+              satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
+              harga_satuan: harga_satuan,
             });
+          }
         });
-        return rabItems;
+      });
+      return rabItems;
     };
 
     // Get date range from daterangepicker
@@ -1553,6 +1602,7 @@ export function renderUsulanKakPage(path, userRole) {
     const formData = {
       kak: {
         nama_kegiatan: document.getElementById("namaKegiatan")?.value || "",
+        tipe_kegiatan_id: parseInt(document.getElementById("tipeKegiatan")?.value) || null,
         deskripsi_kegiatan:
           document.getElementById("gambaranUmum")?.value || "",
         metode_pelaksanaan:
@@ -1602,25 +1652,25 @@ export function renderUsulanKakPage(path, userRole) {
     document.querySelectorAll(".progress-step-item").forEach((step) => {
       step.addEventListener("click", function () {
         const targetStep = parseInt(this.getAttribute("data-main-step"));
-        
+
         if (targetStep < mainStep) {
-            mainStep = targetStep;
-            if (mainStep === 1) {
-                currentStep = 1; 
-            }
-            updateMainStepDisplay();
-            updateStepDisplay();
+          mainStep = targetStep;
+          if (mainStep === 1) {
+            currentStep = 1;
+          }
+          updateMainStepDisplay();
+          updateStepDisplay();
         } else if (targetStep === mainStep) {
-            // Do nothing if clicking the current step
+          // Do nothing if clicking the current step
         } else { // targetStep > mainStep
-            // Validate current step before proceeding
-            if (mainStep === 1 && [1,2,3,4,5].every(validateKAKStep)) {
-                mainStep = targetStep;
-            } else if (mainStep === 2 && validateIkuStep()) {
-                mainStep = targetStep;
-            }
-            updateMainStepDisplay();
-            updateStepDisplay();
+          // Validate current step before proceeding
+          if (mainStep === 1 && [1, 2, 3, 4, 5].every(validateKAKStep)) {
+            mainStep = targetStep;
+          } else if (mainStep === 2 && validateIkuStep()) {
+            mainStep = targetStep;
+          }
+          updateMainStepDisplay();
+          updateStepDisplay();
         }
       });
     });
@@ -1768,7 +1818,7 @@ export function renderUsulanKakPage(path, userRole) {
     container.appendChild(newItem);
     updateRemoveButtonVisibility(container);
     newItem.addEventListener('animationend', () => {
-        newItem.classList.remove('new-item-animation');
+      newItem.classList.remove('new-item-animation');
     });
   };
 
@@ -1785,10 +1835,10 @@ export function renderUsulanKakPage(path, userRole) {
     container.appendChild(newItem);
     updateRemoveButtonVisibility(container);
     newItem.addEventListener('animationend', () => {
-        newItem.classList.remove('new-item-animation');
+      newItem.classList.remove('new-item-animation');
     });
   };
-  
+
   window.addIndikatorKinerja = function (itemData = null) {
     const container = document.getElementById("indikatorKinerjaContainer");
     const newItem = document.createElement("div");
@@ -1822,7 +1872,7 @@ export function renderUsulanKakPage(path, userRole) {
     container.appendChild(newItem);
     updateRemoveButtonVisibility(container);
     newItem.addEventListener('animationend', () => {
-        newItem.classList.remove('new-item-animation');
+      newItem.classList.remove('new-item-animation');
     });
   };
 
@@ -1854,28 +1904,28 @@ export function renderUsulanKakPage(path, userRole) {
       </div>
     `;
     container.appendChild(newItem);
-    
+
     updateRemoveButtonVisibility(container);
-     newItem.addEventListener('animationend', () => {
-        newItem.classList.remove('new-item-animation');
+    newItem.addEventListener('animationend', () => {
+      newItem.classList.remove('new-item-animation');
     });
     // Set selected IKU after the element is created and dropdowns are populated
     populateIkuDropdowns().then(() => {
-        if (ikuId) {
-            newItem.querySelector('select').value = ikuId;
-        }
+      if (ikuId) {
+        newItem.querySelector('select').value = ikuId;
+      }
     });
   };
 
-  window.addRabItem = function(kategoriId, itemData = null) {
+  window.addRabItem = function (kategoriId, itemData = null) {
     const container = document.getElementById(`rab-items-container-${kategoriId}`);
     if (!container) {
-        return;
+      return;
     }
 
     const newItem = document.createElement('div');
     newItem.className = 'rab-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg';
-    
+
     const uraian = itemData ? itemData.uraian : '';
     const vol1 = itemData ? itemData.volume1 : '0';
     const sat1 = itemData ? itemData.satuan1_id : '';
@@ -1937,15 +1987,15 @@ export function renderUsulanKakPage(path, userRole) {
 
     // Populate dropdowns for the new item
     populateSatuanDropdowns().then(() => {
-        const selects = newItem.querySelectorAll('.satuan-select');
-        if (sat1) selects[0].value = sat1;
-        if (sat2) selects[1].value = sat2;
-        if (sat3) selects[2].value = sat3;
+      const selects = newItem.querySelectorAll('.satuan-select');
+      if (sat1) selects[0].value = sat1;
+      if (sat2) selects[1].value = sat2;
+      if (sat3) selects[2].value = sat3;
     });
 
     updateRemoveButtonVisibility(container);
     newItem.addEventListener('animationend', () => {
-        newItem.classList.remove('new-item-animation');
+      newItem.classList.remove('new-item-animation');
     });
   }
 
@@ -1969,6 +2019,28 @@ export function renderUsulanKakPage(path, userRole) {
     }
   };
 
+  async function loadTipeKegiatan() {
+    try {
+      const response = await apiRequest('/tipe-kegiatan'); // SESUAI API KAMU
+      const list = response.data; // Pastikan ini sesuai struktur response API
+
+      const select = document.getElementById("tipeKegiatan");
+      select.innerHTML = `<option value="">Pilih Tipe Kegiatan</option>`;
+
+      list.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.id;   // SESUAI FIELD DI DATABASE
+        opt.textContent = item.nama; // SESUAI FIELD API
+        select.appendChild(opt);
+      });
+
+      console.log("Tipe kegiatan loaded:", list);
+    } catch (err) {
+      console.error("Error load tipe kegiatan:", err);
+    }
+  }
+
+
   async function fetchAndPopulateKakData(id) {
     try {
       const response = await apiRequest(`/kak/${id}/data`);
@@ -1978,6 +2050,27 @@ export function renderUsulanKakPage(path, userRole) {
       if (kakData.nama_kegiatan) {
         document.getElementById("namaKegiatan").value = kakData.nama_kegiatan;
       }
+
+      if (kakData.tipe_kegiatan_id) {
+        const tipeKegiatanSelect = document.getElementById("tipeKegiatan");
+        if (tipeKegiatanSelect) {
+          tipeKegiatanSelect.value = kakData.tipe_kegiatan_id;
+        }
+      }
+
+      if (kakData.catatan_tipe_kegiatan) {
+        const tipeKegiatanContainer = document.getElementById("tipeKegiatan").parentElement;
+        const catatanEl = document.createElement("div");
+        catatanEl.className = "mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg";
+        catatanEl.innerHTML = `
+          <p class="text-sm font-semibold text-yellow-800 mb-1">
+            <i class="ti ti-alert-circle"></i> Catatan Revisi:
+          </p>
+          <p class="text-sm text-yellow-700">${kakData.catatan_tipe_kegiatan}</p>
+        `;
+        tipeKegiatanContainer.appendChild(catatanEl);
+      }
+
       if (kakData.deskripsi_kegiatan) {
         document.getElementById("gambaranUmum").value =
           kakData.deskripsi_kegiatan;
