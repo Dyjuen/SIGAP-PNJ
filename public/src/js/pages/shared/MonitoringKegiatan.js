@@ -1144,7 +1144,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       'Wadir2': { step: 2, dateKey: 'accWD2' },
       'Bendahara-Cair': { step: 3, dateKey: 'uangMuka' },
       'Bendahara-LPJ': { step: 4, dateKey: 'lpj' },
-      'Setor-Fisik': { step: 5, dateKey: 'setorFisik' }
+      'Bendahara-Setor': { step: 5, dateKey: 'setorFisik' }
     };
     
     return apiData.map(item => {
@@ -1414,7 +1414,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
     try {
         const result = await apiService.getKegiatan(page, state.itemsPerPage);
-        state.activities = transformApiData(result.data.data);
+        state.activities = transformApiData(result.data.data).filter(a => a.status < 6);
         state.currentPage = result.pagination?.current_page || 1; // Safely access current_page
         state.totalEntries = result.pagination?.total || 0;     // Safely access total
         state.totalPages = result.pagination?.last_page || 1;   // Safely access last_page
@@ -1464,7 +1464,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
     try {
         const result = await apiService.getKegiatan(state.currentPage, state.itemsPerPage);
-        state.activities = transformApiData(result.data.data);
+        state.activities = transformApiData(result.data.data).filter(a => a.status < 6);
         state.totalEntries = result.pagination?.total || 0;     // Safely access total
         state.totalPages = result.pagination?.last_page || 1;   // Safely access last_page
         state.currentPage = result.pagination?.current_page || 1; // Safely access current_page

@@ -120,7 +120,14 @@ export function renderRevisiLpjPage(path, userRole) {
       }
       
       .lampiran-item.has-comment {
-        background: #FEF2F2;
+        border-color: #FCA5A5;
+        background-color: #FEF2F2;
+      }
+      .lampiran-item.has-comment:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        border-color: #F87171; /* A slightly darker red for the border */
+        background-color: #FEE2E2; /* A light red for the background */
       }
       
       .lampiran-content {
@@ -129,6 +136,74 @@ export function renderRevisiLpjPage(path, userRole) {
         gap: 0.5rem;
         flex: 1;
       }
+
+      /* Enhanced File Upload Styling */
+
+      /* Add File Button */
+      .btn-add-lampiran {
+        background: linear-gradient(135deg, #00BCD4, #0097A7);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-add-lampiran:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        color: white;
+      }
+
+      /* Uploaded File Item */
+      .lampiran-item {
+        border: 1px solid #E5E7EB;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        background-color: #FFFFFF;
+        transition: all 0.3s ease;
+      }
+      .lampiran-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border-color: #D1D5DB; /* A slightly darker grey for the border */
+        background-color: #F9FAFB; /* A very light grey for the background */
+      }
+
+      /* Make sure content is above the pseudo-element */
+      .lampiran-content, .lampiran-item > .flex {
+        position: relative;
+      }
+      .lampiran-item.has-comment {
+        border-left: 4px solid #FCA5A5;
+        background: #FEF2F2;
+      }
+
+      /* Pending File Item */
+      .pending-lampiran {
+        background-color: #EFF6FF;
+        border-color: #BFDBFE;
+      }
+
+      /* Delete/Cancel Buttons */
+      .btn-delete-lampiran, .btn-cancel-upload {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: #EF4444; /* Solid Red background */
+        color: white; /* White icon */
+        border: none; /* No border needed */
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-delete-lampiran:hover, .btn-cancel-upload:hover {
+        background: linear-gradient(135deg, #F87171, #DC2626); /* Lighter to darker red gradient on hover */
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+      }
+
 
       .modal-content {
         border-radius: 16px;
@@ -165,6 +240,126 @@ export function renderRevisiLpjPage(path, userRole) {
         border-color: #00BCD4;
         box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
         outline: none;
+      }
+
+      /* Comment Detail Modal Styling - SAME AS REVISIKAK */
+      #lampiranCommentModal .modal-dialog {
+        max-width: 750px;
+      }
+
+      #lampiranCommentModal .modal-content {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+
+      #lampiranCommentModal .modal-header {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        border: none;
+        padding: 1.75rem 2rem;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 1rem;
+        flex-wrap: nowrap;
+      }
+
+      #lampiranCommentModal .modal-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0 !important;
+        flex: 1;
+        white-space: nowrap;
+      }
+
+      #lampiranCommentModal .modal-title i {
+        font-size: 2rem;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      }
+
+      /* Custom close button - PERFECT VERSION */
+      #lampiranCommentModal .btn-close {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        opacity: 1;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        margin: -4px 0 0 0;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      #lampiranCommentModal .btn-close:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: rotate(90deg) scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      /* X marks using pseudo-elements - PERFECT CROSS */
+      #lampiranCommentModal .btn-close::before,
+      #lampiranCommentModal .btn-close::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 2.5px;
+        background: white;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      }
+
+      #lampiranCommentModal .btn-close::before {
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+
+      #lampiranCommentModal .btn-close::after {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+
+      #lampiranCommentModal .btn-close:hover::before,
+      #lampiranCommentModal .btn-close:hover::after {
+        background: white;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+      }
+
+      /* Remove default Bootstrap close button styles */
+      #lampiranCommentModal .btn-close:focus {
+        box-shadow: none;
+        outline: none;
+      }
+
+      #lampiranCommentModal .modal-body {
+        padding: 2rem;
+        max-height: 60vh;
+        overflow-y: auto;
+        background: linear-gradient(to bottom, #FAFAFA 0%, #F5F5F5 100%);
+      }
+
+      /* Completely hide scrollbar */
+      #lampiranCommentModal .modal-body::-webkit-scrollbar {
+        display: none;
+      }
+
+      #lampiranCommentModal .modal-body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
 
       .action-buttons {
@@ -278,38 +473,43 @@ export function renderRevisiLpjPage(path, userRole) {
     <div class="modal fade" id="lampiranCommentModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Catatan Revisi untuk <span id="lampiranCommentLabel" class="font-bold text-teal-700"></span></h5>
+          <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+            <h5 class="modal-title" style="margin: 0; flex: 1;">
+              <i class="ti ti-message-dots">&#xeaee;</i>
+              Catatan Revisi untuk <span id="lampiranCommentLabel" style="color: white; font-weight: 800;"></span>
+            </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
-              <label class="form-label">Nama File</label>
-              <div class="p-3 rounded-lg bg-gray-100" id="lampiranFileName" style="word-break: break-all;"></div>
+              <label class="form-label font-semibold" style="color: #374151;">Nama File</label>
+              <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="lampiranFileName"></div>
             </div>
             <div id="lampiranCommentInputContainer" style="${
               isPengusul ? "display: none;" : ""
             }">
-              <label class="form-label">Catatan Revisi</label>
-              <textarea id="lampiranCommentInput" class="form-control" rows="4" placeholder="Tuliskan catatan revisi..."></textarea>
+              <label class="form-label font-semibold" style="color: #374151;">Catatan Revisi</label>
+              <textarea id="lampiranCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi untuk lampiran ini..."></textarea>
             </div>
             <div id="lampiranCommentDisplayContainer" style="${
               isBendahara ? "display: none;" : ""
             }">
-              <label class="form-label">Catatan dari Bendahara</label>
-              <div class="p-3 rounded-lg bg-teal-50 border border-teal-200" id="lampiranCommentDisplayText"></div>
+              <label class="form-label font-semibold" style="color: #374151;">Catatan dari Bendahara</label>
+              <div class="p-3 rounded-lg" style="background: #FEF2F2; color: #374151; border-left: 4px solid #EF4444;" id="lampiranCommentDisplayText"></div>
             </div>
             <div class="info-box">
               <div class="info-box-text">
-                <i class="ti ti-info-circle"></i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki lampiran.
+                <i class="ti ti-info-circle">&#xeac5;</i> Berikan masukan yang jelas dan konstruktif untuk membantu pengusul memperbaiki lampiran.
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Tutup</button>
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+              <i class="ti ti-x">&#xeb55;</i> Batal
+            </button>
             ${
               isBendahara
-                ? '<button type="button" class="btn btn-primary" id="saveLampiranCommentBtn">Simpan Catatan</button>'
+                ? '<button type="button" class="btn btn-primary" id="saveLampiranCommentBtn"><i class="ti ti-check">&#xea5e;</i> Simpan Catatan</button>'
                 : ""
             }
           </div>
@@ -432,202 +632,273 @@ export function renderRevisiLpjPage(path, userRole) {
   }
 
   function createDetailedAnggaranRow(item, lampiran, index) {
+    const commonInputClasses = "w-full px-4 py-3 border-2 rounded-lg text-sm";
+
+    const onFocus =
+      "this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';";
+
+    const onBlur =
+      "this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';";
+
     const readOnlyAttr = "readonly disabled";
-    const readOnlyStyle =
-      "border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: not-allowed;";
+
+    const readOnlyStyle = `style="background: #F3F4F6 !important; border-color: #E5E7EB !important; cursor: not-allowed;"`;
 
     const canEdit = isPengusul;
-    const inputAttr = canEdit ? "" : readOnlyAttr;
-    const inputStyle = canEdit ? "" : readOnlyStyle;
 
-    return `
-      <div class="mb-4" data-anggaran-id="${item.anggaran_id}">
-        
-        <div class="mb-6">
-            <h5 class="mb-4 font-bold text-lg" style="color: #374151;">Rencana Anggaran Biaya (KAK)</h5>
-            <div class="grid grid-cols-12 gap-4 items-end mb-4">
-              <div class="col-span-3"><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" disabled class="form-control form-control-sm" style="${readOnlyStyle}" value="${
-      item.uraian || ""
-    }"></div>
-              <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" disabled class="form-control form-control-sm" style="${readOnlyStyle}" value="${
-      item.volume1 || ""
-    }"></div>
-              <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select disabled class="form-control form-control-sm" style="${readOnlyStyle}">${getSatuanOptions(
-      item.satuan1_id
-    )}</select></div>
-              <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" disabled class="form-control form-control-sm" style="${readOnlyStyle}" value="${
-      item.volume2 || ""
-    }"></div>
-              <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select disabled class="form-control form-control-sm" style="${readOnlyStyle}">${getSatuanOptions(
-      item.satuan2_id
-    )}</select></div>
-              <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" disabled class="form-control form-control-sm" style="${readOnlyStyle}" value="${
-      item.volume3 || ""
-    }"></div>
-              <div class="col-span-1"><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select disabled class="form-control form-control-sm" style="${readOnlyStyle}">${getSatuanOptions(
-      item.satuan3_id
-    )}</select></div>
-              <div class="col-span-2"><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" disabled class="form-control form-control-sm" style="${readOnlyStyle}" value="${formatCurrency(
-      item.harga_satuan
-    )}"></div>
-            </div>
-        </div>
+    const inputAttr = canEdit
+      ? `onfocus="${onFocus}" onblur="${onBlur}"`
+      : readOnlyAttr;
 
-        <div>
-            <h5 class="mb-4 font-bold text-lg" style="color: #00BCD4;">Realisasi Pertanggungjawaban (LPJ)</h5>
-            <div class="grid grid-cols-12 gap-4 items-end mb-4 realisasi-grid">
-              <div class="col-span-3">
-                <label class="block font-semibold mb-2 text-sm">Uraian</label>
-                <input type="text" disabled class="form-control form-control-sm realisasi-input" data-field="realisasi_uraian" style="${readOnlyStyle}" value="${
-      item.realisasi_uraian || item.uraian || ""
-    }">
-              </div>
-              <div class="col-span-1">
-                <label class="block font-semibold mb-2 text-sm">Qty 1</label>
-                <input type="number" min="0" ${inputAttr} class="form-control form-control-sm realisasi-input" data-field="realisasi_volume1" style="${inputStyle}" value="${
-      item.realisasi_volume1 || item.volume1 || ""
-    }">
-              </div>
-              <div class="col-span-1">
-                <label class="block font-semibold mb-2 text-sm">Satuan 1</label>
-                <select ${inputAttr} class="form-control form-control-sm realisasi-input" data-field="realisasi_satuan1_id" style="${inputStyle}">${getSatuanOptions(
-      item.realisasi_satuan1_id || item.satuan1_id
-    )}</select>
-              </div>
-              <div class="col-span-1">
-                <label class="block font-semibold mb-2 text-sm">Qty 2</label>
-                <input type="number" min="0" ${inputAttr} class="form-control form-control-sm realisasi-input" data-field="realisasi_volume2" style="${inputStyle}" value="${
-      item.realisasi_volume2 || item.volume2 || ""
-    }">
-              </div>
-              <div class="col-span-1">
-                <label class="block font-semibold mb-2 text-sm">Satuan 2</label>
-                <select ${inputAttr} class="form-control form-control-sm realisasi-input" data-field="realisasi_satuan2_id" style="${inputStyle}">${getSatuanOptions(
-      item.realisasi_satuan2_id || item.satuan2_id
-    )}</select>
-              </div>
-              <div class="col-span-1">
-                <label class="block font-semibold mb-2 text-sm">Qty 3</label>
-                <input type="number" min="0" ${inputAttr} class="form-control form-control-sm realisasi-input" data-field="realisasi_volume3" style="${inputStyle}" value="${
-      item.realisasi_volume3 || item.volume3 || ""
-    }">
-              </div>
-              <div class="col-span-1">
-                <label class="block font-semibold mb-2 text-sm">Satuan 3</label>
-                <select ${inputAttr} class="form-control form-control-sm realisasi-input" data-field="realisasi_satuan3_id" style="${inputStyle}">${getSatuanOptions(
-      item.realisasi_satuan3_id || item.satuan3_id
-    )}</select>
-              </div>
-              <div class="col-span-2">
-                <label class="block font-semibold mb-2 text-sm">Harga Satuan</label>
-                <input type="text" ${inputAttr} class="form-control form-control-sm realisasi-input currency-input" data-field="realisasi_harga_satuan" style="${inputStyle}" value="${formatCurrency(
-      item.realisasi_harga_satuan || item.harga_satuan || 0
-    )}">
-              </div>
-              </div>
+    const inputStyle = canEdit
+      ? `style="border-color: #E5E7EB; background: #FFFFFF;"`
+      : readOnlyStyle;
 
-                <div class="mt-4">
+    const lampiranListHTML =
+      lampiran.length > 0
+        ? lampiran
 
-                    <h6 class="font-semibold text-xs text-gray-500 mb-2">BUKTI/LAMPIRAN:</h6>
+            .map(
+              (file) => `
 
-                    <div class="pl-4 border-l-2 border-gray-200 space-y-2 lampiran-list" data-anggaran-id="${
-                      item.anggaran_id
-                    }">
+                <div class="lampiran-item ${
+                  lampiranComments[file.lampiran_id] ? "has-comment" : ""
+                }" data-lampiran-id="${file.lampiran_id}">
 
-                        ${
-                          lampiran.length > 0
-                            ? lampiran
+                   <div class="lampiran-content">
 
-                                .map(
-                                  (file) => `
+                     <i class="ti ti-file-text text-gray-400"></i>
 
-                            <div class="lampiran-item ${
+                     <a href="/download.php?id=${
+                       file.lampiran_id
+                     }" target="_blank" class="text-blue-600 hover:underline text-sm">${
+                file.nama_file_asli
+              }</a>
+
+                   </div>
+
+                   <div class="flex items-center gap-2">
+
+                      ${
+                        isBendahara || isPengusul
+                          ? `<button type="button" class="lampiran-comment-btn ${
                               lampiranComments[file.lampiran_id]
                                 ? "has-comment"
                                 : ""
-                            }" data-lampiran-id="${file.lampiran_id}">
+                            }" data-lampiran-id="${
+                              file.lampiran_id
+                            }" data-filename="${
+                              file.nama_file_asli
+                            }" title="Komentar">
 
-                               <div class="lampiran-content">
+                              <i class="ti ti-message-circle-2"></i>
 
-                                 <i class="ti ti-file-text text-gray-400"></i>
+                            </button>`
+                          : ""
+                      }
 
-                                                                  <a href="/download.php?id=${
-                                                                    file.lampiran_id
-                                                                  }" target="_blank" class="text-blue-600 hover:underline text-sm">${
-                                    file.nama_file_asli
-                                  }</a>
+                      ${
+                        isPengusul
+                          ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
 
-                               </div>
+                                                                      <i class="ti ti-trash"></i>
+                            </button>`
+                          : ""
+                      }
 
-                               <div class="flex items-center gap-2">
-
-                                                          ${
-                                                            isBendahara ||
-                                                            isPengusul // Always show comment button for Pengusul
-                                                              ? `<button type="button" class="lampiran-comment-btn ${
-                                                                  lampiranComments[
-                                                                    file
-                                                                      .lampiran_id
-                                                                  ]
-                                                                    ? "has-comment"
-                                                                    : ""
-                                                                }" data-lampiran-id="${
-                                                                  file.lampiran_id
-                                                                }" data-filename="${
-                                                                  file.nama_file_asli
-                                                                }" title="Komentar">
-
-                                                                  <i class="ti ti-message-circle-2"></i>
-
-                                                                </button>`
-                                                              : ""
-                                                          }
-
-                                 ${
-                                   isPengusul
-                                     ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
-
-                                        <i class="ti ti-trash text-red-500"></i>
-
-                                      </button>`
-                                     : ""
-                                 }
-
-                               </div>
-
-                            </div>
-
-                        `
-                                )
-
-                                .join("")
-                            : '<p class="text-xs text-gray-400 italic no-files">Tidak ada bukti terlampir untuk item ini.</p>'
-                        }
-
-                    </div>
-
-                    ${
-                      isPengusul
-                        ? `
-
-                      <div class="mt-2">
-
-                        <input type="file" class="input-add-lampiran" data-anggaran-id="${item.anggaran_id}" multiple style="display: none;" />
-
-                        <button type="button" class="btn-add-lampiran btn btn-sm btn-outline-primary" data-anggaran-id="${item.anggaran_id}">
-
-                          <i class="ti ti-plus"></i> Tambah File
-
-                        </button>
-
-                      </div>`
-                        : ""
-                    }
+                   </div>
 
                 </div>
 
+              `
+            )
+
+            .join("")
+        : '<p class="text-xs text-gray-400 italic no-files">Tidak ada bukti terlampir untuk item ini.</p>';
+
+    return `
+
+        <div class="mb-4" data-anggaran-id="${item.anggaran_id}">
+
+          
+
+          <div class="mb-6">
+
+              <h5 class="mb-4 font-bold text-lg" style="color: #374151;">Rencana Anggaran Biaya (KAK)</h5>
+
+              <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr] gap-4 items-end mb-4">
+
+                <div><label class="block font-semibold mb-2 text-sm">Uraian</label><input type="text" disabled class="${commonInputClasses}" ${readOnlyStyle} value="${
+      item.uraian || ""
+    }"></div>
+
+                <div><label class="block font-semibold mb-2 text-sm">Qty 1</label><input type="number" disabled class="${commonInputClasses}" ${readOnlyStyle} value="${
+      item.volume1 || ""
+    }"></div>
+
+                <div><label class="block font-semibold mb-2 text-sm">Satuan 1</label><select disabled class="${commonInputClasses}" ${readOnlyStyle}>${getSatuanOptions(
+      item.satuan1_id
+    )}</select></div>
+
+                <div><label class="block font-semibold mb-2 text-sm">Qty 2</label><input type="number" disabled class="${commonInputClasses}" ${readOnlyStyle} value="${
+      item.volume2 || ""
+    }"></div>
+
+                <div><label class="block font-semibold mb-2 text-sm">Satuan 2</label><select disabled class="${commonInputClasses}" ${readOnlyStyle}>${getSatuanOptions(
+      item.satuan2_id
+    )}</select></div>
+
+                <div><label class="block font-semibold mb-2 text-sm">Qty 3</label><input type="number" disabled class="${commonInputClasses}" ${readOnlyStyle} value="${
+      item.volume3 || ""
+    }"></div>
+
+                <div><label class="block font-semibold mb-2 text-sm">Satuan 3</label><select disabled class="${commonInputClasses}" ${readOnlyStyle}>${getSatuanOptions(
+      item.satuan3_id
+    )}</select></div>
+
+                <div><label class="block font-semibold mb-2 text-sm">Harga Satuan</label><input type="text" disabled class="${commonInputClasses}" ${readOnlyStyle} value="${formatCurrency(
+      item.harga_satuan
+    )}"></div>
+
               </div>
-    `;
+
+          </div>
+
+  
+
+          <div>
+
+              <h5 class="mb-4 font-bold text-lg" style="color: #00BCD4;">Realisasi Pertanggungjawaban (LPJ)</h5>
+
+              <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr] gap-4 items-end mb-4 realisasi-grid">
+
+                <div>
+
+                  <label class="block font-semibold mb-2 text-sm">Uraian</label>
+
+                  <input type="text" disabled class="${commonInputClasses} realisasi-input" data-field="realisasi_uraian" ${readOnlyStyle} value="${
+      item.realisasi_uraian || item.uraian || ""
+    }">
+
+                </div>
+
+                <div>
+
+                  <label class="block font-semibold mb-2 text-sm">Qty 1</label>
+
+                  <input type="number" min="0" ${inputAttr} class="${commonInputClasses} realisasi-input" data-field="realisasi_volume1" ${inputStyle} value="${
+      item.realisasi_volume1 || item.volume1 || ""
+    }">
+
+                </div>
+
+                <div>
+
+                  <label class="block font-semibold mb-2 text-sm">Satuan 1</label>
+
+                  <select ${inputAttr} class="${commonInputClasses} realisasi-input" data-field="realisasi_satuan1_id" ${inputStyle}>${getSatuanOptions(
+      item.realisasi_satuan1_id || item.satuan1_id
+    )}</select>
+
+                </div>
+
+                <div>
+
+                  <label class="block font-semibold mb-2 text-sm">Qty 2</label>
+
+                  <input type="number" min="0" ${inputAttr} class="${commonInputClasses} realisasi-input" data-field="realisasi_volume2" ${inputStyle} value="${
+      item.realisasi_volume2 || item.volume2 || ""
+    }">
+
+                </div>
+
+                <div>
+
+                  <label class="block font-semibold mb-2 text-sm">Satuan 2</label>
+
+                  <select ${inputAttr} class="${commonInputClasses} realisasi-input" data-field="realisasi_satuan2_id" ${inputStyle}>${getSatuanOptions(
+      item.realisasi_satuan2_id || item.satuan2_id
+    )}</select>
+
+                </div>
+
+                <div>
+
+                  <label class="block font-semibold mb-2 text-sm">Qty 3</label>
+
+                  <input type="number" min="0" ${inputAttr} class="${commonInputClasses} realisasi-input" data-field="realisasi_volume3" ${inputStyle} value="${
+      item.realisasi_volume3 || item.volume3 || ""
+    }">
+
+                </div>
+
+                <div>
+
+                  <label class="block font-semibold mb-2 text-sm">Satuan 3</label>
+
+                  <select ${inputAttr} class="${commonInputClasses} realisasi-input" data-field="realisasi_satuan3_id" ${inputStyle}>${getSatuanOptions(
+      item.realisasi_satuan3_id || item.satuan3_id
+    )}</select>
+
+                </div>
+
+                <div>
+
+                  <label class="block font-semibold mb-2 text-sm">Harga Satuan</label>
+
+                  <input type="text" ${inputAttr} class="${commonInputClasses} realisasi-input currency-input" data-field="realisasi_harga_satuan" ${inputStyle} value="${formatCurrency(
+      item.realisasi_harga_satuan || item.harga_satuan || 0
+    )}">
+
+                </div>
+
+                </div>
+
+  
+
+                  <div class="mt-4">
+
+  
+
+                      <h6 class="font-semibold text-xs text-gray-500 mb-2">BUKTI/LAMPIRAN:</h6>
+
+  
+
+                      <div class="pl-4 border-l-2 border-gray-200 space-y-2 lampiran-list" data-anggaran-id="${
+                        item.anggaran_id
+                      }">
+
+                          ${lampiranListHTML}
+
+                      </div>
+
+  
+
+                      ${
+                        isPengusul
+                          ? `
+
+                        <div class="mt-2">
+
+                          <input type="file" class="input-add-lampiran" data-anggaran-id="${item.anggaran_id}" multiple style="display: none;" />
+
+                          <button type="button" class="btn-add-lampiran btn btn-sm btn-outline-primary">
+
+                            <i class="ti ti-plus"></i> Tambah File
+
+                          </button>
+
+                        </div>`
+                          : ""
+                      }
+
+                  </div>
+
+  
+
+                </div>
+
+      `;
   }
 
   function initializeComments(lampiran) {
@@ -813,23 +1084,23 @@ export function renderRevisiLpjPage(path, userRole) {
 
   async function approveLpj() {
     Swal.fire({
-      title: 'Setujui LPJ?',
+      title: "Setujui LPJ?",
       text: "LPJ akan disetujui dan status akan menjadi 'Setor Fisik'.",
-      icon: 'question',
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: 'Ya, Setujui!',
-      cancelButtonText: 'Batal'
+      confirmButtonText: "Ya, Setujui!",
+      cancelButtonText: "Batal",
     }).then(async (result) => {
       if (result.isConfirmed) {
         Swal.fire({
           title: "Menyetujui LPJ...",
           allowOutsideClick: false,
-          didOpen: () => Swal.showLoading()
+          didOpen: () => Swal.showLoading(),
         });
         try {
           await apiRequest(`/kegiatan/${kegiatanId}/lpj/approve`, {
-            method: 'POST',
-            body: JSON.stringify({}) // No specific payload needed for now
+            method: "POST",
+            body: JSON.stringify({}), // No specific payload needed for now
           });
           await Swal.fire(
             "Sukses",
@@ -846,23 +1117,23 @@ export function renderRevisiLpjPage(path, userRole) {
 
   async function completeLpj() {
     Swal.fire({
-      title: 'Selesaikan LPJ?',
+      title: "Selesaikan LPJ?",
       text: "LPJ akan ditandai sebagai selesai secara keseluruhan.",
-      icon: 'question',
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: 'Ya, Selesaikan!',
-      cancelButtonText: 'Batal'
+      confirmButtonText: "Ya, Selesaikan!",
+      cancelButtonText: "Batal",
     }).then(async (result) => {
       if (result.isConfirmed) {
         Swal.fire({
           title: "Menyelesaikan LPJ...",
           allowOutsideClick: false,
-          didOpen: () => Swal.showLoading()
+          didOpen: () => Swal.showLoading(),
         });
         try {
           await apiRequest(`/kegiatan/${kegiatanId}/lpj/complete`, {
-            method: 'POST',
-            body: JSON.stringify({}) // No specific payload needed for now
+            method: "POST",
+            body: JSON.stringify({}), // No specific payload needed for now
           });
           await Swal.fire(
             "Sukses",
@@ -871,7 +1142,11 @@ export function renderRevisiLpjPage(path, userRole) {
           );
           window.location.reload(); // Reload page to update status
         } catch (error) {
-          Swal.fire("Error", `Gagal menyelesaikan LPJ: ${error.message}`, "error");
+          Swal.fire(
+            "Error",
+            `Gagal menyelesaikan LPJ: ${error.message}`,
+            "error"
+          );
         }
       }
     });
@@ -880,22 +1155,22 @@ export function renderRevisiLpjPage(path, userRole) {
   function updateBendaharaButtonVisibility(status) {
     if (!isBendahara) return;
 
-    const approveBtn = document.getElementById('btn-approve-lpj');
-    const completeBtn = document.getElementById('btn-complete-lpj');
-    const revisionBtn = document.getElementById('btn-request-revision');
+    const approveBtn = document.getElementById("btn-approve-lpj");
+    const completeBtn = document.getElementById("btn-complete-lpj");
+    const revisionBtn = document.getElementById("btn-request-revision");
 
     // Hide all first to have a clean state
-    if (approveBtn) approveBtn.style.display = 'none';
-    if (completeBtn) completeBtn.style.display = 'none';
-    if (revisionBtn) revisionBtn.style.display = 'none';
-    
-    if (status === 'setor fisik') {
-        // Only show "Selesaikan" button
-        if (completeBtn) completeBtn.style.display = 'inline-block';
-    } else if (status !== 'disetujui' && status !== 'selesai') {
-        // For other non-final states, show approval and revision buttons
-        if (approveBtn) approveBtn.style.display = 'inline-block';
-        if (revisionBtn) revisionBtn.style.display = 'inline-block';
+    if (approveBtn) approveBtn.style.display = "none";
+    if (completeBtn) completeBtn.style.display = "none";
+    if (revisionBtn) revisionBtn.style.display = "none";
+
+    if (status === "setor fisik") {
+      // Only show "Selesaikan" button
+      if (completeBtn) completeBtn.style.display = "inline-block";
+    } else if (status !== "disetujui" && status !== "selesai") {
+      // For other non-final states, show approval and revision buttons
+      if (approveBtn) approveBtn.style.display = "inline-block";
+      if (revisionBtn) revisionBtn.style.display = "inline-block";
     }
     // If status is 'disetujui' or 'selesai', all buttons remain hidden.
   }
@@ -922,13 +1197,13 @@ export function renderRevisiLpjPage(path, userRole) {
       if (revisionBtn) {
         revisionBtn.addEventListener("click", submitRevision);
       }
-      const approveBtn = document.getElementById('btn-approve-lpj');
+      const approveBtn = document.getElementById("btn-approve-lpj");
       if (approveBtn) {
-        approveBtn.addEventListener('click', approveLpj);
+        approveBtn.addEventListener("click", approveLpj);
       }
-      const completeBtn = document.getElementById('btn-complete-lpj');
+      const completeBtn = document.getElementById("btn-complete-lpj");
       if (completeBtn) {
-        completeBtn.addEventListener('click', completeLpj);
+        completeBtn.addEventListener("click", completeLpj);
       }
     }
 
@@ -947,7 +1222,6 @@ export function renderRevisiLpjPage(path, userRole) {
         if (event.target.closest(".btn-delete-lampiran")) {
           handleDeleteFile(event.target.closest(".btn-delete-lampiran"));
         }
-
       });
 
       document.body.addEventListener("change", function (event) {
@@ -962,7 +1236,6 @@ export function renderRevisiLpjPage(path, userRole) {
       }
     }
   }
-
   // --- Resubmission Logic for Pengusul ---
   const filesToDelete = new Set();
   const fileStore = {}; // Structure: { anggaran_id: [File, File, ...] }
@@ -1001,15 +1274,15 @@ export function renderRevisiLpjPage(path, userRole) {
       `.lampiran-list[data-anggaran-id="${anggaranId}"]`
     );
 
-    const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
+    const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "application/pdf"];
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
     files.forEach((file) => {
       // Validate file type
       if (!ALLOWED_MIME_TYPES.includes(file.type)) {
         Swal.fire({
-          icon: 'error',
-          title: 'Tipe File Tidak Didukung',
+          icon: "error",
+          title: "Tipe File Tidak Didukung",
           text: `File "${file.name}" tidak dapat diunggah. Hanya file JPG, PNG, atau PDF yang diizinkan.`,
         });
         return; // Skip this file
@@ -1018,9 +1291,11 @@ export function renderRevisiLpjPage(path, userRole) {
       // Validate file size
       if (file.size > MAX_FILE_SIZE) {
         Swal.fire({
-          icon: 'error',
-          title: 'Ukuran File Terlalu Besar',
-          text: `File "${file.name}" (${(file.size / (1024 * 1024)).toFixed(2)} MB) melebihi batas maksimal 10 MB.`,
+          icon: "error",
+          title: "Ukuran File Terlalu Besar",
+          text: `File "${file.name}" (${(file.size / (1024 * 1024)).toFixed(
+            2
+          )} MB) melebihi batas maksimal 10 MB.`,
         });
         return; // Skip this file
       }
@@ -1045,9 +1320,7 @@ export function renderRevisiLpjPage(path, userRole) {
     });
   }
 
-
-
-  window.cancelNewFile = function(button, anggaranId, fileIndex) {
+  window.cancelNewFile = function (button, anggaranId, fileIndex) {
     // Remove from UI
     button.closest(".pending-lampiran").remove();
 
@@ -1055,7 +1328,9 @@ export function renderRevisiLpjPage(path, userRole) {
     if (fileStore[anggaranId] && fileStore[anggaranId][fileIndex]) {
       // Filter out the file at the specific index
       // Using slice to create new array for immutability if preferred, or direct filter
-      fileStore[anggaranId] = fileStore[anggaranId].filter((_, idx) => idx !== fileIndex);
+      fileStore[anggaranId] = fileStore[anggaranId].filter(
+        (_, idx) => idx !== fileIndex
+      );
 
       // If after filtering, the array for this anggaranId is empty, delete the entry
       if (fileStore[anggaranId].length === 0) {
@@ -1064,7 +1339,9 @@ export function renderRevisiLpjPage(path, userRole) {
     }
 
     // Check if there are no files remaining for this anggaran_id and potentially re-add the "no files" message
-    const lampiranList = document.querySelector(`.lampiran-list[data-anggaran-id="${anggaranId}"]`);
+    const lampiranList = document.querySelector(
+      `.lampiran-list[data-anggaran-id="${anggaranId}"]`
+    );
     if (lampiranList && lampiranList.children.length === 0) {
       const noFilesText = document.createElement("p");
       noFilesText.className = "text-xs text-gray-400 italic no-files";

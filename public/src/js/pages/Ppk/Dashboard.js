@@ -219,7 +219,7 @@ export function renderPpkDashboardPage(path, userRole) {
           <button class="btn btn-sm me-2 btn-approve" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Setujui">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
           </button>
-          <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Lihat">
+          <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${kegiatan.kak_id}" title="Lihat">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>          
           </button>
         </td>
@@ -244,12 +244,11 @@ export function renderPpkDashboardPage(path, userRole) {
   });
 
   // --- VIEW DETAIL BUTTON ---
-  document.querySelectorAll(".btn-view-detail").forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const kegiatanId = this.dataset.id;
-      window.location.href = `/${userRole.toLowerCase()}/kegiatan/detail/${kegiatanId}`;
-    });
-  });
+      document.querySelectorAll(".btn-view-detail").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const kakId = this.dataset.id;
+        window.location.href = `/${userRole.toLowerCase()}/kegiatan/detail/${kakId}`;
+      });  });
 }
 
   function showError(message) {

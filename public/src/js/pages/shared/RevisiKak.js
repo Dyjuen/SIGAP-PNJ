@@ -178,6 +178,70 @@ export function renderRevisiKakPage(path, userRole) {
         background: rgba(0, 188, 212, 0.1) !important;
       }
       
+      /* Menu button dengan revisi */
+      .menu-button.has-revision {
+        border-color: #FCA5A5 !important;
+        background: linear-gradient(135deg, rgba(254, 242, 242, 0.8) 0%, rgba(254, 226, 226, 0.6) 100%) !important;
+        position: relative;
+      }
+      
+      /* Icon background jadi MERAH kalau ada revisi */
+      .menu-button.has-revision .w-8 {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+      }
+      
+      /* Override shimmer effect untuk revisi - MERAH */
+      .menu-button.has-revision::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.3), transparent);
+        transition: left 0.6s ease;
+      }
+      
+      .menu-button.has-revision:hover::before {
+        left: 100%;
+      }
+      
+      @keyframes pulse-warning {
+        0%, 100% {
+          transform: translateY(-50%) scale(1);
+          box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        }
+        50% {
+          transform: translateY(-50%) scale(1.1);
+          box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
+        }
+      }
+      
+      .menu-button.has-revision .font-semibold {
+        color: #EF4444 !important;
+      }
+      
+      /* Hover text color untuk revisi tetap merah */
+      .menu-button.has-revision:hover .font-semibold {
+        color: #DC2626 !important;
+      }
+      
+      .menu-button.has-revision.active {
+        border-color: #EF4444 !important;
+        background: linear-gradient(135deg, rgba(254, 226, 226, 0.9) 0%, rgba(252, 165, 165, 0.7) 100%) !important;
+      }
+      
+      @keyframes pulse-revision {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+        }
+      }
+      
       /* Step content */
       .step-content {
         display: none;
@@ -293,28 +357,284 @@ export function renderRevisiKakPage(path, userRole) {
         align-items: end;
       }
       
-      /* Comment count badge */
-      .comment-count {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 1rem;
-        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-      
-      .comment-count i {
-        font-size: 1.5rem;
-      }
+ /* Comment count badge */
+.comment-count {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.comment-count:hover {
+  transform: translateX(-50%) translateY(-3px);
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.6);
+}
+
+.comment-count i {
+  font-size: 1.5rem;
+}
+
+/* Comment Detail Modal Styling - FINAL CLEAN VERSION */
+#commentDetailModal .modal-dialog {
+  max-width: 750px;
+}
+
+#commentDetailModal .modal-content {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+#commentDetailModal .modal-header {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  border: none;
+  padding: 1.75rem 2rem;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  position: relative; /* Set position context for the button */
+}
+
+#commentDetailModal .modal-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 !important;
+  flex: 1;
+  white-space: nowrap;
+}
+
+#commentDetailModal .modal-title i {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* Custom close button - Absolute Positioning Fix */
+#commentDetailModal .btn-close {
+  background: #FFFFFF; /* Pure white background */
+  border: 2px solid #FFFFFF; /* Pure white border */
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  opacity: 1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  
+  /* Absolute positioning */
+  position: absolute;
+  top: 50%;
+  right: 2rem; /* Match header padding */
+  transform: translateY(calc(-50% + 2px));
+}
+
+#commentDetailModal .btn-close:hover {
+  background: #F0F0F0; /* Slightly darker white on hover */
+  border-color: #F0F0F0; /* Slightly darker white border on hover */
+  transform: translateY(calc(-50% + 2px)) rotate(90deg) scale(1.05); /* Combine transforms */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* X marks using a hardcoded Unicode character */
+#commentDetailModal .btn-close::before {
+  content: 'X'; /* Capital 'X' character */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000 !important; /* Solid black icon */
+  font-size: 1.75rem;
+  line-height: 1;
+  font-weight: 900; /* Bolder font */
+  z-index: 999; /* Highest z-index */
+}
+
+/* Remove default Bootstrap close button styles */
+#commentDetailModal .btn-close:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+#commentDetailModal .modal-body {
+  padding: 2rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: linear-gradient(to bottom, #FAFAFA 0%, #F5F5F5 100%);
+}
+
+/* Completely hide scrollbar */
+#commentDetailModal .modal-body::-webkit-scrollbar {
+  display: none;
+}
+
+#commentDetailModal .modal-body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.comment-item {
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 2px solid transparent;
+  background: white;
+  margin-bottom: 1rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.comment-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #EF4444, #DC2626);
+  transition: width 0.4s ease;
+}
+
+.comment-item:hover {
+  transform: translateX(8px);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15);
+  border-color: #FCA5A5;
+}
+
+.comment-item:hover::before {
+  width: 8px;
+}
+
+.comment-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.comment-item-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #EF4444;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.comment-item:hover .comment-item-title {
+  color: #DC2626;
+  transform: translateX(4px);
+}
+
+.comment-item-title i {
+  font-size: 1.25rem;
+  color: #EF4444;
+  flex-shrink: 0;
+}
+
+.comment-item-badge {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: white;
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  flex-shrink: 0;
+}
+
+.comment-item-text {
+  color: #4B5563;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #FEFEFE 0%, #F9FAFB 100%);
+  border-radius: 12px;
+  border-left: 4px solid #EF4444;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Section divider - FIXED untuk sticky scroll */
+.comment-section-divider {
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: white;
+  margin: 2rem -2rem 1.5rem -2rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  position: sticky;
+  top: -2rem;
+  z-index: 10;
+  border-left: 6px solid #B91C1C;
+}
+
+.comment-section-divider:first-child {
+  margin-top: -2rem;
+}
+
+.comment-section-divider i {
+  font-size: 1.75rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  flex-shrink: 0;
+}
+
+.comment-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #9CA3AF;
+}
+
+.comment-empty-state i {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.2;
+  color: #EF4444;
+}
+
+.comment-empty-state .empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #6B7280;
+}
+
+.comment-empty-state .empty-subtitle {
+  font-size: 0.95rem;
+  color: #9CA3AF;
+}
+
+/* Remove footer completely */
+#commentDetailModal .modal-footer {
+  display: none;
+}
       
       .info-box {
         padding: 1rem;
@@ -1179,12 +1499,29 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
       </div>
 
-      <!-- Comment Count Badge -->
-      <div class="comment-count" id="commentCountBadge" style="display: none;">
-        <i class="ti ti-message-dots">&#xeaee;</i>
-        <span id="commentCountText">0 Catatan</span>
+<!-- Comment Count Badge -->
+<div class="comment-count" id="commentCountBadge" style="display: none;" onclick="openCommentDetailModal()">
+  <i class="ti ti-message-dots">&#xeaee;</i>
+  <span id="commentCountText">0 Catatan</span>
+</div>
+
+<!-- Comment Detail Modal -->
+<div class="modal fade" id="commentDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+        <h5 class="modal-title" style="margin: 0; flex: 1;">
+          <i class="ti ti-message-dots">&#xeaee;</i>
+          Daftar Catatan Revisi
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="commentDetailContent">
+        <!-- Dynamic content will be injected here -->
       </div>
     </div>
+  </div>
+</div>
 
     <!-- Field Comment Modal -->
     <div class="modal fade" id="fieldCommentModal" tabindex="-1" aria-hidden="true">
@@ -1815,6 +2152,11 @@ export function renderRevisiKakPage(path, userRole) {
     attachEventListeners();
     updateCommentCount();
     loadDateRangePicker();
+    
+    // Update menu button revision status on page load
+    setTimeout(() => {
+      updateMenuButtonRevisionStatus();
+    }, 100);
   }
 
   function updateMainStepDisplay() {
@@ -2037,6 +2379,10 @@ export function renderRevisiKakPage(path, userRole) {
     const camelCaseKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
     updateCommentButton(`.row-comment-icon[data-field="${camelCaseKey}"]`, comment);
     updateCommentCount();
+    
+    // Update menu button revision status
+    updateMenuButtonRevisionStatus();
+    
     fieldCommentModalInstance.hide();
     Swal.fire({
       icon: "success",
@@ -2145,6 +2491,9 @@ export function renderRevisiKakPage(path, userRole) {
       updateCommentButton(selector, comment);
 
       updateCommentCount();
+      
+      // Update menu button revision status
+      updateMenuButtonRevisionStatus();
 
       rowCommentModalInstance.hide();
 
@@ -2176,6 +2525,278 @@ export function renderRevisiKakPage(path, userRole) {
         btn.parentElement.classList.toggle("has-row-comment", !!comment);
       }
     }
+    
+    // Update menu button status
+    updateMenuButtonRevisionStatus();
+  }
+// Fungsi untuk membuka modal detail catatan - SIMPLIFIED VERSION
+window.openCommentDetailModal = function() {
+  const modalContent = document.getElementById("commentDetailContent");
+  
+  // Simplified mapping - hanya 3 section utama
+  const fieldToMainStep = {
+    'nama_kegiatan': 1,
+    'gambaran_umum': 1,
+    'metode_pelaksanaan': 1,
+    'kurun_waktu': 1
+  };
+
+  const tableToMainStep = {
+    't_kak_manfaat': 1,
+    't_kak_tahapan': 1,
+    't_kak_target': 1,
+    't_kak_iku': 2,
+    't_kak_anggaran': 3
+  };
+
+  // Group comments by main step
+  const commentsByStep = {
+    1: [], // KAK
+    2: [], // IKU & Renstra
+    3: []  // RAB
+  };
+
+  // Collect field comments
+  for (const [fieldKey, comment] of Object.entries(fieldComments)) {
+    const step = fieldToMainStep[fieldKey] || 1;
+    const fieldLabels = {
+      'nama_kegiatan': 'Nama Kegiatan',
+      'gambaran_umum': 'Gambaran Umum Kegiatan',
+      'metode_pelaksanaan': 'Metode Pelaksanaan',
+      'kurun_waktu': 'Kurun Waktu Pelaksanaan'
+    };
+    
+    commentsByStep[step].push({
+      type: 'field',
+      identifier: fieldKey,
+      label: fieldLabels[fieldKey] || fieldKey,
+      comment: comment,
+      section: getSectionFromField(fieldKey)
+    });
+  }
+
+  // Collect row comments
+  for (const [tableName, comments] of Object.entries(rowComments)) {
+    const step = tableToMainStep[tableName] || 1;
+    
+    for (const [rowId, comment] of Object.entries(comments)) {
+      let displayLabel = getTableDisplayName(tableName);
+      let rowIdForNav = rowId;
+      
+      // Handle manfaat special case
+      if (tableName === 't_kak_manfaat' && rowId.includes('_')) {
+        const parts = rowId.split('_');
+        const fieldName = parts.slice(1).join('_');
+        rowIdForNav = parts[0];
+        displayLabel += ` - ${fieldName === 'sasaran_utama' ? 'Sasaran Utama' : 'Manfaat'}`;
+      }
+
+      commentsByStep[step].push({
+        type: 'row',
+        identifier: tableName,
+        rowId: rowIdForNav,
+        label: displayLabel,
+        comment: comment,
+        section: getSectionFromTable(tableName)
+      });
+    }
+  }
+
+  // Build HTML
+  let html = '';
+  let hasComments = false;
+
+  const stepTitles = {
+    1: { title: 'Kerangka Acuan Kerja', icon: '&#xef40;' },
+    2: { title: 'IKU & Renstra', icon: '&#xea59;' },
+    3: { title: 'Rencana Anggaran Biaya', icon: '&#xeb84;' }
+  };
+
+  for (const step of [1, 2, 3]) {
+    const items = commentsByStep[step];
+    if (items.length > 0) {
+      hasComments = true;
+      
+      html += `
+        <div class="comment-section-divider">
+          <i class="ti ti-file-text">${stepTitles[step].icon}</i>
+          ${stepTitles[step].title}
+        </div>
+      `;
+
+      items.forEach(item => {
+        const navigateParams = item.type === 'field' 
+          ? `'field', '${item.identifier}', ${step}, '${item.section}'`
+          : `'row', '${item.identifier}', ${step}, '${item.section}', '${item.rowId}'`;
+
+        html += `
+          <div class="comment-item" onclick="navigateToComment(${navigateParams})">
+            <div class="comment-item-header">
+              <div class="comment-item-title">
+                <i class="ti ti-alert-circle">&#xea06;</i>
+                ${item.label}
+              </div>
+            </div>
+            <div class="comment-item-text">${item.comment}</div>
+          </div>
+        `;
+      });
+    }
+  }
+
+  // Empty state
+  if (!hasComments) {
+    html = `
+      <div class="comment-empty-state">
+        <i class="ti ti-clipboard-off">&#xf0cf;</i>
+        <div class="empty-title">Tidak Ada Catatan Revisi</div>
+        <div class="empty-subtitle">Belum ada catatan yang ditambahkan untuk usulan ini.</div>
+      </div>
+    `;
+  }
+
+  modalContent.innerHTML = html;
+
+  // Show modal
+  const modal = new bootstrap.Modal(document.getElementById('commentDetailModal'));
+  modal.show();
+};
+
+// Helper functions
+function getSectionFromField(fieldKey) {
+  const sectionMap = {
+    'nama_kegiatan': 'gambaran-umum',
+    'gambaran_umum': 'gambaran-umum',
+    'metode_pelaksanaan': 'strategi-pencapaian',
+    'kurun_waktu': 'kurun-waktu'
+  };
+  return sectionMap[fieldKey] || 'gambaran-umum';
+}
+
+function getSectionFromTable(tableName) {
+  const sectionMap = {
+    't_kak_manfaat': 'penerima-manfaat',
+    't_kak_tahapan': 'strategi-pencapaian',
+    't_kak_target': 'indikator-kinerja',
+    't_kak_iku': null,
+    't_kak_anggaran': null
+  };
+  return sectionMap[tableName] || null;
+}
+
+function getTableDisplayName(tableName) {
+  const nameMap = {
+    't_kak_manfaat': 'Penerima Manfaat',
+    't_kak_tahapan': 'Tahapan Pelaksanaan',
+    't_kak_target': 'Indikator Kinerja',
+    't_kak_iku': 'IKU & Renstra',
+    't_kak_anggaran': 'Rencana Anggaran Biaya'
+  };
+  return nameMap[tableName] || tableName;
+}
+
+// Navigate to specific comment location - FIXED VERSION
+window.navigateToComment = function(type, identifier, targetMainStep, targetSection, rowId = null) {
+  // Close modal
+  const modal = bootstrap.Modal.getInstance(document.getElementById('commentDetailModal'));
+  if (modal) modal.hide();
+
+  // Navigate to main step
+  mainStep = targetMainStep;
+  updateMainStepDisplay();
+
+  // If it's KAK step with subsections
+  if (targetMainStep === 1 && targetSection) {
+    const menuIndex = menuItems.indexOf(targetSection);
+    if (menuIndex !== -1) {
+      currentStep = menuIndex + 1;
+      updateStepDisplay();
+    }
+  }
+
+  // Scroll to element after a short delay
+  setTimeout(() => {
+    let targetElement = null;
+
+    if (type === 'field') {
+      // Convert snake_case back to camelCase for data-field attribute
+      const camelCaseKey = identifier.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+      
+      // Try to find by data-field first
+      targetElement = document.querySelector(`[data-field="${camelCaseKey}"]`);
+      
+      // If not found, try to find the parent container
+      if (!targetElement) {
+        targetElement = document.querySelector(`.row-with-comment .input-with-comment [data-field="${camelCaseKey}"]`);
+      }
+      
+      // Get the parent row-with-comment for better highlighting
+      if (targetElement) {
+        const parentRow = targetElement.closest('.row-with-comment');
+        if (parentRow) {
+          targetElement = parentRow;
+        }
+      }
+    } else if (type === 'row' && rowId) {
+      // Find row by type and pk value
+      if (identifier === 't_kak_manfaat') {
+        // Try both with and without field-name for manfaat
+        targetElement = document.querySelector(`.row-with-comment[data-row-type="${identifier}"][data-pk-value="${rowId}"]`);
+      } else {
+        targetElement = document.querySelector(`.row-with-comment[data-row-type="${identifier}"][data-pk-value="${rowId}"]`);
+      }
+    }
+
+    if (targetElement) {
+      // Scroll with offset for fixed headers
+      const yOffset = -150;
+      const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+
+      // Enhanced highlight effect with animation
+      targetElement.style.transition = 'all 0.5s ease';
+      targetElement.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.6)';
+      targetElement.style.transform = 'scale(1.02)';
+      
+      // Add background flash
+      const originalBg = targetElement.style.backgroundColor;
+      targetElement.style.backgroundColor = 'rgba(254, 226, 226, 0.5)';
+      
+      setTimeout(() => {
+        targetElement.style.boxShadow = '';
+        targetElement.style.transform = '';
+        targetElement.style.backgroundColor = originalBg;
+      }, 2000);
+    } else {
+      console.warn('Target element not found:', type, identifier, rowId);
+    }
+  }, 400);
+};
+
+  // Fungsi untuk mengecek dan update status menu button jika ada revisi di section-nya
+  function updateMenuButtonRevisionStatus() {
+    // Mapping section ID ke menu button data-menu
+    const sectionMenuMap = {
+      'gambaran-umum': 'gambaran-umum',
+      'penerima-manfaat': 'penerima-manfaat',
+      'strategi-pencapaian': 'strategi-pencapaian',
+      'indikator-kinerja': 'indikator-kinerja',
+      'kurun-waktu': 'kurun-waktu'
+    };
+
+    // Cek setiap section
+    Object.keys(sectionMenuMap).forEach(sectionId => {
+      const section = document.getElementById(sectionId);
+      const menuButton = document.querySelector(`.menu-button[data-menu="${sectionMenuMap[sectionId]}"]`);
+      
+      if (section && menuButton) {
+        // Cek apakah ada comment button dengan class 'has-comment' di dalam section
+        const hasRevision = section.querySelector('.has-comment, .has-row-comment') !== null;
+        
+        // Toggle class 'has-revision' pada menu button
+        menuButton.classList.toggle('has-revision', hasRevision);
+      }
+    });
   }
 
   function updateCommentCount() {

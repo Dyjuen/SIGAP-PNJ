@@ -153,46 +153,50 @@ function initializeDaftarLpj(userRole) {
   }
 
   function getActionButtons(item) {
-      const { status_lpj: status, kegiatan_id: id, approval_status } = item;
-  
-      if (isBendahara) {
-        switch (status) {
-          case "Diajukan":
-            return `
+    const { status_lpj: status, kegiatan_id: id, approval_status } = item;
+
+    if (isBendahara) {
+      const detailButton = `<a href="/bendahara/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
+      switch (status) {
+        case "Diajukan":
+          return `
               <div class="d-flex justify-content-center gap-2">
                 <a href="/bendahara/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-info">Revisi</a>
                 <button class="btn btn-sm btn-primary" data-action="setujui" data-id="${id}">Setujui</button>
               </div>`;
-          case "Setor Fisik":
-            if (approval_status === "bendahara-setor") {
-              return `
+        case "Setor Fisik":
+          if (approval_status === "bendahara-setor") {
+            return `
                 <div class="d-flex justify-content-center gap-2">
+                  ${detailButton}
                   <button class="btn btn-sm btn-success" data-action="selesaikan" data-id="${id}">Setujui & Selesaikan</button>
                 </div>`;
-            } else {
-              return `
+          } else {
+            return `
                 <div class="d-flex justify-content-center gap-2">
+                  ${detailButton}
                   <button class="btn btn-sm btn-success" data-action="selesaikan" data-id="${id}">Selesaikan</button>
                 </div>`;
-            }
-          default:
-            return `<span class="text-muted">-</span>`;
-        }
-          } else if (isPengusul) {
-            switch (status) {
-              case "Menunggu Penyerahan":
-                return `<a href="/pengusul/kegiatan/lpj/new?kegiatan_id=${id}" data-link class="btn btn-sm btn-primary">Submit LPJ</a>`;
-              case "Direvisi":
-                return `<a href="/pengusul/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-warning">Kerjakan Revisi</a>`;
-              case "Diajukan":
-              case "Setor Fisik":
-              case "Selesai":
-                return `<a href="/pengusul/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
-              default:
-                return `<span class="text-muted">-</span>`;
-            }      }
-      return "";
+          }
+        default:
+          return `<span class="text-muted">-</span>`;
+      }
+    } else if (isPengusul) {
+      switch (status) {
+        case "Menunggu Penyerahan":
+          return `<a href="/pengusul/kegiatan/lpj/new?kegiatan_id=${id}" data-link class="btn btn-sm btn-primary">Submit LPJ</a>`;
+        case "Direvisi":
+          return `<a href="/pengusul/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-warning">Kerjakan Revisi</a>`;
+        case "Diajukan":
+        case "Setor Fisik":
+        case "Selesai":
+          return `<a href="/pengusul/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
+        default:
+          return `<span class="text-muted">-</span>`;
+      }
     }
+    return "";
+  }
   function calculateCountdown(deadline) {
     if (!deadline) return { text: "-", colorClass: "" };
 
