@@ -343,11 +343,27 @@ export function renderDashboardVerifikator(path, userRole) {
     }
 
     try {
-      // Fetch all relevant data at once
+      // 1. Get User Profile first
+      const profileResponse = await apiRequest('/auth/profile');
+      const user = profileResponse.data; // Corrected: data is the user object
+      const username = user.username;
+
+      // 2. Fetch all relevant data at once
       const response = await apiRequest(`/kak`);
-      state.allUsulan = response.data || [];
+      let allUsulan = response.data || [];
+
+      // 3. Filter based on username (verifikator1 -> tipe_kegiatan_id 1, etc.)
+      const verifMatch = username.match(/^verifikator(\d+)$/);
+      if (verifMatch) {
+        const typeId = parseInt(verifMatch[1]);
+        if (typeId >= 1 && typeId <= 4) {
+          allUsulan = allUsulan.filter((u) => u.tipe_kegiatan_id == typeId);
+        }
+      }
+
+      state.allUsulan = allUsulan;
       console.log(
-        "All proposals from API:",
+        "All proposals from API (Filtered):",
         JSON.stringify(state.allUsulan, null, 2)
       );
 
