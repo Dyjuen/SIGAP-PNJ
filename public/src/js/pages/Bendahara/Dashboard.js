@@ -467,39 +467,30 @@ export function renderBendaharaDashboardPage(path, userRole) {
     const filter = state.currentFilter;
 
     if (filter === "all") {
-      // Show all approved activities (PPK + Wadir approved)
+      // Show all activities where PPK and Wadir have approved (ready for Bendahara or already processed)
       state.displayKegiatan = state.allKegiatan.filter((k) => {
-        const ppkApproval = k.approvals?.find(
-          (a) => a.approval_level === "PPK"
-        );
-        const wadirApproval = k.approvals?.find(
-          (a) => a.approval_level === "Wadir2"
-        );
+        const ppkApproval = k.approvals?.find((a) => a.approval_level === "PPK");
+        const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir2");
         return (
           ppkApproval?.status === "Disetujui" &&
           wadirApproval?.status === "Disetujui"
         );
       });
     } else if (filter === "waiting") {
-      // Approved but not yet disbursed
+      // Waiting for Disbursement: Bendahara-Cair step is Active
       state.displayKegiatan = state.allKegiatan.filter((k) => {
-        const ppkApproval = k.approvals?.find(
-          (a) => a.approval_level === "PPK"
-        );
-        const wadirApproval = k.approvals?.find(
-          (a) => a.approval_level === "Wadir2"
-        );
         return (
-          ppkApproval?.status === "Disetujui" &&
-          wadirApproval?.status === "Disetujui" &&
-          !k.disbursement_date
+          k.current_approval?.approval_level === "Bendahara-Cair" &&
+          k.current_approval?.status === "Aktif"
         );
       });
     } else if (filter === "disbursed") {
-      // Already disbursed
-      state.displayKegiatan = state.allKegiatan.filter(
-        (k) => k.disbursement_date
-      );
+      // Already Disbursed: Bendahara-Cair step is Disetujui
+      state.displayKegiatan = state.allKegiatan.filter((k) => {
+        return k.approvals?.some(
+          (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
+        );
+      });
     } else if (filter === "lpj_submitted") {
       // LPJ submitted, waiting for verification
       state.displayKegiatan = state.allKegiatan.filter(
@@ -553,13 +544,18 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
     if (!confirmResult.isConfirmed) return;
 
+    // Find kegiatan to get the remaining amount
+    const kegiatan = state.allKegiatan.find(k => k.kegiatan_id == kegiatanId);
+    const sisaDana = (kegiatan?.total_anggaran_diusulkan || 0) - (kegiatan?.dana_dicairkan || 0);
+
     // Step 3: API request
     try {
-      await apiRequest(`/kegiatan/${kegiatanId}/disburse`, {
+      await apiRequest(`/kegiatan/${kegiatanId}/cairkan`, {
         method: "POST",
         body: JSON.stringify({
-          disbursement_date: formValues.date,
-          notes: formValues.notes || null,
+          nominal_pencairan: sisaDana,
+          tanggal_pencairan: formValues.date,
+          keterangan: formValues.notes || null,
         }),
       });
 
@@ -582,6 +578,11 @@ export function renderBendaharaDashboardPage(path, userRole) {
             year: "numeric",
           })
         : "-";
+        
+      // Check if disbursed based on approval status
+      const isDisbursed = kegiatan.approvals?.some(
+        (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
+      );
 
       Swal.fire({
         title: "Detail Pencairan",
@@ -609,7 +610,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
               <tr>
                 <td><strong>Status:</strong></td>
                 <td>${
-                  kegiatan.disbursement_date
+                  isDisbursed
                     ? '<span class="badge bg-success">Sudah Dicairkan</span>'
                     : '<span class="badge bg-warning">Menunggu Pencairan</span>'
                 }</td>
@@ -667,7 +668,12 @@ export function renderBendaharaDashboardPage(path, userRole) {
       let statusBadge = "";
       let actionButtons = "";
 
-      if (kegiatan.disbursement_date) {
+      // Determine if disbursed based on approval status
+      const isDisbursed = kegiatan.approvals?.some(
+        (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
+      );
+
+      if (isDisbursed) {
         statusBadge =
           '<span class="badge bg-label-success" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Dicairkan</span>';
         actionButtons = `
@@ -789,26 +795,28 @@ export function renderBendaharaDashboardPage(path, userRole) {
   }
 
   function updateStats(allData) {
-    // Waiting for disbursement (approved by both PPK and Wadir, but not yet disbursed)
+    // Waiting for disbursement: Bendahara-Cair step is Active
     const waitingCount = allData.filter((k) => {
-      const ppkApproval = k.approvals?.find((a) => a.approval_level === "PPK");
-      const wadirApproval = k.approvals?.find(
-        (a) => a.approval_level === "Wadir2"
-      );
       return (
-        ppkApproval?.status === "Disetujui" &&
-        wadirApproval?.status === "Disetujui" &&
-        !k.disbursement_date
+        k.current_approval?.approval_level === "Bendahara-Cair" &&
+        k.current_approval?.status === "Aktif"
       );
     }).length;
 
-    // Already disbursed
-    const disbursedCount = allData.filter((k) => k.disbursement_date).length;
+    // Already disbursed: Bendahara-Cair step is Disetujui
+    const disbursedData = allData.filter((k) => {
+      return k.approvals?.some(
+        (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
+      );
+    });
 
-    // Total disbursed amount
-    const totalDisbursed = allData
-      .filter((k) => k.disbursement_date)
-      .reduce((sum, k) => sum + (k.dana_dicairkan || 0), 0);
+    const disbursedCount = disbursedData.length;
+
+    // Total disbursed amount: Sum of all recorded disbursements (jumlah_dicairkan) across all activities
+    const totalDisbursed = allData.reduce(
+      (sum, k) => sum + (Number(k.dana_dicairkan) || 0),
+      0
+    );
 
     // LPJ submitted but not yet verified
     const lpjCount = allData.filter(

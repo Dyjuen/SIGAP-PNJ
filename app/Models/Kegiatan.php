@@ -217,6 +217,7 @@ class Kegiatan extends Model
                         ks.nama_status,
                         ks.status_id,
                         (SELECT COALESCE(SUM(pd.jumlah_dicairkan), 0) FROM t_pencairan_dana pd WHERE pd.kegiatan_id = k.kegiatan_id) as dana_dicairkan,
+                        (SELECT MAX(pd.tanggal_pencairan) FROM t_pencairan_dana pd WHERE pd.kegiatan_id = k.kegiatan_id) as disbursement_date,
                         (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_diusulkan";
 
         $page = $filters['page'] ?? 1;
