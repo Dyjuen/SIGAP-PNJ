@@ -361,6 +361,7 @@ export function renderInputLpjPage(path, userRole) {
       select:focus {
         border-color: #00BCD4; /* focus:border-cyan-500 */
         box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1); /* focus:ring-4 focus:ring-cyan-100 */
+        outline: none; /* Remove default focus outline */
       }
 
       /* Disabled/Readonly states */
@@ -508,6 +509,8 @@ export function renderInputLpjPage(path, userRole) {
                   background: #EF4444; /* Red-500 */
                   color: #FFFFFF;
                   font-size: 1.5rem; /* For the '−' character */
+                  position: relative; /* Needed for pseudo-element */
+                  overflow: hidden; /* Hide pseudo-element overflow */
                 }
                 .remove-button:hover {
                   transform: scale(1.1);
@@ -515,7 +518,19 @@ export function renderInputLpjPage(path, userRole) {
                 }
                 /* Remove button specific animation override */
                 .remove-button::after {
-                  display: none; /* Disable ripple for remove button */
+                  content: '';
+                  position: absolute;
+                  top: 0;
+                  left: -120%; /* Start further off-screen for subtle entry */
+                  width: 150%; /* Make wider to cover button more naturally with gradient */
+                  height: 100%;
+                  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%); /* Softer gradient */
+                  transform: skewX(-10deg); /* Less slanted */
+                  transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); /* Longer transition */
+                  z-index: 1; /* Above button content but below text/icon */
+                }
+                .remove-button:hover::after {
+                  left: 120%; /* Slide across to the right, matching new width */
                 }
                 
                 /* Comment count badge */      .comment-count {
@@ -940,7 +955,7 @@ export function renderInputLpjPage(path, userRole) {
         content: '';
         position: absolute;
         inset: 0;
-        border-radius: 12px;
+        border-radius: 8px;
         padding: 2px;
         background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
         -webkit-mask: 
@@ -959,12 +974,17 @@ export function renderInputLpjPage(path, userRole) {
         );
         
         /* Smooth reverse animation by default */
-        animation: borderDrawReverse 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+        animation: borderDrawReverse 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      }
+
+      /* Override for files within rab-item with comment */
+      .rab-item.has-row-comment .border-hover-draw::before {
+        background: linear-gradient(135deg, #EF4444, #DC2626, #EF4444); /* Red gradient */
       }
 
       /* Forward animation on hover - SUPER SMOOTH */
       .border-hover-draw:hover::before {
-        animation: borderDrawForward 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+        animation: borderDrawForward 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
       }
 
       /* ====== FORWARD ANIMATION (Mouse IN) ====== */
