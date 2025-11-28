@@ -204,6 +204,7 @@ class Kegiatan extends Model
         $mainSelect = "SELECT 
                         k.kegiatan_id,
                         k.kak_id,
+                        k.penanggung_jawab_manual,
                         k.pelaksana_manual,
                         k.tgl_batas_lpj,
                         t.nama_kegiatan,
