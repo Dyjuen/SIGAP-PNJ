@@ -253,6 +253,7 @@ $router->get('/kegiatan/{id}/lampiran', 'LampiranController@index');
 $router->post('/kegiatan/{id}/lampiran', 'LampiranController@upload');
 $router->get('/lampiran/{id}', 'LampiranController@show');
 $router->post('/lampiran/{id}/catatan', 'LampiranController@saveCatatan');
+$router->get('/lampiran/{id}/stream', 'LampiranController@stream');
 $router->get('/kegiatan/{id}/lampiran/{file_id}', 'LampiranController@download');
 $router->delete('/kegiatan/{id}/lampiran/{file_id}', 'LampiranController@delete');
 

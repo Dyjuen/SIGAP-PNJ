@@ -1376,6 +1376,45 @@ export function renderInputLpjPage(path, userRole) {
     }
   }
 
+  async function openFileInNewTab(lampiranId) {
+    Swal.fire({
+      title: "Membuka file...",
+      text: "Mohon tunggu sejenak.",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    try {
+      const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+      const response = await fetch(`/api/lampiran/${lampiranId}/stream`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Gagal mengambil file (status: ${response.status})`);
+      }
+
+      const blob = await response.blob();
+      const fileUrl = URL.createObjectURL(blob);
+      
+      Swal.close();
+      window.open(fileUrl, '_blank');
+      
+      // Revoke the object URL after a short delay to allow the new tab to load
+      setTimeout(() => URL.revokeObjectURL(fileUrl), 1000);
+
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Membuka File',
+        text: error.message
+      });
+    }
+  }
+
   async function fetchLpjDetail(id) {
     try {
       // This endpoint should return KAK data, and if available, existing LPJ data + comments
@@ -1671,9 +1710,9 @@ export function renderInputLpjPage(path, userRole) {
 
                   <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200 border-hover-draw">
 
-                      <a href="${
-                        file.path_file_disimpan
-                      }" target="_blank" class="text-sm truncate flex-1 text-blue-500 hover:underline">📎 ${
+                      <a href="javascript:void(0);"
+                         data-lampiran-id="${file.lampiran_id}"
+                         class="text-sm truncate flex-1 text-blue-500 hover:underline view-file-btn">📎 ${
                     file.nama_file_asli
                   }</a>
 
@@ -2101,6 +2140,16 @@ export function renderInputLpjPage(path, userRole) {
 
     renderRABSections();
     renderActionButtons();
+
+    // Add event listener for viewing files
+    document.body.addEventListener('click', function(event) {
+        const viewBtn = event.target.closest('.view-file-btn');
+        if (viewBtn) {
+            event.preventDefault();
+            const lampiranId = viewBtn.dataset.lampiranId;
+            openFileInNewTab(lampiranId);
+        }
+    });
   }
 
   initializeApp();

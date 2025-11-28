@@ -1109,9 +1109,9 @@ export function renderRevisiLpjPage(path, userRole) {
 
                      <i class="ti ti-file-text text-gray-400"></i>
 
-                     <a href="/download.php?id=${
-                       file.lampiran_id
-                     }" target="_blank" class="text-blue-600 hover:underline text-sm">${
+                     <a href="javascript:void(0);" 
+                        data-lampiran-id="${file.lampiran_id}" 
+                        class="text-blue-600 hover:underline text-sm view-file-btn">${
                 file.nama_file_asli
               }</a>
 
@@ -1615,6 +1615,45 @@ export function renderRevisiLpjPage(path, userRole) {
     // If status is 'disetujui' or 'selesai', all buttons remain hidden.
   }
 
+  async function openFileInNewTab(lampiranId) {
+    Swal.fire({
+      title: "Membuka file...",
+      text: "Mohon tunggu sejenak.",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    try {
+      const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+      const response = await fetch(`/api/lampiran/${lampiranId}/stream`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Gagal mengambil file (status: ${response.status})`);
+      }
+
+      const blob = await response.blob();
+      const fileUrl = URL.createObjectURL(blob);
+      
+      Swal.close();
+      window.open(fileUrl, '_blank');
+      
+      // Revoke the object URL after a short delay to allow the new tab to load
+      setTimeout(() => URL.revokeObjectURL(fileUrl), 1000);
+
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Membuka File',
+        text: error.message
+      });
+    }
+  }
+
   function attachEventListeners() {
     // Event delegation untuk button comment
     document.body.addEventListener("click", function (event) {
@@ -1624,6 +1663,13 @@ export function renderRevisiLpjPage(path, userRole) {
         event.stopPropagation();
         console.log("Lampiran comment button clicked", commentBtn);
         openLampiranCommentModal(commentBtn);
+      }
+
+      const viewFileBtn = event.target.closest(".view-file-btn");
+      if (viewFileBtn) {
+        event.preventDefault();
+        const lampiranId = viewFileBtn.dataset.lampiranId;
+        openFileInNewTab(lampiranId);
       }
     });
 

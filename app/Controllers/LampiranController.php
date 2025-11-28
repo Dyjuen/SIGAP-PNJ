@@ -421,11 +421,76 @@ class LampiranController
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
-        // Pattern: /api/lampiran/{id}/catatan
-        if (preg_match('/\/lampiran\/(\d+)\/catatan$/', $uri, $matches)) {
+        // Pattern: /api/lampiran/{id}/catatan or /api/lampiran/{id}/stream
+        if (preg_match('/\/lampiran\/(\d+)\/(?:catatan|stream)$/', $uri, $matches)) {
             return (int) $matches[1];
         }
 
         return null;
+    }
+
+    /**
+     * Stream lampiran for inline viewing
+     * 
+     * GET /api/lampiran/{id}/stream
+     */
+    public function stream()
+    {
+        try {
+            // Get lampiran_id from URL
+            $lampiranId = $this->extractLampiranIdOnly();
+
+            if (!$lampiranId) {
+                Response::error('ID lampiran tidak valid.', 400);
+                return;
+            }
+
+            // Check if lampiran exists
+            $lampiran = $this->lampiranModel->find($lampiranId);
+            if (!$lampiran) {
+                Response::notFound('File tidak ditemukan.');
+                return;
+            }
+
+            // Authorization: Use the same logic as show() method
+            if (!$this->hasRole('Bendahara')) {
+                $anggaran = $this->kakAnggaranModel->find($lampiran['anggaran_id']);
+                if (!$anggaran) {
+                    Response::forbidden('Tidak dapat memverifikasi anggaran terkait lampiran ini.');
+                    return;
+                }
+                $kak = $this->kakModel->find($anggaran['kak_id']);
+                if (!$kak || $kak['pengusul_user_id'] != $this->user['user_id']) {
+                    Response::forbidden('Anda tidak memiliki izin untuk melihat file ini.');
+                    return;
+                }
+            }
+
+            // Check if file exists on server
+            $baseUploadDir = __DIR__ . '/../../storage/uploads/documents/';
+            $filePath = $baseUploadDir . basename($lampiran['path_file_disimpan']);
+            
+            if (!file_exists($filePath)) {
+                Response::notFound('File tidak ditemukan di server.');
+                return;
+            }
+
+            // Stream file for inline viewing
+            $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+
+            header('Content-Type: ' . $mimeType);
+            header('Content-Disposition: inline; filename="' . basename($lampiran['nama_file_asli']) . '"');
+            header('Content-Length: ' . filesize($filePath));
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Expires: 0');
+            
+            @ob_end_clean();
+            readfile($filePath);
+            exit;
+
+        } catch (\Exception $e) {
+            error_log("Streaming error for lampiran ID {$lampiranId}: " . $e->getMessage());
+            Response::error('Gagal menampilkan file: ' . $e->getMessage(), 500);
+        }
     }
 }
