@@ -493,9 +493,12 @@ export function renderBendaharaDashboardPage(path, userRole) {
       });
     } else if (filter === "lpj_submitted") {
       // LPJ submitted, waiting for verification
-      state.displayKegiatan = state.allKegiatan.filter(
-        (k) => k.lpj_submitted_date && !k.lpj_verified_date
-      );
+      state.displayKegiatan = state.allKegiatan.filter((k) => {
+        return (
+          k.current_approval?.approval_level === "Bendahara-LPJ" &&
+          k.current_approval?.status === "Aktif"
+        );
+      });
     }
 
     renderTableRows(state.displayKegiatan);
@@ -668,18 +671,28 @@ export function renderBendaharaDashboardPage(path, userRole) {
       let statusBadge = "";
       let actionButtons = "";
 
-      // Determine if disbursed based on approval status
+      // Determine status
       const isDisbursed = kegiatan.approvals?.some(
         (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
       );
+      const isLpjVerification = kegiatan.current_approval?.approval_level === "Bendahara-LPJ" &&
+          kegiatan.current_approval?.status === "Aktif";
 
-      if (isDisbursed) {
+      if (isLpjVerification) {
+        statusBadge =
+          '<span class="badge bg-label-info" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Verifikasi LPJ</span>';
+        actionButtons = `
+          <a href="/bendahara/kegiatan/lpj/revisi/${kegiatan.kegiatan_id}" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);" title="Verifikasi LPJ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 15l2 2l4 -4" /></svg>
+          </a>
+        `;
+      } else if (isDisbursed) {
         statusBadge =
           '<span class="badge bg-label-success" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Dicairkan</span>';
         actionButtons = `
-          <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Lihat Detail">
+          <a href="/bendahara/kegiatan/riwayat/detail/${kegiatan.kak_id}" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" title="Lihat Detail">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-          </button>
+          </a>
         `;
       } else {
         statusBadge =
@@ -688,9 +701,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
           <button class="btn btn-sm me-2 btn-disburse" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Cairkan Dana">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-cash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="7" y="9" width="14" height="10" rx="2" /><circle cx="14" cy="14" r="2" /><path d="M17 9v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h2" /></svg>
           </button>
-          <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Lihat Detail">
+          <a href="/bendahara/kegiatan/riwayat/detail/${kegiatan.kak_id}" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" title="Lihat Detail">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-          </button>
+          </a>
         `;
       }
 
@@ -818,10 +831,13 @@ export function renderBendaharaDashboardPage(path, userRole) {
       0
     );
 
-    // LPJ submitted but not yet verified
-    const lpjCount = allData.filter(
-      (k) => k.lpj_submitted_date && !k.lpj_verified_date
-    ).length;
+    // LPJ submitted but not yet verified: Bendahara-LPJ step is Active
+    const lpjCount = allData.filter((k) => {
+      return (
+        k.current_approval?.approval_level === "Bendahara-LPJ" &&
+        k.current_approval?.status === "Aktif"
+      );
+    }).length;
 
     const waitingEl = document.getElementById("waitingCount");
     const disbursedEl = document.getElementById("disbursedCount");
