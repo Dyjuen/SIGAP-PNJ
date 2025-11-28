@@ -79,7 +79,7 @@ export function renderRevisiLpjPage(path, userRole) {
         content: '';
         position: absolute;
         inset: 0;
-        border-radius: 12px;
+        border-radius: 8px;
         padding: 2px;
         background: linear-gradient(135deg, #00BCD4, #00E5FF, #00BCD4);
         -webkit-mask: 
@@ -98,12 +98,17 @@ export function renderRevisiLpjPage(path, userRole) {
         );
         
         /* Smooth reverse animation by default */
-        animation: borderDrawReverse 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+        animation: borderDrawReverse 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      }
+
+      /* Override for lampiran-item with comment */
+      .lampiran-item.has-comment.border-hover-draw::before {
+        background: linear-gradient(135deg, #EF4444, #DC2626, #EF4444); /* Red gradient */
       }
 
       /* Forward animation saat hover - SUPER SMOOTH */
       .border-hover-draw:hover::before {
-        animation: borderDrawForward 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+        animation: borderDrawForward 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
       }
 
       /* ====== FORWARD ANIMATION (Mouse IN) ====== */
@@ -461,7 +466,7 @@ export function renderRevisiLpjPage(path, userRole) {
       }
       
       .lampiran-item.has-comment {
-        border-color: #FCA5A5;
+        /* border-color: #FCA5A5; Removed as per user request */
         background-color: #FEF2F2;
       }
       .lampiran-item.has-comment:hover {
@@ -489,16 +494,32 @@ export function renderRevisiLpjPage(path, userRole) {
         padding: 0.5rem 1rem;
         font-weight: 600;
         transition: all 0.3s ease;
+        position: relative; /* Needed for pseudo-element */
+        overflow: hidden; /* Hide pseudo-element overflow */
       }
       .btn-add-lampiran:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
         color: white;
       }
+      .btn-add-lampiran::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -120%; /* Start further off-screen for subtle entry */
+        width: 150%; /* Make wider to cover button more naturally with gradient */
+        height: 100%;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%); /* Softer gradient */
+                          transform: skewX(-10deg); /* Less slanted */
+                          transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); /* Longer transition */
+                          z-index: 1; /* Above button content but below text/icon */      }
+      .btn-add-lampiran:hover::after {
+        left: 120%; /* Slide across to the right, matching new width */
+      }
 
       /* Uploaded File Item */
       .lampiran-item {
-        border: 1px solid #E5E7EB;
+        border: 1px solid #E5E7EB; /* Re-add small static border */
         padding: 0.75rem 1rem;
         border-radius: 8px;
         background-color: #FFFFFF;
@@ -511,7 +532,7 @@ export function renderRevisiLpjPage(path, userRole) {
         position: relative;
       }
       .lampiran-item.has-comment {
-        border-left: 4px solid #FCA5A5;
+        /* border-left: 4px solid #FCA5A5; Removed as per user request */
         background: #FEF2F2;
       }
 
@@ -749,6 +770,85 @@ export function renderRevisiLpjPage(path, userRole) {
         font-size: 0.875rem;
         color: #1E40AF;
       }
+
+      /* Custom Button Styles for RevisiLpj */
+      .lpj-custom-btn {
+        padding: 1rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center; /* Center horizontally */
+        gap: 0.5rem;
+        position: relative; /* Needed for pseudo-element */
+        overflow: hidden; /* Hide pseudo-element overflow */
+      }
+      .lpj-custom-btn::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -120%; /* Start further off-screen for subtle entry */
+        width: 150%; /* Make wider to cover button more naturally with gradient */
+        height: 100%;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%); /* Softer gradient */
+        transform: skewX(-10deg); /* Less slanted */
+        transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); /* Longer transition */
+        z-index: 1; /* Above button content but below text/icon */
+      }
+      .lpj-custom-btn:hover::after {
+        left: 120%; /* Slide across to the right, matching new width */
+      }
+
+      .lpj-custom-btn.btn-back-style {
+        background: #F3F4F6;
+        color: #6B7280;
+        border: 2px solid #E5E7EB;
+      }
+      .lpj-custom-btn.btn-back-style:hover {
+        background: #E5E7EB;
+        color: #374151;
+      }
+
+      .lpj-custom-btn.btn-revise-style {
+        background: linear-gradient(135deg, #EF5350 0%, #E53935 100%); /* Material Red gradient for revision */
+        color: white;
+      }
+      .lpj-custom-btn.btn-revise-style:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(229, 57, 53, 0.4); /* Material Red shadow */
+      }
+
+      .lpj-custom-btn.btn-approve-style {
+        background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%); /* Material Green gradient for approval */
+        color: white;
+      }
+      .lpj-custom-btn.btn-approve-style:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67, 160, 71, 0.4); /* Material Green shadow */
+      }
+
+      .lpj-custom-btn.btn-complete-style {
+        background: linear-gradient(135deg, #29B6F6 0%, #039BE5 100%); /* Material Light Blue gradient for complete */
+        color: white;
+      }
+      .lpj-custom-btn.btn-complete-style:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(3, 155, 229, 0.4); /* Material Light Blue shadow */
+      }
+
+      /* Resubmit button for Pengusul */
+      .lpj-custom-btn.btn-resubmit-style {
+        background: linear-gradient(135deg, #29B6F6 0%, #039BE5 100%); /* Material Light Blue gradient */
+        color: white;
+      }
+      .lpj-custom-btn.btn-resubmit-style:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(3, 155, 229, 0.4); /* Material Light Blue shadow */
+      }
     </style>
 
     <div class="lpj-review-page">
@@ -769,20 +869,20 @@ export function renderRevisiLpjPage(path, userRole) {
       
       <!-- Action Buttons (Fixed at bottom) -->
       <div class="action-buttons">
-        <button class="btn btn-secondary" onclick="history.back()">
+        <button class="lpj-custom-btn btn-back-style" onclick="history.back()">
           <i class="ti ti-arrow-left"></i> Kembali
         </button>
         ${
           isBendahara
             ? `
           <div class="flex gap-4">
-            <button class="btn btn-danger" id="btn-request-revision" style="display: none;">
+            <button class="lpj-custom-btn btn-revise-style" id="btn-request-revision" style="display: none;">
               <i class="ti ti-send"></i> Kirim Revisi
             </button>
-            <button class="btn btn-success" id="btn-approve-lpj" style="display: none;">
+            <button class="lpj-custom-btn btn-approve-style" id="btn-approve-lpj" style="display: none;">
               <i class="ti ti-check"></i> Setuju
             </button>
-            <button class="btn btn-primary" id="btn-complete-lpj" style="display: none;">
+            <button class="lpj-custom-btn btn-complete-style" id="btn-complete-lpj" style="display: none;">
               <i class="ti ti-check-double"></i> Selesaikan LPJ
             </button>
           </div>
@@ -793,7 +893,7 @@ export function renderRevisiLpjPage(path, userRole) {
           isPengusul
             ? `
           <div class="flex gap-4">
-            <button class="btn btn-primary" id="btn-resubmit-lpj">
+            <button class="lpj-custom-btn btn-resubmit-style" id="btn-resubmit-lpj">
               <i class="ti ti-device-floppy"></i> Submit Ulang LPJ
             </button>
           </div>
@@ -975,7 +1075,7 @@ export function renderRevisiLpjPage(path, userRole) {
     const commonInputClasses = "w-full px-4 py-3 border-2 rounded-lg text-sm";
 
     const onFocus =
-      "this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';";
+      "this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)'; this.style.outline='none !important';";
 
     const onBlur =
       "this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';";
