@@ -1424,7 +1424,7 @@ export function renderInputLpjPage(path, userRole) {
         const section = document.createElement("div");
         // Add comment-related classes
         const comment = rowComments[item.anggaran_id];
-        section.className = `rab-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg ${
+        section.className = `rab-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg border-hover-draw ${
           comment ? "has-row-comment" : ""
         }`;
         section.dataset.rowType = "t_kegiatan_anggaran_realisasi";
@@ -1649,7 +1649,7 @@ export function renderInputLpjPage(path, userRole) {
                 .map(
                   (file) => `
 
-                  <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200">
+                  <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200 border-hover-draw">
 
                       <a href="${
                         file.path_file_disimpan
