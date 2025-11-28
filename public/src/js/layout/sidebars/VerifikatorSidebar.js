@@ -824,12 +824,17 @@ export const verifikatorSidebar = `
 
   <!-- User Profile Section -->
   <div class="user-profile-section">
-    <div class="user-profile-card" id="user-profile-card" data-user-name="John Doe">
+    <div class="user-profile-card" id="user-profile-card" data-user-name="">
       <div class="user-profile-header">
-        <div class="user-avatar" id="user-avatar">JD</div>
+        <div class="user-avatar" id="user-avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
         <div class="user-info">
-          <p class="user-name" id="user-name">John Doe</p>
-          <p class="user-role" id="user-role">Verifikator</p>
+          <p class="user-name" id="user-name"></p>
+          <p class="user-role" id="user-role"></p>
         </div>
       </div>
       <div class="user-profile-details">
@@ -838,7 +843,7 @@ export const verifikatorSidebar = `
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
             <polyline points="22,6 12,13 2,6"></polyline>
           </svg>
-          <span>johndoe@email.com</span>
+          <span></span>
         </p>
       </div>
     </div>
@@ -856,8 +861,118 @@ export const verifikatorSidebar = `
 </aside>
 
 <script>
-  // Sidebar toggle functionality
+  // ============= VERIFIKATOR SIDEBAR API INTEGRATION =============
+  // Global functions for user data management
+  function loadUserData() {
+    console.log('[VERIFIKATOR SIDEBAR] 🚀 Starting loadUserData...');
+    const storedUserData = localStorage.getItem('userData');
+    
+    if (storedUserData) {
+      console.log('[VERIFIKATOR SIDEBAR] ✅ Found cached user data');
+      try {
+        const userData = JSON.parse(storedUserData);
+        updateUserProfile(userData);
+      } catch (e) {
+        console.error('[VERIFIKATOR SIDEBAR] ❌ Error parsing cached data:', e);
+      }
+    }
+    
+    // Always fetch fresh data from API
+    console.log('[VERIFIKATOR SIDEBAR] 🌐 Fetching fresh data from API...');
+    fetchUserDataFromAPI();
+  }
+
+  function fetchUserDataFromAPI() {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      console.error('[VERIFIKATOR SIDEBAR] ❌ No token found');
+      return;
+    }
+
+    console.log('[VERIFIKATOR SIDEBAR] 📡 Calling /api/auth/profile...');
+
+    fetch('/api/auth/profile', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        console.log('[VERIFIKATOR SIDEBAR] 📥 Response status:', response.status);
+        return response.json();
+      })
+      .then(result => {
+        console.log('[VERIFIKATOR SIDEBAR] 📦 API Response:', result);
+        
+        if (result.success && result.data) {
+          const userData = {
+            name: result.data.nama_lengkap || result.data.username || 'User',
+            email: result.data.email || '',
+            role: result.data.roles && result.data.roles.length > 0 
+                  ? result.data.roles[0] 
+                  : 'Verifikator',
+            username: result.data.username || ''
+          };
+          
+          console.log('[VERIFIKATOR SIDEBAR] ✅ Mapped userData:', userData);
+          localStorage.setItem('userData', JSON.stringify(userData));
+          updateUserProfile(userData);
+        } else {
+          console.error('[VERIFIKATOR SIDEBAR] ❌ Invalid API response structure');
+        }
+      })
+      .catch(error => {
+        console.error('[VERIFIKATOR SIDEBAR] ❌ API Error:', error);
+      });
+  }
+
+  function updateUserProfile(userData) {
+    console.log('[VERIFIKATOR SIDEBAR] 🎨 Updating UI with:', userData);
+    
+    const userNameEl = document.getElementById('user-name');
+    const userEmailEl = document.querySelector('#user-email span');
+    const userRoleEl = document.getElementById('user-role');
+    const userAvatarEl = document.getElementById('user-avatar');
+    const userProfileCard = document.getElementById('user-profile-card');
+    
+    if (userData.name && userNameEl) {
+      userNameEl.textContent = userData.name;
+      console.log('[VERIFIKATOR SIDEBAR] ✅ Updated name:', userData.name);
+      
+      // Update avatar with initials
+      const initials = userData.name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .slice(0, 2)
+        .join('');
+      
+      if (userAvatarEl) {
+        userAvatarEl.textContent = initials;
+        console.log('[VERIFIKATOR SIDEBAR] ✅ Updated avatar:', initials);
+      }
+      
+      if (userProfileCard) {
+        userProfileCard.setAttribute('data-user-name', userData.name);
+      }
+    }
+    
+    if (userData.email && userEmailEl) {
+      userEmailEl.textContent = userData.email;
+      console.log('[VERIFIKATOR SIDEBAR] ✅ Updated email:', userData.email);
+    }
+    
+    if (userData.role && userRoleEl) {
+      userRoleEl.textContent = userData.role;
+      console.log('[VERIFIKATOR SIDEBAR] ✅ Updated role:', userData.role);
+    }
+  }
+
+  // DOMContentLoaded - main initialization
   document.addEventListener('DOMContentLoaded', function() {
+    console.log('[VERIFIKATOR SIDEBAR] 🎬 DOMContentLoaded fired');
+    
     const sidebar = document.getElementById('layout-menu');
     const toggleBtn = document.getElementById('sidebar-toggle');
     const userProfileCard = document.getElementById('user-profile-card');
@@ -866,8 +981,6 @@ export const verifikatorSidebar = `
     if (userProfileCard) {
       userProfileCard.addEventListener('click', function(e) {
         e.preventDefault();
-        
-        // Only allow expansion when sidebar is expanded on desktop
         const isDesktop = window.innerWidth >= 1200;
         const isSidebarExpanded = sidebar.classList.contains('sidebar-expanded-js');
         
@@ -877,8 +990,10 @@ export const verifikatorSidebar = `
       });
     }
     
-    // Load user data from localStorage or API
-    loadUserData();
+    // Load user data with small delay to ensure DOM is ready
+    setTimeout(() => {
+      loadUserData();
+    }, 200);
     
     // Set active menu based on current URL
     const currentPath = window.location.pathname;
@@ -898,9 +1013,8 @@ export const verifikatorSidebar = `
       logoutBtn.addEventListener('click', function(e) {
         e.preventDefault();
         if (confirm('Apakah Anda yakin ingin logout?')) {
-          // Clear localStorage
           localStorage.removeItem('userData');
-          // Redirect to logout
+          localStorage.removeItem('token');
           window.location.href = '/logout';
         }
       });
@@ -913,86 +1027,31 @@ export const verifikatorSidebar = `
       }
     });
   });
-  
-  // Function to load user data
-  function loadUserData() {
-    // Try to get user data from localStorage first
-    const storedUserData = localStorage.getItem('userData');
-    
-    if (storedUserData) {
-      try {
-        const userData = JSON.parse(storedUserData);
-        updateUserProfile(userData);
-      } catch (e) {
-        console.error('Error parsing user data:', e);
-        // Fallback to default or fetch from API
-        fetchUserDataFromAPI();
-      }
-    } else {
-      // Fetch from API
-      fetchUserDataFromAPI();
-    }
-  }
-  
-  // Function to fetch user data from API
-  function fetchUserDataFromAPI() {
-    // Example API call - adjust according to your backend
-    fetch('/api/user/profile')
-      .then(response => response.json())
-      .then(data => {
-        // Store in localStorage for future use
-        localStorage.setItem('userData', JSON.stringify(data));
-        updateUserProfile(data);
-      })
-      .catch(error => {
-        console.error('Error fetching user data:', error);
-        // Use default values if API fails
-        updateUserProfile({
-          name: 'John Doe',
-          email: 'johndoe@email.com',
-          role: 'Verifikator'
-        });
-      });
-  }
-  
-  // Function to update user profile in sidebar
-  function updateUserProfile(userData) {
+
+  // Backup: window.load event
+  window.addEventListener('load', function() {
+    console.log('[VERIFIKATOR SIDEBAR] 🔄 Window loaded - checking if data populated');
     const userNameEl = document.getElementById('user-name');
-    const userEmailEl = document.getElementById('user-email');
-    const userRoleEl = document.getElementById('user-role');
-    const userAvatarEl = document.getElementById('user-avatar');
-    const userProfileCard = document.getElementById('user-profile-card');
-    
-    if (userData.name && userNameEl) {
-      userNameEl.textContent = userData.name;
-      
-      // Update avatar with initials
-      const initials = userData.name
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase())
-        .slice(0, 2)
-        .join('');
-      
-      if (userAvatarEl) {
-        userAvatarEl.textContent = initials;
-      }
-      
-      // Update tooltip
-      if (userProfileCard) {
-        userProfileCard.setAttribute('data-user-name', userData.name);
-      }
+    if (userNameEl && !userNameEl.textContent.trim()) {
+      console.log('[VERIFIKATOR SIDEBAR] ⚠️ Name empty on window.load, retrying...');
+      loadUserData();
     }
-    
-    if (userData.email && userEmailEl) {
-      const emailSpan = userEmailEl.querySelector('span');
-      if (emailSpan) {
-        emailSpan.textContent = userData.email;
-      }
+  });
+
+  // Debug tools
+  window.verifikatorSidebarDebug = {
+    loadUserData,
+    fetchUserDataFromAPI,
+    updateUserProfile,
+    checkElements: function() {
+      console.log('[VERIFIKATOR SIDEBAR DEBUG] 🔍 Element check:');
+      console.log('  user-name:', document.getElementById('user-name'));
+      console.log('  user-email:', document.querySelector('#user-email span'));
+      console.log('  user-role:', document.getElementById('user-role'));
+      console.log('  user-avatar:', document.getElementById('user-avatar'));
     }
-    
-    if (userData.role && userRoleEl) {
-      userRoleEl.textContent = userData.role;
-    }
-  }
+  };
+
+  console.log('[VERIFIKATOR SIDEBAR] ✅ Debug tools ready! Use window.verifikatorSidebarDebug');
 </script>
 `;

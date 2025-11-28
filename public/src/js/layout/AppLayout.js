@@ -75,6 +75,9 @@ export function renderDashboardLayout(content, userRole) {
   initializeMobileMenuToggle();
   initializeLogout();
   setupPengusulSidebarInteractivity(userRole);
+  
+  // Execute sidebar scripts manually (since innerHTML doesn't execute <script> tags)
+  executeSidebarScripts(dynamicSidebar);
 }
 
 function initializeSidebar() {
@@ -233,4 +236,43 @@ function setupPengusulSidebarInteractivity(userRole) {
       }
     });
   }, 100);
+}
+
+// Execute scripts from sidebar templates (since innerHTML doesn't run <script> tags)
+function executeSidebarScripts(sidebarTemplate) {
+  console.log('[APPLAYOUT] 🚀 Executing sidebar scripts...');
+  
+  if (!sidebarTemplate) {
+    console.warn('[APPLAYOUT] ⚠️ No sidebar template provided');
+    return;
+  }
+  
+  // Extract script content from template string
+  const scriptRegex = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+  const matches = [...sidebarTemplate.matchAll(scriptRegex)];
+  
+  console.log('[APPLAYOUT] 📜 Found', matches.length, 'script blocks in template');
+  
+  if (matches.length === 0) {
+    console.warn('[APPLAYOUT] ⚠️ No script tags found in sidebar template');
+    return;
+  }
+  
+  // Execute each script
+  matches.forEach((match, index) => {
+    const scriptContent = match[1]; // Get captured group (script content)
+    
+    try {
+      console.log('[APPLAYOUT] ⚡ Executing script block', index + 1);
+      
+      // Use eval instead of Function constructor to maintain scope
+      // eslint-disable-next-line no-eval
+      eval(scriptContent);
+      
+      console.log('[APPLAYOUT] ✅ Script block', index + 1, 'executed successfully');
+    } catch (error) {
+      console.error('[APPLAYOUT] ❌ Error executing script block', index + 1, ':', error);
+      console.error('Script content preview:', scriptContent.substring(0, 200));
+    }
+  });
 }

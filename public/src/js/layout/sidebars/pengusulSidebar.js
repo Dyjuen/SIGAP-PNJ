@@ -850,12 +850,17 @@ export const pengusulSidebar = `
 
   <!-- User Profile Section -->
   <div class="user-profile-section">
-    <div class="user-profile-card" id="user-profile-card" data-user-name="John Doe">
+    <div class="user-profile-card" id="user-profile-card" data-user-name="">
       <div class="user-profile-header">
-        <div class="user-avatar" id="user-avatar">JD</div>
+        <div class="user-avatar" id="user-avatar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
         <div class="user-info">
-          <p class="user-name" id="user-name">John Doe</p>
-          <p class="user-role" id="user-role">Pengusul</p>
+          <p class="user-name" id="user-name"></p>
+          <p class="user-role" id="user-role"></p>
         </div>
       </div>
       <div class="user-profile-details">
@@ -864,7 +869,7 @@ export const pengusulSidebar = `
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
             <polyline points="22,6 12,13 2,6"></polyline>
           </svg>
-          <span>johndoe@email.com</span>
+          <span></span>
         </p>
       </div>
     </div>
@@ -882,11 +887,200 @@ export const pengusulSidebar = `
 </aside>
 
 <script>
+  /* eslint-disable */
+  // @ts-nocheck
+  
+  // ============== GLOBAL FUNCTIONS - Available immediately ==============
+  
+  // Function to load user data
+  function loadUserData() {
+    console.log('[SIDEBAR] 🚀 loadUserData() called');
+    
+    // Try to get user data from localStorage first
+    const storedUserData = localStorage.getItem('userData');
+    
+    if (storedUserData) {
+      try {
+        const userData = JSON.parse(storedUserData);
+        console.log('[SIDEBAR] 💾 Using cached data:', userData);
+        updateUserProfile(userData);
+        // Still fetch fresh data in background
+        console.log('[SIDEBAR] 🔄 Fetching fresh data in background...');
+        fetchUserDataFromAPI();
+      } catch (e) {
+        console.error('[SIDEBAR] ❌ Error parsing user data:', e);
+        // Fallback to default or fetch from API
+        fetchUserDataFromAPI();
+      }
+    } else {
+      console.log('[SIDEBAR] 📡 No cached data, fetching from API...');
+      // Fetch from API
+      fetchUserDataFromAPI();
+    }
+  }
+  
+  // Function to fetch user data from API
+  function fetchUserDataFromAPI() {
+    // Get JWT token from localStorage
+    const token = localStorage.getItem('token');
+    
+    console.log('[SIDEBAR] 🔄 Fetching user data from API...');
+    console.log('[SIDEBAR] 🔑 Token exists:', !!token);
+    
+    if (!token) {
+      console.error('[SIDEBAR] ❌ No authentication token found');
+      updateUserProfile({
+        name: 'User',
+        email: 'user@email.com',
+        role: 'Pengusul'
+      });
+      return;
+    }
+    
+    // Fetch user profile from /api/auth/profile (CORRECTED ENDPOINT!)
+    console.log('[SIDEBAR] 📡 Calling /api/auth/profile...');
+    fetch('/api/auth/profile', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        console.log('[SIDEBAR] 📥 API Response status:', response.status);
+        if (!response.ok) {
+          throw new Error('API responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(result => {
+        console.log('[SIDEBAR] ✅ API Result:', result);
+        
+        if (result.success && result.data) {
+          // Map API response to userData
+          const userData = {
+            name: result.data.nama_lengkap || 'User',
+            email: result.data.email || 'user@email.com',
+            // roles is an array, get first element OR use role_name if exists
+            role: (result.data.roles && result.data.roles[0]) || result.data.role_name || 'Pengusul',
+            username: result.data.username || ''
+          };
+          
+          console.log('[SIDEBAR] 📦 User data prepared:', userData);
+          
+          // Store in localStorage for future use
+          localStorage.setItem('userData', JSON.stringify(userData));
+          updateUserProfile(userData);
+          
+          console.log('[SIDEBAR] ✨ Profile updated successfully!');
+        } else {
+          throw new Error('Invalid API response format');
+        }
+      })
+      .catch(error => {
+        console.error('[SIDEBAR] ❌ Error fetching user data:', error);
+        // Use default values if API fails
+        updateUserProfile({
+          name: 'User',
+          email: 'user@email.com',
+          role: 'Pengusul'
+        });
+      });
+  }
+  
+  // Function to update user profile in sidebar
+  function updateUserProfile(userData) {
+    console.log('[SIDEBAR] 🎨 Updating profile UI with:', userData);
+    
+    const userNameEl = document.getElementById('user-name');
+    const userEmailEl = document.getElementById('user-email');
+    const userRoleEl = document.getElementById('user-role');
+    const userAvatarEl = document.getElementById('user-avatar');
+    const userProfileCard = document.getElementById('user-profile-card');
+    
+    console.log('[SIDEBAR] 🔍 Elements found:', {
+      userNameEl: !!userNameEl,
+      userEmailEl: !!userEmailEl,
+      userRoleEl: !!userRoleEl,
+      userAvatarEl: !!userAvatarEl,
+      userProfileCard: !!userProfileCard
+    });
+    
+    if (userData.name && userNameEl) {
+      userNameEl.textContent = userData.name;
+      console.log('[SIDEBAR] ✅ Updated name:', userData.name);
+      
+      // Update avatar with initials
+      const initials = userData.name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .slice(0, 2)
+        .join('');
+      
+      if (userAvatarEl) {
+        userAvatarEl.textContent = initials;
+        console.log('[SIDEBAR] ✅ Updated avatar:', initials);
+      }
+      
+      // Update tooltip
+      if (userProfileCard) {
+        userProfileCard.setAttribute('data-user-name', userData.name);
+      }
+    }
+    
+    if (userData.email && userEmailEl) {
+      const emailSpan = userEmailEl.querySelector('span');
+      if (emailSpan) {
+        emailSpan.textContent = userData.email;
+        console.log('[SIDEBAR] ✅ Updated email:', userData.email);
+      } else {
+        console.warn('[SIDEBAR] ⚠️ Email span element not found');
+      }
+    }
+    
+    if (userData.role && userRoleEl) {
+      userRoleEl.textContent = userData.role;
+      console.log('[SIDEBAR] ✅ Updated role:', userData.role);
+    }
+    
+    console.log('[SIDEBAR] 🎉 Profile update complete!');
+  }
+  
+  // Expose functions to window IMMEDIATELY
+  window.sidebarDebug = {
+    loadUserData: loadUserData,
+    fetchUserDataFromAPI: fetchUserDataFromAPI,
+    updateUserProfile: updateUserProfile,
+    checkElements: function() {
+      console.log('=== SIDEBAR ELEMENTS CHECK ===');
+      console.log('user-name:', document.getElementById('user-name'));
+      console.log('user-email:', document.getElementById('user-email'));
+      console.log('user-role:', document.getElementById('user-role'));
+      console.log('user-avatar:', document.getElementById('user-avatar'));
+      console.log('Token:', localStorage.getItem('token') ? 'EXISTS' : 'MISSING');
+      console.log('Cached userData:', localStorage.getItem('userData'));
+    }
+  };
+  
+  console.log('[SIDEBAR] 🛠️ Debug tools ready! Available via window.sidebarDebug');
+  console.log('[SIDEBAR] 💡 Try: window.sidebarDebug.checkElements()');
+  console.log('[SIDEBAR] 💡 Try: window.sidebarDebug.fetchUserDataFromAPI()');
+  
+  // ============== DOM EVENT LISTENERS ==============
+  
   // Sidebar toggle functionality
   document.addEventListener('DOMContentLoaded', function() {
+    console.log('[SIDEBAR] 🎬 DOMContentLoaded fired');
+    
     const sidebar = document.getElementById('layout-menu');
     const toggleBtn = document.getElementById('sidebar-toggle');
     const userProfileCard = document.getElementById('user-profile-card');
+    
+    console.log('[SIDEBAR] 🔍 Initial elements:', {
+      sidebar: !!sidebar,
+      toggleBtn: !!toggleBtn,
+      userProfileCard: !!userProfileCard
+    });
     
     // User Profile Card Toggle
     if (userProfileCard) {
@@ -903,8 +1097,11 @@ export const pengusulSidebar = `
       });
     }
     
-    // Load user data from localStorage or API
-    loadUserData();
+    // Load user data with delay to ensure DOM is fully ready
+    setTimeout(function() {
+      console.log('[SIDEBAR] ⏰ Delayed load triggered');
+      loadUserData();
+    }, 200);
     
     // Set active menu based on current URL
     const currentPath = window.location.pathname;
@@ -926,6 +1123,7 @@ export const pengusulSidebar = `
         if (confirm('Apakah Anda yakin ingin logout?')) {
           // Clear localStorage
           localStorage.removeItem('userData');
+          localStorage.removeItem('token');
           // Redirect to logout
           window.location.href = '/logout';
         }
@@ -940,85 +1138,17 @@ export const pengusulSidebar = `
     });
   });
   
-  // Function to load user data
-  function loadUserData() {
-    // Try to get user data from localStorage first
-    const storedUserData = localStorage.getItem('userData');
-    
-    if (storedUserData) {
-      try {
-        const userData = JSON.parse(storedUserData);
-        updateUserProfile(userData);
-      } catch (e) {
-        console.error('Error parsing user data:', e);
-        // Fallback to default or fetch from API
-        fetchUserDataFromAPI();
-      }
-    } else {
-      // Fetch from API
-      fetchUserDataFromAPI();
-    }
-  }
-  
-  // Function to fetch user data from API
-  function fetchUserDataFromAPI() {
-    // Example API call - adjust according to your backend
-    fetch('/api/user/profile')
-      .then(response => response.json())
-      .then(data => {
-        // Store in localStorage for future use
-        localStorage.setItem('userData', JSON.stringify(data));
-        updateUserProfile(data);
-      })
-      .catch(error => {
-        console.error('Error fetching user data:', error);
-        // Use default values if API fails
-        updateUserProfile({
-          name: 'John Doe',
-          email: 'johndoe@email.com',
-          role: 'Pengusul'
-        });
-      });
-  }
-  
-  // Function to update user profile in sidebar
-  function updateUserProfile(userData) {
+  // Backup: Also try on window load
+  window.addEventListener('load', function() {
+    console.log('[SIDEBAR] 🪟 Window load fired - checking data...');
     const userNameEl = document.getElementById('user-name');
-    const userEmailEl = document.getElementById('user-email');
-    const userRoleEl = document.getElementById('user-role');
-    const userAvatarEl = document.getElementById('user-avatar');
-    const userProfileCard = document.getElementById('user-profile-card');
-    
-    if (userData.name && userNameEl) {
-      userNameEl.textContent = userData.name;
-      
-      // Update avatar with initials
-      const initials = userData.name
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase())
-        .slice(0, 2)
-        .join('');
-      
-      if (userAvatarEl) {
-        userAvatarEl.textContent = initials;
-      }
-      
-      // Update tooltip
-      if (userProfileCard) {
-        userProfileCard.setAttribute('data-user-name', userData.name);
-      }
+    if (userNameEl && !userNameEl.textContent.trim()) {
+      console.log('[SIDEBAR] ⚠️ User name still empty, forcing reload...');
+      loadUserData();
+    } else if (userNameEl) {
+      console.log('[SIDEBAR] ✅ User name already populated:', userNameEl.textContent);
     }
-    
-    if (userData.email && userEmailEl) {
-      const emailSpan = userEmailEl.querySelector('span');
-      if (emailSpan) {
-        emailSpan.textContent = userData.email;
-      }
-    }
-    
-    if (userData.role && userRoleEl) {
-      userRoleEl.textContent = userData.role;
-    }
-  }
+  });
+
 </script>
 `;
