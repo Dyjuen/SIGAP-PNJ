@@ -20,9 +20,13 @@ class MasterController extends Controller
 
     public function getTipeKegiatan()
     {
-        $tipeKegiatanModel = new TipeKegiatan();
-        $data = $tipeKegiatanModel->findAll();
-        Response::success($data, 'Data Tipe Kegiatan berhasil diambil.');
+        try {
+            $this->db->query("SELECT * FROM m_tipe_kegiatan ORDER BY tipe_kegiatan_id ASC");
+            $rows = $this->db->resultSet();
+            Response::success($rows);
+        } catch (\PDOException $e) {
+            Response::error($e->getMessage());
+        }
     }
 
     public function getSatuan()
