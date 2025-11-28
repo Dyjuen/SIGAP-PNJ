@@ -305,6 +305,15 @@ class Kegiatan extends Model
             }
         }
 
+        // Filter for Verifikator based on username (verifikator1 -> tipe_kegiatan_id 1)
+        if (!empty($filters['username']) && strpos($filters['username'], 'verifikator') === 0) {
+             // extract number
+             if (preg_match('/verifikator(\d+)$/', $filters['username'], $matches)) {
+                 $whereSql .= " AND kak.tipe_kegiatan_id = ?";
+                 $params[] = $matches[1];
+             }
+        }
+
         // Filter search
         if (!empty($filters['search'])) {
             $whereSql .= " AND kak.nama_kegiatan LIKE ?";

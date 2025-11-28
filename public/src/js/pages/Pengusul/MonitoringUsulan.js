@@ -709,6 +709,12 @@ export function renderMonitoringUsulanPage(path, userRole) {
     `;
 
     let url = `/kak?status=1,2,5`;
+
+    const user = JSON.parse(localStorage.getItem("auth_user"));
+    if (user) {
+      url += `&pengusul_user_id=${user.user_id}`;
+    }
+
     if (state.searchQuery) {
       url += `&search=${state.searchQuery}`;
     }

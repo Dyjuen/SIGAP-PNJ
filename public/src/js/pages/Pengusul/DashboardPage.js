@@ -639,6 +639,7 @@ export function renderPengusulDashboardPage(path, userRole) {
   async function fetchDashboardData() {
     try {
       const token = authService.getToken();
+      const user = authService.getUser();
       if (!token) {
         console.error("No token found");
         return;
@@ -649,8 +650,11 @@ export function renderPengusulDashboardPage(path, userRole) {
         "Content-Type": "application/json"
       };
 
+      const userIdParam = user ? `?user_id=${user.user_id}` : '';
+      const userIdParamAmp = user ? `&user_id=${user.user_id}` : '';
+
       // 1. Fetch Statistics
-      fetch('/api/dashboard/summary', { headers })
+      fetch(`/api/dashboard/summary${userIdParam}`, { headers })
         .then(res => res.json())
         .then(data => {
           if (data.success && data.data) {
@@ -660,7 +664,7 @@ export function renderPengusulDashboardPage(path, userRole) {
         .catch(err => console.error("Error fetching stats:", err));
 
       // 2. Fetch Monitoring Kegiatan
-      fetch('/api/dashboard/kegiatan?per_page=5&page=1', { headers })
+      fetch(`/api/dashboard/kegiatan?per_page=5&page=1${userIdParamAmp}`, { headers })
         .then(res => res.json())
         .then(data => {
             if (data.success) {
@@ -676,7 +680,7 @@ export function renderPengusulDashboardPage(path, userRole) {
         });
 
       // 3. Fetch Monitoring LPJ
-      fetch('/api/dashboard/lpj?per_page=5&page=1', { headers })
+      fetch(`/api/dashboard/lpj?per_page=5&page=1${userIdParamAmp}`, { headers })
         .then(res => res.json())
         .then(data => {
             if (data.success) {

@@ -139,6 +139,8 @@ class KAKController
     {
         try {
             $status = $_GET['status'] ?? null;
+            $pengusulUserId = $_GET['pengusul_user_id'] ?? null;
+            $search = $_GET['search'] ?? null;
 
             $sql = "
                 SELECT 
@@ -156,22 +158,39 @@ class KAKController
                 FROM t_kak t
                 LEFT JOIN m_users u ON u.user_id = t.pengusul_user_id
                 LEFT JOIN m_kegiatan_status s ON s.status_id = t.status_id
+                WHERE 1=1
             ";
+
+            $params = [];
 
             if ($status) {
                 $status_ids = explode(',', $status);
-                $placeholders = implode(',', array_fill(0, count($status_ids), '?'));
-                $sql .= " WHERE t.status_id IN ($placeholders)";
+                // Use named placeholders for status (e.g., :status0, :status1)
+                $status_placeholders = [];
+                foreach ($status_ids as $k => $id) {
+                    $key = ":status{$k}";
+                    $status_placeholders[] = $key;
+                    $params[$key] = $id;
+                }
+                $sql .= " AND t.status_id IN (" . implode(',', $status_placeholders) . ")";
+            }
+
+            if ($pengusulUserId) {
+                $sql .= " AND t.pengusul_user_id = :pengusul_user_id";
+                $params[':pengusul_user_id'] = $pengusulUserId;
+            }
+
+            if ($search) {
+                $sql .= " AND t.nama_kegiatan LIKE :search";
+                $params[':search'] = "%{$search}%";
             }
 
             $sql .= " ORDER BY t.kak_id DESC";
 
             $this->db->query($sql);
 
-            if ($status) {
-                foreach ($status_ids as $k => $id) {
-                    $this->db->bind($k + 1, $id);
-                }
+            foreach ($params as $key => $val) {
+                $this->db->bind($key, $val);
             }
 
             $rows = $this->db->resultSet();

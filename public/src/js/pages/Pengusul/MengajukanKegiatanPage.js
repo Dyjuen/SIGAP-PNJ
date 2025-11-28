@@ -629,7 +629,9 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     tbody.innerHTML =
       '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
     try {
-      const response = await apiRequest("/kak?status=3");
+      const user = JSON.parse(localStorage.getItem("auth_user"));
+      const userIdParam = user ? `&pengusul_user_id=${user.user_id}` : '';
+      const response = await apiRequest(`/kak?status=3${userIdParam}`);
       approvedTelaah = response.data;
       renderTableRows(approvedTelaah);
     } catch (error) {

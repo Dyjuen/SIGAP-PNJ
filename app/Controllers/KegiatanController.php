@@ -162,8 +162,12 @@ class KegiatanController
                 $filters['approver_user_id'] = $userId;
                 $filters['approval_level'] = 'Bendahara-Setor'; // akan match Bendahara-Cair, Bendahara-LPJ, dll
                 
-            } elseif ($this->hasRole('Verifikator') || $this->hasRole('Rektorat') || $this->hasRole('Admin')) {
-                // Verifikator/Rektorat/Admin: tampilkan semua
+            } elseif ($this->hasRole('Verifikator')) {
+                // Verifikator: filter by tipe_kegiatan_id matching username number (handled in Model)
+                $filters['username'] = $this->userData['username'];
+
+            } elseif ($this->hasRole('Rektorat') || $this->hasRole('Admin')) {
+                // Rektorat/Admin: tampilkan semua
                 // No additional filter
             }
 

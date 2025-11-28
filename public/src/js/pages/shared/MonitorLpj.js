@@ -131,7 +131,9 @@ function initializeDaftarLpj(userRole) {
   async function fetchData() {
     tbody.innerHTML = `<tr><td colspan="7" class="text-center">Loading...</td></tr>`;
     try {
-      const response = await apiRequest("/dashboard/lpj");
+      const user = JSON.parse(localStorage.getItem("auth_user"));
+      const userIdParam = user ? `?user_id=${user.user_id}` : '';
+      const response = await apiRequest(`/dashboard/lpj${userIdParam}`);
       state.kegiatan = response.data.data || [];
       filterAndRender();
       updateStats();
