@@ -6,6 +6,7 @@ import { verifikatorSidebar } from "./sidebars/VerifikatorSidebar.js";
 import { wadirSidebar } from "./sidebars/WadirSidebar.js";
 import { ppkSidebar } from "./sidebars/PpkSidebar.js";
 import { bendaharaSidebar } from "./sidebars/BendaharaSidebar.js";
+import { rektoratSidebar } from "./sidebars/RektoratSidebar.js";
 
 // Header Component is now an empty spacer to push content down
 export const header = `<div style="height: 2.5rem;"></div>`;
@@ -24,6 +25,7 @@ export function renderDashboardLayout(content, userRole) {
     case "Wadir": dynamicSidebar = wadirSidebar; break;
     case "PPK": dynamicSidebar = ppkSidebar; break;
     case "Bendahara": dynamicSidebar = bendaharaSidebar; break;
+    case "Rektorat": dynamicSidebar = rektoratSidebar; break;
     default:
       dynamicSidebar = `
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme" style="width: 260px;">
