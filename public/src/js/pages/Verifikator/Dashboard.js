@@ -598,14 +598,40 @@ export function renderDashboardVerifikator(path, userRole) {
   // ==============================================
   function attachEventListeners() {
     document.querySelectorAll(".btn-approve").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         const kakId = btn.dataset.id;
-        const usulanToApprove = state.allUsulan.find((u) => u.kak_id == kakId);
-        console.log(
-          "Attempting to approve:",
-          JSON.stringify(usulanToApprove, null, 2)
-        );
-        handleAction(kakId, "approve");
+        
+        // Prompt for Kode MAK
+        const { value: kodeAnggaran } = await Swal.fire({
+          title: 'Input Kode MAK',
+          input: 'text',
+          inputLabel: 'Masukkan Kode Mata Anggaran Kegiatan',
+          inputPlaceholder: 'Contoh: 1234.5678',
+          showCancelButton: true,
+          confirmButtonText: 'Setujui',
+          cancelButtonText: 'Batal',
+          confirmButtonColor: '#00BCD4',
+          inputValidator: (value) => {
+            if (!value) {
+              return 'Kode MAK harus diisi!'
+            }
+          }
+        });
+
+        if (kodeAnggaran) {
+          try {
+            await apiRequest(`/kak/${kakId}/approve`, {
+              method: "POST",
+              body: JSON.stringify({ kode_anggaran: kodeAnggaran }),
+            });
+
+            showSuccess(`Usulan berhasil disetujui!`);
+            initializeDashboard(); // Refresh UI
+          } catch (error) {
+            console.error(`Gagal approve usulan:`, error);
+            showError(`Gagal approve usulan: ${error.message}`);
+          }
+        }
       });
     });
 

@@ -476,7 +476,7 @@ class KAKController
             $sql = "
                 UPDATE t_kak 
                 SET nama_kegiatan = :nama,
-                    tipe_kegiatan_id,  = :tipe,
+                    tipe_kegiatan_id = :tipe,
                     deskripsi_kegiatan = :desk,
                     metode_pelaksanaan = :metode,
                     kurun_waktu_pelaksanaan = :kurun,
@@ -948,9 +948,34 @@ class KAKController
             if ($data['pengusul_user_id'] == $this->userData['user_id'])
                 Response::forbidden("Pengusul tidak dapat menyetujui KAK sendiri.");
 
+            $input = json_decode(file_get_contents('php://input'), true);
+            $kodeAnggaran = $input['kode_anggaran'] ?? null;
+
+            if (empty($kodeAnggaran)) {
+                Response::badRequest("Kode MAK (Mata Anggaran) wajib diisi.");
+            }
+
             $db->beginTransaction();
 
-            $db->query("UPDATE t_kak SET status_id = 3 WHERE kak_id=:id");
+            // Handle Mata Anggaran (Check existing or Create new)
+            $db->query("SELECT mata_anggaran_id FROM m_mata_anggaran WHERE kode_anggaran = :kode");
+            $db->bind(':kode', $kodeAnggaran);
+            $existingMak = $db->single();
+
+            if ($existingMak) {
+                $makId = $existingMak['mata_anggaran_id'];
+            } else {
+                // Create new Mata Anggaran with default values for required fields
+                $db->query("INSERT INTO m_mata_anggaran (kode_anggaran, nama_sumber_dana, tahun_anggaran, total_pagu) VALUES (:kode, '-', :thn, 0)");
+                $db->bind(':kode', $kodeAnggaran);
+                $db->bind(':thn', date('Y'));
+                $db->execute();
+                $makId = $db->lastInsertId();
+            }
+
+            // Update KAK status and link to Mata Anggaran
+            $db->query("UPDATE t_kak SET status_id = 3, mata_anggaran_id = :makId WHERE kak_id=:id");
+            $db->bind(':makId', $makId);
             $db->bind(':id', $id);
             $db->execute();
 
