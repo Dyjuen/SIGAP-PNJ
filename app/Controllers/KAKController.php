@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Database;
 use App\Core\Response;
 use App\Core\PDF;
+use App\Core\JWT;
 use App\Middlewares\AuthMiddleware;
 use App\Models\KAK;
 use App\Models\KAKAnggaran;
@@ -39,7 +40,15 @@ class KAKController
         $this->userModel = new User();
         $this->roleModel = new Role();
         $this->ikuModel = new Iku();
-        $this->userData = AuthMiddleware::getAuthUser();
+        
+        // Don't require auth in constructor - let individual methods handle it
+        // This allows download/preview to authenticate via query parameter
+        try {
+            $this->userData = AuthMiddleware::getAuthUser();
+        } catch (\Exception $e) {
+            // Auth will be checked in individual methods if needed
+            $this->userData = null;
+        }
     }
 
     public function getRefKategoriBelanja()
@@ -55,41 +64,211 @@ class KAKController
         }
     }
 
+    /**
+     * Generate temporary download token (1 minute expiry)
+     * POST /api/kak/{id}/generate-download-token
+     */
+    public function generateDownloadToken()
+    {
+        try {
+            // Require authentication via middleware
+            if (!$this->userData) {
+                Response::error('Unauthorized', 401);
+                return;
+            }
+
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kak\/(\d+)\/generate-download-token$/', $uri, $matches);
+            $kakId = $matches[1] ?? null;
+
+            if (!$kakId) {
+                Response::error('KAK ID tidak valid.', 400);
+                return;
+            }
+
+            // Verify KAK exists and user has access
+            $kakData = $this->kakModel->getDataForKAK($kakId);
+            if (!$kakData) {
+                Response::notFound('Data KAK tidak ditemukan.');
+                return;
+            }
+
+            // Generate random token (32 bytes = 64 hex characters)
+            $tempToken = bin2hex(random_bytes(32));
+            
+            // Store in cache directory with 1 minute expiry
+            $cacheDir = __DIR__ . '/../../cache/download_tokens';
+            if (!is_dir($cacheDir)) {
+                if (!mkdir($cacheDir, 0755, true)) {
+                    Response::error('Gagal membuat direktori cache.', 500);
+                    return;
+                }
+            }
+
+            $tokenData = [
+                'kak_id' => (int) $kakId,
+                'user_id' => (int) $this->userData['user_id'],
+                'expires_at' => time() + 60, // 1 minute
+                'created_at' => time()
+            ];
+
+            $tokenFile = $cacheDir . '/' . $tempToken . '.json';
+            $result = file_put_contents($tokenFile, json_encode($tokenData));
+            
+            if ($result === false) {
+                Response::error('Gagal menyimpan token.', 500);
+                return;
+            }
+
+            Response::success([
+                'download_token' => $tempToken,
+                'expires_in' => 60 // seconds
+            ]);
+            
+        } catch (\Exception $e) {
+            Response::error('Terjadi kesalahan: ' . $e->getMessage(), 500);
+        }
+    }
+
     public function download()
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        preg_match('/\/kak\/(\d+)$/', $uri, $matches);
-        $kakId = $matches[1] ?? null;
+        try {
+            // Get temporary download token from query parameter
+            $tempToken = $_GET['t'] ?? null;
+            
+            if (!$tempToken) {
+                Response::error('Token download tidak ditemukan.', 401);
+                return;
+            }
 
-        if (!$kakId) {
-            Response::error('KAK ID tidak valid.', 400);
+            // Validate temporary token
+            $cacheDir = __DIR__ . '/../../cache/download_tokens';
+            $tokenFile = $cacheDir . '/' . $tempToken . '.json';
+
+            if (!file_exists($tokenFile)) {
+                Response::error('Token download tidak valid atau sudah kadaluarsa.', 401);
+                return;
+            }
+
+            $tokenData = json_decode(file_get_contents($tokenFile), true);
+
+            if (!$tokenData) {
+                Response::error('Token data tidak valid.', 401);
+                return;
+            }
+
+            // Check expiry
+            if ($tokenData['expires_at'] < time()) {
+                // Delete expired token
+                @unlink($tokenFile);
+                Response::error('Token download sudah kadaluarsa. Silakan generate ulang.', 401);
+                return;
+            }
+
+            // Token valid, get KAK ID
+            $kakId = $tokenData['kak_id'];
+
+            // Delete token after use (one-time use)
+            @unlink($tokenFile);
+
+            // Get KAK data
+            $kakData = $this->kakModel->getDataForKAK($kakId);
+
+            if (!$kakData) {
+                Response::notFound('Data KAK tidak ditemukan.');
+                return;
+            }
+
+            // DEBUG: Log KAK data structure
+            error_log("=== DEBUG KAK DOWNLOAD ===");
+            error_log("KAK ID: " . $kakId);
+            error_log("Nama Kegiatan: " . ($kakData['nama_kegiatan'] ?? 'N/A'));
+            error_log("Jumlah Anggaran: " . count($kakData['anggaran'] ?? []));
+            if (!empty($kakData['anggaran'])) {
+                error_log("Sample Anggaran Item: " . json_encode($kakData['anggaran'][0]));
+            }
+            error_log("Jumlah Manfaat: " . count($kakData['manfaat'] ?? []));
+            error_log("Jumlah Target: " . count($kakData['target'] ?? []));
+            error_log("=========================");
+
+            // Generate and download PDF
+            $html = $this->generateKAKHTML($kakData);
+            $filename = $this->generateFilename($kakData);
+            PDF::download($html, $filename);
+            
+        } catch (\Exception $e) {
+            Response::error('Terjadi kesalahan: ' . $e->getMessage(), 500);
         }
-
-        $kakData = $this->kakModel->getDataForKAK($kakId);
-
-        if (!$kakData) {
-            Response::notFound('Data KAK tidak ditemukan.');
-        }
-
-        $html = $this->generateKAKHTML($kakData);
-        $filename = $this->generateFilename($kakData);
-        PDF::download($html, $filename);
     }
 
     public function preview()
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        preg_match('/\/kak\/(\d+)\/preview$/', $uri, $matches);
-        $kakId = $matches[1] ?? null;
+        // Check temporary token from query parameter (same as download)
+        $tempToken = $_GET['t'] ?? null;
+        
+        if ($tempToken) {
+            // Validate temporary token
+            $tokenFile = __DIR__ . "/../../cache/download_tokens/{$tempToken}.json";
+            
+            if (!file_exists($tokenFile)) {
+                Response::error('Token tidak valid atau sudah kadaluarsa.', 401);
+                return;
+            }
+            
+            $tokenData = json_decode(file_get_contents($tokenFile), true);
+            
+            // Check if token expired (60 seconds)
+            if ($tokenData['expires_at'] < time()) {
+                unlink($tokenFile); // Delete expired token
+                Response::error('Token sudah kadaluarsa.', 401);
+                return;
+            }
+            
+            // Token is valid, but DON'T delete it (so user can download after preview)
+            // The token will expire after 60 seconds automatically
+            
+            // Extract kak_id from token data
+            $kakId = $tokenData['kak_id'];
+            
+        } else {
+            // Fallback to JWT token for backward compatibility
+            $token = $_GET['token'] ?? null;
+            
+            if ($token) {
+                // Validate JWT token manually from query parameter
+                $jwt = new JWT();
+                $payload = $jwt->decode($token);
+                
+                if ($payload === null) {
+                    Response::error('Token tidak valid atau sudah kadaluarsa.', 401);
+                    return;
+                }
+                
+                // Token valid, set userData for potential use
+                $this->userData = (array) $payload;
+                
+            } elseif (!$this->userData) {
+                // No token from query param and no auth from header
+                Response::error('Token tidak ditemukan. Silakan login terlebih dahulu.', 401);
+                return;
+            }
+            
+            // Extract kak_id from URI
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kak\/(\d+)\/preview$/', $uri, $matches);
+            $kakId = $matches[1] ?? null;
+        }
 
         if (!$kakId) {
             Response::error('KAK ID tidak valid.', 400);
+            return;
         }
 
         $kakData = $this->kakModel->getDataForKAK($kakId);
 
         if (!$kakData) {
             Response::notFound('Data KAK tidak ditemukan.');
+            return;
         }
 
         $html = $this->generateKAKHTML($kakData);

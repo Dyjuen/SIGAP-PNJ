@@ -66,6 +66,20 @@ if ($method === 'POST' && $uri === '/auth/forgot-password') {
     exit;
 }
 
+// GET /api/kak/{kak_id} - Download KAK PDF using temporary token (PUBLIC)
+if ($method === 'GET' && preg_match('/^\/kak\/(\d+)$/', $uri)) {
+    $controller = new KAKController();
+    $controller->download();
+    exit;
+}
+
+// GET /api/kak/{kak_id}/preview - Preview KAK HTML using temporary token (PUBLIC)
+if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/preview$/', $uri)) {
+    $controller = new KAKController();
+    $controller->preview();
+    exit;
+}
+
 // =====================================================
 // 4. APPLY AUTH MIDDLEWARE FOR PROTECTED ROUTES
 // =====================================================
@@ -158,21 +172,18 @@ if ($method === 'DELETE' && preg_match('/^\/admin\/users\/(\d+)$/', $uri, $match
 // 8. KAK (KERANGKA ACUAN KERJA) ROUTES
 // =====================================================
 
-// GET /api/kak/{kak_id} - Download KAK PDF
-if ($method === 'GET' && preg_match('/^\/kak\/(\d+)$/', $uri)) {
+// POST /api/kak/{kak_id}/generate-download-token - Generate temporary download token (PROTECTED)
+if ($method === 'POST' && preg_match('/^\/kak\/(\d+)\/generate-download-token$/', $uri)) {
+    // Already authenticated from global middleware above
     $controller = new KAKController();
-    $controller->download();
+    $controller->generateDownloadToken();
     exit;
 }
 
-// GET /api/kak/{kak_id}/preview - Preview KAK HTML
-if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/preview$/', $uri)) {
-    $controller = new KAKController();
-    $controller->preview();
-    exit;
-}
+// Note: Download and Preview routes are in PUBLIC section (before auth middleware)
+// because they use temporary token system
 
-// GET /api/kak/{kak_id}/data - Get KAK data as JSON
+// GET /api/kak/{kak_id}/data - Get KAK data as JSON (PROTECTED)
 if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
     $controller = new KAKController();
     $controller->getData();
