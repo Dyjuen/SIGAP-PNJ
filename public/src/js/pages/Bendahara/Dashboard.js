@@ -506,64 +506,79 @@ export function renderBendaharaDashboardPage(path, userRole) {
   }
 
   async function handleDisbursementAction(kegiatanId) {
-    // Step 1: Confirmation with date input
-    const { value: formValues } = await Swal.fire({
-      title: "Konfirmasi Pencairan Dana",
-      html: `
-        <div class="text-start">
-          <label class="form-label">Tanggal Pencairan</label>
-          <input type="date" id="disbursementDate" class="form-control mb-3" value="${
-            new Date().toISOString().split("T")[0]
-          }">
-          <label class="form-label">Catatan (Opsional)</label>
-          <textarea id="disbursementNotes" class="form-control" rows="3" placeholder="Catatan pencairan..."></textarea>
-        </div>
-      `,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: "Cairkan Dana",
-      cancelButtonText: "Batal",
-      confirmButtonColor: "#00BCD4",
-      preConfirm: () => {
-        return {
-          date: document.getElementById("disbursementDate").value,
-          notes: document.getElementById("disbursementNotes").value,
-        };
+    // Step 1 — Ask for nominal using SweetAlert2
+    const { value: nominalString } = await Swal.fire({
+      title: "Masukkan Nominal Pencairan",
+      input: "number",
+      inputPlaceholder: "Masukkan nominal dana...",
+      inputAttributes: {
+        min: 1,
+        step: 1,
       },
+      showCancelButton: true,
+      confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Lanjut",
+      cancelButtonText: "Batal",
     });
 
-    if (!formValues) return;
+    if (nominalString === undefined) return; // Cancelled
 
-    // Step 2: Final confirmation
+    const nominal = parseFloat(nominalString);
+
+    if (isNaN(nominal) || nominal <= 0) {
+      showError("Nominal tidak valid. Harap masukkan angka positif.");
+      return;
+    }
+
+    const kegiatan = state.allKegiatan.find((k) => k.kegiatan_id == kegiatanId);
+    if (!kegiatan) {
+      showError("Kegiatan tidak ditemukan.");
+      return;
+    }
+
+    const totalDiminta = parseFloat(kegiatan.total_anggaran_diusulkan || 0);
+    const sudahDicairkan = parseFloat(kegiatan.dana_dicairkan || 0);
+    const sisaDana = totalDiminta - sudahDicairkan;
+
+    if (nominal > sisaDana) {
+      showError(
+        `Nominal pencairan (${formatCurrency(
+          nominal
+        )}) melebihi sisa dana yang tersedia (${formatCurrency(sisaDana)}).`
+      );
+      return;
+    }
+
+    // Step 2 — Confirmation modal
     const confirmResult = await Swal.fire({
-      title: "Apakah Anda yakin?",
-      text: "Dana akan dicairkan untuk kegiatan ini.",
+      title: "Konfirmasi Pencairan",
+      text: `Anda yakin ingin mencairkan Rp ${nominal.toLocaleString(
+        "id-ID"
+      )} untuk kegiatan ini?`,
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Ya, Cairkan",
-      cancelButtonText: "Batal",
       confirmButtonColor: "#00BCD4",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, cairkan",
+      cancelButtonText: "Batal",
     });
 
     if (!confirmResult.isConfirmed) return;
 
-    // Find kegiatan to get the remaining amount
-    const kegiatan = state.allKegiatan.find(k => k.kegiatan_id == kegiatanId);
-    const sisaDana = (kegiatan?.total_anggaran_diusulkan || 0) - (kegiatan?.dana_dicairkan || 0);
-
-    // Step 3: API request
+    // Step 3 — API call
     try {
       await apiRequest(`/kegiatan/${kegiatanId}/cairkan`, {
         method: "POST",
-        body: JSON.stringify({
-          nominal_pencairan: sisaDana,
-          tanggal_pencairan: formValues.date,
-          keterangan: formValues.notes || null,
-        }),
+        body: JSON.stringify({ nominal_pencairan: nominal }),
       });
 
-      showSuccess("Dana berhasil dicairkan!");
-      fetchKegiatan();
+      // Step 4 — Success popup
+      showSuccess(
+        `Dana Rp ${nominal.toLocaleString("id-ID")} berhasil dicairkan.`
+      );
+
+      fetchKegiatan(); // Refresh data
     } catch (error) {
       showError(`Gagal mencairkan dana: ${error.message}`);
     }

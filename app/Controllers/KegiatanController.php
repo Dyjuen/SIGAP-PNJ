@@ -1016,6 +1016,86 @@ class KegiatanController
     }
 
     /**
+     * Stream Surat Pengantar
+     * 
+     * GET /api/kegiatan/{id}/surat-pengantar
+     */
+    public function streamSuratPengantar()
+    {
+        try {
+            // Get kegiatan_id from URL
+            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            preg_match('/\/kegiatan\/(\d+)\/surat-pengantar$/', $uri, $matches);
+            $kegiatanId = $matches[1] ?? null;
+
+            if (!$kegiatanId) {
+                Response::error('Kegiatan ID tidak valid.', 400);
+            }
+
+            // Check if kegiatan exists
+            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+            if (!$kegiatan) {
+                Response::notFound('Kegiatan tidak ditemukan.');
+            }
+
+            // Authorization
+            // Admin, PPK, Wadir, Bendahara can view
+            // Pengusul can view if owner
+            $allowedRoles = ['Admin', 'PPK', 'Wadir', 'Bendahara', 'Verifikator'];
+            $hasAccess = false;
+            foreach ($allowedRoles as $role) {
+                if ($this->hasRole($role)) {
+                    $hasAccess = true;
+                    break;
+                }
+            }
+
+            if (!$hasAccess) {
+                if ($this->hasRole('Pengusul') && $kegiatan['pengusul_user_id'] == $this->userData['user_id']) {
+                    $hasAccess = true;
+                }
+            }
+
+            if (!$hasAccess) {
+                Response::forbidden('Anda tidak memiliki akses untuk melihat surat pengantar ini.');
+            }
+
+            if (empty($kegiatan['surat_pengantar_path'])) {
+                Response::notFound('Surat pengantar belum diupload.');
+            }
+
+            // Check if file exists on server
+            // Strategy 1: Use DOCUMENT_ROOT + path (standard for public uploads)
+            $filePath = $_SERVER['DOCUMENT_ROOT'] . $kegiatan['surat_pengantar_path'];
+            
+            if (!file_exists($filePath)) {
+                 // Strategy 2: Use relative path from app/Controllers to project root (for storage outside public)
+                 // __DIR__ is app/Controllers. ../../ is project root.
+                 $filePath = __DIR__ . '/../../' . ltrim($kegiatan['surat_pengantar_path'], '/');
+            }
+
+            if (!file_exists($filePath)) {
+                Response::notFound('File tidak ditemukan di server.');
+            }
+
+            // Stream file
+            $mimeType = mime_content_type($filePath) ?: 'application/pdf';
+
+            header('Content-Type: ' . $mimeType);
+            header('Content-Disposition: inline; filename="Surat_Pengantar_' . basename($filePath) . '"');
+            header('Content-Length: ' . filesize($filePath));
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Expires: 0');
+            
+            readfile($filePath);
+            exit;
+
+        } catch (\Exception $e) {
+            Response::error('Gagal menampilkan file: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
      * Export to Excel
      * 
      * GET /api/kegiatan/export/excel

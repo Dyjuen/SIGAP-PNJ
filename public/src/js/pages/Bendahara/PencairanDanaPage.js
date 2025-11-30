@@ -305,9 +305,9 @@ export function renderPencairanDanaPage(path, userRole) {
             <tr>
               <th style="width: 80px;">No.</th>
               <th>Nama Usulan Kegiatan</th>
-              <th>Pelaksana</th>
-              <th>Penanggung Jawab</th>
+              <th>Pelaksana & PJ</th>
               <th>Tanggal Diajukan</th>
+              <th>Catatan Wadir 2</th>
               <th style="text-align: center;">Uang Dicairkan</th>
               <th style="text-align: center;">Uang Diminta</th>
               <th style="text-align: center;">Aksi</th>
@@ -572,14 +572,17 @@ export function renderPencairanDanaPage(path, userRole) {
         </td>
         <td>
           <div class="activity-title">${item.pelaksana_manual || "N/A"}</div>
-        </td>
-        <td>
-          <div class="activity-title">${item.penanggung_jawab_manual || "N/A"}</div>
+          <div class="activity-subtitle">${item.penanggung_jawab_manual || "N/A"}</div>
         </td>
         <td>
           <span style="font-weight: 600; color: #374151;">${formatDate(
             item.tanggal_diajukan_ppk
           )}</span>
+        </td>
+        <td>
+          <div class="text-wrap" style="max-width: 200px; font-size: 0.9em;">
+            ${item.approvals?.find(a => a.approval_level === 'Wadir2')?.catatan || '-'}
+          </div>
         </td>
         <td style="text-align: center;">
           ${formatRupiah(item.dana_dicairkan)}

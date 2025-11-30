@@ -247,6 +247,7 @@ $router->post('/kegiatan/{id}/revise', 'KegiatanController@revise');
 $router->post('/kegiatan/{id}/approve', 'KegiatanController@approve');
 $router->get('/kegiatan/{id}/logs', 'KegiatanController@logs');
 $router->get('/kegiatan/{id}/catatan-ppk', 'KegiatanController@getCatatanPPK');
+$router->get('/kegiatan/{id}/surat-pengantar', 'KegiatanController@streamSuratPengantar');
 
 // Fitur Tambahan
 $router->post('/kegiatan/{id}/cairkan', 'PencairanController@logPencairan');

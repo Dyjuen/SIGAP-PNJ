@@ -207,6 +207,7 @@ class Kegiatan extends Model
                         k.penanggung_jawab_manual,
                         k.pelaksana_manual,
                         k.tgl_batas_lpj,
+                        k.surat_pengantar_path,
                         t.nama_kegiatan,
                         t.tanggal_mulai,
                         t.tanggal_selesai,

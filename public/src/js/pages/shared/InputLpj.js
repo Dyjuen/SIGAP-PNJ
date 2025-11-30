@@ -1546,7 +1546,7 @@ export function renderInputLpjPage(path, userRole) {
 
     const commonInputStyle = `border-color: #E5E7EB; background: #FFFFFF;`;
 
-    const commonOnfocusBlur = `onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 44px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`; // Changed 0 0 0 4px to 0 0 0 44px
+    const commonOnfocusBlur = `onfocus="this.style.borderColor='#00BCD4';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`;
 
     const disabledInputStyleAttr = `style="background: #E9E9E9; cursor: not-allowed; border-color: #C0C0C0;"`;
 
