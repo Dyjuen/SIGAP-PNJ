@@ -626,6 +626,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
               <th>Tanggal Diajukan</th>
               <th>Tanggal Disetujui</th>
               <th style="text-align: center;">Status</th>
+              <th style="width: 100px; text-align: center;">Dokumen</th>
               <th style="text-align: center;">Aksi</th>
             </tr>
           </thead>
@@ -682,7 +683,19 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
     try {
       const response = await fetch(`/api${endpoint}`, config);
+      
+      // Check content type before parsing
+      const contentType = response.headers.get("content-type");
+      
+      if (!contentType || !contentType.includes("application/json")) {
+        // Response is not JSON (likely HTML error page)
+        const text = await response.text();
+        console.error("Non-JSON response:", text.substring(0, 500));
+        throw new Error(`Server returned non-JSON response. Status: ${response.status}`);
+      }
+      
       const data = await response.json();
+      
       if (data.success !== true) {
         throw new Error(data.message || "API request failed");
       }
@@ -797,35 +810,49 @@ export function renderMonitoringUsulanPage(path, userRole) {
       case 1: // Draft
       case 5: // Revisi
         return `
-          <button class="btn btn-sm btn-primary me-2 btn-ajukan" data-id="${id}" title="Ajukan untuk Verifikasi">
+          <button class="btn btn-sm btn-primary me-1 btn-ajukan" data-id="${id}" title="Ajukan untuk Verifikasi">
             ${statusId === 1 ? "Ajukan" : "Ajukan Ulang"}
           </button>
-          <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" data-status="${statusId}" title="Edit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
+          <button class="btn btn-sm btn-edit-profile me-1" data-id="${id}" data-status="${statusId}" title="Edit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
           </button>
-          <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+          <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+          </button>
+        `;
+      case 2: // Sedang Diverifikasi
+      case 3: // Disetujui
+        return `
+          <button class="btn btn-sm btn-detail" data-id="${id}" title="Lihat Detail" style="background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
           </button>
         `;
       case 4: // Ditolak
         return `
-          <button class="btn btn-sm btn-edit-profile me-2" data-id="${id}" data-status="${statusId}" title="Edit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
+          <button class="btn btn-sm btn-edit-profile me-1" data-id="${id}" data-status="${statusId}" title="Edit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
           </button>
-          <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-          </button>
-        `;
-      case 3: // Disetujui
-        return `
-          <button class="btn btn-sm btn-download" data-id="${id}" title="Download KAK">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-            Download KAK
+          <button class="btn btn-sm btn-delete" data-id="${id}" title="Hapus" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
           </button>
         `;
       default:
-        return `<span class="text-muted">No actions available</span>`;
+        return `<span class="text-muted">-</span>`;
     }
+  }
+
+  // Function untuk render tombol Dokumen (Preview & Download)
+  function getDocumentButtons(id) {
+    return `
+      <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+        <button class="btn btn-sm btn-preview" data-id="${id}" title="Preview PDF" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 6px 10px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+        </button>
+        <button class="btn btn-sm btn-download" data-id="${id}" title="Download PDF" style="background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%); color: white; border: none; padding: 6px 10px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+        </button>
+      </div>
+    `;
   }
 
   // ==============================================
@@ -838,7 +865,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
     if (data.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="7" style="text-align: center; padding: 3rem;">
+          <td colspan="8" style="text-align: center; padding: 3rem;">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1rem; display: block;">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -862,6 +889,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
       const statusId = activity.status_id;
       const statusBadge = getStatusBadge(statusId);
       const actionButtons = getActionButtons(statusId, activity.kak_id);
+      const documentButtons = getDocumentButtons(activity.kak_id);
 
       // Calculate global index for numbering (1-based, continuous across pages)
       const globalIndex =
@@ -888,6 +916,9 @@ export function renderMonitoringUsulanPage(path, userRole) {
         </td>
         <td style="text-align: center;">
           <span class="badge ${statusBadge.class}">${statusBadge.text}</span>
+        </td>
+        <td style="text-align: center;">
+          ${documentButtons}
         </td>
         <td style="text-align: center;">
           ${actionButtons}
@@ -952,6 +983,17 @@ export function renderMonitoringUsulanPage(path, userRole) {
       });
     });
 
+    document.querySelectorAll(".btn-detail").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        addRippleEffect(this, e);
+        const id = this.getAttribute("data-id");
+        
+        setTimeout(() => {
+          window.location.pathname = `/pengusul/usulan/${id}`;
+        }, 300);
+      });
+    });
+
     document.querySelectorAll(".btn-delete").forEach((btn) => {
       btn.addEventListener("click", async function (e) {
         addRippleEffect(this, e);
@@ -975,17 +1017,110 @@ export function renderMonitoringUsulanPage(path, userRole) {
     });
 
     document.querySelectorAll(".btn-download").forEach((btn) => {
-      btn.addEventListener("click", function (e) {
+      btn.addEventListener("click", async function (e) {
+        e.preventDefault(); // Prevent default link behavior
         addRippleEffect(this, e);
         const id = this.getAttribute("data-id");
-        showNotification("Mengunduh KAK...");
-        setTimeout(() => {
-          window.open(`/api/kak/${id}`, "_blank");
-        }, 300);
+        
+        try {
+          showNotification("Membuat link download...", "info");
+          
+          console.log("Requesting download token for KAK ID:", id);
+          
+          // Request temporary download token from backend
+          const response = await apiRequest(`/kak/${id}/generate-download-token`, {
+            method: "POST"
+          });
+          
+          console.log("Token response:", response);
+          
+          if (response.success) {
+            const tempToken = response.data.download_token;
+            
+            console.log("Temp token generated:", tempToken);
+            
+            // Open download URL with temporary token (expires in 1 minute)
+            setTimeout(() => {
+              const downloadUrl = `/api/kak/${id}?t=${tempToken}`;
+              console.log("Opening download URL:", downloadUrl);
+              window.open(downloadUrl, "_blank");
+              showNotification("Download dimulai!", "success");
+            }, 300);
+          } else {
+            console.error("Failed response:", response);
+            showError("Gagal membuat link download: " + response.message);
+          }
+        } catch (error) {
+          console.error("Download error:", error);
+          showError("Gagal mengunduh KAK: " + error.message);
+        }
       });
     });
 
-    setupPagination();
+    // Event handler for Preview button
+    document.querySelectorAll(".btn-preview").forEach((btn) => {
+      btn.addEventListener("click", async function (e) {
+        e.preventDefault();
+        addRippleEffect(this, e);
+        const id = this.getAttribute("data-id");
+        
+        try {
+          showNotification("Membuat link preview...", "info");
+          
+          console.log("Requesting preview token for KAK ID:", id);
+          
+          // Request temporary preview token from backend
+          const response = await apiRequest(`/kak/${id}/generate-download-token`, {
+            method: "POST"
+          });
+          
+          console.log("Token response:", response);
+          
+          if (response.success) {
+            const tempToken = response.data.download_token;
+            
+            console.log("Temp token generated:", tempToken);
+            
+            // Open preview URL with temporary token (expires in 1 minute)
+            setTimeout(() => {
+              const previewUrl = `/api/kak/${id}/preview?t=${tempToken}`;
+              console.log("Opening preview URL:", previewUrl);
+              window.open(previewUrl, "_blank");
+              showNotification("Preview dibuka!", "success");
+            }, 300);
+          } else {
+            console.error("Failed response:", response);
+            showError("Gagal membuat link preview: " + response.message);
+          }
+        } catch (error) {
+          console.error("Preview error:", error);
+          showError("Gagal membuka preview KAK: " + error.message);
+        }
+      });
+    });
+
+    document.querySelectorAll(".btn-delete").forEach((btn) => {
+      btn.addEventListener("click", async function (e) {
+        e.preventDefault(); // Prevent default link behavior
+        addRippleEffect(this, e);
+        const activityId = this.getAttribute("data-id");
+
+        const confirmed = await confirmAction(
+          "Yakin ingin menghapus?",
+          `Kegiatan dengan ID ${activityId} akan dihapus secara permanen.`
+        );
+
+        if (confirmed) {
+          try {
+            await apiRequest(`/kak/${activityId}`, { method: "DELETE" });
+            showSuccess(`Berhasil menghapus kegiatan ID: ${activityId}`);
+            fetchKak();
+          } catch (error) {
+            showError(`Gagal menghapus kegiatan: ${error.message}`);
+          }
+        }
+      });
+    });
   }
 
   function updateSelectAll() {

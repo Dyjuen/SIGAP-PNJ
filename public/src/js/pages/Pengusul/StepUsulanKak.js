@@ -2046,6 +2046,20 @@ export function renderUsulanKakPage(path, userRole) {
       const response = await apiRequest(`/kak/${id}/data`);
       const kakData = response.data;
 
+      // Store status_id globally
+      window.currentKakStatus = kakData.status_id;
+      
+      // Hide submit button if status is not Draft (1) or Ditolak (4)
+      const btnSubmitRab = document.getElementById("btnSubmitRab");
+      if (btnSubmitRab && kakData.status_id !== 1 && kakData.status_id !== 4) {
+        btnSubmitRab.style.display = 'none';
+        // Change "Kembali" button text
+        const backButton = document.querySelector('[onclick*="usulan"]');
+        if (backButton) {
+          backButton.textContent = 'Kembali ke Monitoring Usulan';
+        }
+      }
+
       // Populate Step 1: Gambaran Umum
       if (kakData.nama_kegiatan) {
         document.getElementById("namaKegiatan").value = kakData.nama_kegiatan;
