@@ -17,6 +17,11 @@ class PDF extends TCPDF
      */
     public static function generate($html, $filename = 'document.pdf', $orientation = 'P', $paperSize = 'A4')
     {
+        // Define K_PATH_IMAGES if not already defined
+        if (!defined('K_PATH_IMAGES')) {
+            define('K_PATH_IMAGES', dirname(dirname(__DIR__)) . '/public/assets/img/');
+        }
+        
         // Create new PDF document
         $pdf = new self($orientation, 'mm', $paperSize, true, 'UTF-8', false);
 
@@ -35,6 +40,9 @@ class PDF extends TCPDF
 
         // Set font
         $pdf->SetFont('helvetica', '', 10);
+        
+        // Set image scale
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
         // Add a page
         $pdf->AddPage();

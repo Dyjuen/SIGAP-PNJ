@@ -9,6 +9,9 @@ class Response
      */
     public static function success($data = null, string $message = 'Success', int $code = 200): void
     {
+        // Clean any previous output
+        if (ob_get_length()) ob_clean();
+        
         http_response_code($code);
         header('Content-Type: application/json');
         
@@ -26,6 +29,9 @@ class Response
      */
     public static function error(string $message = 'Error', int $code = 400, ?array $errors = null): void
     {
+        // Clean any previous output
+        if (ob_get_length()) ob_clean();
+        
         http_response_code($code);
         header('Content-Type: application/json');
         
