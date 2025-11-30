@@ -52,6 +52,7 @@ export function renderWadirDashboardPage(path, userRole) {
               <th>Nama Usulan Kegiatan</th>
               <th>Pengusul</th>
               <th>Tanggal Diajukan</th>
+              <th>Catatan PPK</th>
               <th style="text-align: center;">Status</th>
               <th style="text-align: center;">Aksi</th>
             </tr>
@@ -188,47 +189,43 @@ export function renderWadirDashboardPage(path, userRole) {
     }
   }
 
-  async function viewPpkNotes(kegiatanId) {
-    try {
-      // Use the new, correct endpoint
-      const response = await apiRequest(`/kegiatan/${kegiatanId}/catatan-ppk`);
-      const data = response.data; // The API returns { catatan: "...", updated_at: "..." }
-
-      let notesContent;
-      if (data && data.catatan) {
-        const formattedDate = new Date(data.updated_at).toLocaleDateString(
-          "id-ID",
-          {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          }
-        );
-        notesContent = `
-          <div style="text-align: left;">
-            <p style="margin-bottom: 1rem;">${data.catatan}</p>
-            <hr>
-            <small class="text-muted">Dibuat pada: ${formattedDate}</small>
-          </div>
-        `;
-      } else {
-        notesContent =
-          "Tidak ada catatan yang ditemukan dari PPK untuk kegiatan ini.";
-      }
-
+    async function previewSuratPengantar(kegiatanId) {
       Swal.fire({
-        title: "Catatan dari PPK",
-        html: notesContent,
-        icon: "info",
-        confirmButtonText: "Tutup",
-        confirmButtonColor: "#00BCD4",
+        title: "Membuka Surat Pengantar...",
+        text: "Mohon tunggu sejenak.",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
       });
-    } catch (error) {
-      showError(`Gagal mengambil catatan PPK: ${error.message}`);
+
+      try {
+        const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+        const response = await fetch(`/api/kegiatan/${kegiatanId}/surat-pengantar`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || `Gagal mengambil file (status: ${response.status})`);
+        }
+
+        const blob = await response.blob();
+        const fileUrl = URL.createObjectURL(blob);
+        
+        Swal.close();
+        window.open(fileUrl, '_blank');
+        
+        setTimeout(() => URL.revokeObjectURL(fileUrl), 1000);
+
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Membuka File',
+          text: error.message
+        });
+      }
     }
-  }
 
   // ==============================================
   // RENDER FUNCTIONS
@@ -273,6 +270,9 @@ export function renderWadirDashboardPage(path, userRole) {
         <td>
           <div class="date-text">${formatDate(kegiatan.created_at)}</div>
         </td>
+        <td>
+          <div class="text-wrap" style="max-width: 250px; font-size: 0.9em;">${kegiatan.approvals?.find(a => a.approval_level === 'PPK')?.catatan || '-'}</div>
+        </td>
         <td style="text-align: center;">
           <span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>
         </td>
@@ -282,12 +282,11 @@ export function renderWadirDashboardPage(path, userRole) {
           }" title="Setujui">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
           </button>
-          <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);" data-id="${kegiatan.kak_id}" title="Lihat Detail">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-description"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 17h6" /><path d="M9 13h6" /></svg>
-          </button>
-          <button class="btn btn-sm me-2 btn-view-ppk-notes" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${
-            kegiatan.kegiatan_id
-          }" title="Lihat Catatan PPK">
+          ${kegiatan.surat_pengantar_path ? `
+          <button class="btn btn-sm me-2 btn-preview-surat" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Preview Surat Pengantar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-text"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg>
+          </button>` : ''}
+          <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${kegiatan.kak_id}" title="Lihat">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>          
           </button>
         </td>
@@ -315,10 +314,11 @@ export function renderWadirDashboardPage(path, userRole) {
       );
     });
 
-    document.querySelectorAll(".btn-view-ppk-notes").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const kegiatanId = this.getAttribute("data-id");
-        viewPpkNotes(kegiatanId);
+    // --- PREVIEW SURAT BUTTON ---
+    document.querySelectorAll(".btn-preview-surat").forEach((btn) => {
+      btn.addEventListener("click", function() {
+        const kegiatanId = this.dataset.id;
+        previewSuratPengantar(kegiatanId);
       });
     });
 
