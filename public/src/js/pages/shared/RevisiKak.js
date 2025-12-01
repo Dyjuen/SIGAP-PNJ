@@ -1264,24 +1264,82 @@ export function renderRevisiKakPage(path, userRole) {
           opacity: 0.8;
         }
       }
+
+    /* Dynamic field animations */
+    .dynamic-field-item {
+        transition: all 0.4s ease-in-out;
+        overflow: hidden;
+    }
+
+    .dynamic-field-item.new-item-animation {
+        animation: slide-in 0.4s ease-out;
+    }
+    
+    @keyframes slide-in {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+            max-height: 0;
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px; /* Adjust based on content */
+        }
+    }
+
+    .dynamic-field-item.removing {
+      animation: slide-out 0.4s ease-out forwards;
+    }
+
+    @keyframes slide-out {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px; /* Adjust based on content */
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+            max-height: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border: none;
+        }
+    }
+
+    .remove-button {
+      display: none; /* Hide by default */
+      opacity: 0;
+      transform: scale(0.5);
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+
+    .remove-button.visible {
+      display: flex;
+      opacity: 1;
+      transform: scale(1);
+    }
     </style>
 
     <div class="kerangka-acuan-kerja-page">
       <!-- Progress Steps -->
       <div class="flex justify-center gap-24 mb-8 backdrop-blur-md p-6 rounded-xl shadow-lg" style="background: rgba(255, 255, 255, 0.8);">
-        <div class="progress-step-item flex items-center justify-center gap-3 px-4">
+        <div class="progress-step-item flex items-center justify-center gap-3 px-4 cursor-pointer" data-main-step="1">
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #00BCD4; color: #FFFFFF;">1</div>
           <div class="text-left">
             <div class="progress-step-text text-sm font-semibold" style="color: #00BCD4;">Kerangka Acuan Kerja</div>
           </div>
         </div>
-        <div class="progress-step-item flex items-center justify-center gap-3 px-4">
+        <div class="progress-step-item flex items-center justify-center gap-3 px-4 cursor-pointer" data-main-step="2">
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">2</div>
           <div class="text-left">
             <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Indikator Kinerja Utama</div>
           </div>
         </div>
-        <div class="progress-step-item flex items-center justify-center gap-3 px-4">
+        <div class="progress-step-item flex items-center justify-center gap-3 px-4 cursor-pointer" data-main-step="3">
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background: #E5E7EB; color: #6B7280;">3</div>
           <div class="text-left">
             <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rencana Anggaran Biaya</div>
@@ -1367,6 +1425,8 @@ export function renderRevisiKakPage(path, userRole) {
                       </div>
                     </div>
                   </div>
+                  <div id="penerimaManfaatDynamicContainer"></div>
+                  ${isPengusul ? `<button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addPenerimaManfaat()">Tambah Penerima Manfaat</button>` : ''}
                 </div>
 
                 <!-- Step 3: Strategi Pencapaian -->
@@ -1390,6 +1450,7 @@ export function renderRevisiKakPage(path, userRole) {
                     <div id="tahapanPelaksanaanContainer">
                       <!-- Dynamic content will be injected here -->
                     </div>
+                    ${isPengusul ? `<button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addTahapanPelaksanaan()">Tambah</button>` : ''}
                   </div>
                 </div>
 
@@ -1402,6 +1463,7 @@ export function renderRevisiKakPage(path, userRole) {
                     <div id="indikatorKinerjaContainer">
                       <!-- Dynamic content will be injected here -->
                     </div>
+                    ${isPengusul ? `<button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIndikatorKinerja()">Tambah</button>` : ''}
                   </div>
                 </div>
 
@@ -1446,6 +1508,8 @@ export function renderRevisiKakPage(path, userRole) {
           <div class="mb-8" id="ikuRenstraContainer">
             <!-- Dynamic content will be injected here -->
           </div>
+
+          ${isPengusul ? `<button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIkuField()">Tambah</button>` : ''}
 
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
@@ -1658,6 +1722,185 @@ export function renderRevisiKakPage(path, userRole) {
   let masterState = {
     iku: [],
     satuan: [],
+  };
+
+  // ==============================================
+  // DYNAMIC FIELD FUNCTIONS
+  // ==============================================
+
+  window.removeField = function (btn) {
+    const item = btn.closest(".dynamic-field-item");
+    if (!item) return;
+
+    // For Revisi, we assume added fields can be removed without limit checks on existing items
+    item.classList.add("removing");
+    item.addEventListener("animationend", () => {
+      item.remove();
+    }, { once: true });
+  };
+
+  window.addPenerimaManfaat = function () {
+    const container = document.getElementById("penerimaManfaatDynamicContainer");
+    const newItem = document.createElement("div");
+    newItem.className = "penerima-manfaat-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
+    newItem.innerHTML = `
+      <div class="flex-1">
+        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
+        <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran">
+      </div>
+      <div class="flex-1">
+        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
+        <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat">
+      </div>
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+        <span class="text-xl font-bold">−</span>
+      </button>
+    `;
+    container.appendChild(newItem);
+  };
+
+  window.addTahapanPelaksanaan = function () {
+    const container = document.getElementById("tahapanPelaksanaanContainer");
+    const newItem = document.createElement("div");
+    newItem.className = "tahapan-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
+    newItem.innerHTML = `
+      <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input">
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+        <span class="text-xl font-bold">−</span>
+      </button>
+    `;
+    container.appendChild(newItem);
+  };
+
+  window.addIndikatorKinerja = function () {
+    const container = document.getElementById("indikatorKinerjaContainer");
+    const newItem = document.createElement("div");
+    newItem.className = "indikator-kinerja-item dynamic-field-item new-item-animation flex items-end gap-4 mb-6";
+    newItem.innerHTML = `
+      <div class='w-full'>
+        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
+        <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
+          <option value="">Pilih Bulan</option>
+          <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option>
+          <option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option>
+          <option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option>
+          <option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
+        </select>
+      </div>
+      <div class='w-full'>
+        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input">
+      </div>
+      <div class='w-full'>
+        <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
+        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input">
+      </div>
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+        <span class="text-xl font-bold">−</span>
+      </button>
+    `;
+    container.appendChild(newItem);
+  };
+
+  window.addIkuField = function () {
+    const container = document.getElementById("ikuRenstraContainer");
+    const newItem = document.createElement("div");
+    newItem.className = "iku-item dynamic-field-item new-item-animation row-item mb-4";
+    
+    let ikuOptions = '<option value="">Pilih IKU</option>';
+    if (masterState.iku) {
+        masterState.iku.forEach(iku => {
+            ikuOptions += `<option value="${iku.iku_id}">${iku.nama_iku}</option>`;
+        });
+    }
+
+    newItem.innerHTML = `
+      <div class="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
+            ${ikuOptions}
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
+          <div class="flex gap-2 items-center">
+            <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100">
+            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+          </div>
+        </div>
+        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+          <span class="text-xl font-bold">−</span>
+        </button>
+      </div>
+    `;
+    container.appendChild(newItem);
+  };
+
+  window.addRabItem = function (kategoriId) {
+    const container = document.getElementById(`rab-items-container-${kategoriId}`);
+    if (!container) return;
+
+    const newItem = document.createElement('div');
+    newItem.className = 'rab-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg';
+    const inputStyle = `style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`;
+
+    let satuanOptions = '<option value="">Pilih Satuan</option>';
+    if (masterState.satuan) {
+        masterState.satuan.forEach(satuan => {
+            satuanOptions += `<option value="${satuan.satuan_id}">${satuan.nama_satuan}</option>`;
+        });
+    }
+
+    newItem.innerHTML = `
+        <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
+                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Uraian" ${inputStyle}>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
+                <input type="number" min="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
+                <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" ${inputStyle}>
+                    ${satuanOptions}
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
+                <input type="number" min="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
+                <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" ${inputStyle}>
+                    ${satuanOptions}
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
+                <input type="number" min="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
+                <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" ${inputStyle}>
+                    ${satuanOptions}
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
+                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm autonumeric-currency" placeholder="Input Harga" ${inputStyle}>
+            </div>
+            <div class="flex items-end pb-3">
+                <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+                    <span class="text-xl font-bold">−</span>
+                </button>
+            </div>
+        </div>
+    `;
+    container.appendChild(newItem);
+    initAutoNumeric();
   };
 
   // ==============================================
@@ -2151,6 +2394,18 @@ export function renderRevisiKakPage(path, userRole) {
                 });
                 
                 section.appendChild(itemsContainer);
+
+                if (isPengusul) {
+                    const addButton = document.createElement("button");
+                    addButton.type = "button";
+                    addButton.className = "ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5";
+                    addButton.style.background = "#00BCD4";
+                    addButton.style.color = "#FFFFFF";
+                    addButton.textContent = "Tambah Item";
+                    addButton.onclick = () => addRabItem(cat.kategori_belanja_id);
+                    section.appendChild(addButton);
+                }
+
                 rabContainer.appendChild(section);
 
                 // Restore missing logic: Update comment buttons for RAB items
@@ -2253,6 +2508,22 @@ export function renderRevisiKakPage(path, userRole) {
   }
 
   function attachEventListeners() {
+    // Progress step items - allow clicking to navigate
+    document.querySelectorAll(".progress-step-item").forEach((step) => {
+      step.addEventListener("click", function () {
+        const targetStep = parseInt(this.getAttribute("data-main-step"));
+
+        if (targetStep && targetStep !== mainStep) {
+          mainStep = targetStep;
+          if (mainStep === 1) {
+            currentStep = 1;
+          }
+          updateMainStepDisplay();
+          updateStepDisplay();
+        }
+      });
+    });
+
     document.querySelectorAll(".menu-button").forEach((btn) => {
       btn.addEventListener("click", function () {
         const menuIndex = menuItems.indexOf(this.getAttribute("data-menu"));
@@ -3018,70 +3289,194 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Prepare payload sesuai format backend
+          // Helpers
+          const getVal = (el) => el ? el.value : "";
+          
+          // 1. General Info
+          const nama_kegiatan = getVal(document.querySelector('[data-field="namaKegiatan"]'));
+          const deskripsi_kegiatan = getVal(document.querySelector('[data-field="gambaranUmum"]'));
+          const metode_pelaksanaan = getVal(document.querySelector('[data-field="metodePelaksanaan"]'));
+          const kurunWaktuRaw = getVal(document.querySelector('[data-field="kurunWaktu"]'));
+          
+          let tanggal_mulai = kakDataState.tanggal_mulai;
+          let tanggal_selesai = kakDataState.tanggal_selesai;
+          let kurun_waktu_pelaksanaan = kakDataState.kurun_waktu_pelaksanaan;
+
+          if (kurunWaktuRaw.includes(" - ")) {
+              const parts = kurunWaktuRaw.split(" - ");
+              if (parts.length === 2) {
+                  const start = moment(parts[0], "DD/MM/YYYY");
+                  const end = moment(parts[1], "DD/MM/YYYY");
+                  if (start.isValid() && end.isValid()) {
+                      tanggal_mulai = start.format("YYYY-MM-DD");
+                      tanggal_selesai = end.format("YYYY-MM-DD");
+                      
+                      // Calculate kurun waktu string
+                      const diffDays = end.diff(start, "days") + 1;
+                      if (diffDays > 0) {
+                          if (diffDays < 30) {
+                              kurun_waktu_pelaksanaan = `${diffDays} hari`;
+                          } else if (diffDays < 365) {
+                              const months = Math.floor(diffDays / 30);
+                              const remainingDays = diffDays % 30;
+                              kurun_waktu_pelaksanaan = `${months} bulan ${remainingDays > 0 ? `${remainingDays} hari` : ""}`.trim();
+                          } else {
+                              const years = Math.floor(diffDays / 365);
+                              const remainingMonths = Math.floor((diffDays % 365) / 30);
+                              kurun_waktu_pelaksanaan = `${years} tahun ${remainingMonths > 0 ? `${remainingMonths} bulan` : ""}`.trim();
+                          }
+                      }
+                  }
+              }
+          }
+
+          // 2. Penerima Manfaat
+          const penerima_manfaat = [];
+          // Existing
+          const existingSasaran = document.querySelectorAll('#sasaranUtamaContainer input');
+          const existingManfaat = document.querySelectorAll('#manfaatContainer input');
+          existingSasaran.forEach((el, idx) => {
+              penerima_manfaat.push({
+                  sasaran_utama: el.value,
+                  manfaat: existingManfaat[idx] ? existingManfaat[idx].value : ""
+              });
+          });
+          // New
+          document.querySelectorAll('#penerimaManfaatDynamicContainer .penerima-manfaat-item').forEach(row => {
+              penerima_manfaat.push({
+                  sasaran_utama: row.querySelector('.sasaran-utama-input').value,
+                  manfaat: row.querySelector('.manfaat-input').value
+              });
+          });
+
+          // 3. Tahapan
+          const tahapan_pelaksanaan = [];
+          // Existing
+          document.querySelectorAll('#tahapanPelaksanaanContainer .row-with-comment input').forEach((el, idx) => {
+              tahapan_pelaksanaan.push({
+                  nama_tahapan: el.value,
+                  urutan: idx + 1
+              });
+          });
+          // New
+          document.querySelectorAll('#tahapanPelaksanaanContainer .tahapan-item input').forEach(el => {
+              tahapan_pelaksanaan.push({
+                  nama_tahapan: el.value,
+                  urutan: tahapan_pelaksanaan.length + 1
+              });
+          });
+
+          // 4. Indikator Kinerja
+          const indikator_kinerja = [];
+          // Existing
+          document.querySelectorAll('#indikatorKinerjaContainer .row-with-comment').forEach(row => {
+              const inputs = row.querySelectorAll('input');
+              if (inputs.length >= 3) {
+                  indikator_kinerja.push({
+                      bulan_indikator: inputs[0].value,
+                      deskripsi_target: inputs[1].value,
+                      persentase_target: inputs[2].value
+                  });
+              }
+          });
+          // New
+          document.querySelectorAll('#indikatorKinerjaContainer .indikator-kinerja-item').forEach(row => {
+              const bulan = row.querySelector('select').value;
+              const inputs = row.querySelectorAll('input');
+              indikator_kinerja.push({
+                  bulan_indikator: bulan,
+                  deskripsi_target: inputs[0].value,
+                  persentase_target: inputs[1].value
+              });
+          });
+
+          // 5. IKU
+          const target_iku = [];
+          // Existing (rely on order match with kakDataState.iku)
+          if (kakDataState.iku) {
+              document.querySelectorAll('#ikuRenstraContainer .row-with-comment').forEach((row, idx) => {
+                  const original = kakDataState.iku[idx];
+                  // 2nd input is percentage
+                  const inputs = row.querySelectorAll('input');
+                  const percentInput = inputs.length > 1 ? inputs[1] : null; 
+                  if (original && percentInput) {
+                      target_iku.push({
+                          iku_id: original.iku_id || original.kak_iku_id, // Fallback logic
+                          persentase_target: parseFloat(percentInput.value) || 0
+                      });
+                  }
+              });
+          }
+          // New
+          document.querySelectorAll('#ikuRenstraContainer .iku-item').forEach(row => {
+              const select = row.querySelector('select');
+              const input = row.querySelector('input[type="number"]');
+              if (select.value) {
+                  target_iku.push({
+                      iku_id: parseInt(select.value),
+                      persentase_target: parseFloat(input.value) || 0
+                  });
+              }
+          });
+
+          // 6. RAB
+          const rab = [];
+          const rabContainers = document.querySelectorAll('[id^="rab-items-container-"]');
+          rabContainers.forEach(container => {
+              const catId = parseInt(container.id.replace('rab-items-container-', ''));
+              
+              // Helper for RAB Row
+              const extractRabData = (inputs) => {
+                  const hargaInput = inputs[7];
+                  let harga = 0;
+                  if (typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(hargaInput)) {
+                      harga = AutoNumeric.getAutoNumericElement(hargaInput).getNumber();
+                  } else {
+                      harga = parseFloat(hargaInput.getAttribute('data-raw-value')) || parseFloat(hargaInput.value.replace(/[^0-9]/g, '')) || 0;
+                  }
+                  return {
+                      kategori_belanja_id: catId,
+                      uraian: inputs[0].value,
+                      volume1: parseInt(inputs[1].value) || 0,
+                      satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
+                      volume2: parseInt(inputs[3].value) || 0,
+                      satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
+                      volume3: parseInt(inputs[5].value) || 0,
+                      satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
+                      harga_satuan: harga
+                  };
+              };
+
+              // Existing items
+              container.querySelectorAll('.row-with-comment').forEach(row => {
+                  const inputs = row.querySelectorAll('input, select');
+                  rab.push(extractRabData(inputs));
+              });
+
+              // New items
+              container.querySelectorAll('.rab-item').forEach(row => {
+                  const inputs = row.querySelectorAll('input, select');
+                  rab.push(extractRabData(inputs));
+              });
+          });
+
+          // Prepare payload
           const payload = {
             kak: {
-              nama_kegiatan: kakDataState.nama_kegiatan,
-              deskripsi_kegiatan: kakDataState.deskripsi_kegiatan,
-              metode_pelaksanaan: kakDataState.metode_pelaksanaan,
-              kurun_waktu_pelaksanaan: kakDataState.kurun_waktu_pelaksanaan,
-              tanggal_mulai: kakDataState.tanggal_mulai,
-              tanggal_selesai: kakDataState.tanggal_selesai,
+              nama_kegiatan,
+              deskripsi_kegiatan,
+              metode_pelaksanaan,
+              kurun_waktu_pelaksanaan,
+              tanggal_mulai,
+              tanggal_selesai,
               lokasi: kakDataState.lokasi,
-              penerima_manfaat: [],
-              tahapan_pelaksanaan: [],
-              indikator_kinerja: [],
+              penerima_manfaat,
+              tahapan_pelaksanaan,
+              indikator_kinerja,
             },
-            target_iku: [],
-            rab: [],
+            target_iku,
+            rab,
           };
-
-          // Populate penerima_manfaat
-          if (kakDataState.manfaat && kakDataState.manfaat.length > 0) {
-            payload.kak.penerima_manfaat = kakDataState.manfaat.map((m) => ({
-              manfaat: m.manfaat,
-              sasaran_utama: m.sasaran_utama,
-            }));
-          }
-
-          // Populate tahapan_pelaksanaan
-          if (kakDataState.tahapan && kakDataState.tahapan.length > 0) {
-            payload.kak.tahapan_pelaksanaan = kakDataState.tahapan.map((t) => ({
-              nama_tahapan: t.nama_tahapan,
-              urutan: t.urutan,
-            }));
-          }
-
-          // Populate indikator_kinerja (dari target)
-          if (kakDataState.target && kakDataState.target.length > 0) {
-            payload.kak.indikator_kinerja = kakDataState.target.map((t) => ({
-              bulan_indikator: t.bulan_indikator,
-              deskripsi_target: t.deskripsi_target,
-              persentase_target: t.persentase_target,
-            }));
-          }
-
-          // Populate target_iku
-          if (kakDataState.iku && kakDataState.iku.length > 0) {
-            payload.target_iku = kakDataState.iku.map((iku) => ({
-              iku_id: iku.iku_id,
-              persentase_target: iku.persentase_target,
-            }));
-          }
-
-          // Populate rab
-          if (kakDataState.anggaran && kakDataState.anggaran.length > 0) {
-            payload.rab = kakDataState.anggaran.map((a) => ({
-              uraian: a.uraian,
-              volume1: a.volume1,
-              satuan1_id: a.satuan1_id,
-              volume2: a.volume2,
-              satuan2_id: a.satuan2_id,
-              volume3: a.volume3,
-              satuan3_id: a.satuan3_id,
-              harga_satuan: a.harga_satuan,
-            }));
-          }
 
           // Step 1: Update the KAK data
           await apiRequest(`/kak/${usulanId}/update`, {
