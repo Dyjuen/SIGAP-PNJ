@@ -352,7 +352,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
               <div class="d-flex align-items-start justify-content-between">
                 <div class="content-left">
                   <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Total Anggaran</span>
-                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Diminta</h4>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Belum Dicairkan</h4>
                   <div class="d-flex align-items-end mt-2">
                     <h1 class="mb-0 me-2" style="font-size: 32px; font-weight: 700; letter-spacing: -1px;" id="totalUndisbursed">0</h1>
                   </div>
@@ -522,24 +522,47 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
   async function handleDisbursementAction(kegiatanId) {
     // Step 1 — Ask for nominal using SweetAlert2
-    const { value: nominalString } = await Swal.fire({
+    const { value: nominal } = await Swal.fire({
       title: "Masukkan Nominal Pencairan",
-      input: "number",
-      inputPlaceholder: "Masukkan nominal dana...",
-      inputAttributes: {
-        min: 1,
-        step: 1,
-      },
+      html: `
+        <input id="swal-input-nominal" class="swal2-input" placeholder="Masukkan nominal dana..." style="width: 85%; max-width: 100%;">
+      `,
       showCancelButton: true,
       confirmButtonColor: "#00BCD4",
       cancelButtonColor: "#d33",
       confirmButtonText: "Lanjut",
       cancelButtonText: "Batal",
+      didOpen: () => {
+        const input = Swal.getPopup().querySelector('#swal-input-nominal');
+        if (typeof AutoNumeric !== 'undefined') {
+          new AutoNumeric(input, {
+            currencySymbol: 'Rp ',
+            digitGroupSeparator: '.',
+            decimalCharacter: ',',
+            decimalPlaces: 0,
+            minimumValue: '0'
+          });
+        } else {
+          input.type = 'number';
+        }
+      },
+      preConfirm: () => {
+        const input = Swal.getPopup().querySelector('#swal-input-nominal');
+        let value;
+        if (typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(input)) {
+          value = AutoNumeric.getAutoNumericElement(input).getNumber();
+        } else {
+          value = input.value;
+        }
+
+        if (!value || value <= 0) {
+          Swal.showValidationMessage("Nominal tidak valid. Harap masukkan angka positif.");
+        }
+        return parseFloat(value);
+      }
     });
 
-    if (nominalString === undefined) return; // Cancelled
-
-    const nominal = parseFloat(nominalString);
+    if (nominal === undefined) return; // Cancelled
 
     if (isNaN(nominal) || nominal <= 0) {
       showError("Nominal tidak valid. Harap masukkan angka positif.");

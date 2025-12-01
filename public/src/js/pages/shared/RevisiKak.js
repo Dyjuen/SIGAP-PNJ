@@ -1860,9 +1860,7 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${formatCurrency(
-      item.harga_satuan
-    )}">
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm autonumeric-currency" style="${inputStyle}" ${inputAttr} data-raw-value="${item.harga_satuan || 0}">
         </div>
       </div>
       <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Anggaran #${
@@ -1872,6 +1870,26 @@ export function renderRevisiKakPage(path, userRole) {
       </button>
     </div>
   `;
+  };
+
+  // Helper to initialize AutoNumeric
+  const initAutoNumeric = () => {
+    if (typeof AutoNumeric === 'undefined') return;
+    document.querySelectorAll('.autonumeric-currency').forEach(el => {
+      if (AutoNumeric.getAutoNumericElement(el)) return; // Already initialized
+      new AutoNumeric(el, {
+        currencySymbol: 'Rp ',
+        digitGroupSeparator: '.',
+        decimalCharacter: ',',
+        decimalPlaces: 0,
+        minimumValue: '0'
+      });
+      // Set initial value
+      const rawValue = el.getAttribute('data-raw-value');
+      if (rawValue) {
+        AutoNumeric.getAutoNumericElement(el).set(rawValue);
+      }
+    });
   };
 
   // ==============================================
@@ -2101,45 +2119,60 @@ export function renderRevisiKakPage(path, userRole) {
         });
       }
 
-      // Populate RAB with Categories
+      // Render RAB
       const rabContainer = document.getElementById("rab-container");
-      rabContainer.innerHTML = "";
-      const kategoriBelanja = kategoriBelanjaResponse.data;
+      if (rabContainer && kakData.anggaran) {
+        rabContainer.innerHTML = "";
+        const grouped = {};
+        kakData.anggaran.forEach((item) => {
+          if (!grouped[item.kategori_belanja_id]) grouped[item.kategori_belanja_id] = [];
+          grouped[item.kategori_belanja_id].push(item);
+        });
 
-      kategoriBelanja.forEach(kategori => {
-        const section = document.createElement('div');
-        section.className = 'mb-10';
-        section.dataset.kategoriId = kategori.kategori_belanja_id;
+        // We need category names. Assuming they are in `kategoriBelanjaResponse` which was fetched but not stored in masterState?
+        // In the `fetchAndPopulateData` I saw: `const [..., kategoriBelanjaResponse] = await Promise.all(...)`
+        // I need to make sure `kategoriBelanjaResponse` is used.
         
-        const itemsContainer = document.createElement('div');
-        itemsContainer.id = `rab-items-container-${kategori.kategori_belanja_id}`;
+        const kategoriData = kategoriBelanjaResponse.data;
+        
+        kategoriData.forEach((cat) => {
+            const catItems = grouped[cat.kategori_belanja_id] || [];
+            // Always show category if we are Pengusul (to allow adding) or if Verifikator has items
+            if (isPengusul || catItems.length > 0) {
+                const section = document.createElement("div");
+                section.className = "mb-8";
+                section.innerHTML = `<h5 class="mb-4 font-bold text-lg" style="color: #374151;">${cat.nama}</h5>`;
+                
+                const itemsContainer = document.createElement("div");
+                itemsContainer.id = `rab-items-container-${cat.kategori_belanja_id}`;
+                
+                catItems.forEach((item, idx) => {
+                    itemsContainer.innerHTML += createRabRow(item, idx);
+                });
+                
+                section.appendChild(itemsContainer);
+                rabContainer.appendChild(section);
 
-        const anggaranForKategori = kakData.anggaran.filter(
-          (item) => item.kategori_belanja_id === kategori.kategori_belanja_id
-        );
-
-        if (anggaranForKategori.length > 0) {
-            section.innerHTML = `<h5 class="mb-6 font-bold text-lg" style="color: #374151;">${kategori.nama}</h5>`;
-            
-            anggaranForKategori.forEach((item, index) => {
-                itemsContainer.innerHTML += createRabRow(item, index);
-            });
-
-            section.appendChild(itemsContainer);
-            rabContainer.appendChild(section);
-
-            // After appending, update comment buttons for the items in this category
-            anggaranForKategori.forEach((item) => {
-                if (item.catatan_verifikator) {
-                    updateCommentButton(`.row-with-comment[data-row-type="t_kak_anggaran"][data-pk-value="${item.anggaran_id}"] .row-comment-icon`, item.catatan_verifikator);
-                }
-            });
-        }
-      });
-
+                // Restore missing logic: Update comment buttons for RAB items
+                catItems.forEach((item) => {
+                    if (item.catatan_verifikator) {
+                        updateCommentButton(
+                            `.row-with-comment[data-row-type="t_kak_anggaran"][data-pk-value="${item.anggaran_id}"] .row-comment-icon`, 
+                            item.catatan_verifikator
+                        );
+                    }
+                });
+            }
+        });
+        
+        // Initialize AutoNumeric after rendering RAB
+        initAutoNumeric();
+      }
+      
       Swal.close();
     } catch (error) {
-      Swal.fire("Gagal Memuat Data", error.message, "error");
+      console.error("Error fetching data:", error);
+      Swal.fire("Error", "Gagal memuat data KAK.", "error");
     }
   }
 

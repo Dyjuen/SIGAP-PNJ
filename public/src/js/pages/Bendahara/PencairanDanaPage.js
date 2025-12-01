@@ -401,24 +401,47 @@ export function renderPencairanDanaPage(path, userRole) {
 
     async function handleCairkan(kegiatanId) {
     // Step 1 — Ask for nominal using SweetAlert2
-    const { value: nominalString } = await Swal.fire({
+    const { value: nominal } = await Swal.fire({
       title: "Masukkan Nominal Pencairan",
-      input: "number",
-      inputPlaceholder: "Masukkan nominal dana...",
-      inputAttributes: {
-        min: 1,
-        step: 1,
-      },
+      html: `
+        <input id="swal-input-nominal" class="swal2-input" placeholder="Masukkan nominal dana..." style="width: 85%; max-width: 100%;">
+      `,
       showCancelButton: true,
       confirmButtonColor: "#00BCD4",
       cancelButtonColor: "#d33",
       confirmButtonText: "Lanjut",
       cancelButtonText: "Batal",
+      didOpen: () => {
+        const input = Swal.getPopup().querySelector('#swal-input-nominal');
+        if (typeof AutoNumeric !== 'undefined') {
+          new AutoNumeric(input, {
+            currencySymbol: 'Rp ',
+            digitGroupSeparator: '.',
+            decimalCharacter: ',',
+            decimalPlaces: 0,
+            minimumValue: '0'
+          });
+        } else {
+          input.type = 'number';
+        }
+      },
+      preConfirm: () => {
+        const input = Swal.getPopup().querySelector('#swal-input-nominal');
+        let value;
+        if (typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(input)) {
+          value = AutoNumeric.getAutoNumericElement(input).getNumber();
+        } else {
+          value = input.value;
+        }
+
+        if (!value || value <= 0) {
+          Swal.showValidationMessage("Nominal tidak valid. Harap masukkan angka positif.");
+        }
+        return parseFloat(value);
+      }
     });
 
-    if (nominalString === undefined) return; // Cancelled
-
-    const nominal = parseFloat(nominalString);
+    if (nominal === undefined) return; // Cancelled
 
     if (isNaN(nominal) || nominal <= 0) {
       showError("Nominal tidak valid. Harap masukkan angka positif.");

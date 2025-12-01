@@ -1565,7 +1565,8 @@ export function renderUsulanKakPage(path, userRole) {
           const inputs = item.querySelectorAll("input, select");
           const uraian = inputs[0].value;
           const volume1 = parseInt(inputs[1].value) || 0;
-          const harga_satuan = parseFloat(inputs[7].value.replace(/[^0-9]/g, '')) || 0;
+          const hargaInput = inputs[7];
+          const harga_satuan = typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(hargaInput) ? AutoNumeric.getAutoNumericElement(hargaInput).getNumber() : (parseFloat(hargaInput.value.replace(/[^0-9]/g, '')) || 0);
 
           if (uraian && volume1 > 0 && harga_satuan > 0) {
             rabItems.push({
@@ -1974,7 +1975,7 @@ export function renderUsulanKakPage(path, userRole) {
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Harga" value="${harga}" ${inputStyle}>
+                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm autonumeric-currency" placeholder="Input Harga" data-raw-value="${harga}" ${inputStyle}>
             </div>
             <div class="flex items-end pb-3">
                 <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
@@ -1984,6 +1985,21 @@ export function renderUsulanKakPage(path, userRole) {
         </div>
     `;
     container.appendChild(newItem);
+
+    // Initialize AutoNumeric for the new item
+    if (typeof AutoNumeric !== 'undefined') {
+        const priceInput = newItem.querySelector('.autonumeric-currency');
+        new AutoNumeric(priceInput, {
+            currencySymbol: 'Rp ',
+            digitGroupSeparator: '.',
+            decimalCharacter: ',',
+            decimalPlaces: 0,
+            minimumValue: '0'
+        });
+        if (harga) {
+            AutoNumeric.getAutoNumericElement(priceInput).set(harga);
+        }
+    }
 
     // Populate dropdowns for the new item
     populateSatuanDropdowns().then(() => {
