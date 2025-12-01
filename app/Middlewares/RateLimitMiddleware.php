@@ -29,7 +29,8 @@ class RateLimitMiddleware implements Middleware
         $this->useApcu = function_exists('apcu_enabled') && apcu_enabled();
 
         // Disable rate limiting in development environment
-        if (getenv('APP_ENV') === 'development') {
+        $appEnv = $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? getenv('APP_ENV') ?? 'production';
+        if ($appEnv === 'development') {
             $this->enabled = false;
         }
     }

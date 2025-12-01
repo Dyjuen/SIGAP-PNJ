@@ -299,7 +299,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
       <!-- Stats Cards -->
       <div class="row g-4 mb-3">
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl">
           <div class="card stat-card-active stat-card-filter" data-filter="waiting" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%) !important; color: white !important; border: none !important;">
             <div class="card-body">
               <div class="d-flex align-items-start justify-content-between">
@@ -315,7 +315,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
             </div>
           </div>
         </div>
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl">
           <div class="card stat-card-inactive stat-card-filter" data-filter="disbursed">
             <div class="card-body">
               <div class="d-flex align-items-start justify-content-between">
@@ -331,7 +331,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
             </div>
           </div>
         </div>
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl">
           <div class="card stat-card-inactive">
             <div class="card-body">
               <div class="d-flex align-items-start justify-content-between">
@@ -346,7 +346,22 @@ export function renderBendaharaDashboardPage(path, userRole) {
             </div>
           </div>
         </div>
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl">
+          <div class="card stat-card-inactive">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between">
+                <div class="content-left">
+                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Total Anggaran</span>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Diminta</h4>
+                  <div class="d-flex align-items-end mt-2">
+                    <h1 class="mb-0 me-2" style="font-size: 32px; font-weight: 700; letter-spacing: -1px;" id="totalUndisbursed">0</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl">
           <div class="card stat-card-inactive stat-card-filter" data-filter="lpj_submitted">
             <div class="card-body">
               <div class="d-flex align-items-start justify-content-between">
@@ -840,11 +855,27 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
     const disbursedCount = disbursedData.length;
 
-    // Total disbursed amount: Sum of all recorded disbursements (jumlah_dicairkan) across all activities
-    const totalDisbursed = allData.reduce(
-      (sum, k) => sum + (Number(k.dana_dicairkan) || 0),
-      0
-    );
+    let totalDisbursed = 0;
+    let totalUndisbursed = 0;
+
+    allData.forEach((k) => {
+      const budget = Number(k.total_anggaran_diusulkan) || 0;
+      const disbursed = Number(k.dana_dicairkan) || 0;
+
+      // Check if Done (Bendahara-Setor Disetujui)
+      const isDone = k.approvals?.some(
+        (a) => a.approval_level === "Bendahara-Setor" && a.status === "Disetujui"
+      );
+
+      if (isDone) {
+        // If done, count full budget as disbursed and 0 as undisbursed
+        totalDisbursed += budget;
+      } else {
+        // If not done, count actual disbursed and remaining
+        totalDisbursed += disbursed;
+        totalUndisbursed += Math.max(0, budget - disbursed);
+      }
+    });
 
     // LPJ submitted but not yet verified: Bendahara-LPJ step is Active
     const lpjCount = allData.filter((k) => {
@@ -857,6 +888,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
     const waitingEl = document.getElementById("waitingCount");
     const disbursedEl = document.getElementById("disbursedCount");
     const totalDisbursedEl = document.getElementById("totalDisbursed");
+    const totalUndisbursedEl = document.getElementById("totalUndisbursed");
     const lpjEl = document.getElementById("lpjCount");
 
     if (waitingEl) {
@@ -869,6 +901,8 @@ export function renderBendaharaDashboardPage(path, userRole) {
     }
     if (totalDisbursedEl)
       totalDisbursedEl.textContent = formatCurrency(totalDisbursed);
+    if (totalUndisbursedEl)
+      totalUndisbursedEl.textContent = formatCurrency(totalUndisbursed);
     if (lpjEl) {
       lpjEl.setAttribute("data-target", lpjCount);
       lpjEl.textContent = "0";
