@@ -8,6 +8,7 @@ use App\Core\FileUpload;
 use App\Models\Kegiatan;
 use App\Models\KAKAnggaran;
 use App\Models\KegiatanLampiran;
+use App\Models\KegiatanLogStatus;
 use App\Models\KAK;
 use App\Middlewares\AuthMiddleware;
 
@@ -16,6 +17,7 @@ class LpjController extends Controller
     private $kegiatanModel;
     private $kakAnggaranModel;
     private $kegiatanLampiranModel;
+    private $logStatusModel;
     protected $user;
 
     public function __construct()
@@ -36,6 +38,7 @@ class LpjController extends Controller
         $this->kegiatanModel = new Kegiatan();
         $this->kakAnggaranModel = new KAKAnggaran();
         $this->kegiatanLampiranModel = new KegiatanLampiran();
+        $this->logStatusModel = new KegiatanLogStatus();
     }
 
     /**
@@ -141,6 +144,17 @@ class LpjController extends Controller
 
             // 3. Update Kegiatan status
             $this->kegiatanModel->update($kegiatanId, ['lpj_submitted_at' => date('Y-m-d H:i:s')]);
+            
+            $oldStatus = $kegiatan['status_id'];
+            $this->kegiatanModel->updateStatus($kegiatanId, 12); // 12 = Review LPJ
+
+            $this->logStatusModel->create([
+                'kegiatan_id' => $kegiatanId,
+                'status_id_lama' => $oldStatus,
+                'status_id_baru' => 12,
+                'actor_user_id' => $this->user['user_id'],
+                'catatan' => 'LPJ disubmit untuk review.'
+            ]);
             
             // Activate 'Bendahara-LPJ' approval status
             $this->kegiatanModel->activateLpjApproval($kegiatanId);
@@ -252,6 +266,17 @@ class LpjController extends Controller
                 'status' => 'Revisi',
                 'catatan' => $generalComment,
                 'approver_user_id' => $this->user['user_id']
+            ]);
+
+            $oldStatus = $kegiatan['status_id'];
+            $this->kegiatanModel->updateStatus($kegiatanId, 14); // 14 = LPJ Direvisi
+
+            $this->logStatusModel->create([
+                'kegiatan_id' => $kegiatanId,
+                'status_id_lama' => $oldStatus,
+                'status_id_baru' => 14,
+                'actor_user_id' => $this->user['user_id'],
+                'catatan' => "Revisi LPJ: {$generalComment}"
             ]);
 
             // 4. Notify the Pengusul
@@ -373,6 +398,17 @@ class LpjController extends Controller
             // Also update the main submission timestamp
             $this->kegiatanModel->update($kegiatanId, ['lpj_submitted_at' => date('Y-m-d H:i:s')]);
 
+            $oldStatus = $kegiatan['status_id'];
+            $this->kegiatanModel->updateStatus($kegiatanId, 12); // 12 = Review LPJ
+
+            $this->logStatusModel->create([
+                'kegiatan_id' => $kegiatanId,
+                'status_id_lama' => $oldStatus,
+                'status_id_baru' => 12,
+                'actor_user_id' => $this->user['user_id'],
+                'catatan' => 'LPJ disubmit ulang setelah revisi.'
+            ]);
+
             $db->commit();
 
             return Response::success(null, 'LPJ berhasil disubmit ulang dan menunggu review dari Bendahara.');
@@ -435,6 +471,17 @@ class LpjController extends Controller
                 $this->kegiatanModel->updateApprovalStatus($nextApproval['approval_kegiatan_id'], 'Aktif', null, null);
             }
 
+            $oldStatus = $kegiatan['status_id'];
+            $this->kegiatanModel->updateStatus($kegiatanId, 15); // 15 = Setor Fisik Dokumen
+
+            $this->logStatusModel->create([
+                'kegiatan_id' => $kegiatanId,
+                'status_id_lama' => $oldStatus,
+                'status_id_baru' => 15,
+                'actor_user_id' => $this->user['user_id'],
+                'catatan' => 'LPJ digital disetujui. Menunggu setor fisik.'
+            ]);
+
             // 3. Notify the Pengusul
             $notifikasiModel = new \App\Models\Notifikasi();
             $notifikasiModel->create([
@@ -495,6 +542,17 @@ class LpjController extends Controller
                 'catatan' => 'Bukti fisik telah diterima dan LPJ dinyatakan selesai.',
                 'approver_user_id' => $this->user['user_id'],
                 'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $oldStatus = $kegiatan['status_id'];
+            $this->kegiatanModel->updateStatus($kegiatanId, 16); // 16 = Selesai
+
+            $this->logStatusModel->create([
+                'kegiatan_id' => $kegiatanId,
+                'status_id_lama' => $oldStatus,
+                'status_id_baru' => 16,
+                'actor_user_id' => $this->user['user_id'],
+                'catatan' => 'LPJ fisik diterima. Kegiatan selesai.'
             ]);
 
             // Notify the Pengusul

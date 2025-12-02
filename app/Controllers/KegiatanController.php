@@ -320,7 +320,7 @@ class KegiatanController
             }
             
             // --- 7. Update KAK Status ---
-            $this->kakModel->update($kakId, ['status_id' => 6]); // 6 = Proses Pencairan
+            $this->kakModel->update($kakId, ['status_id' => 6]); // 6 = Review PPK
 
             $db->commit();
 
@@ -751,7 +751,7 @@ class KegiatanController
             
             } else {
                 if ($expectedRole === 'Bendahara-LPJ') {
-                    $this->kegiatanModel->updateStatus($kegiatanId, 9); // 9 = Selesai
+                    $this->kegiatanModel->updateStatus($kegiatanId, 16); // 16 = Selesai
                     $this->notifikasiModel->create([
                         'penerima_user_id' => $kegiatan['pengusul_user_id'],
                         'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah disetujui. Kegiatan selesai.",
@@ -830,7 +830,7 @@ class KegiatanController
             }
 
             // 6. Update main kegiatan status to 'LPJ'
-            $this->kegiatanModel->updateStatus($kegiatanId, 8); // 8 = Menunggu LPJ
+            $this->kegiatanModel->updateStatus($kegiatanId, 11); // 11 = Menunggu LPJ
 
             // 7. Start the LPJ Timer
             $lpjTimerService = new LpjTimerService();
@@ -840,7 +840,7 @@ class KegiatanController
             $this->logStatusModel->create([
                 'kegiatan_id' => $kegiatanId,
                 'status_id_lama' => $kegiatan['status_id'],
-                'status_id_baru' => 8, // Menunggu LPJ
+                'status_id_baru' => 11, // Menunggu LPJ
                 'actor_user_id' => $this->userData['user_id'],
                 'catatan' => 'Proses pencairan selesai, tahap LPJ dimulai.'
             ]);
