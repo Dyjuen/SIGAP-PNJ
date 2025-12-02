@@ -76,11 +76,19 @@ class Mailer
 
     /**
      * Kirim email dengan template
+     * 
+     * @param string $to Email penerima
+     * @param string $subject Subjek email
+     * @param string $body Body HTML email
+     * @param string|null $altBody Plain text alternatif
+     * @param array $attachments Array file attachments
+     * @param array $embeddedImages Array of embedded images [['path' => 'file.jpg', 'cid' => 'logo']]
      */
-    public function send($to, $subject, $body, $altBody = null, $attachments = [])
+    public function send($to, $subject, $body, $altBody = null, $attachments = [], $embeddedImages = [])
     {
         try {
             $this->mail->clearAddresses();
+            $this->mail->clearAttachments();
             $this->mail->addAddress($to);
             $this->mail->Subject = $subject;
             $this->mail->isHTML(true);
@@ -94,6 +102,19 @@ class Mailer
                 }
             }
 
+            // Tambah embedded images jika ada (untuk ditampilkan di body email)
+            if (!empty($embeddedImages)) {
+                foreach ($embeddedImages as $image) {
+                    if (isset($image['path']) && isset($image['cid']) && file_exists($image['path'])) {
+                        $this->mail->addEmbeddedImage(
+                            $image['path'], 
+                            $image['cid'],
+                            basename($image['path'])
+                        );
+                    }
+                }
+            }
+
             return $this->mail->send();
         } catch (Exception $e) {
             error_log("[PHPMailer Send Error]: " . $e->getMessage() . " ErrorInfo: " . $this->mail->ErrorInfo);
@@ -104,13 +125,13 @@ class Mailer
     /**
      * Kirim ke multiple recipients
      */
-    public function sendBatch($recipients, $subject, $body, $altBody = null)
+    public function sendBatch($recipients, $subject, $body, $altBody = null, $attachments = [], $embeddedImages = [])
     {
         $failed = [];
         
         foreach ($recipients as $email) {
             try {
-                $this->send($email, $subject, $body, $altBody);
+                $this->send($email, $subject, $body, $altBody, $attachments, $embeddedImages);
             } catch (Exception $e) {
                 $failed[] = [
                     'email' => $email,
@@ -139,7 +160,10 @@ class Mailer
         // Add base URL for email assets (images, etc)
         // Change this to your production domain when deploying
         $baseUrl = getenv('APP_URL') ?: 'http://localhost';
-        $data['logoUrl'] = $data['logoUrl'] ?? $baseUrl . '/assets/img/logo/logo.svg';
+        
+        // Use CID for embedded images instead of URL
+        // Logo akan di-embed sebagai attachment dengan cid:logo
+        $data['logoUrl'] = 'cid:logo';
         $data['baseUrl'] = $baseUrl;
 
         extract($data);
@@ -148,5 +172,51 @@ class Mailer
         $html = ob_get_clean();
 
         return $html;
+    }
+
+    /**
+     * Get logo path untuk embedded image
+     * Note: SVG tidak bisa di-embed di email, jadi gunakan PNG/JPG
+     */
+    public function getLogoPath()
+    {
+        // Cari logo dalam format yang didukung email (PNG, JPG, GIF)
+        // SVG tidak didukung oleh banyak email client
+        $possiblePaths = [
+            __DIR__ . '/../../public/assets/img/logo/logo.png',
+            __DIR__ . '/../../public/assets/img/branding/logo.png',
+            __DIR__ . '/../../public/assets/img/logo.png',
+            __DIR__ . '/../../public/assets/img/logo/logo.jpg',
+            __DIR__ . '/../../public/assets/img/logo.jpg',
+        ];
+
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        // Return null if no logo found
+        return null;
+    }
+
+    /**
+     * Get background path untuk embedded image di email
+     */
+    public function getBackgroundPath()
+    {
+        $possiblePaths = [
+            __DIR__ . '/../../public/assets/img/backgrounds/Auth.png',
+            __DIR__ . '/../../public/assets/img/backgrounds/auth.png',
+            __DIR__ . '/../../public/assets/img/background.png',
+        ];
+
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return null;
     }
 }

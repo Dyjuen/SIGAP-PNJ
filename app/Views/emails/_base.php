@@ -8,44 +8,42 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #f0f2f5;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #E3F2FD 0%, #B3E5FC 100%);
+            background-color: #ECF7FB;
+            font-family: 'Nexa', Arial, sans-serif;
         }
         .container {
             width: 100%;
             padding: 40px 0;
+            background: linear-gradient(135deg, #ffffff 0%, <?php echo $emailData['status_color'] ?? '#e7fbff'; ?>20 100%);
+            background-color: #ECF7FB;
         }
         .card {
             width: 90%;
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
+            margin-top: 30px;
             background-color: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            border: 1px solid <?php echo $emailData['status_color'] ?? '#e0e0e0'; ?>;
+            overflow: hidden;
             position: relative;
         }
-        .icon-bubble {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: #ffffff;
-            text-align: center;
-            line-height: 52px;
-            position: absolute;
-            top: -30px;
-            left: 20px;
-        }
-        .icon-bubble span {
-            font-size: 30px;
-            font-weight: normal;
+        .card-header {
+            background-color: <?php echo $emailData['status_color'] ?? '#dc3545'; ?>;
+            height: 30px;
+            width: 100%;
+            border-radius: 16px 16px 0 0;
         }
         .content {
-            padding: 60px 40px 40px 40px;
+            padding: 40px 40px 40px 40px;
         }
         .title {
             font-size: 28px;
             font-weight: bold;
+            color: <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;
             margin: 0 0 20px 0;
+            text-align: center;
         }
         .body-text {
             font-size: 16px;
@@ -54,17 +52,21 @@
             margin: 0 0 30px 0;
         }
         .button-container {
-            text-align: center;
+            text-align: left;
             margin-bottom: 30px;
         }
         .button {
-            color: #ffffff;
+            background-color: <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;
+            color: #ffffff !important;
             padding: 14px 40px;
             border-radius: 12px;
             text-decoration: none;
             font-size: 16px;
             font-weight: bold;
             display: inline-block;
+        }
+        .button * {
+            color: #ffffff !important;
         }
         .footer-text {
             font-size: 14px;
@@ -99,12 +101,10 @@
 <body>
     <div class="container">
         <div class="card">
-            <div class="icon-bubble" style="border: 4px solid <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;">
-                <span style="color: <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;"><?php echo $emailData['icon_text'] ?? '!'; ?></span>
-            </div>
+            <div class="card-header"></div>
             <div class="content">
                 <?php if (isset($emailData['title'])): ?>
-                    <h1 class="title" style="color: <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;"><?php echo $emailData['title']; ?></h1>
+                    <h1 class="title"><?php echo $emailData['title']; ?></h1>
                 <?php endif; ?>
                 
                 <?php if (isset($emailData['body'])): ?>
@@ -113,7 +113,7 @@
 
                 <?php if (isset($emailData['button_text']) && isset($emailData['button_link'])): ?>
                     <div class="button-container">
-                        <a href="<?php echo $emailData['button_link']; ?>" class="button" style="background-color: <?php echo $emailData['status_color'] ?? '#1ABDD4'; ?>;"><?php echo $emailData['button_text']; ?></a>
+                        <a href="<?php echo $emailData['button_link']; ?>" class="button"><?php echo $emailData['button_text']; ?></a>
                     </div>
                 <?php endif; ?>
 
@@ -127,7 +127,7 @@
             </div>
         </div>
         <div class="bottom-section">
-            <img src="http://localhost/assets/img/logo.svg" alt="Logo" class="logo">
+            <img src="<?php echo $logoUrl ?? 'cid:logo'; ?>" alt="Logo" class="logo">
             <p class="phone-number">+123 456 789</p>
             <p class="address">Lorem ipsum dolor sit<br>amet, consectetur adipiscing elit,</p>
         </div>

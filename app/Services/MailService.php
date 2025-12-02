@@ -27,6 +27,40 @@ class MailService
         return rtrim($protocol . $host, '/');
     }
 
+    /**
+     * Prepare embedded images untuk email (logo, dll)
+     */
+    private function getEmbeddedImages()
+    {
+        $embeddedImages = [];
+        $logoPath = $this->mailer->getLogoPath();
+        if ($logoPath) {
+            $embeddedImages[] = ['path' => $logoPath, 'cid' => 'logo'];
+        }
+        
+        $backgroundPath = $this->mailer->getBackgroundPath();
+        if ($backgroundPath) {
+            $embeddedImages[] = ['path' => $backgroundPath, 'cid' => 'background'];
+        }
+        
+        return $embeddedImages;
+    }
+
+    /**
+     * Send email dengan embedded images (helper method)
+     */
+    private function sendWithEmbeddedImages($to, $subject, $htmlBody, $attachments = [])
+    {
+        return $this->mailer->send(
+            $to,
+            $subject,
+            $htmlBody,
+            null,
+            $attachments,
+            $this->getEmbeddedImages()
+        );
+    }
+
     // ==================== KAK WORKFLOW ====================
 
     /**
@@ -46,7 +80,7 @@ class MailService
             ]);
 
             foreach ($verifikators as $v) {
-                $this->mailer->send(
+                $this->sendWithEmbeddedImages(
                     $v['email'],
                     "🔔 KAK Baru Membutuhkan Verifikasi",
                     $htmlBody
@@ -74,7 +108,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kak/detail/' . $kakId,
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kakData['pengusul_email'],
                 "✅ KAK Disetujui - Lanjutkan ke Kegiatan",
                 $htmlBody
@@ -100,7 +134,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kak/edit/' . $kakId,
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kakData['pengusul_email'],
                 "⚠️ KAK Perlu Revisi",
                 $htmlBody
@@ -125,7 +159,7 @@ class MailService
                 'link_detail' => $this->baseUrl . '/app/kak/detail/' . $kakId,
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kakData['pengusul_email'],
                 "❌ KAK Ditolak",
                 $htmlBody
@@ -153,7 +187,7 @@ class MailService
             ]);
 
             foreach ($verifikators as $v) {
-                $this->mailer->send(
+                $this->sendWithEmbeddedImages(
                     $v['email'],
                     "🔄 KAK Sudah Direvisi - Perlu Review Ulang",
                     $htmlBody
@@ -183,7 +217,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kegiatan/detail/' . $kegiatanId,
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kegiatanData['pengusul_email'],
                 "✅ Kegiatan Disetujui oleh PPK",
                 $htmlBody
@@ -208,7 +242,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kegiatan/detail/' . $kegiatanId,
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kegiatanData['pengusul_email'],
                 "✅ Kegiatan Disetujui oleh Wadir",
                 $htmlBody
@@ -237,7 +271,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kegiatan/detail/' . $kegiatanId,
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kegiatanData['pengusul_email'],
                 "🚀 Dana Dicairkan - Deadline LPJ 14 Hari",
                 $htmlBody
@@ -265,7 +299,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kegiatan/lpj/' . $kegiatanData['kegiatan_id'],
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kegiatanData['pengusul_email'],
                 "⏰ Reminder: 7 Hari Lagi Deadline LPJ",
                 $htmlBody
@@ -291,7 +325,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kegiatan/lpj/' . $kegiatanData['kegiatan_id'],
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kegiatanData['pengusul_email'],
                 "🚨 URGENT: 3 Hari Lagi Deadline LPJ",
                 $htmlBody
@@ -317,7 +351,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kegiatan/lpj/' . $kegiatanData['kegiatan_id'],
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kegiatanData['pengusul_email'],
                 "🚨 SANGAT URGENT: Besok Deadline LPJ!",
                 $htmlBody
@@ -346,7 +380,7 @@ class MailService
             ]);
 
             // Kirim ke pengusul
-            $this->mailer->send(
+            $this->sendWithEmbeddedImages(
                 $kegiatanData['pengusul_email'],
                 "🚨 OVERDUE: LPJ Terlambat {$hariTerlambat} Hari!",
                 $htmlBody
@@ -354,7 +388,7 @@ class MailService
 
             // CC ke bendahara & admin
             foreach ($bendahara as $b) {
-                $this->mailer->send(
+                $this->sendWithEmbeddedImages(
                     $b['email'],
                     "🚨 OVERDUE: LPJ Terlambat {$hariTerlambat} Hari - {$kegiatanData['nama_kegiatan']}",
                     $htmlBody
@@ -362,7 +396,7 @@ class MailService
             }
 
             foreach ($admin as $a) {
-                $this->mailer->send(
+                $this->sendWithEmbeddedImages(
                     $a['email'],
                     "🚨 OVERDUE: LPJ Terlambat {$hariTerlambat} Hari - {$kegiatanData['nama_kegiatan']}",
                     $htmlBody
@@ -395,7 +429,7 @@ class MailService
             ]);
 
             foreach ($bendahara as $b) {
-                $this->mailer->send(
+                $this->sendWithEmbeddedImages(
                     $b['email'],
                     "📋 LPJ Baru Perlu Review",
                     $htmlBody
@@ -423,7 +457,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kegiatan/detail/' . $kegiatanId,
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kegiatanData['pengusul_email'],
                 "✅ LPJ Disetujui - Kegiatan Selesai",
                 $htmlBody
@@ -449,7 +483,7 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kegiatan/lpj/' . $kegiatanId,
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $kegiatanData['pengusul_email'],
                 "❌ LPJ Ditolak - Perlu Perbaikan",
                 $htmlBody
@@ -472,7 +506,7 @@ class MailService
                 'login_link' => $this->baseUrl . '/login',
             ]);
 
-            return $this->mailer->send(
+            return $this->sendWithEmbeddedImages(
                 $user['email'],
                 "🔑 Password Anda Telah Direset",
                 $htmlBody
