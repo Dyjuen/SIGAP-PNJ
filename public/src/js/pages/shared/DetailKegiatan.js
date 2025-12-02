@@ -760,6 +760,11 @@ export function renderDetailKegiatanPage(path, userRole) {
                   </div>
 
                   <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tipe Kegiatan</label>
+                    <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="" data-field="tipeKegiatan">
+                  </div>
+
+                  <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Gambaran Umum Kegiatan</label>
                     <textarea readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="border-color: #E5E7EB; background: #F9FAFB;" data-field="gambaranUmum"></textarea>
                   </div>
@@ -922,6 +927,7 @@ export function renderDetailKegiatanPage(path, userRole) {
     iku: [],
     satuan: [],
     kategoriBelanja: [],
+    tipeKegiatan: [],
   };
 
   // ==============================================
@@ -1068,21 +1074,24 @@ export function renderDetailKegiatanPage(path, userRole) {
     });
 
     try {
-      const [kakResponse, ikuResponse, satuanResponse, kategoriBelanjaResponse] = await Promise.all([
+      const [kakResponse, ikuResponse, satuanResponse, kategoriBelanjaResponse, tipeKegiatanResponse] = await Promise.all([
         apiRequest(`/kak/${kakId}/data`),
         apiRequest("/master/iku"),
         apiRequest("/master/satuan"),
         apiRequest("/master/kategori-belanja"),
+        apiRequest("/master/tipe-kegiatan"),
       ]);
 
       masterState.iku = ikuResponse.data;
       masterState.satuan = satuanResponse.data;
       masterState.kategoriBelanja = kategoriBelanjaResponse.data;
+      masterState.tipeKegiatan = tipeKegiatanResponse.data;
       const kakData = kakResponse.data;
       kakDataState = kakData;
 
       // Populate form fields
       document.querySelector('[data-field="namaKegiatan"]').value = kakData.nama_kegiatan || "";
+      document.querySelector('[data-field="tipeKegiatan"]').value = getNameById(kakData.tipe_kegiatan_id, masterState.tipeKegiatan, "tipe_kegiatan_id", "nama_tipe") || "";
       document.querySelector('[data-field="gambaranUmum"]').value = kakData.deskripsi_kegiatan || "";
       document.querySelector('[data-field="metodePelaksanaan"]').value = kakData.metode_pelaksanaan || "";
       const tanggalMulai = kakData.tanggal_mulai;

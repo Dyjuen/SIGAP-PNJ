@@ -989,7 +989,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
         const id = this.getAttribute("data-id");
         
         setTimeout(() => {
-          window.location.pathname = `/pengusul/usulan/${id}`;
+          window.location.pathname = `/pengusul/riwayat/detail/${id}`;
         }, 300);
       });
     });
