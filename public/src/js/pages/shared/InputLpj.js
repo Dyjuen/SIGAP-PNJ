@@ -1220,6 +1220,83 @@ export function renderInputLpjPage(path, userRole) {
           opacity: 0.8;
         }
       }
+      /* Spectacular Divider */
+      .spectacular-divider {
+        position: relative;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+      }
+      .spectacular-divider::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), #00BCD4, rgba(0, 188, 212, 0.3), transparent);
+        border-radius: 100%;
+        opacity: 0.8;
+        box-shadow: 0 2px 4px rgba(0, 188, 212, 0.2);
+      }
+      /* Spectacular Total Card */
+      .spectacular-total-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border: 1px solid rgba(0, 188, 212, 0.2);
+        border-radius: 20px;
+        padding: 2rem 2.5rem;
+        margin-top: 3rem;
+        box-shadow: 0 20px 40px -10px rgba(0, 188, 212, 0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .spectacular-total-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #00BCD4, #00E5FF);
+      }
+      .spectacular-total-card::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(0, 188, 212, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .total-label {
+        font-size: 1.25rem;
+        color: #455A64;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .total-label i {
+        font-size: 1.75rem;
+        color: #00BCD4;
+        background: rgba(0, 188, 212, 0.1);
+        padding: 0.75rem;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.1);
+      }
+      .total-value {
+        font-size: 2.75rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0097A7 0%, #006064 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        letter-spacing: -0.5px;
+      }
     </style>
 
     <div class="input-lpj-page">
@@ -1448,6 +1525,49 @@ export function renderInputLpjPage(path, userRole) {
   }
 
   // --- RENDER FUNCTIONS ---
+  function calculateLpjTotals() {
+    let grandTotal = 0;
+    
+    document.querySelectorAll('.category-section').forEach(section => {
+        let subtotal = 0;
+        section.querySelectorAll('.rab-item').forEach(row => {
+            const realisasiGrid = row.querySelector('.realisasi-grid');
+            if (!realisasiGrid) return;
+
+            const vol1Input = realisasiGrid.querySelector('input[data-field="realisasi_volume1"]');
+            const vol2Input = realisasiGrid.querySelector('input[data-field="realisasi_volume2"]');
+            const vol3Input = realisasiGrid.querySelector('input[data-field="realisasi_volume3"]');
+            const hargaInput = realisasiGrid.querySelector('input[data-field="realisasi_harga_satuan"]');
+
+            const v1 = parseFloat(vol1Input?.value) || 0;
+            // Treat empty/null as 1 for multipliers. 
+            const v2 = (vol2Input?.value === "" || vol2Input?.value === null || vol2Input?.value === "0") ? 1 : parseFloat(vol2Input.value);
+            const v3 = (vol3Input?.value === "" || vol3Input?.value === null || vol3Input?.value === "0") ? 1 : parseFloat(vol3Input.value);
+            
+            let harga = 0;
+            if (typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(hargaInput)) {
+                harga = AutoNumeric.getAutoNumericElement(hargaInput).getNumber();
+            } else {
+                // Fallback if AutoNumeric not attached or readonly
+                harga = parseFloat(hargaInput?.value.replace(/[^0-9]/g, '')) || 0;
+            }
+
+            subtotal += (v1 * v2 * v3 * harga);
+        });
+        
+        const subtotalEl = section.querySelector('.subtotal-display');
+        if (subtotalEl) {
+            subtotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal);
+        }
+        grandTotal += subtotal;
+    });
+
+    const grandTotalEl = document.getElementById('grand-total-lpj');
+    if (grandTotalEl) {
+        grandTotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(grandTotal);
+    }
+  }
+
   function renderRABSections() {
     const container = document.getElementById("rabSectionsContainer");
     if (
@@ -1464,9 +1584,9 @@ export function renderInputLpjPage(path, userRole) {
     const groupedItems = state.lpjData.anggaran_items.reduce((acc, item) => {
       const category = item.nama_kategori || "Lain-lain";
       if (!acc[category]) {
-        acc[category] = [];
+        acc[category] = { items: [] };
       }
-      acc[category].push(item);
+      acc[category].items.push(item);
       return acc;
     }, {});
 
@@ -1474,12 +1594,22 @@ export function renderInputLpjPage(path, userRole) {
 
     // Render items for each category
     for (const category in groupedItems) {
-      const categoryTitle = document.createElement("h4");
-      categoryTitle.className = "text-xl font-semibold mb-4 mt-6 text-gray-700";
-      categoryTitle.textContent = category;
-      container.appendChild(categoryTitle);
+      const group = groupedItems[category];
+      const categorySection = document.createElement("div");
+      const isLastCategory = Object.keys(groupedItems).indexOf(category) === Object.keys(groupedItems).length - 1;
+      categorySection.className = `category-section mb-10 ${!isLastCategory ? 'spectacular-divider' : ''}`;
+      
+      categorySection.innerHTML = `
+        <div class="flex justify-between items-center mb-6">
+            <h4 class="text-xl font-semibold text-gray-700">${category}</h4>
+            <div class="text-right">
+                <span class="text-sm text-gray-500">Subtotal (Realisasi):</span>
+                <span class="font-bold text-lg ml-2 subtotal-display" style="color: #00BCD4;">Rp 0</span>
+            </div>
+        </div>
+      `;
 
-      groupedItems[category].forEach((item, index) => {
+      group.items.forEach((item, index) => {
         const section = document.createElement("div");
         // Add comment-related classes
         const comment = rowComments[item.anggaran_id];
@@ -1490,15 +1620,60 @@ export function renderInputLpjPage(path, userRole) {
         section.dataset.pkValue = item.anggaran_id;
 
         section.innerHTML = getSectionHTML(item, index);
-        container.appendChild(section);
+        categorySection.appendChild(section);
         updateCommentButton(
           `.row-with-comment[data-pk-value="${item.anggaran_id}"] .row-comment-icon`,
           comment
         );
       });
+      
+      container.appendChild(categorySection);
     }
 
-    // Currency formatting is now handled directly in getSectionHTML
+    // Grand Total Section
+    const totalSection = document.createElement('div');
+    totalSection.className = 'spectacular-total-card';
+    totalSection.innerHTML = `
+      <div class="total-label">
+          <i class="ti ti-receipt-2"></i>
+          <span>Total Realisasi LPJ</span>
+      </div>
+      <div id="grand-total-lpj" class="total-value">Rp 0</div>
+    `;
+    container.appendChild(totalSection);
+
+    // Initialize AutoNumeric and Calculation
+    if (typeof AutoNumeric !== 'undefined') {
+        const numericOptions = {
+            currencySymbol: 'Rp ',
+            digitGroupSeparator: '.',
+            decimalCharacter: ',',
+            decimalPlaces: 0,
+            minimumValue: '0',
+            readOnly: isBendahara || isViewOnly // Respect read-only state for formatting
+        };
+
+        container.querySelectorAll('.autonumeric-currency').forEach(el => {
+            const rawValue = el.dataset.rawValue;
+            const anElement = new AutoNumeric(el, numericOptions);
+            
+            if (rawValue !== undefined && rawValue !== null && rawValue !== "") {
+                anElement.set(rawValue);
+            }
+            
+            el.addEventListener('autoNumeric:rawValueModified', calculateLpjTotals);
+        });
+    }
+
+    // Bind input events for volumes
+    container.addEventListener('input', (e) => {
+        if (e.target.matches('input[type="number"]')) {
+            calculateLpjTotals();
+        }
+    });
+
+    // Initial calculation
+    calculateLpjTotals();
   }
 
   function getSatuanOptions(selectedValue) {
@@ -1530,215 +1705,417 @@ export function renderInputLpjPage(path, userRole) {
     // button.parentElement.remove();
   };
 
-  function getSectionHTML(item, index) {
-    const realisasiItem =
-      state.lpjData?.realisasi?.find(
-        (r) => r.anggaran_id === item.anggaran_id
-      ) || {};
+    function getSectionHTML(item, index) {
 
-    const rabHargaFormatted = formatCurrency(item.harga_satuan);
+      const realisasiItem =
 
-    const realisasiHargaFormatted = formatCurrency(realisasiItem.harga_satuan);
+        state.lpjData?.realisasi?.find(
 
-    const inputAttr = isBendahara || isViewOnly ? "readonly disabled" : "";
+          (r) => r.anggaran_id === item.anggaran_id
 
-    const commonInputClasses = "w-full px-4 py-3 border-2 rounded-lg text-sm";
+        ) || {};
 
-    const commonInputStyle = `border-color: #E5E7EB; background: #FFFFFF;`;
-
-    const commonOnfocusBlur = `onfocus="this.style.borderColor='#00BCD4';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`;
-
-    const disabledInputStyleAttr = `style="background: #E9E9E9; cursor: not-allowed; border-color: #C0C0C0;"`;
-
-    const enabledInputStyleAttr = `style="${commonInputStyle}" ${commonOnfocusBlur}`;
-
-    const currentInputStyleAttr = isBendahara || isViewOnly
-      ? disabledInputStyleAttr
-      : enabledInputStyleAttr;
-
-    return `
-
-        ${
-          (isBendahara && !isViewOnly) || ((isPengusul || isViewOnly) && rowComments[item.anggaran_id])
-            ? `<button class="row-comment-icon" onclick="window.openRowCommentModal(this)" data-label="Item Anggaran #${
-                index + 1
-              }"><i class="ti ti-message-circle-2"></i></button>`
-            : ""
-        }
   
 
-        <!-- RAB Section (Disabled) -->
+      const rabHargaFormatted = formatCurrency(item.harga_satuan);
 
-        <div class="mb-6">
+  
 
-          <h5 class="mb-4 font-bold text-lg" style="color: #374151;">Rencana Anggaran Biaya (KAK)</h5>
+      // For AutoNumeric
 
-          <div class="grid-rab-header">
+      const realisasiHargaVal = realisasiItem.harga_satuan !== undefined ? realisasiItem.harga_satuan : (item.harga_satuan || 0);
 
-            <label class="block font-semibold text-sm">Uraian</label>
+  
 
-            <label class="block font-semibold text-sm">Qty 1</label>
+      const inputAttr = isBendahara || isViewOnly ? "readonly disabled" : "";
 
-            <label class="block font-semibold text-sm">Satuan 1</label>
+  
 
-            <label class="block font-semibold text-sm">Qty 2</label>
+      const commonInputClasses = "w-full px-4 py-3 border-2 rounded-lg text-sm";
 
-            <label class="block font-semibold text-sm">Satuan 2</label>
+  
 
-            <label class="block font-semibold text-sm">Qty 3</label>
+      const commonInputStyle = `border-color: #E5E7EB; background: #FFFFFF;`;
 
-            <label class="block font-semibold text-sm">Satuan 3</label>
+  
 
-            <label class="block font-semibold text-sm">Harga Satuan</label>
+      const commonOnfocusBlur = `onfocus="this.style.borderColor='#00BCD4';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`;
 
-            <span></span>
+  
 
-          </div>
+      const disabledInputStyleAttr = `style="background: #E9E9E9; cursor: not-allowed; border-color: #C0C0C0;"`;
 
-          <div class="grid grid-cols-[3fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr_0.5fr] gap-4 items-end mt-2">
+  
 
-              <div><input type="text" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
-      item.uraian || ""
-    }"></div>
+      const enabledInputStyleAttr = `style="${commonInputStyle}" ${commonOnfocusBlur}`;
 
-              <div><input type="number" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
-      item.volume1 || ""
-    }"></div>
+  
 
-              <div><select disabled class="${commonInputClasses}" ${disabledInputStyleAttr}>${getSatuanOptions(
-      item.satuan1_id
-    )}</select></div>
+      const currentInputStyleAttr = isBendahara || isViewOnly
 
-              <div><input type="number" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
-      item.volume2 || ""
-    }"></div>
+        ? disabledInputStyleAttr
 
-              <div><select disabled class="${commonInputClasses}" ${disabledInputStyleAttr}>${getSatuanOptions(
-      item.satuan2_id
-    )}</select></div>
+        : enabledInputStyleAttr;
 
-              <div><input type="number" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
-      item.volume3 || ""
-    }"></div>
+  
 
-              <div><select disabled class="${commonInputClasses}" ${disabledInputStyleAttr}>${getSatuanOptions(
-      item.satuan3_id
-    )}</select></div>
+      return `
 
-              <div><input type="text" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${rabHargaFormatted}"></div>
+  
+
+          ${
+
+            (isBendahara && !isViewOnly) || ((isPengusul || isViewOnly) && rowComments[item.anggaran_id])
+
+              ? `<button class="row-comment-icon" onclick="window.openRowCommentModal(this)" data-label="Item Anggaran #${
+
+                  index + 1
+
+                }"><i class="ti ti-message-circle-2"></i></button>`
+
+              : ""
+
+          }
+
+    
+
+  
+
+          <!-- RAB Section (Disabled) -->
+
+  
+
+          <div class="mb-6">
+
+  
+
+            <h5 class="mb-4 font-bold text-lg" style="color: #374151;">Rencana Anggaran Biaya (KAK)</h5>
+
+  
+
+            <div class="grid-rab-header">
+
+  
+
+              <label class="block font-semibold text-sm">Uraian</label>
+
+  
+
+              <label class="block font-semibold text-sm">Qty 1</label>
+
+  
+
+              <label class="block font-semibold text-sm">Satuan 1</label>
+
+  
+
+              <label class="block font-semibold text-sm">Qty 2</label>
+
+  
+
+              <label class="block font-semibold text-sm">Satuan 2</label>
+
+  
+
+              <label class="block font-semibold text-sm">Qty 3</label>
+
+  
+
+              <label class="block font-semibold text-sm">Satuan 3</label>
+
+  
+
+              <label class="block font-semibold text-sm">Harga Satuan</label>
+
+  
 
               <span></span>
 
-          </div>
+  
 
-        </div>
+            </div>
 
   
 
-        <!-- Realisasi Section -->
+            <div class="grid grid-cols-[3fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr_0.5fr] gap-4 items-end mt-2">
 
-        <div>
+  
 
-          <h5 class="mb-4 font-bold text-lg" style="color: #00BCD4;">Realisasi Pertanggungjawaban (LPJ)</h5>
+                <div><input type="text" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
 
-          <div class="grid grid-cols-[3fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr_0.5fr] gap-4 items-end realisasi-grid">
+        item.uraian || ""
 
-              <div><input type="text" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
-      item.realisasi_uraian || item.uraian || ""
-    }"></div>
+      }"></div>
 
-              <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
-      item.realisasi_volume1 || item.volume1 || ""
-    }"></div>
+  
 
-              <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr}>${getSatuanOptions(
-      item.realisasi_satuan1_id || item.satuan1_id
-    )}</select>
+                <div><input type="number" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
 
-              </div>
+        item.volume1 || ""
 
-              <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
-      item.realisasi_volume2 || item.volume2 || ""
-    }"></div>
+      }"></div>
 
-              <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr}>${getSatuanOptions(
-      item.realisasi_satuan2_id || item.satuan2_id
-    )}</select></div>
+  
 
-              <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
-      item.realisasi_volume3 || item.volume3 || ""
-    }"></div>
+                <div><select disabled class="${commonInputClasses}" ${disabledInputStyleAttr}>${getSatuanOptions(
 
-              <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr}>${getSatuanOptions(
-      item.realisasi_satuan3_id || item.satuan3_id
-    )}</select></div>
+        item.satuan1_id
 
-         
+      )}</select></div>
 
-              <div><input type="text" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${formatCurrency(
-      item.realisasi_harga_satuan || item.harga_satuan || ""
-    )}"></div>
+  
 
-            
+                <div><input type="number" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
 
-            ${
-              isPengusul && !isViewOnly
-                ? `
+        item.volume2 || ""
 
-                          <label class="cursor-pointer flex items-center justify-center">
+      }"></div>
 
-                            <input type="file" multiple class="hidden" onchange="window.handleFileUpload(this)" data-anggaran-id="${item.anggaran_id}">
+  
 
-                            <div class="remove-button w-full h-auto py-2 flex-shrink-0" style="background: #00BCD4;"><!-- Upload button styled like remove-button -->
+                <div><select disabled class="${commonInputClasses}" ${disabledInputStyleAttr}>${getSatuanOptions(
 
-                              <i class="ti ti-upload text-white text-xl"></i>
+        item.satuan2_id
 
-                            </div>
+      )}</select></div>
 
-                          </label>`
-                : "<div></div>"
-            }
+  
 
-          </div>
+                <div><input type="number" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${
 
-          <div class="uploaded-files-container mt-4 grid grid-cols-1 gap-2">
+        item.volume3 || ""
 
-              ${(item.bukti || [])
+      }"></div>
 
-                .map(
-                  (file) => `
+  
 
-                  <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200 border-hover-draw">
+                <div><select disabled class="${commonInputClasses}" ${disabledInputStyleAttr}>${getSatuanOptions(
 
-                      <a href="javascript:void(0);"
-                         data-lampiran-id="${file.lampiran_id}"
-                         class="text-sm truncate flex-1 text-blue-500 hover:underline view-file-btn">📎 ${
-                    file.nama_file_asli
-                  }</a>
+        item.satuan3_id
 
-                      ${
-                        isPengusul && !isViewOnly
-                          ? `<button type="button" class="remove-button" onclick="window.deleteUploadedFile(this, ${file.lampiran_id})">
+      )}</select></div>
 
-                              <span class="text-xl font-bold">−</span>
+  
 
-                             </button>`
-                          : ""
-                      }
+                <div><input type="text" disabled class="${commonInputClasses}" ${disabledInputStyleAttr} value="${rabHargaFormatted}"></div>
 
-                  </div>
+  
 
-              `
-                )
+                <span></span>
 
-                .join("")}
+  
+
+            </div>
+
+  
 
           </div>
 
-        </div>
+  
 
-      `;
-  }
+    
+
+  
+
+          <!-- Realisasi Section -->
+
+  
+
+          <div>
+
+  
+
+            <h5 class="mb-4 font-bold text-lg" style="color: #00BCD4;">Realisasi Pertanggungjawaban (LPJ)</h5>
+
+  
+
+            <div class="grid grid-cols-[3fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr_0.5fr] gap-4 items-end realisasi-grid">
+
+  
+
+                <div><input type="text" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
+
+        item.realisasi_uraian || item.uraian || ""
+
+      }"></div>
+
+  
+
+                <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_volume1" value="${
+
+        item.realisasi_volume1 || item.volume1 || ""
+
+      }"></div>
+
+  
+
+                <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_satuan1_id">${getSatuanOptions(
+
+        item.realisasi_satuan1_id || item.satuan1_id
+
+      )}</select>
+
+  
+
+                </div>
+
+  
+
+                <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_volume2" value="${
+
+        item.realisasi_volume2 || item.volume2 || ""
+
+      }"></div>
+
+  
+
+                <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_satuan2_id">${getSatuanOptions(
+
+        item.realisasi_satuan2_id || item.satuan2_id
+
+      )}</select></div>
+
+  
+
+                <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_volume3" value="${
+
+        item.realisasi_volume3 || item.volume3 || ""
+
+      }"></div>
+
+  
+
+                <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_satuan3_id">${getSatuanOptions(
+
+        item.realisasi_satuan3_id || item.satuan3_id
+
+      )}</select></div>
+
+  
+
+           
+
+  
+
+                <div><input type="text" ${inputAttr} class="${commonInputClasses} realisasi-input autonumeric-currency" data-field="realisasi_harga_satuan" data-raw-value="${realisasiHargaVal}" ${currentInputStyleAttr}></div>
+
+  
+
+              
+
+  
+
+              ${
+
+                isPengusul && !isViewOnly
+
+                  ? `
+
+  
+
+                            <label class="cursor-pointer flex items-center justify-center">
+
+  
+
+                              <input type="file" multiple class="hidden" onchange="window.handleFileUpload(this)" data-anggaran-id="${item.anggaran_id}">
+
+  
+
+                              <div class="remove-button w-full h-auto py-2 flex-shrink-0" style="background: #00BCD4;"><!-- Upload button styled like remove-button -->
+
+  
+
+                                <i class="ti ti-upload text-white text-xl"></i>
+
+  
+
+                              </div>
+
+  
+
+                            </label>`
+
+                  : "<div></div>"
+
+              }
+
+  
+
+            </div>
+
+  
+
+            <div class="uploaded-files-container mt-4 grid grid-cols-1 gap-2">
+
+  
+
+                ${(item.bukti || [])
+
+  
+
+                  .map(
+
+                    (file) => `
+
+  
+
+                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200 border-hover-draw">
+
+  
+
+                        <a href="javascript:void(0);"
+
+                           data-lampiran-id="${file.lampiran_id}"
+
+                           class="text-sm truncate flex-1 text-blue-500 hover:underline view-file-btn">📎 ${file.nama_file_asli}</a>
+
+  
+
+                        ${
+
+                          isPengusul && !isViewOnly
+
+                            ? `<button type="button" class="remove-button" onclick="window.deleteUploadedFile(this, ${file.lampiran_id})">
+
+  
+
+                                <span class="text-xl font-bold">−</span>
+
+  
+
+                               </button>`
+
+                            : ""
+
+                        }
+
+  
+
+                    </div>
+
+  
+
+                `
+
+                  )
+
+  
+
+                  .join("")}
+
+  
+
+            </div>
+
+  
+
+          </div>
+
+  
+
+        `;
+
+    }
 
   function renderActionButtons() {
     const container = document.getElementById("actionButtonsContainer");

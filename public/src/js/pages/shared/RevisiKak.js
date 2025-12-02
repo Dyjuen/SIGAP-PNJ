@@ -1322,6 +1322,101 @@ export function renderRevisiKakPage(path, userRole) {
       opacity: 1;
       transform: scale(1);
     }
+      /* Spectacular Divider */
+      .spectacular-divider {
+        position: relative;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+      }
+      .spectacular-divider::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), #00BCD4, rgba(0, 188, 212, 0.3), transparent);
+        border-radius: 100%;
+        opacity: 0.8;
+        box-shadow: 0 2px 4px rgba(0, 188, 212, 0.2);
+      }
+      /* Spectacular Divider */
+      .spectacular-divider {
+        position: relative;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+      }
+      .spectacular-divider::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), #00BCD4, rgba(0, 188, 212, 0.3), transparent);
+        border-radius: 100%;
+        opacity: 0.8;
+        box-shadow: 0 2px 4px rgba(0, 188, 212, 0.2);
+      }
+      /* Spectacular Total Card */
+      .spectacular-total-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border: 1px solid rgba(0, 188, 212, 0.2);
+        border-radius: 20px;
+        padding: 2rem 2.5rem;
+        margin-top: 3rem;
+        box-shadow: 0 20px 40px -10px rgba(0, 188, 212, 0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .spectacular-total-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #00BCD4, #00E5FF);
+      }
+      .spectacular-total-card::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(0, 188, 212, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .total-label {
+        font-size: 1.25rem;
+        color: #455A64;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .total-label i {
+        font-size: 1.75rem;
+        color: #00BCD4;
+        background: rgba(0, 188, 212, 0.1);
+        padding: 0.75rem;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.1);
+      }
+      .total-value {
+        font-size: 2.75rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0097A7 0%, #006064 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        letter-spacing: -0.5px;
+      }
     </style>
 
     <div class="kerangka-acuan-kerja-page">
@@ -1837,7 +1932,52 @@ export function renderRevisiKakPage(path, userRole) {
     container.appendChild(newItem);
   };
 
-  window.addRabItem = function (kategoriId) {
+  function calculateTotals() {
+    let grandTotal = 0;
+    
+    document.querySelectorAll('[id^="rab-items-container-"]').forEach(container => {
+        const categoryId = container.id.replace('rab-items-container-', '');
+        let categorySubtotal = 0;
+        
+        container.querySelectorAll('.rab-item').forEach(item => {
+            const inputs = item.querySelectorAll('input');
+            // Layout in addRabItem:
+            // 0: Uraian
+            // 1: Qty 1
+            // 2: Qty 2
+            // 3: Qty 3
+            // 4: Harga Satuan (autonumeric)
+            
+            const v1 = parseFloat(inputs[1]?.value) || 0;
+            const v2 = (inputs[2]?.value === "" || inputs[2]?.value === "0") ? 1 : parseFloat(inputs[2].value);
+            const v3 = (inputs[3]?.value === "" || inputs[3]?.value === "0") ? 1 : parseFloat(inputs[3].value);
+            
+            let price = 0;
+            const priceInput = inputs[4];
+            if (priceInput && typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(priceInput)) {
+                price = AutoNumeric.getAutoNumericElement(priceInput).getNumber();
+            } else if (priceInput) {
+                price = parseFloat(priceInput.value.replace(/[^0-9]/g, '')) || 0;
+            }
+
+            categorySubtotal += (v1 * v2 * v3 * price);
+        });
+
+        grandTotal += categorySubtotal;
+        
+        const subtotalEl = document.getElementById(`subtotal-${categoryId}`);
+        if (subtotalEl) {
+            subtotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(categorySubtotal);
+        }
+    });
+
+    const grandTotalEl = document.getElementById('grand-total-rab');
+    if (grandTotalEl) {
+        grandTotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(grandTotal);
+    }
+  }
+
+  window.addRabItem = function (kategoriId, itemData = null) {
     const container = document.getElementById(`rab-items-container-${kategoriId}`);
     if (!container) return;
 
@@ -1852,15 +1992,25 @@ export function renderRevisiKakPage(path, userRole) {
         });
     }
 
+    // Determine if this is creating from existing data (itemData) or new row
+    const uraian = itemData ? itemData.uraian : '';
+    const vol1 = itemData ? itemData.volume1 : '0';
+    const sat1 = itemData ? itemData.satuan1_id : '';
+    const vol2 = itemData ? itemData.volume2 : '0';
+    const sat2 = itemData ? itemData.satuan2_id : '';
+    const vol3 = itemData ? itemData.volume3 : '0';
+    const sat3 = itemData ? itemData.satuan3_id : '';
+    const harga = itemData ? itemData.harga_satuan : '';
+
     newItem.innerHTML = `
         <div class="grid grid-cols-[2.5fr_0.8fr_1.2fr_0.8fr_1.2fr_0.8fr_1.2fr_2.5fr_auto] gap-4 items-end">
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Uraian" ${inputStyle}>
+                <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Uraian" value="${uraian}" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                <input type="number" min="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+                <input type="number" min="0" value="${vol1}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
@@ -1870,7 +2020,7 @@ export function renderRevisiKakPage(path, userRole) {
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                <input type="number" min="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+                <input type="number" min="0" value="${vol2}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
@@ -1880,7 +2030,7 @@ export function renderRevisiKakPage(path, userRole) {
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-                <input type="number" min="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+                <input type="number" min="0" value="${vol3}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
@@ -1900,7 +2050,33 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
     `;
     container.appendChild(newItem);
-    initAutoNumeric();
+
+    // Populate selects
+    const selects = newItem.querySelectorAll('.satuan-select');
+    if (sat1) selects[0].value = sat1;
+    if (sat2) selects[1].value = sat2;
+    if (sat3) selects[2].value = sat3;
+
+    // Init AutoNumeric
+    if (typeof AutoNumeric !== 'undefined') {
+        const priceInput = newItem.querySelector('.autonumeric-currency');
+        new AutoNumeric(priceInput, {
+            currencySymbol: 'Rp ',
+            digitGroupSeparator: '.',
+            decimalCharacter: ',',
+            decimalPlaces: 0,
+            minimumValue: '0'
+        });
+        if (harga) {
+            AutoNumeric.getAutoNumericElement(priceInput).set(harga);
+        }
+        priceInput.addEventListener('autoNumeric:rawValueModified', calculateTotals);
+    }
+
+    updateRemoveButtonVisibility(container);
+    newItem.addEventListener('animationend', () => {
+      newItem.classList.remove('new-item-animation');
+    });
   };
 
   // ==============================================
@@ -2061,7 +2237,7 @@ export function renderRevisiKakPage(path, userRole) {
     };
 
     return `
-    <div class="row-with-comment" data-row-type="t_kak_anggaran" data-pk-name="anggaran_id" data-pk-value="${
+    <div class="row-with-comment rab-item" data-row-type="t_kak_anggaran" data-pk-name="anggaran_id" data-pk-value="${
       item.anggaran_id
     }">
       <div class="grid-rab">
@@ -2132,6 +2308,7 @@ export function renderRevisiKakPage(path, userRole) {
       if (rawValue) {
         AutoNumeric.getAutoNumericElement(el).set(rawValue);
       }
+      el.addEventListener('autoNumeric:rawValueModified', calculateTotals);
     });
   };
 
@@ -2378,13 +2555,24 @@ export function renderRevisiKakPage(path, userRole) {
         
         const kategoriData = kategoriBelanjaResponse.data;
         
-        kategoriData.forEach((cat) => {
+        kategoriData.forEach((cat, index) => {
             const catItems = grouped[cat.kategori_belanja_id] || [];
             // Always show category if we are Pengusul (to allow adding) or if Verifikator has items
             if (isPengusul || catItems.length > 0) {
                 const section = document.createElement("div");
-                section.className = "mb-8";
-                section.innerHTML = `<h5 class="mb-4 font-bold text-lg" style="color: #374151;">${cat.nama}</h5>`;
+                const isLastCategory = index === kategoriData.length - 1;
+                section.className = `mb-8 ${!isLastCategory ? 'spectacular-divider' : ''}`;
+                section.dataset.kategoriId = cat.kategori_belanja_id;
+                
+                section.innerHTML = `
+                    <div class="flex justify-between items-center mb-6">
+                        <h5 class="font-bold text-lg" style="color: #374151;">${cat.nama}</h5>
+                        <div class="text-right">
+                            <span class="text-sm text-gray-500">Subtotal:</span>
+                            <span id="subtotal-${cat.kategori_belanja_id}" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
+                        </div>
+                    </div>
+                `;
                 
                 const itemsContainer = document.createElement("div");
                 itemsContainer.id = `rab-items-container-${cat.kategori_belanja_id}`;
@@ -2419,9 +2607,22 @@ export function renderRevisiKakPage(path, userRole) {
                 });
             }
         });
+
+        // Grand Total
+        const totalSection = document.createElement('div');
+        totalSection.className = 'spectacular-total-card';
+        totalSection.innerHTML = `
+            <div class="total-label">
+                <i class="ti ti-wallet"></i>
+                <span>Total Estimasi Biaya</span>
+            </div>
+            <div id="grand-total-rab" class="total-value">Rp 0</div>
+        `;
+        rabContainer.appendChild(totalSection);
         
         // Initialize AutoNumeric after rendering RAB
         initAutoNumeric();
+        setTimeout(calculateTotals, 500);
       }
       
       Swal.close();
@@ -2562,6 +2763,16 @@ export function renderRevisiKakPage(path, userRole) {
       mainStep = 2;
       updateMainStepDisplay();
     });
+
+    // RAB Calculation Listener
+    const rabContainer = document.getElementById('rab-container');
+    if (rabContainer) {
+        rabContainer.addEventListener('input', (e) => {
+            if (e.target.matches('input[type="number"]')) {
+                calculateTotals();
+            }
+        });
+    }
   }
 
   window.openFieldCommentModal = function (btn) {

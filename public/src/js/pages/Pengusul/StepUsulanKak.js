@@ -491,6 +491,83 @@ export function renderUsulanKakPage(path, userRole) {
       html {
         scroll-behavior: smooth;
       }
+      /* Spectacular Divider */
+      .spectacular-divider {
+        position: relative;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+      }
+      .spectacular-divider::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), #00BCD4, rgba(0, 188, 212, 0.3), transparent);
+        border-radius: 100%;
+        opacity: 0.8;
+        box-shadow: 0 2px 4px rgba(0, 188, 212, 0.2);
+      }
+      /* Spectacular Total Card */
+      .spectacular-total-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border: 1px solid rgba(0, 188, 212, 0.2);
+        border-radius: 20px;
+        padding: 2rem 2.5rem;
+        margin-top: 3rem;
+        box-shadow: 0 20px 40px -10px rgba(0, 188, 212, 0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .spectacular-total-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #00BCD4, #00E5FF);
+      }
+      .spectacular-total-card::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(0, 188, 212, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .total-label {
+        font-size: 1.25rem;
+        color: #455A64;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .total-label i {
+        font-size: 1.75rem;
+        color: #00BCD4;
+        background: rgba(0, 188, 212, 0.1);
+        padding: 0.75rem;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.1);
+      }
+      .total-value {
+        font-size: 2.75rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0097A7 0%, #006064 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        letter-spacing: -0.5px;
+      }
     </style>
     
     <div class="kerangka-acuan-kerja-page">
@@ -1477,6 +1554,120 @@ export function renderUsulanKakPage(path, userRole) {
     }
   }
 
+  function calculateTotals() {
+    let grandTotal = 0;
+    
+    // Iterate through each category section
+    document.querySelectorAll('[id^="rab-items-container-"]').forEach(container => {
+        const categoryId = container.id.replace('rab-items-container-', '');
+        let categorySubtotal = 0;
+        
+        container.querySelectorAll('.rab-item').forEach(item => {
+            const inputs = item.querySelectorAll('input');
+            // inputs indices: 0: uraian, 1: qty1, 2: qty2, 3: qty3, 4: price
+            // Note: inputs list depends on exact HTML structure. 
+            // In addRabItem:
+            // 0: Uraian (text)
+            // 1: Qty 1 (number)
+            // 2: Qty 2 (number)
+            // 3: Qty 3 (number)
+            // 4: Harga Satuan (text/autonumeric)
+            
+            // Let's select explicitly to be safe
+            const qty1 = parseFloat(item.querySelector('input[placeholder="Input Uraian"]')?.parentElement?.nextElementSibling?.querySelector('input')?.value) || 0;
+            // The structure is grid, so we can navigate or use classes if added. 
+            // Current structure in addRabItem:
+            // div > label > input (Uraian)
+            // div > label > input (Qty 1)
+            // ...
+            
+            const allInputs = item.querySelectorAll('input');
+            const q1 = parseFloat(allInputs[1].value) || 0;
+            // Qty 2 is at index 2? No, index 2 is Qty 2 input? 
+            // Let's check addRabItem structure:
+            // 1. Uraian input
+            // 2. Qty 1 input
+            // 3. Satuan 1 select (not input)
+            // 4. Qty 2 input
+            // ...
+            // Filter only inputs
+            const numberInputs = Array.from(allInputs).filter(i => i.type === 'number');
+            const q2 = parseFloat(numberInputs[1]?.value) || 1; // Default to 1 if empty/0 for multiplication
+            const q3 = parseFloat(numberInputs[2]?.value) || 1;
+            
+            // Effective Qty 2 and 3 should be treated as 1 if they are not used/visible or 0
+            // Based on previous logic: volume2: parseInt(inputs[3].value) || null
+            // For calculation: 
+            const vol1 = parseFloat(numberInputs[0]?.value) || 0;
+            const vol2 = parseFloat(numberInputs[1]?.value) || 1; 
+            const vol3 = parseFloat(numberInputs[2]?.value) || 1;
+
+            // Price
+            const priceInput = item.querySelector('.autonumeric-currency');
+            let price = 0;
+            if (priceInput && typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(priceInput)) {
+                price = AutoNumeric.getAutoNumericElement(priceInput).getNumber();
+            } else if (priceInput) {
+                price = parseFloat(priceInput.value.replace(/[^0-9]/g, '')) || 0;
+            }
+
+            // Logic: if vol2/vol3 are 0 or empty in UI, they act as 1 for multiplication OR they imply 0 total?
+            // Usually in RAB: Total = Vol1 * Vol2 * Vol3 * Harga
+            // If Vol2 is intended to be empty, it's 1. 
+            // But the input `min="0"` suggests 0 is possible. 
+            // Let's assume if user inputs 0, it's 0. If empty, it's 1? 
+            // The addRabItem sets value="${vol2}" which is '0' by default string.
+            
+            // Let's strictly use the value.
+            const v1 = numberInputs[0]?.value ? parseFloat(numberInputs[0].value) : 0;
+            const v2 = numberInputs[1]?.value ? parseFloat(numberInputs[1].value) : 1; // Treat empty/0 as 1 for easier subtotaling if unused?
+            // Actually, if it's 0, the total should be 0.
+            // However, mostly vol2 and vol3 are optional. 
+            // Let's try: If value is "0" explicitly, it is 0. If "", it is 1.
+            // But standard html input type number value is "" if empty.
+            
+            const val1 = numberInputs[0].value === "" ? 0 : parseFloat(numberInputs[0].value);
+            const val2 = numberInputs[1].value === "" || numberInputs[1].value === "0" ? 1 : parseFloat(numberInputs[1].value); // Hacky: usually vol2/3 are multipliers.
+            const val3 = numberInputs[2].value === "" || numberInputs[2].value === "0" ? 1 : parseFloat(numberInputs[2].value);
+
+            // Let's stick to standard multiplication. If user puts 0, it is 0.
+            // But we need to handle the case where Vol2/Vol3 are hidden or not relevant.
+            // In this UI they are always visible.
+            
+            // Revised logic:
+            // Vol1 is mandatory.
+            // Vol2 and Vol3, if 0 or empty, should probably be treated as 1 for the calculation context IF they are just extra dimensions.
+            // But if they are real quantities, 0 means 0.
+            // Let's look at `collectFormData`: `volume2: parseInt(inputs[3].value) || null`
+            // If it submits null, likely backend treats it as 1 or ignores.
+            
+            // Safe bet: use 1 if falsy/0
+            const safeV1 = parseFloat(numberInputs[0]?.value) || 0;
+            let safeV2 = parseFloat(numberInputs[1]?.value);
+            if (!safeV2) safeV2 = 1;
+            let safeV3 = parseFloat(numberInputs[2]?.value);
+            if (!safeV3) safeV3 = 1;
+
+            const total = safeV1 * safeV2 * safeV3 * price;
+            categorySubtotal += total;
+        });
+
+        grandTotal += categorySubtotal;
+        
+        // Update Subtotal Display
+        const subtotalEl = document.getElementById(`subtotal-${categoryId}`);
+        if (subtotalEl) {
+            subtotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(categorySubtotal);
+        }
+    });
+
+    // Update Grand Total Display
+    const grandTotalEl = document.getElementById('grand-total-rab');
+    if (grandTotalEl) {
+        grandTotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(grandTotal);
+    }
+  }
+
   async function populateRabSections() {
     try {
       const response = await apiRequest("/master/kategori-belanja");
@@ -1484,13 +1675,20 @@ export function renderUsulanKakPage(path, userRole) {
       const rabContainer = document.getElementById('rab-container');
       rabContainer.innerHTML = ''; // Clear existing
 
-      kategoriData.forEach(kategori => {
+      kategoriData.forEach((kategori, index) => {
         const section = document.createElement('div');
-        section.className = 'mb-10';
+        const isLastCategory = index === kategoriData.length - 1;
+        section.className = `mb-10 ${!isLastCategory ? 'spectacular-divider' : ''}`;
         section.dataset.kategoriId = kategori.kategori_belanja_id;
 
         section.innerHTML = `
-                  <h5 class="mb-6 font-bold text-lg" style="color: #374151;">${kategori.nama}</h5>
+                  <div class="flex justify-between items-center mb-6">
+                    <h5 class="font-bold text-lg" style="color: #374151;">${kategori.nama}</h5>
+                    <div class="text-right">
+                        <span class="text-sm text-gray-500">Subtotal:</span>
+                        <span id="subtotal-${kategori.kategori_belanja_id}" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
+                    </div>
+                  </div>
                   <div id="rab-items-container-${kategori.kategori_belanja_id}">
                       <!-- New RAB items will be inserted here -->
                   </div>
@@ -1504,6 +1702,18 @@ export function renderUsulanKakPage(path, userRole) {
           addRabItem(kategori.kategori_belanja_id);
         }
       });
+
+      // Add Grand Total Section
+      const totalSection = document.createElement('div');
+      totalSection.className = 'spectacular-total-card';
+      totalSection.innerHTML = `
+        <div class="total-label">
+            <i class="ti ti-wallet"></i>
+            <span>Total Estimasi Biaya</span>
+        </div>
+        <div id="grand-total-rab" class="total-value">Rp 0</div>
+      `;
+      rabContainer.appendChild(totalSection);
 
     } catch (error) {
       console.error("Error populating RAB sections:", error);
@@ -1747,6 +1957,13 @@ export function renderUsulanKakPage(path, userRole) {
         updateMainStepDisplay();
       });
     }
+
+    // RAB Calculation Listener
+    document.body.addEventListener('input', function(e) {
+        if (e.target.matches('#rab-container input')) {
+             calculateTotals();
+        }
+    });
   }
 
   // Update Step Display for Step 1 sub-steps
@@ -1999,6 +2216,8 @@ export function renderUsulanKakPage(path, userRole) {
         if (harga) {
             AutoNumeric.getAutoNumericElement(priceInput).set(harga);
         }
+        // Add listener for AutoNumeric
+        priceInput.addEventListener('autoNumeric:rawValueModified', calculateTotals);
     }
 
     // Populate dropdowns for the new item
@@ -2177,6 +2396,10 @@ export function renderUsulanKakPage(path, userRole) {
           addRabItem(item.kategori_belanja_id, item);
         });
       }
+      
+      // Calculate totals after populating data
+      setTimeout(calculateTotals, 500);
+
     } catch (error) {
       console.error("Error fetching KAK data:", error);
       showError(`Gagal memuat data: ${error.message}`);

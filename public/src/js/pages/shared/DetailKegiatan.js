@@ -635,6 +635,65 @@ export function renderDetailKegiatanPage(path, userRole) {
           100% 0%, 100% 100%
         );
       }
+      /* Spectacular Total Card */
+      .spectacular-total-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border: 1px solid rgba(0, 188, 212, 0.2);
+        border-radius: 20px;
+        padding: 2rem 2.5rem;
+        margin-top: 3rem;
+        box-shadow: 0 20px 40px -10px rgba(0, 188, 212, 0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .spectacular-total-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #00BCD4, #00E5FF);
+      }
+      .spectacular-total-card::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(0, 188, 212, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .total-label {
+        font-size: 1.25rem;
+        color: #455A64;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .total-label i {
+        font-size: 1.75rem;
+        color: #00BCD4;
+        background: rgba(0, 188, 212, 0.1);
+        padding: 0.75rem;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.1);
+      }
+      .total-value {
+        font-size: 2.75rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0097A7 0%, #006064 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        letter-spacing: -0.5px;
+      }
     </style>
 
     <div class="kerangka-acuan-kerja-page">
@@ -1093,20 +1152,66 @@ export function renderDetailKegiatanPage(path, userRole) {
       const belanjaPerjalananContainer = document.getElementById("belanjaPerjalananContainer");
       belanjaPerjalananContainer.innerHTML = "";
 
+      let totalBarang = 0;
+      let totalJasa = 0;
+      let totalPerjalanan = 0;
+
       if (kakData.anggaran && kakData.anggaran.length > 0) {
         const kategoriBarangId = masterState.kategoriBelanja.find(k => k.nama?.toLowerCase() === 'belanja barang')?.kategori_belanja_id;
         const kategoriJasaId = masterState.kategoriBelanja.find(k => k.nama?.toLowerCase() === 'belanja jasa')?.kategori_belanja_id;
         const kategoriPerjalananId = masterState.kategoriBelanja.find(k => k.nama?.toLowerCase() === 'belanja perjalanan')?.kategori_belanja_id;
 
         kakData.anggaran.forEach((item) => {
+          const vol1 = parseFloat(item.volume1) || 0;
+          const vol2 = parseFloat(item.volume2) || 1;
+          const vol3 = parseFloat(item.volume3) || 1;
+          const harga = parseFloat(item.harga_satuan) || 0;
+          const total = vol1 * vol2 * vol3 * harga;
+
           if (item.kategori_belanja_id == kategoriBarangId) {
             belanjaBarangContainer.innerHTML += createRabRow(item);
+            totalBarang += total;
           } else if (item.kategori_belanja_id == kategoriJasaId) {
             belanjaJasaContainer.innerHTML += createRabRow(item);
+            totalJasa += total;
           } else if (item.kategori_belanja_id == kategoriPerjalananId) {
             belanjaPerjalananContainer.innerHTML += createRabRow(item);
+            totalPerjalanan += total;
           }
         });
+      }
+
+      const formatMoney = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+
+      if (belanjaBarangContainer.innerHTML) {
+          belanjaBarangContainer.innerHTML += `<div class="text-right font-bold mt-4 text-lg" style="color: #00BCD4;">Subtotal: ${formatMoney(totalBarang)}</div>`;
+      }
+      if (belanjaJasaContainer.innerHTML) {
+          belanjaJasaContainer.innerHTML += `<div class="text-right font-bold mt-4 text-lg" style="color: #00BCD4;">Subtotal: ${formatMoney(totalJasa)}</div>`;
+      }
+      if (belanjaPerjalananContainer.innerHTML) {
+          belanjaPerjalananContainer.innerHTML += `<div class="text-right font-bold mt-4 text-lg" style="color: #00BCD4;">Subtotal: ${formatMoney(totalPerjalanan)}</div>`;
+      }
+
+      const grandTotal = totalBarang + totalJasa + totalPerjalanan;
+      const totalContainer = document.createElement('div');
+      totalContainer.className = 'spectacular-total-card';
+      totalContainer.innerHTML = `
+        <div class="total-label">
+            <i class="ti ti-wallet"></i>
+            <span>Total Estimasi Biaya</span>
+        </div>
+        <div class="total-value">${formatMoney(grandTotal)}</div>
+      `;
+      
+      // Append to the parent of categories containers
+      const rabParent = belanjaBarangContainer.closest('.bg-white');
+      // Insert before the navigation buttons
+      const navButtons = rabParent.querySelector('.flex.justify-between.mt-8');
+      if (navButtons) {
+          rabParent.insertBefore(totalContainer, navButtons);
+      } else {
+          rabParent.appendChild(totalContainer);
       }
 
       Swal.close();

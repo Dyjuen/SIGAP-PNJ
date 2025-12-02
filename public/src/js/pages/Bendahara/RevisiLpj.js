@@ -849,6 +849,83 @@ export function renderRevisiLpjPage(path, userRole) {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(3, 155, 229, 0.4); /* Material Light Blue shadow */
       }
+      /* Spectacular Divider */
+      .spectacular-divider {
+        position: relative;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+      }
+      .spectacular-divider::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), #00BCD4, rgba(0, 188, 212, 0.3), transparent);
+        border-radius: 100%;
+        opacity: 0.8;
+        box-shadow: 0 2px 4px rgba(0, 188, 212, 0.2);
+      }
+      /* Spectacular Total Card */
+      .spectacular-total-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border: 1px solid rgba(0, 188, 212, 0.2);
+        border-radius: 20px;
+        padding: 2rem 2.5rem;
+        margin-top: 3rem;
+        box-shadow: 0 20px 40px -10px rgba(0, 188, 212, 0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .spectacular-total-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #00BCD4, #00E5FF);
+      }
+      .spectacular-total-card::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(0, 188, 212, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .total-label {
+        font-size: 1.25rem;
+        color: #455A64;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .total-label i {
+        font-size: 1.75rem;
+        color: #00BCD4;
+        background: rgba(0, 188, 212, 0.1);
+        padding: 0.75rem;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.1);
+      }
+      .total-value {
+        font-size: 2.75rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0097A7 0%, #006064 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        letter-spacing: -0.5px;
+      }
     </style>
 
     <div class="lpj-review-page">
@@ -983,6 +1060,47 @@ export function renderRevisiLpjPage(path, userRole) {
     updateCommentCount();
   }
 
+  function calculateRevisiLpjTotals() {
+    let grandTotal = 0;
+    
+    document.querySelectorAll('.category-section').forEach(section => {
+        let subtotal = 0;
+        section.querySelectorAll('.border-hover-draw').forEach(row => {
+            const realisasiGrid = row.querySelector('.realisasi-grid');
+            if (!realisasiGrid) return;
+
+            const vol1Input = realisasiGrid.querySelector('input[data-field="realisasi_volume1"]');
+            const vol2Input = realisasiGrid.querySelector('input[data-field="realisasi_volume2"]');
+            const vol3Input = realisasiGrid.querySelector('input[data-field="realisasi_volume3"]');
+            const hargaInput = realisasiGrid.querySelector('input[data-field="realisasi_harga_satuan"]');
+
+            const v1 = parseFloat(vol1Input?.value) || 0;
+            const v2 = (vol2Input?.value === "" || vol2Input?.value === null || vol2Input?.value === "0") ? 1 : parseFloat(vol2Input.value);
+            const v3 = (vol3Input?.value === "" || vol3Input?.value === null || vol3Input?.value === "0") ? 1 : parseFloat(vol3Input.value);
+            
+            let harga = 0;
+            if (typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(hargaInput)) {
+                harga = AutoNumeric.getAutoNumericElement(hargaInput).getNumber();
+            } else {
+                harga = parseFloat(hargaInput?.value.replace(/[^0-9]/g, '')) || 0;
+            }
+
+            subtotal += (v1 * v2 * v3 * harga);
+        });
+        
+        const subtotalEl = section.querySelector('.subtotal-display');
+        if (subtotalEl) {
+            subtotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal);
+        }
+        grandTotal += subtotal;
+    });
+
+    const grandTotalEl = document.getElementById('grand-total-lpj');
+    if (grandTotalEl) {
+        grandTotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(grandTotal);
+    }
+  }
+
   async function fetchAndPopulateData() {
     Swal.fire({
       title: "Memuat Data LPJ...",
@@ -1027,11 +1145,19 @@ export function renderRevisiLpjPage(path, userRole) {
       anggaranContainer.innerHTML = "";
 
       for (const category in groupedAnggaran) {
-        const categoryTitle = document.createElement("h4");
-        categoryTitle.className =
-          "text-xl font-semibold mb-4 mt-6 text-gray-700";
-        categoryTitle.textContent = category;
-        anggaranContainer.appendChild(categoryTitle);
+        const categorySection = document.createElement("div");
+        const isLastCategory = Object.keys(groupedAnggaran).indexOf(category) === Object.keys(groupedAnggaran).length - 1;
+        categorySection.className = `category-section mb-8 ${!isLastCategory ? 'spectacular-divider' : ''}`;
+        
+        categorySection.innerHTML = `
+            <div class="flex justify-between items-center mb-6">
+                <h4 class="text-xl font-semibold text-gray-700">${category}</h4>
+                <div class="text-right">
+                    <span class="text-sm text-gray-500">Subtotal (Realisasi):</span>
+                    <span class="font-bold text-lg ml-2 subtotal-display" style="color: #00BCD4;">Rp 0</span>
+                </div>
+            </div>
+        `;
 
         groupedAnggaran[category].forEach((item, index) => {
           const itemLampiran = lampiranMap[item.anggaran_id] || [];
@@ -1041,12 +1167,56 @@ export function renderRevisiLpjPage(path, userRole) {
             itemLampiran,
             index
           );
-          anggaranContainer.appendChild(section);
+          categorySection.appendChild(section);
         });
+        anggaranContainer.appendChild(categorySection);
       }
+
+      // Grand Total
+      const totalSection = document.createElement('div');
+      totalSection.className = 'spectacular-total-card';
+      totalSection.innerHTML = `
+        <div class="total-label">
+            <i class="ti ti-receipt-2"></i>
+            <span>Total Realisasi LPJ</span>
+        </div>
+        <div id="grand-total-lpj" class="total-value">Rp 0</div>
+      `;
+      anggaranContainer.appendChild(totalSection);
 
       initializeComments(lampiran);
       updateAllCommentIcons();
+
+      // Initialize AutoNumeric
+      if (typeof AutoNumeric !== 'undefined') {
+          const numericOptions = {
+              currencySymbol: 'Rp ',
+              digitGroupSeparator: '.',
+              decimalCharacter: ',',
+              decimalPlaces: 0,
+              minimumValue: '0',
+              readOnly: !isPengusul // Readonly if not pengusul
+          };
+
+          anggaranContainer.querySelectorAll('.autonumeric-currency').forEach(el => {
+              const rawValue = el.dataset.rawValue;
+              const anElement = new AutoNumeric(el, numericOptions);
+              if (rawValue !== undefined && rawValue !== null && rawValue !== "") {
+                  anElement.set(rawValue);
+              }
+              el.addEventListener('autoNumeric:rawValueModified', calculateRevisiLpjTotals);
+          });
+      }
+
+      // Event listener for volume inputs
+      anggaranContainer.addEventListener('input', (e) => {
+          if (e.target.matches('input[type="number"]')) {
+              calculateRevisiLpjTotals();
+          }
+      });
+
+      // Initial calculation
+      calculateRevisiLpjTotals();
 
       Swal.close();
     } catch (error) {
@@ -1093,6 +1263,8 @@ export function renderRevisiLpjPage(path, userRole) {
     const inputStyle = canEdit
       ? `style="border-color: #E5E7EB; background: #FFFFFF;"`
       : readOnlyStyle;
+
+    const realisasiHargaVal = item.realisasi_harga_satuan !== undefined ? item.realisasi_harga_satuan : (item.harga_satuan || 0);
 
     const lampiranListHTML =
       lampiran.length > 0
@@ -1286,9 +1458,7 @@ export function renderRevisiLpjPage(path, userRole) {
 
                   <label class="block font-semibold mb-2 text-sm">Harga Satuan</label>
 
-                  <input type="text" ${inputAttr} class="${commonInputClasses} realisasi-input currency-input" data-field="realisasi_harga_satuan" ${inputStyle} value="${formatCurrency(
-      item.realisasi_harga_satuan || item.harga_satuan || 0
-    )}">
+                  <input type="text" ${inputAttr} class="${commonInputClasses} realisasi-input autonumeric-currency" data-field="realisasi_harga_satuan" ${inputStyle} data-raw-value="${realisasiHargaVal}">
 
                 </div>
 
