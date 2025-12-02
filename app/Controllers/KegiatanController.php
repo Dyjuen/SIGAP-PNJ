@@ -727,6 +727,30 @@ class KegiatanController
                 $this->kegiatanModel->updateApprovalStatus($nextApproval['approval_kegiatan_id'], 'Aktif', null, null);
                 
                 $nextExpectedRole = $approvalHierarchy[$activeIndex + 1] ?? 'Unknown';
+                
+                // Update Main Status based on Next Step
+                $newStatusId = $kegiatan['status_id']; // Default to current
+                if ($nextExpectedRole === 'Wadir2') {
+                    $newStatusId = 7; // Review Wadir 2
+                } elseif ($nextExpectedRole === 'Bendahara-Cair') {
+                    $newStatusId = 8; // Proses Pencairan
+                } elseif ($nextExpectedRole === 'Bendahara-LPJ') {
+                    $newStatusId = 9; // Uang Muka Dicairkan
+                }
+
+                if ($newStatusId != $kegiatan['status_id']) {
+                    $this->kegiatanModel->updateStatus($kegiatanId, $newStatusId);
+                    
+                    // Log the automatic status change
+                    $this->logStatusModel->create([
+                        'kegiatan_id' => $kegiatanId,
+                        'status_id_lama' => $kegiatan['status_id'],
+                        'status_id_baru' => $newStatusId,
+                        'actor_user_id' => $this->userData['user_id'],
+                        'catatan' => "Status diperbarui otomatis ke " . $this->getStatusName($newStatusId)
+                    ]);
+                }
+
                 $nextApproverRoleName = $nextExpectedRole;
                 if (in_array($nextApproverRoleName, ['Bendahara-Cair', 'Bendahara-LPJ'])) {
                     $nextApproverRoleName = 'Bendahara';
@@ -751,7 +775,7 @@ class KegiatanController
             
             } else {
                 if ($expectedRole === 'Bendahara-LPJ') {
-                    $this->kegiatanModel->updateStatus($kegiatanId, 16); // 16 = Selesai
+                    $this->kegiatanModel->updateStatus($kegiatanId, 15); // 15 = Selesai
                     $this->notifikasiModel->create([
                         'penerima_user_id' => $kegiatan['pengusul_user_id'],
                         'pesan' => "LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah disetujui. Kegiatan selesai.",
@@ -1132,6 +1156,19 @@ class KegiatanController
     private function hasRole($roleName)
     {
         return in_array($roleName, $this->userData['roles'] ?? []);
+    }
+
+    /**
+     * Helper: Get status name by ID
+     */
+    private function getStatusName($statusId)
+    {
+        $statuses = [
+            7 => 'Review Wadir 2',
+            8 => 'Proses Pencairan',
+            9 => 'Uang Muka Dicairkan'
+        ];
+        return $statuses[$statusId] ?? 'Status Baru';
     }
 
     /**

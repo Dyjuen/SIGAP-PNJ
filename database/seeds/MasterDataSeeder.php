@@ -65,7 +65,6 @@ class MasterDataSeeder extends AbstractSeed
             ['nama_status' => 'Kegiatan Berlangsung'],
             ['nama_status' => 'Menunggu LPJ'],
             ['nama_status' => 'Review LPJ'],
-            ['nama_status' => 'LPJ Diterima'],
             ['nama_status' => 'LPJ Direvisi'],
             ['nama_status' => 'Setor Fisik Dokumen'],
             ['nama_status' => 'Selesai']
