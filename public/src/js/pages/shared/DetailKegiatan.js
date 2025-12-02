@@ -694,6 +694,24 @@ export function renderDetailKegiatanPage(path, userRole) {
         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
         letter-spacing: -0.5px;
       }
+      /* Spectacular Divider */
+      .spectacular-divider {
+        position: relative;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+      }
+      .spectacular-divider::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), #00BCD4, rgba(0, 188, 212, 0.3), transparent);
+        border-radius: 100%;
+        opacity: 0.8;
+        box-shadow: 0 2px 4px rgba(0, 188, 212, 0.2);
+      }
     </style>
 
     <div class="kerangka-acuan-kerja-page">
@@ -871,16 +889,28 @@ export function renderDetailKegiatanPage(path, userRole) {
           <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Rincian Anggaran Biaya</h4>
           
           <!-- Belanja Barang -->
-          <div class="mb-10">
-            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
+          <div class="mb-10 spectacular-divider">
+            <div class="flex justify-between items-center mb-6">
+              <h5 class="font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
+              <div class="text-right">
+                <span class="text-sm text-gray-500">Subtotal:</span>
+                <span id="subtotal-barang" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
+              </div>
+            </div>
             <div id="belanjaBarangContainer">
               <!-- Dynamic content will be injected here -->
             </div>
           </div>
 
           <!-- Belanja Jasa -->
-          <div class="mb-10">
-            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
+          <div class="mb-10 spectacular-divider">
+            <div class="flex justify-between items-center mb-6">
+              <h5 class="font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
+              <div class="text-right">
+                <span class="text-sm text-gray-500">Subtotal:</span>
+                <span id="subtotal-jasa" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
+              </div>
+            </div>
             <div id="belanjaJasaContainer">
               <!-- Dynamic content will be injected here -->
             </div>
@@ -888,7 +918,13 @@ export function renderDetailKegiatanPage(path, userRole) {
 
           <!-- Belanja Perjalanan -->
           <div class="mb-10">
-            <h5 class="mb-6 font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
+            <div class="flex justify-between items-center mb-6">
+              <h5 class="font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
+              <div class="text-right">
+                <span class="text-sm text-gray-500">Subtotal:</span>
+                <span id="subtotal-perjalanan" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
+              </div>
+            </div>
             <div id="belanjaPerjalananContainer">
               <!-- Dynamic content will be injected here -->
             </div>
@@ -1192,14 +1228,14 @@ export function renderDetailKegiatanPage(path, userRole) {
 
       const formatMoney = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
 
-      if (belanjaBarangContainer.innerHTML) {
-          belanjaBarangContainer.innerHTML += `<div class="text-right font-bold mt-4 text-lg" style="color: #00BCD4;">Subtotal: ${formatMoney(totalBarang)}</div>`;
+      if (document.getElementById('subtotal-barang')) {
+          document.getElementById('subtotal-barang').textContent = formatMoney(totalBarang);
       }
-      if (belanjaJasaContainer.innerHTML) {
-          belanjaJasaContainer.innerHTML += `<div class="text-right font-bold mt-4 text-lg" style="color: #00BCD4;">Subtotal: ${formatMoney(totalJasa)}</div>`;
+      if (document.getElementById('subtotal-jasa')) {
+          document.getElementById('subtotal-jasa').textContent = formatMoney(totalJasa);
       }
-      if (belanjaPerjalananContainer.innerHTML) {
-          belanjaPerjalananContainer.innerHTML += `<div class="text-right font-bold mt-4 text-lg" style="color: #00BCD4;">Subtotal: ${formatMoney(totalPerjalanan)}</div>`;
+      if (document.getElementById('subtotal-perjalanan')) {
+          document.getElementById('subtotal-perjalanan').textContent = formatMoney(totalPerjalanan);
       }
 
       const grandTotal = totalBarang + totalJasa + totalPerjalanan;

@@ -785,6 +785,10 @@ export function renderUsulanKakPage(path, userRole) {
     /* Dynamic field animations */
     .dynamic-field-item {
         transition: all 0.4s ease-in-out;
+    }
+
+    .dynamic-field-item.new-item-animation, 
+    .dynamic-field-item.removing {
         overflow: hidden;
     }
 
@@ -868,6 +872,10 @@ export function renderUsulanKakPage(path, userRole) {
     /* Dynamic field animations */
     .dynamic-field-item {
         transition: all 0.4s ease-in-out;
+    }
+
+    .dynamic-field-item.new-item-animation, 
+    .dynamic-field-item.removing {
         overflow: hidden;
     }
 
@@ -1060,19 +1068,16 @@ export function renderUsulanKakPage(path, userRole) {
     document
       .querySelectorAll(`#main-step-1 .step-content.active .validation-error`)
       .forEach((el) => el.remove());
-    document
-      .querySelectorAll(`#main-step-1 .step-content.active .is-invalid`)
-      .forEach((el) => {
-        el.classList.remove("is-invalid");
-        el.style.borderColor = "#E5E7EB";
-      });
-
     const addError = (el, message) => {
       isValid = false;
       el.classList.add("is-invalid");
       el.style.borderColor = "#EF4444";
+
+      // Ensure parent is relative for absolute positioning
+      el.parentElement.classList.add('relative');
+
       const errorEl = document.createElement("p");
-      errorEl.className = "validation-error text-red-500 text-sm mt-1";
+      errorEl.className = "validation-error text-red-500 text-xs italic absolute -bottom-5 left-0 z-10";
       errorEl.textContent = message;
       el.parentElement.appendChild(errorEl);
     };
@@ -1180,14 +1185,17 @@ export function renderUsulanKakPage(path, userRole) {
       el.classList.add("is-invalid");
       el.style.borderColor = "#EF4444";
       const errorEl = document.createElement("p");
-      errorEl.className = "validation-error text-red-500 text-sm mt-1";
+      errorEl.className = "validation-error text-red-500 text-xs italic absolute -bottom-5 left-0 z-10";
       errorEl.textContent = message;
       // Check if the element is the numeric input for IKU
       if (el.type === 'number' && el.parentElement.classList.contains('flex')) {
         // Place error message after the parent of the flex container
-        el.parentElement.parentElement.appendChild(errorEl);
+        const parent = el.parentElement.parentElement;
+        parent.classList.add('relative');
+        parent.appendChild(errorEl);
       } else {
         // Default behavior for other elements like select
+        el.parentElement.classList.add('relative');
         el.parentElement.appendChild(errorEl);
       }
     };
@@ -1261,8 +1269,12 @@ export function renderUsulanKakPage(path, userRole) {
       isValid = false;
       el.classList.add("is-invalid");
       el.style.borderColor = "#EF4444";
+
+      // Ensure parent is relative for absolute positioning
+      el.parentElement.classList.add('relative');
+
       const errorEl = document.createElement("p");
-      errorEl.className = "validation-error text-red-500 text-sm mt-1";
+      errorEl.className = "validation-error text-red-500 text-xs italic absolute -bottom-5 left-0 z-10";
       errorEl.textContent = message;
       el.parentElement.appendChild(errorEl);
     };
