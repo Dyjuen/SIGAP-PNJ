@@ -238,6 +238,43 @@ export function renderRiwayatKAKPage(path, userRole) {
         box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
       }
 
+      .badge-draft {
+        background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(148, 163, 184, 0.3);
+      }
+
+      .badge-process {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+      }
+
+      .badge-money {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      }
+      
+      .badge-active {
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        animation: pulseBadge 2s ease-in-out infinite;
+      }
+
+      .badge-warning {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+      }
+
+      .badge-finished {
+        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+      }
+
       .status-icon {
         width: 14px;
         height: 14px;
@@ -443,21 +480,53 @@ export function renderRiwayatKAKPage(path, userRole) {
     const statusString = String(status).toLowerCase().replace(/\s+/g, '_');
     
     const statusConfig = {
-      disetujui: { class: "badge-approved", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`, text: "Disetujui" },
-      approved: { class: "badge-approved", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`, text: "Disetujui" },
-      ditolak: { class: "badge-rejected", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`, text: "Ditolak" },
-      rejected: { class: "badge-rejected", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`, text: "Ditolak" },
-      menunggu: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Menunggu" },
-      pending: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Menunggu" },
-      revisi: { class: "badge-revision", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`, text: "Revisi" },
-      revision: { class: "badge-revision", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`, text: "Revisi" },
-      disetujui_verifikator: { class: "badge-approved", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`, text: "Disetujui Verifikator" },
-      proses_pencairan: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Proses Pencairan" },
-      menunggu_lpj: { class: "badge-lpj", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`, text: "Menunggu LPJ" },
-      selesai: { class: "badge-approved", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`, text: "Selesai" }
+      // 1. Draft
+      draft: { class: "badge-draft", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`, text: "Draft" },
+      
+      // 2. Review Verifikator
+      review_verifikator: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Review Verifikator" },
+      
+      // 3. Disetujui Verifikator
+      disetujui_verifikator: { class: "badge-approved", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`, text: "Disetujui Verifikator" },
+      
+      // 4. Ditolak
+      ditolak: { class: "badge-rejected", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`, text: "Ditolak" },
+      
+      // 5. Revisi
+      revisi: { class: "badge-revision", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`, text: "Revisi" },
+      
+      // 6. Review PPK
+      review_ppk: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Review PPK" },
+      
+      // 7. Review Wadir 2
+      review_wadir_2: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Review Wadir 2" },
+      
+      // 8. Proses Pencairan
+      proses_pencairan: { class: "badge-process", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`, text: "Proses Pencairan" },
+      
+      // 9. Uang Muka Dicairkan
+      uang_muka_dicairkan: { class: "badge-money", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`, text: "UM Dicairkan" },
+      
+      // 10. Kegiatan Berlangsung
+      kegiatan_berlangsung: { class: "badge-active", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`, text: "Berlangsung" },
+      
+      // 11. Menunggu LPJ
+      menunggu_lpj: { class: "badge-lpj", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`, text: "Menunggu LPJ" },
+      
+      // 12. Review LPJ
+      review_lpj: { class: "badge-pending", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, text: "Review LPJ" },
+      
+      // 13. LPJ Direvisi
+      lpj_direvisi: { class: "badge-revision", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`, text: "LPJ Direvisi" },
+      
+      // 14. Setor Fisik Dokumen
+      setor_fisik_dokumen: { class: "badge-warning", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>`, text: "Setor Fisik" },
+      
+      // 15. Selesai
+      selesai: { class: "badge-finished", icon: `<svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`, text: "Selesai" }
     };
 
-    const config = statusConfig[statusString] || statusConfig.pending;
+    const config = statusConfig[statusString] || { class: "badge-pending", icon: statusConfig.review_verifikator.icon, text: status };
     return `<span class="status-badge ${config.class}">${config.icon}${config.text}</span>`;
   }
 
