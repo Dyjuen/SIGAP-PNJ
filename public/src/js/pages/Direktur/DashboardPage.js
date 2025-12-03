@@ -278,12 +278,12 @@ export function DirekturDashboardPage(path, userRole) {
       setTimeout(initDashboard, 150);
       return;
     }
-    
+
     // Set Global Chart Defaults
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.color = '#64748b';
     Chart.defaults.scale.grid.color = '#f1f5f9';
-    
+
     initEventListeners();
     fetchData();
   }
@@ -291,9 +291,9 @@ export function DirekturDashboardPage(path, userRole) {
   function initEventListeners() {
     // 1. Period Selector
     const sel = document.getElementById('periodSelector');
-    if(sel) {
+    if (sel) {
       sel.addEventListener('click', (e) => {
-        if(e.target.classList.contains('filter-btn')) {
+        if (e.target.classList.contains('filter-btn')) {
           document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
           e.target.classList.add('active');
           state.period = e.target.dataset.period;
@@ -304,7 +304,7 @@ export function DirekturDashboardPage(path, userRole) {
 
     // 2. Export Button (Simulasi Print)
     const exportBtn = document.getElementById('exportBtn');
-    if(exportBtn) {
+    if (exportBtn) {
       exportBtn.addEventListener('click', () => {
         window.print(); // Cara termudah dan paling "native" untuk PDF
       });
@@ -313,16 +313,16 @@ export function DirekturDashboardPage(path, userRole) {
     // 3. Modal Close Logic
     const modalBackdrop = document.getElementById('unitDetailModal');
     const closeBtn = document.getElementById('closeModal');
-    
+
     function closeModal() {
       modalBackdrop.classList.remove('open');
       setTimeout(() => { modalBackdrop.style.display = 'none'; }, 300);
     }
 
-    if(closeBtn) closeBtn.addEventListener('click', closeModal);
-    if(modalBackdrop) {
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (modalBackdrop) {
       modalBackdrop.addEventListener('click', (e) => {
-        if(e.target === modalBackdrop) closeModal();
+        if (e.target === modalBackdrop) closeModal();
       });
     }
   }
@@ -335,12 +335,12 @@ export function DirekturDashboardPage(path, userRole) {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const json = await res.json();
-      
-      if(json.success && json.data) {
+
+      if (json.success && json.data) {
         state.data = json.data;
         renderAll();
       }
-    } catch(e) {
+    } catch (e) {
       console.error("Fetch Error", e);
     }
   }
@@ -363,25 +363,25 @@ export function DirekturDashboardPage(path, userRole) {
   // --- A. AI EXECUTIVE SUMMARY (Fitur 11/10) ---
   function renderAiSummary() {
     const container = document.getElementById('aiInsightBox');
-    if(!container || !state.data) return;
+    if (!container || !state.data) return;
 
     const { overview, by_jurusan, trends } = state.data;
-    
+
     // 1. Analisis Kinerja
     const isGood = overview.persentase_serapan > 50;
-    const bestUnit = [...by_jurusan].sort((a,b) => b.persentase_serapan - a.persentase_serapan)[0];
-    const worstUnit = [...by_jurusan].sort((a,b) => a.persentase_serapan - b.persentase_serapan)[0];
-    
+    const bestUnit = [...by_jurusan].sort((a, b) => b.persentase_serapan - a.persentase_serapan)[0];
+    const worstUnit = [...by_jurusan].sort((a, b) => a.persentase_serapan - b.persentase_serapan)[0];
+
     // 2. Analisis Tren (Growth)
-    const currentTotal = trends[trends.length-1]?.total_kegiatan || 0;
-    const prevTotal = trends[trends.length-2]?.total_kegiatan || 0;
+    const currentTotal = trends[trends.length - 1]?.total_kegiatan || 0;
+    const prevTotal = trends[trends.length - 2]?.total_kegiatan || 0;
     const isGrowing = currentTotal >= prevTotal;
 
     // 3. Generate Kalimat "Pintar"
     let summaryHTML = '';
-    
+
     // Tentukan Mood & Pesan
-    if(isGood) {
+    if (isGood) {
       summaryHTML = `
         <div style="background: linear-gradient(135deg, #ecfeff 0%, #fff 100%); border-left: 4px solid #06b6d4; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; gap: 1rem; align-items: start;">
           <div style="background:#06b6d4; color:white; padding:8px; border-radius:50%; margin-top:2px;">✨</div>
@@ -416,44 +416,98 @@ export function DirekturDashboardPage(path, userRole) {
   }
 
   // --- B. PRIORITY FEED (Pengganti Recent Activity Biasa) ---
+  // --- B. PRIORITY FEED (BOTTLENECK DETECTOR) ---
   function renderPriorityFeed() {
     const container = document.getElementById('priorityFeed');
-    if(!container) return;
+    if (!container) return;
+
     const { recent_activities } = state.data;
 
-    if(!recent_activities || recent_activities.length === 0) {
-      container.innerHTML = `<div style="text-align:center; padding:2rem; color:#94a3b8;">Tidak ada isu mendesak.</div>`;
+    // Filter: Hanya ambil yang statusnya 'Aktif' (Sedang Menunggu)
+    const activeItems = recent_activities.filter(a => a.status === 'Aktif');
+
+    if (!activeItems || activeItems.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:3rem 1rem; color:#94a3b8;"><div style="font-size:2rem; margin-bottom:0.5rem;">👍</div><div style="font-weight:600;">Lancar Jaya</div><div style="font-size:0.85rem;">Tidak ada antrian yang macet.</div></div>`;
       return;
     }
 
-    // Algoritma Prioritas:
-    // 1. Ditolak / Revisi (Merah/Kuning) -> Tampil Paling Atas
-    // 2. Pending > 7 hari (Kita simulasi karena data tanggal ada) -> Kuning
-    // 3. Disetujui -> Hijau (Paling bawah)
-    
-    // Sort logic
-    const sortedActs = [...recent_activities].sort((a, b) => {
-      const scoreA = getPriorityScore(a.status);
-      const scoreB = getPriorityScore(b.status);
-      return scoreB - scoreA; // Descending (High priority first)
+    // HELPER: Hitung selisih hari
+    const getDaysStuck = (dateStr) => {
+      if (!dateStr) return 0;
+      // Convert SQL date (YYYY-MM-DD HH:MM:SS) to JS Date object
+      const lastUpdate = new Date(dateStr.replace(' ', 'T'));
+      const now = new Date();
+      const diffTime = Math.abs(now - lastUpdate);
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    };
+
+    // LOGIKA SORTIR:
+    // Urutkan berdasarkan "Paling Lama Macet" dulu, baru Level Jabatan
+    const sortedActs = [...activeItems].sort((a, b) => {
+      const daysA = getDaysStuck(a.created_at);
+      const daysB = getDaysStuck(b.created_at);
+      return daysB - daysA; // Yang harinya paling besar di paling atas
     });
 
     container.innerHTML = sortedActs.map(act => {
-      const style = getStatusStyle(act.status);
+      const days = getDaysStuck(act.created_at);
+
+      // LOGIKA TAMPILAN BERDASARKAN DURASI MACET
+      let style = { color: '#3b82f6', bg: 'background:#eff6ff;', icon: '⏳', label: 'BARU' }; // Default Biru
+      let warningBadge = '';
+
+      if (days > 7) {
+        // KRITIS (Lebih dari seminggu)
+        style = {
+          color: '#ef4444', // Merah
+          bg: 'background:#fef2f2;',
+          icon: '🔥',
+          label: 'KRITIS'
+        };
+        warningBadge = `<span style="background:#fee2e2; color:#ef4444; font-size:0.65rem; padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid #fecaca;">STUCK ${days} HARI</span>`;
+      }
+      else if (days > 3) {
+        // WARNING (Lebih dari 3 hari)
+        style = {
+          color: '#f97316', // Oranye
+          bg: 'background:#fff7ed;',
+          icon: '⚠️',
+          label: 'LAMBAT'
+        };
+        warningBadge = `<span style="background:#ffedd5; color:#c2410c; font-size:0.65rem; padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid #fed7aa;">${days} HARI</span>`;
+      }
+      else {
+        // NORMAL
+        warningBadge = `<span style="background:#dbeafe; color:#1e40af; font-size:0.65rem; padding:2px 6px; border-radius:4px; font-weight:800;">${days} HARI</span>`;
+      }
+
+      // Deteksi Posisi Macetnya dimana
+      let posisi = `di meja <strong>${act.approval_level}</strong>`;
+      if (act.approval_level === 'Wadir2') posisi = `menunggu <strong>Wadir 2</strong>`;
+      if (act.approval_level === 'PPK') posisi = `verifikasi <strong>PPK</strong>`;
+
       return `
-        <div class="act-item ${style.bgClass}" style="border-left: 3px solid ${style.color};">
+        <div class="act-item" style="${style.bg} border-left: 4px solid ${style.color}; padding: 12px; margin-bottom: 10px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); transition:0.2s;">
           <div style="flex:1;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-size:0.75rem; font-weight:700; color:${style.color}; text-transform:uppercase; letter-spacing:0.5px;">
-                ${style.label}
-              </span>
-              <span style="font-size:0.7rem; color:#94a3b8;">${act.time_ago}</span>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <div style="display:flex; gap:6px; align-items:center;">
+                ${warningBadge}
+                <span style="font-size:0.7rem; color:#64748b;">di ${act.approval_level}</span>
+              </div>
+              <span style="font-size:1rem;">${style.icon}</span>
             </div>
-            <div style="font-weight:700; font-size:0.9rem; color:#1e293b; margin-bottom:2px;">
+
+            <div style="font-weight:700; font-size:0.9rem; color:#1e293b; line-height:1.3; margin-bottom:4px;">
               ${act.nama_kegiatan}
             </div>
-            <div style="font-size:0.8rem; color:#64748b;">
-              ${act.jurusan}
+
+            <div style="font-size:0.8rem; color:#475569;">
+              Sudah ${days} hari tertahan ${posisi}.
+            </div>
+            
+            <div style="font-size:0.7rem; color:#94a3b8; margin-top:6px; padding-top:6px; border-top:1px dashed rgba(0,0,0,0.05); font-style:italic;">
+              Pengusul: ${act.jurusan}
             </div>
           </div>
         </div>
@@ -463,16 +517,16 @@ export function DirekturDashboardPage(path, userRole) {
 
   // Helpers untuk Priority Feed
   function getPriorityScore(status) {
-    if(status === 'Ditolak') return 3;
-    if(status === 'Revisi') return 2;
-    if(status === 'Pending') return 1;
+    if (status === 'Ditolak') return 3;
+    if (status === 'Revisi') return 2;
+    if (status === 'Pending') return 1;
     return 0; // Disetujui
   }
 
   function getStatusStyle(status) {
-    if(status === 'Ditolak') return { color: '#ef4444', bgClass: 'alert-item', label: 'Ditolak / Masalah' };
-    if(status === 'Revisi') return { color: '#f59e0b', bgClass: '', label: 'Perlu Revisi' };
-    if(status === 'Disetujui') return { color: '#10b981', bgClass: '', label: 'Selesai' };
+    if (status === 'Ditolak') return { color: '#ef4444', bgClass: 'alert-item', label: 'Ditolak / Masalah' };
+    if (status === 'Revisi') return { color: '#f59e0b', bgClass: '', label: 'Perlu Revisi' };
+    if (status === 'Disetujui') return { color: '#10b981', bgClass: '', label: 'Selesai' };
     return { color: '#3b82f6', bgClass: '', label: 'Sedang Proses' }; // Default/Pending
   }
 
@@ -519,10 +573,10 @@ export function DirekturDashboardPage(path, userRole) {
     // Logic Sederhana untuk Insight
     // 1. Cari yang serapannya paling tinggi
     const best = [...by_jurusan].sort((a, b) => b.persentase_serapan - a.persentase_serapan)[0] || { nama_jurusan: '-', persentase_serapan: 0 };
-    
+
     // 2. Cari yang gap (sisa) anggarannya paling besar
     const worst = [...by_jurusan].sort((a, b) => (b.dana_diminta - b.dana_terserap) - (a.dana_diminta - a.dana_terserap))[0] || { nama_jurusan: '-', dana_diminta: 0, dana_terserap: 0 };
-    
+
     // 3. Hitung Growth dari bulan lalu
     const last = trends[trends.length - 1]?.dana_diminta || 0;
     const prev = trends[trends.length - 2]?.dana_diminta || 0;
@@ -569,60 +623,55 @@ export function DirekturDashboardPage(path, userRole) {
 
   function renderTrends() {
     const ctx = document.getElementById('trendsChart');
-    if(!ctx) return;
-    if(state.charts.trends) state.charts.trends.destroy();
+    if (!ctx) return;
+    if (state.charts.trends) state.charts.trends.destroy();
 
     const { trends } = state.data;
-    // Setup Gradient Cyan
-    const chartCtx = ctx.getContext('2d');
-    const gradient = chartCtx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(6, 182, 212, 0.5)'); // Cyan Primary
-    gradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
 
     state.charts.trends = new Chart(ctx, {
-      type: 'line',
+      type: 'bar', // Ubah jadi BAR agar perbandingannya tegas
       data: {
         labels: trends.map(t => t.periode),
-        datasets: [{
-          label: 'Volume Kegiatan',
-          data: trends.map(t => t.total_kegiatan),
-          borderColor: '#06b6d4', // Cyan
-          backgroundColor: gradient,
-          borderWidth: 3,
-          pointBackgroundColor: '#fff',
-          pointBorderColor: '#06b6d4',
-          pointRadius: 6,
-          pointHoverRadius: 8,
-          fill: true,
-          tension: 0.4,
-          yAxisID: 'y'
-        }, {
-          label: 'Anggaran (Juta)',
-          data: trends.map(t => t.dana_diminta / 1000000),
-          borderColor: '#8b5cf6', // Purple Accent
-          borderWidth: 2,
-          borderDash: [6, 6],
-          pointRadius: 0,
-          tension: 0.4,
-          yAxisID: 'y1'
-        }]
+        datasets: [
+          {
+            label: 'Rencana Anggaran (Juta)',
+            data: trends.map(t => t.dana_diminta / 1000000),
+            backgroundColor: '#e2e8f0', // Abu-abu (Target/Background)
+            borderRadius: 4,
+            barPercentage: 0.6,
+            categoryPercentage: 0.7,
+            order: 2 // Di belakang
+          },
+          {
+            label: 'Realisasi Serapan (Juta)',
+            data: trends.map(t => t.dana_terserap / 1000000), // Data baru dari backend
+            backgroundColor: '#06b6d4', // Cyan (Realisasi)
+            borderRadius: 4,
+            barPercentage: 0.4, // Lebih kurus biar "numpuk" di depan
+            categoryPercentage: 0.7,
+            order: 1 // Di depan
+          }
+        ]
       },
       options: {
-        responsive: true, maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'top', align: 'end', labels: { usePointStyle: true } },
+          legend: { position: 'top', align: 'end' },
           tooltip: {
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            titleColor: '#0f172a', bodyColor: '#334155',
-            borderColor: '#e2e8f0', borderWidth: 1, padding: 12,
-            displayColors: true, boxPadding: 6
+            mode: 'index', intersect: false, // Tooltip muncul dua-duanya
+            callbacks: {
+              label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw} Jt`
+            }
           }
         },
         scales: {
           x: { grid: { display: false } },
-          y: { position: 'left', grid: { color: '#f1f5f9' }, beginAtZero: true },
-          y1: { position: 'right', grid: { display: false }, beginAtZero: true }
+          y: {
+            grid: { color: '#f1f5f9', borderDash: [5, 5] },
+            beginAtZero: true,
+            ticks: { callback: (val) => val + ' Jt' } // Format sumbu Y
+          }
         }
       }
     });
@@ -630,40 +679,66 @@ export function DirekturDashboardPage(path, userRole) {
 
   function renderJurusanChart() {
     const ctx = document.getElementById('jurusanChart');
-    if(!ctx) return;
-    if(state.charts.jurusan) state.charts.jurusan.destroy();
-    
+    if (!ctx) return;
+    if (state.charts.jurusan) state.charts.jurusan.destroy();
+
     const { by_jurusan } = state.data;
-    // Gradient Bar
+
+    // Sortir data agar bar terpanjang ada di paling atas (descending)
+    const sortedData = [...by_jurusan].sort((a, b) => b.kak_diajukan - a.kak_diajukan);
+
+    // Gradient Bar (Horizontal: Kiri ke Kanan)
     const chartCtx = ctx.getContext('2d');
-    const gradient = chartCtx.createLinearGradient(0, 0, 0, 300);
+    const gradient = chartCtx.createLinearGradient(0, 0, 400, 0); // Ubah arah gradien
     gradient.addColorStop(0, '#22d3ee'); // Light Cyan
     gradient.addColorStop(1, '#06b6d4'); // Dark Cyan
 
     state.charts.jurusan = new Chart(ctx, {
       type: 'bar',
       data: {
-        // Shorten labels
-        labels: by_jurusan.map(j => j.nama_jurusan
+        // Label disingkat agar rapi
+        labels: sortedData.map(j => j.nama_jurusan
+          .replace('Teknik Informatika Komputer', 'TIK')
           .replace('Teknik ', 'T. ')
           .replace('Administrasi ', 'Adm. ')
-          .replace('Komputer', 'Komp.')
+          .replace('Grafika dan Penerbitan', 'Grafika')
         ),
         datasets: [{
           label: 'Jumlah Pengajuan',
-          data: by_jurusan.map(j => j.kak_diajukan),
+          data: sortedData.map(j => j.kak_diajukan),
           backgroundColor: gradient,
-          borderRadius: 6,
+          borderRadius: 4,
           barPercentage: 0.6,
           categoryPercentage: 0.8
         }]
       },
       options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        indexAxis: 'y', // PENTING: Membuat bar jadi horizontal
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#0f172a',
+            bodyColor: '#334155',
+            borderColor: '#e2e8f0',
+            borderWidth: 1,
+            padding: 10
+          }
+        },
         scales: {
-          x: { grid: { display: false } },
-          y: { grid: { color: '#f1f5f9' }, beginAtZero: true }
+          x: {
+            grid: { display: false, drawBorder: false }, // Hapus grid vertikal
+            ticks: { precision: 0 } // Hindari angka desimal (misal 1.5 dokumen)
+          },
+          y: {
+            grid: { display: false, drawBorder: false }, // Hapus grid horizontal
+            ticks: {
+              font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
+              color: '#64748b'
+            }
+          }
         }
       }
     });
@@ -671,24 +746,24 @@ export function DirekturDashboardPage(path, userRole) {
 
   function renderDanaChart() {
     const ctx = document.getElementById('danaChart');
-    if(!ctx) return;
-    if(state.charts.dana) state.charts.dana.destroy();
+    if (!ctx) return;
+    if (state.charts.dana) state.charts.dana.destroy();
 
     const { by_jurusan } = state.data;
     const values = by_jurusan.map(j => j.dana_terserap);
-    
+
     // Check Empty Data
     const total = values.reduce((a, b) => a + b, 0);
     const emptyState = document.getElementById('danaEmptyState');
-    if(emptyState) emptyState.style.display = total === 0 ? 'block' : 'none';
+    if (emptyState) emptyState.style.display = total === 0 ? 'block' : 'none';
 
-    if(total === 0) {
-       state.charts.dana = new Chart(ctx, {
-         type: 'doughnut',
-         data: { labels: [], datasets: [{ data: [1], backgroundColor: ['#f1f5f9'], borderWidth: 0 }] },
-         options: { cutout: '75%', plugins: { tooltip: {enabled:false}, legend: {display:false} } }
-       });
-       return;
+    if (total === 0) {
+      state.charts.dana = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels: [], datasets: [{ data: [1], backgroundColor: ['#f1f5f9'], borderWidth: 0 }] },
+        options: { cutout: '75%', plugins: { tooltip: { enabled: false }, legend: { display: false } } }
+      });
+      return;
     }
 
     state.charts.dana = new Chart(ctx, {
@@ -708,7 +783,7 @@ export function DirekturDashboardPage(path, userRole) {
       },
       options: {
         responsive: true, maintainAspectRatio: false, cutout: '70%',
-        plugins: { 
+        plugins: {
           legend: { display: false },
           tooltip: {
             callbacks: { label: (ctx) => ` ${formatMoney(ctx.raw)}` }
@@ -724,11 +799,11 @@ export function DirekturDashboardPage(path, userRole) {
 
   function renderUnitGrid() {
     const container = document.getElementById('jurusanGrid');
-    if(!container) return;
-    
+    if (!container) return;
+
     const { by_jurusan } = state.data;
-    
-    if(!by_jurusan || by_jurusan.length === 0) {
+
+    if (!by_jurusan || by_jurusan.length === 0) {
       container.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#94a3b8;">Data unit tidak tersedia.</div>`;
       return;
     }
@@ -782,8 +857,8 @@ export function DirekturDashboardPage(path, userRole) {
     const title = document.getElementById('modalTitle');
     const sub = document.getElementById('modalSubtitle');
     const body = document.getElementById('modalBody');
-    
-    if(!modal) return;
+
+    if (!modal) return;
 
     // Set Header
     title.textContent = unit.nama_jurusan;
@@ -791,7 +866,7 @@ export function DirekturDashboardPage(path, userRole) {
 
     // Filter Activities for this Unit (Client-side filtering for demo)
     // In real app, you might fetch specific detail here
-    const unitActivities = state.data.recent_activities.filter(act => 
+    const unitActivities = state.data.recent_activities.filter(act =>
       act.jurusan === unit.nama_jurusan || unit.nama_jurusan.includes(act.jurusan)
     );
 
@@ -816,7 +891,7 @@ export function DirekturDashboardPage(path, userRole) {
           <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem; border-bottom:1px solid #f1f5f9;">
             <div>
               <div style="font-weight:600; font-size:0.9rem; color:#334155;">${act.nama_kegiatan}</div>
-              <div style="font-size:0.8rem; color:${act.status === 'Ditolak' ? '#ef4444' : '#10b981'}">${act.status}</div>
+              <div style="font-size:0.8rem; color:${act.status === 'Ditolak' ? '#ef4444' : '#10b981'}">${act.deskripsi_status || act.status}</div>
             </div>
             <div style="font-size:0.75rem; color:#94a3b8;">${act.time_ago}</div>
           </div>

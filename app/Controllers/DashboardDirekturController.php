@@ -14,7 +14,7 @@ class DashboardDirekturController
     public function __construct()
     {
         $this->db = Database::getInstance();
-        
+
         // Get authenticated user
         try {
             $this->userData = AuthMiddleware::getAuthUser();
@@ -38,7 +38,7 @@ class DashboardDirekturController
             // Get time range from query params (default: 6 months)
             $period = $_GET['period'] ?? '6months';
             $startDate = $this->getStartDate($period);
-            
+
             $data = [
                 'overview' => $this->getOverview($startDate),
                 'by_jurusan' => $this->getByJurusan($startDate),
@@ -50,7 +50,6 @@ class DashboardDirekturController
             ];
 
             Response::success($data, 'Data dashboard direktur berhasil diambil.');
-
         } catch (\Exception $e) {
             Response::error('Gagal mengambil data dashboard: ' . $e->getMessage(), 500);
         }
@@ -118,8 +117,8 @@ class DashboardDirekturController
         $danaTerserap = $this->getTotalDanaTerserap($startDate);
 
         // Calculate percentage
-        $persentaseSerapan = $danaDiminta > 0 
-            ? round(($danaTerserap / $danaDiminta) * 100, 2) 
+        $persentaseSerapan = $danaDiminta > 0
+            ? round(($danaTerserap / $danaDiminta) * 100, 2)
             : 0;
 
         // Growth comparison (vs previous period)
@@ -226,8 +225,8 @@ class DashboardDirekturController
             // Dana terserap
             $danaTerserap = $this->getDanaTereserapByUserIds($userIds, $startDate);
 
-            $persentaseSerapan = $danaDiminta > 0 
-                ? round(($danaTerserap / $danaDiminta) * 100, 2) 
+            $persentaseSerapan = $danaDiminta > 0
+                ? round(($danaTerserap / $danaDiminta) * 100, 2)
                 : 0;
 
             $result[] = [
@@ -242,7 +241,7 @@ class DashboardDirekturController
         }
 
         // Sort by dana_diminta descending
-        usort($result, function($a, $b) {
+        usort($result, function ($a, $b) {
             return $b['dana_diminta'] - $a['dana_diminta'];
         });
 
@@ -255,45 +254,56 @@ class DashboardDirekturController
     private function getTrends($startDate)
     {
         $trends = [];
-        $currentDate = new \DateTime($startDate);
-        $endDate = new \DateTime();
+        $curr = new \DateTime($startDate);
+        $end = new \DateTime();
 
-        while ($currentDate <= $endDate) {
-            $monthStart = $currentDate->format('Y-m-01');
-            $monthEnd = $currentDate->format('Y-m-t');
-            $monthLabel = $currentDate->format('M Y');
+        while ($curr <= $end) {
+            // 1. DEFINISIKAN VARIABEL WAKTU ($s dan $e)
+            $s = $curr->format('Y-m-01'); // Awal bulan
+            $e = $curr->format('Y-m-t');  // Akhir bulan
+            $label = $curr->format('M Y');
 
-            // Total kegiatan in this month
+            // 2. QUERY TOTAL KEGIATAN
             $this->db->query("
                 SELECT COUNT(*) as total
                 FROM t_kegiatan k
                 JOIN t_kak t ON k.kak_id = t.kak_id
-                WHERE t.created_at BETWEEN :start AND :end
+                WHERE t.created_at BETWEEN :s AND :e
             ");
-            $this->db->bind(':start', $monthStart);
-            $this->db->bind(':end', $monthEnd);
-            $totalKegiatan = $this->db->single()['total'];
+            $this->db->bind(':s', $s);
+            $this->db->bind(':e', $e);
+            $cnt = $this->db->single()['total'];
 
-            // Dana diminta in this month
+            // 3. QUERY DANA RENCANA (Pagu)
             $this->db->query("
-                SELECT COALESCE(SUM(tka.jumlah_diusulkan), 0) as total
+                SELECT COALESCE(SUM(jumlah_diusulkan), 0) as total
                 FROM t_kak_anggaran tka
                 JOIN t_kak t ON tka.kak_id = t.kak_id
-                WHERE t.created_at BETWEEN :start AND :end
+                WHERE t.created_at BETWEEN :s AND :e
                 AND t.status_id != 4
             ");
-            $this->db->bind(':start', $monthStart);
-            $this->db->bind(':end', $monthEnd);
-            $danaDiminta = $this->db->single()['total'];
+            $this->db->bind(':s', $s);
+            $this->db->bind(':e', $e);
+            $danaRencana = $this->db->single()['total'];
+
+            // 4. QUERY DANA REALISASI (Pencairan)
+            $this->db->query("
+                SELECT COALESCE(SUM(jumlah_dicairkan), 0) as total
+                FROM t_pencairan_dana
+                WHERE created_at BETWEEN :s AND :e
+            ");
+            $this->db->bind(':s', $s);
+            $this->db->bind(':e', $e);
+            $danaRealisasi = $this->db->single()['total'];
 
             $trends[] = [
-                'periode' => $monthLabel,
-                'bulan' => $currentDate->format('Y-m'),
-                'total_kegiatan' => (int) $totalKegiatan,
-                'dana_diminta' => (float) $danaDiminta
+                'periode' => $label,
+                'total_kegiatan' => (int) $cnt,
+                'dana_diminta' => (float) $danaRencana,
+                'dana_terserap' => (float) $danaRealisasi
             ];
 
-            $currentDate->modify('+1 month');
+            $curr->modify('+1 month');
         }
 
         return $trends;
@@ -304,30 +314,32 @@ class DashboardDirekturController
      */
     private function getRecentActivities($limit = 10)
     {
+        // PERUBAHAN: Tambahkan WHERE ka.status != 'Menunggu'
+        // Agar langkah masa depan tidak muncul di riwayat
         $this->db->query("
             SELECT 
                 t.nama_kegiatan,
                 u.nama_lengkap as pengusul_nama,
                 ka.approval_level,
                 ka.status,
-                ka.created_at,
-                k.kegiatan_id
+                ka.updated_at as created_at  -- Gunakan updated_at agar urut berdasarkan aktivitas terakhir
             FROM t_kegiatan_approval ka
             JOIN t_kegiatan k ON ka.kegiatan_id = k.kegiatan_id
             JOIN t_kak t ON k.kak_id = t.kak_id
             JOIN m_users u ON t.pengusul_user_id = u.user_id
-            ORDER BY ka.created_at DESC
+            WHERE ka.status IN ('Aktif', 'Disetujui', 'Ditolak', 'Revisi') 
+            ORDER BY ka.updated_at DESC
             LIMIT :limit
         ");
+
         $this->db->bind(':limit', $limit);
-        
         $activities = $this->db->resultSet();
 
-        foreach ($activities as &$activity) {
-            $activity['jurusan'] = $this->parseJurusan($activity['pengusul_nama']);
-            $activity['time_ago'] = $this->timeAgo($activity['created_at']);
+        foreach ($activities as &$act) {
+            $act['jurusan'] = $this->parseJurusan($act['pengusul_nama']);
+            $act['time_ago'] = $this->timeAgo($act['created_at']);
+            $act['deskripsi_status'] = $this->formatActivityMessage($act['approval_level'], $act['status']);
         }
-
         return $activities;
     }
 
@@ -340,8 +352,8 @@ class DashboardDirekturController
             'Teknik Informatika Komputer' => '/Teknik Informatika Komputer|Informatika Komputer|jurusantik@/i',
             'Teknik Sipil' => '/Teknik Sipil|jurusansipil@/i',
             'Teknik Mesin' => '/Teknik Mesin|jurusanmesin@/i',
-            'Teknik Grafika dan Penerbitan' => '/Grafika dan Penerbitan|Grafika|Penerbitan|jurusantgr@/i',
-            'Akutansi' => '/Administrasi Komersial|Admin Komersial|jurusanak@/i',
+            'Teknik Grafika dan Penerbitan' => '/Grafika dan Penerbitan|Grafika|Penerbitan|jurusantgp@/i',
+            'Akuntansi' => '/Admin Jurusan Akuntansi|jurusanak@/i',
             'Administrasi Niaga' => '/Administrasi Niaga|Admin Niaga|jurusanniaga@/i',
             'Teknik Elektro' => '/Teknik Elektro|jurusante@/i',
         ];
@@ -456,7 +468,7 @@ class DashboardDirekturController
     {
         $currentStart = new \DateTime($startDate);
         $currentEnd = new \DateTime();
-        
+
         $diff = $currentStart->diff($currentEnd);
         $daysDiff = $diff->days;
 
@@ -500,7 +512,7 @@ class DashboardDirekturController
     private function getStartDate($period)
     {
         $date = new \DateTime();
-        
+
         switch ($period) {
             case '3months':
                 $date->modify('-3 months');
@@ -520,7 +532,7 @@ class DashboardDirekturController
             default:
                 $date->modify('-6 months');
         }
-        
+
         return $date->format('Y-m-d');
     }
 
@@ -544,5 +556,57 @@ class DashboardDirekturController
         } else {
             return 'Baru saja';
         }
+    }
+
+    // --- HELPERS BARU UNTUK STATUS DESKRIPTIF ---
+
+    private function formatActivityMessage($level, $status)
+    {
+        $levelName = $this->normalizeLevelName($level);
+
+        // 1. Status AKTIF = Berkas sedang di meja ini (Menunggu diproses)
+        if ($status === 'Aktif') {
+            switch ($level) {
+                case 'Bendahara-Cair':
+                    return "Dalam Proses Pencairan Dana";
+                case 'Bendahara-LPJ':
+                    return "Menunggu Pelaporan & Verifikasi LPJ"; // Input User + Cek Bendahara
+                case 'Bendahara-Setor':
+                    return "Menunggu Penyerahan Dokumen Fisik"; // Setor Hardcopy
+                default:
+                    return "Menunggu Persetujuan " . $levelName;
+            }
+        }
+
+        // 2. Status DISETUJUI = Sudah lewat
+        if ($status === 'Disetujui') {
+            switch ($level) {
+                case 'PPK':
+                    return "Telah Diverifikasi PPK";
+                case 'Wadir2':
+                    return "Telah Disetujui Wadir 2";
+                case 'Bendahara-Cair':
+                    return "Dana Tersalurkan Sepenuhnya";
+                case 'Bendahara-LPJ':
+                    return "LPJ Digital Terverifikasi"; // Tahap 1 LPJ beres
+                case 'Bendahara-Setor':
+                    return "Kegiatan Tuntas (Administrasi Lengkap)"; // Final
+                default:
+                    return "Disetujui oleh " . $levelName;
+            }
+        }
+
+        // 3. Status Masalah
+        if ($status === 'Ditolak') return "Ditolak oleh " . $levelName;
+        if ($status === 'Revisi') return "Permintaan Revisi dari " . $levelName;
+
+        return "$status - $levelName";
+    }
+
+    private function normalizeLevelName($level)
+    {
+        if ($level === 'Wadir2') return 'Wadir 2';
+        if (strpos($level, 'Bendahara') !== false) return 'Bendahara';
+        return $level;
     }
 }
