@@ -1121,8 +1121,11 @@ export function renderRevisiLpjPage(path, userRole) {
 
       updateBendaharaButtonVisibility(kegiatan.lpj_status);
 
-      document.getElementById("kegiatan-title").textContent =
+      document.getElementById("kegiatan-title").textContent = "Nama Kegiatan: " +
         kegiatan.nama_kegiatan;
+
+      document.getElementById("pengusul-name").textContent = "Pengusul: " +
+        kegiatan.pelaksana_manual;
 
       const groupedAnggaran = anggaran.reduce((acc, item) => {
         const category = item.nama_kategori_belanja || "Lain-lain";

@@ -938,7 +938,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
     // Button Ajukan Usulan
     const btnAjukanUsulan = document.getElementById("btnAjukanUsulan");
     if (btnAjukanUsulan) {
-      btnAjukanUsulan.addEventListener("click", function () {
+      btnAjukanUsulan.addEventListener("click", function (event) {
         addRippleEffect(this, event);
         setTimeout(() => {
           window.location.pathname = "/pengusul/usulan/new";
