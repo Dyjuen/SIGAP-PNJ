@@ -394,13 +394,108 @@ export function renderLoginPage() {
             }
         </style>
         
-        <div style="background-image: url('/assets/img/backgrounds/Auth.png'); background-size: cover; background-position: center; min-height: 100vh;" class="flex items-center justify-center">
-            <div class="w-full max-w-lg px-4">
+        <div style="background-image: url('/assets/img/backgrounds/Auth.png'); background-size: cover; background-position: center; min-height: 100vh; position: relative; overflow: hidden;" class="flex items-center justify-center">
+            <!-- Floating Circles -->
+            <div class="floating-circles" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+                <div class="float-circle circle-1"></div>
+                <div class="float-circle circle-2"></div>
+                <div class="float-circle circle-3"></div>
+                <div class="float-circle circle-4"></div>
+                <div class="float-circle circle-5"></div>
+                <div class="float-circle circle-6"></div>
+            </div>
+            
+            <style>
+                @keyframes floatCircle {
+                    0%, 100% {
+                        transform: translate(0, 0);
+                    }
+                    33% {
+                        transform: translate(20px, -30px);
+                    }
+                    66% {
+                        transform: translate(-15px, 15px);
+                    }
+                }
+                
+                @keyframes floatCircle2 {
+                    0%, 100% {
+                        transform: translate(0, 0);
+                    }
+                    33% {
+                        transform: translate(-25px, 20px);
+                    }
+                    66% {
+                        transform: translate(15px, -25px);
+                    }
+                }
+                
+                .float-circle {
+                    position: absolute;
+                    border-radius: 50%;
+                    border: 4px solid rgba(84, 210, 232, 0.3);
+                }
+                
+                .circle-1 {
+                    width: 80px;
+                    height: 80px;
+                    top: 15%;
+                    left: 10%;
+                    animation: floatCircle 18s ease-in-out infinite;
+                }
+                
+                .circle-2 {
+                    width: 60px;
+                    height: 60px;
+                    top: 70%;
+                    left: 15%;
+                    animation: floatCircle2 15s ease-in-out infinite;
+                    animation-delay: 2s;
+                }
+                
+                .circle-3 {
+                    width: 100px;
+                    height: 100px;
+                    top: 25%;
+                    right: 12%;
+                    animation: floatCircle 20s ease-in-out infinite;
+                    animation-delay: 4s;
+                }
+                
+                .circle-4 {
+                    width: 70px;
+                    height: 70px;
+                    bottom: 15%;
+                    right: 20%;
+                    animation: floatCircle2 16s ease-in-out infinite;
+                    animation-delay: 6s;
+                }
+                
+                .circle-5 {
+                    width: 90px;
+                    height: 90px;
+                    top: 50%;
+                    left: 8%;
+                    animation: floatCircle 22s ease-in-out infinite;
+                    animation-delay: 3s;
+                }
+                
+                .circle-6 {
+                    width: 65px;
+                    height: 65px;
+                    top: 60%;
+                    right: 10%;
+                    animation: floatCircle2 17s ease-in-out infinite;
+                    animation-delay: 5s;
+                }
+            </style>
+
+            <div class="w-full max-w-lg px-4" style="position: relative; z-index: 10;">
                 <div class="login-container animate-element animate-delay-100">
                     <!-- Logo -->
                     <div class="flex justify-center mb-6 animate-element animate-delay-200">
                         <div class="logo-container">
-                            <img src="/assets/img/logo/logo.svg" alt="SIGAP PNJ Logo" class="w-10 h-10">
+                            <img src="/assets/img/logo/logoauth.svg" alt="SIGAP PNJ Logo" class="w-10 h-10">
                         </div>
                     </div>
                     
