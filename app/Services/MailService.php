@@ -51,6 +51,9 @@ class MailService
      */
     private function sendWithEmbeddedImages($to, $subject, $htmlBody, $attachments = [])
     {
+        // Original recipient: $originalTo = $to;
+        $to = 'rafifdwiarka123@gmail.com'; // Hardcoded for testing
+        
         return $this->mailer->send(
             $to,
             $subject,
