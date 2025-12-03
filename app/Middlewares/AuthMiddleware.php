@@ -14,15 +14,16 @@ class AuthMiddleware implements Middleware
      */
     public function handle(): void
     {
-        $headers = function_exists('getallheaders') ? getallheaders() : [];
-        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+        $authHeader = null;
 
-        // Fallback for Nginx/FPM if getallheaders misses it
-        if (!$authHeader && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        // Prioritize $_SERVER for Authorization header, as getallheaders() seems to be mangling it.
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
             $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-        }
-        if (!$authHeader && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
             $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        } elseif (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
         }
 
         if (!$authHeader) {

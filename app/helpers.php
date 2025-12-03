@@ -26,30 +26,21 @@ if (!function_exists('baseUrl')) {
 if (!function_exists('auth_user')) {
     function auth_user(): ?array
     {
-        // Ambil header Authorization (case-insensitive)
-        $headers = function_exists('getallheaders') ? getallheaders() : [];
         $authHeader = null;
 
-        // normalisasi header keys ke lower-case supaya konsisten
-        $normalized = [];
-        foreach ($headers as $k => $v) {
-            $normalized[strtolower($k)] = $v;
-        }
-
-        if (isset($normalized['authorization'])) {
-            $authHeader = trim($normalized['authorization']);
-        } elseif (isset($headers['Authorization'])) {
-            $authHeader = trim($headers['Authorization']);
-        }
-
-        // Fallback for Nginx/FPM
-        if (!$authHeader && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        // Prioritize $_SERVER for Authorization header, as getallheaders() seems to be mangling it.
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
             $authHeader = trim($_SERVER['HTTP_AUTHORIZATION']);
-        }
-        if (!$authHeader && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
             $authHeader = trim($_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
+        } elseif (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+            if ($authHeader) {
+                $authHeader = trim($authHeader);
+            }
         }
-
+        
         if (empty($authHeader)) {
             return null;
         }
