@@ -52,9 +52,8 @@ class MailService
     private function sendWithEmbeddedImages($to, $subject, $htmlBody, $attachments = [])
     {
         // Original recipient: $originalTo = $to;
-        $to = 'rafifdwiarka123@gmail.com'; // Hardcoded for testing
         
-        return $this->mailer->send(
+        $sendResult = $this->mailer->send(
             $to,
             $subject,
             $htmlBody,
@@ -62,6 +61,11 @@ class MailService
             $attachments,
             $this->getEmbeddedImages()
         );
+
+        if (is_string($sendResult)) { // If it's a string, it's an error message
+            return $sendResult;
+        }
+        return true; // Otherwise, it was successful
     }
 
     // ==================== KAK WORKFLOW ====================
@@ -137,14 +141,20 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kak/detail/' . $kakId,
             ]);
 
-            return $this->sendWithEmbeddedImages(
+            $sendResult = $this->sendWithEmbeddedImages(
                 $recipientEmail,
                 "✅ KAK Anda Telah Disetujui Verifikator",
                 $htmlBody
             );
+
+            if (is_string($sendResult)) { // If it's a string, it's an error message
+                return $sendResult;
+            }
+            return true; // Otherwise, it was successful
+
         } catch (\Exception $e) {
             error_log("Error sending KAK approved by verifikator email: " . $e->getMessage());
-            return false;
+            return "Error preparing KAK approved by verifikator email: " . $e->getMessage();
         }
     }
 

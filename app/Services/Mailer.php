@@ -118,7 +118,8 @@ class Mailer
             return $this->mail->send();
         } catch (Exception $e) {
             error_log("[PHPMailer Send Error]: " . $e->getMessage() . " ErrorInfo: " . $this->mail->ErrorInfo);
-            throw new Exception("Email send failed: " . $e->getMessage());
+            // Instead of throwing, return the error message for display
+            return "Email send failed: " . $e->getMessage() . " ErrorInfo: " . $this->mail->ErrorInfo;
         }
     }
 

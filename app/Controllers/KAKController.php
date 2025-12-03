@@ -32,6 +32,7 @@ class KAKController
     private $roleModel;
     private $ikuModel;
     private $userData;
+    private $mailService;
 
     public function __construct()
     {
@@ -41,6 +42,7 @@ class KAKController
         $this->userModel = new User();
         $this->roleModel = new Role();
         $this->ikuModel = new Iku();
+        $this->mailService = new MailService();
         
         // Don't require auth in constructor - let individual methods handle it
         // This allows download/preview to authenticate via query parameter
@@ -870,6 +872,8 @@ class KAKController
             $input = json_decode(file_get_contents("php://input"), true);
             if (!$input) Response::badRequest("Input JSON tidak valid.");
 
+            $catatan = $input['catatan'] ?? '';
+
             $db->beginTransaction();
 
             if (!empty($input['catatan_kak'])) {
@@ -965,6 +969,16 @@ class KAKController
                 'pesan' => "KAK Anda \"{$data['nama_kegiatan']}\" membutuhkan revisi.",
                 'link_tujuan' => '/pengusul/kak/' . $id,
             ]);
+
+            $proposer = $this->userModel->findById($data['pengusul_user_id']);
+            if ($proposer && !empty($proposer['email'])) {
+                $kakDataForEmail = [
+                    'nama_kegiatan' => $data['nama_kegiatan'],
+                    'pengusul_nama' => $proposer['nama_lengkap'],
+                    'pengusul_email' => $proposer['email']
+                ];
+                $this->mailService->notifyKAKRevisionRequested($id, $kakDataForEmail, $catatan);
+            }
 
             Response::success(null, "KAK berhasil dikembalikan untuk revisi.");
         } catch (\Exception $e) {
@@ -1217,19 +1231,26 @@ class KAKController
                 'link_tujuan' => '/pengusul/kak/' . $id,
             ]);
 
-            Response::success(null, "KAK berhasil disetujui.");
-            // Send email to Pengusul
+            $emailSendStatus = 'Email not sent (proposer email missing or user not found).';
             $mailService = new MailService();
             $proposer = $this->userModel->findById($data['pengusul_user_id']);
 
             if ($proposer && $proposer['email']) {
-                $mailService->sendKakApprovedVerifikatorEmail(
+                $sendResult = $mailService->sendKakApprovedVerifikatorEmail(
                     $proposer['email'],
                     $proposer['nama_lengkap'],
                     $data['nama_kegiatan'],
                     $id
                 );
+
+                if (is_string($sendResult)) { // If it's a string, it's an error message
+                    $emailSendStatus = "Gagal mengirim email approval KAK: {$sendResult}";
+                } else { // It's true (success)
+                    $emailSendStatus = "Email approval KAK berhasil dikirim ke {$proposer['email']}.";
+                }
             }
+
+            Response::success(null, "KAK berhasil disetujui. " . $emailSendStatus);
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
@@ -1337,6 +1358,16 @@ class KAKController
                 'pesan' => "KAK Anda \"{$data['nama_kegiatan']}\" ditolak. " . ($catatan ? "Catatan: {$catatan}" : ""),
                 'link_tujuan' => '/pengusul/kak/' . $id,
             ]);
+
+            $proposer = $this->userModel->findById($data['pengusul_user_id']);
+            if ($proposer && !empty($proposer['email'])) {
+                $kakDataForEmail = [
+                    'nama_kegiatan' => $data['nama_kegiatan'],
+                    'pengusul_nama' => $proposer['nama_lengkap'],
+                    'pengusul_email' => $proposer['email']
+                ];
+                $this->mailService->notifyKAKRejected($id, $kakDataForEmail, $catatan);
+            }
 
             Response::success(null, "KAK berhasil ditolak.");
         } catch (\Exception $e) {
