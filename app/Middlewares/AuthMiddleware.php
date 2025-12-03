@@ -22,8 +22,8 @@ class AuthMiddleware implements Middleware
         
         $serverAuth = $_SERVER['HTTP_AUTHORIZATION'] ?? 'NULL';
         $redirectAuth = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? 'NULL';
-        error_log("$_SERVER['HTTP_AUTHORIZATION']: " . $serverAuth);
-        error_log("$_SERVER['REDIRECT_HTTP_AUTHORIZATION']: " . $redirectAuth);
+        error_log("HTTP_AUTHORIZATION: " . $serverAuth);
+        error_log("REDIRECT_HTTP_AUTHORIZATION: " . $redirectAuth);
         
         if (function_exists('getallheaders')) {
             $headers = getallheaders();
