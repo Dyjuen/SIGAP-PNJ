@@ -62,7 +62,6 @@ class MasterDataSeeder extends AbstractSeed
             ['nama_status' => 'Review Wadir 2'],
             ['nama_status' => 'Proses Pencairan'],
             ['nama_status' => 'Uang Muka Dicairkan'],
-            ['nama_status' => 'Kegiatan Berlangsung'],
             ['nama_status' => 'Menunggu LPJ'],
             ['nama_status' => 'Review LPJ'],
             ['nama_status' => 'LPJ Direvisi'],
