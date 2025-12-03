@@ -491,16 +491,18 @@ class KAKController
 
             $sql = "
                 INSERT INTO t_kak 
-                (nama_kegiatan, tipe_kegiatan_id, deskripsi_kegiatan, metode_pelaksanaan, kurun_waktu_pelaksanaan,
+                (nama_kegiatan, tipe_kegiatan_id, deskripsi_kegiatan, sasaran_utama, catatan_sasaran_utama, metode_pelaksanaan, kurun_waktu_pelaksanaan,
                 tanggal_mulai, tanggal_selesai, lokasi, pengusul_user_id, status_id)
                 VALUES 
-                (:nama, :tipe, :desk, :metode, :kurun, :mulai, :selesai, :lokasi, :user, 1)
+                (:nama, :tipe, :desk, :sasaran, :catatan_sasaran, :metode, :kurun, :mulai, :selesai, :lokasi, :user, 1)
             ";
 
             $this->db->query($sql);
             $this->db->bind(':nama', $k['nama_kegiatan']);
             $this->db->bind(':tipe', $k['tipe_kegiatan_id']);
             $this->db->bind(':desk', $k['deskripsi_kegiatan']);
+            $this->db->bind(':sasaran', $k['sasaran_utama']);
+            $this->db->bind(':catatan_sasaran', $k['catatan_sasaran_utama'] ?? null);
             $this->db->bind(':metode', $k['metode_pelaksanaan']);
             $this->db->bind(':kurun', $k['kurun_waktu_pelaksanaan']);
             $this->db->bind(':mulai', $k['tanggal_mulai']);
@@ -511,16 +513,15 @@ class KAKController
 
             $id = $this->db->lastInsertId();
 
-            if (!empty($k['penerima_manfaat'])) {
-                foreach ($k['penerima_manfaat'] as $m) {
+            if (!empty($k['manfaat'])) {
+                foreach ($k['manfaat'] as $m) {
                     $this->db->query("
                         INSERT INTO t_kak_manfaat
-                        (kak_id, manfaat, sasaran_utama)
-                        VALUES (:id, :m, :sas)
+                        (kak_id, manfaat)
+                        VALUES (:id, :m)
                     ");
                     $this->db->bind(':id', $id);
-                    $this->db->bind(':m', $m['manfaat']);
-                    $this->db->bind(':sas', $m['sasaran_utama']);
+                    $this->db->bind(':m', $m); // Assuming $m is now just a string
                     $this->db->execute();
                 }
             }
@@ -660,6 +661,8 @@ class KAKController
                 SET nama_kegiatan = :nama,
                     tipe_kegiatan_id = :tipe,
                     deskripsi_kegiatan = :desk,
+                    sasaran_utama = :sasaran,
+                    catatan_sasaran_utama = :catatan_sasaran,
                     metode_pelaksanaan = :metode,
                     kurun_waktu_pelaksanaan = :kurun,
                     tanggal_mulai = :mulai,
@@ -673,6 +676,8 @@ class KAKController
             $this->db->bind(':nama', $k['nama_kegiatan']);
             $this->db->bind(':tipe', $k['tipe_kegiatan_id']);
             $this->db->bind(':desk', $k['deskripsi_kegiatan']);
+            $this->db->bind(':sasaran', $k['sasaran_utama']);
+            $this->db->bind(':catatan_sasaran', $k['catatan_sasaran_utama'] ?? null);
             $this->db->bind(':metode', $k['metode_pelaksanaan']);
             $this->db->bind(':kurun', $k['kurun_waktu_pelaksanaan']);
             $this->db->bind(':mulai', $k['tanggal_mulai']);
@@ -697,13 +702,12 @@ class KAKController
                 $this->db->execute();
             }
 
-            // Re-insert data (same logic as store method)
-            if (!empty($k['penerima_manfaat'])) {
-                foreach ($k['penerima_manfaat'] as $m) {
-                    $this->db->query("INSERT INTO t_kak_manfaat (kak_id, manfaat, sasaran_utama) VALUES (:id, :m, :sas)");
+            // Re-insert data
+            if (!empty($k['manfaat'])) {
+                foreach ($k['manfaat'] as $m) {
+                    $this->db->query("INSERT INTO t_kak_manfaat (kak_id, manfaat) VALUES (:id, :m)");
                     $this->db->bind(':id', $id);
-                    $this->db->bind(':m', $m['manfaat']);
-                    $this->db->bind(':sas', $m['sasaran_utama']);
+                    $this->db->bind(':m', $m);
                     $this->db->execute();
                 }
             }
@@ -911,17 +915,15 @@ class KAKController
                         $recordId = $r['id'];
 
                         if ($table === 't_kak_manfaat') {
-                            $recordId = strtok($r['id'], '_');
+                            // t_kak_manfaat only has catatan_manfaat now
                             $catatanManfaat = $r['catatan_manfaat'] ?? null;
-                            $catatanSasaran = $r['catatan_sasaran_utama'] ?? null;
 
                             $db->query("
                                 UPDATE $table 
-                                SET catatan_manfaat = :cm, catatan_sasaran_utama = :cs
+                                SET catatan_manfaat = :cm
                                 WHERE $pkColumn = :pk
                             ");
                             $db->bind(':cm', $catatanManfaat);
-                            $db->bind(':cs', $catatanSasaran);
                             $db->bind(':pk', $recordId);
                             $db->execute();
                         } else {
@@ -1062,7 +1064,14 @@ class KAKController
                         $idChild = $r['id'];
                         unset($r['id']);
 
-                        $r['catatan_verifikator'] = null;
+                        // Clear catatan fields based on table type
+                        if ($table === 't_kak_manfaat') {
+                            // Manfaat only has catatan_manfaat
+                            $r['catatan_manfaat'] = null;
+                        } else {
+                            // Other tables use catatan_verifikator
+                            $r['catatan_verifikator'] = null;
+                        }
 
                         $setParts = [];
                         foreach ($r as $k => $v) {
@@ -1220,7 +1229,10 @@ class KAKController
                 $db->execute();
             }
 
-
+            // Clear catatan untuk t_kak_manfaat (only catatan_manfaat now)
+            $db->query("UPDATE t_kak_manfaat SET catatan_manfaat=NULL WHERE kak_id=:id");
+            $db->bind(':id', $id);
+            $db->execute();
 
             $db->commit();
 
@@ -1304,7 +1316,7 @@ class KAKController
             $db->query("
                 INSERT INTO t_kak_approval
                 (kak_id, approver_user_id, status, catatan, created_at)
-                VALUES (:id, :usr, 'Ditolak', :ct, NOW())
+                VALUES (:id, :usr, 'Selesai', :ct, NOW())
             ");
             $this->db->bind(':id', $id);
             $this->db->bind(':usr', $this->userData['user_id']);
@@ -1369,7 +1381,7 @@ class KAKController
                 $this->mailService->notifyKAKRejected($id, $kakDataForEmail, $catatan);
             }
 
-            Response::success(null, "KAK berhasil ditolak.");
+            Response::success(null, "KAK berhasil ditolak dan proses dihentikan.");
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();

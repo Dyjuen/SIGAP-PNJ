@@ -668,10 +668,18 @@ export function renderUsulanKakPage(path, userRole) {
                 <div class="step-content" id="penerima-manfaat">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Penerima Manfaat</h4>
                   
-                  <div id="penerimaManfaatContainer">
-                    <!-- Dynamic rows will be inserted here -->
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Penerima Manfaat (Sasaran Utama)</label>
+                    <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 min-h-[100px] resize-y" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Contoh: Mahasiswa, Dosen, Masyarakat Umum" id="sasaranUtama"></textarea>
                   </div>
-                  <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addPenerimaManfaat()">Tambah Penerima Manfaat</button>
+
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat yang Diperoleh</label>
+                    <div id="manfaatContainer">
+                      <!-- Dynamic benefit rows will be inserted here -->
+                    </div>
+                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addManfaat()">Tambah Manfaat</button>
+                  </div>
                 </div>
 
                 <!-- Step 3: Strategi Pencapaian -->
@@ -1096,19 +1104,20 @@ export function renderUsulanKakPage(path, userRole) {
       if (!gambaranUmum.value)
         addError(gambaranUmum, "Gambaran Umum Kegiatan wajib diisi.");
     } else if (step === 2) {
-      // Penerima Manfaat
-      const penerimaRows = document.querySelectorAll(
-        "#penerimaManfaatContainer .penerima-manfaat-item"
+      // Penerima Manfaat (Refactored)
+      const sasaranUtama = document.getElementById("sasaranUtama");
+      if (!sasaranUtama.value)
+        addError(sasaranUtama, "Penerima Manfaat (Sasaran Utama) wajib diisi.");
+
+      const manfaatRows = document.querySelectorAll(
+        "#manfaatContainer .manfaat-item"
       );
-      penerimaRows.forEach((row) => {
-        const sasaranInput = row.querySelector(".sasaran-utama-input");
+      manfaatRows.forEach((row) => {
         const manfaatInput = row.querySelector(".manfaat-input");
-        if (!sasaranInput.value)
-          addError(sasaranInput, "Sasaran Utama wajib diisi.");
         if (!manfaatInput.value) addError(manfaatInput, "Manfaat wajib diisi.");
       });
-      if (penerimaRows.length === 0) {
-        showError("Harap tambahkan setidaknya satu Penerima Manfaat.");
+      if (manfaatRows.length === 0) {
+        showError("Harap tambahkan setidaknya satu Manfaat.");
         isValid = false;
       }
     } else if (step === 3) {
@@ -1430,7 +1439,7 @@ export function renderUsulanKakPage(path, userRole) {
       await fetchAndPopulateKakData(kakId);
     } else {
       // Add default rows for create mode
-      addPenerimaManfaat();
+      addManfaat();
       addTahapanPelaksanaan();
       addIndikatorKinerja();
       addIkuField();
@@ -1836,16 +1845,12 @@ export function renderUsulanKakPage(path, userRole) {
         tanggal_selesai: tanggalSelesai || "",
         lokasi: "PNJ Depok",
 
-        penerima_manfaat: Array.from(
-          document.querySelectorAll(
-            "#penerimaManfaatContainer .penerima-manfaat-item"
-          )
+        sasaran_utama: document.getElementById("sasaranUtama")?.value || "",
+        manfaat: Array.from(
+          document.querySelectorAll("#manfaatContainer .manfaat-input")
         )
-          .map((row) => ({
-            sasaran_utama: row.querySelector(".sasaran-utama-input").value,
-            manfaat: row.querySelector(".manfaat-input").value,
-          }))
-          .filter((item) => item.sasaran_utama || item.manfaat),
+          .map((input) => input.value)
+          .filter(Boolean),
 
         tahapan_pelaksanaan: getDynamicListValues(
           "tahapanPelaksanaanContainer"
@@ -2026,22 +2031,13 @@ export function renderUsulanKakPage(path, userRole) {
 
   // Dynamic Field Functions (Global scope)
 
-  window.addPenerimaManfaat = function (itemData = null) {
-    const container = document.getElementById("penerimaManfaatContainer");
+  window.addManfaat = function (value = '') {
+    const container = document.getElementById("manfaatContainer");
     const newItem = document.createElement("div");
-    newItem.className = "penerima-manfaat-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
-    const sasaran = itemData ? itemData.sasaran_utama : '';
-    const manfaat = itemData ? itemData.manfaat : '';
+    newItem.className = "manfaat-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
     newItem.innerHTML = `
-      <div class="flex-1">
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-        <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran" value="${sasaran}">
-      </div>
-      <div class="flex-1">
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
-        <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat" value="${manfaat}">
-      </div>
-      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+      <input type="text" class="manfaat-input flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input Manfaat" value="${value}">
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
       </button>
     `;
@@ -2337,14 +2333,18 @@ export function renderUsulanKakPage(path, userRole) {
           kakData.deskripsi_kegiatan;
       }
 
-      // Populate Step 2: Penerima Manfaat
+      // Populate Step 2: Penerima Manfaat (Refactored)
+      if (kakData.sasaran_utama) {
+        document.getElementById("sasaranUtama").value = kakData.sasaran_utama;
+      }
+
       if (kakData.manfaat && kakData.manfaat.length > 0) {
-        const penerimaManfaatContainer = document.getElementById(
-          "penerimaManfaatContainer"
+        const manfaatContainer = document.getElementById(
+          "manfaatContainer"
         );
-        penerimaManfaatContainer.innerHTML = "";
+        manfaatContainer.innerHTML = ""; // Clear existing
         kakData.manfaat.forEach((item) => {
-          addPenerimaManfaat(item);
+          addManfaat(item.manfaat); // Pass the string value
         });
       }
 

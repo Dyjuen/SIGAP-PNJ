@@ -678,6 +678,14 @@ export function renderLandingPage(userRole) {
 
 <!-- Roles Section - ENHANCED -->
 <section id="landingRoles" class="section-py pt-8 pb-20 px-4 bg-white relative">
+  <!-- Gradient blend dari Features (putih) -->
+  <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent z-[6] pointer-events-none"></div>
+  
+  <!-- Shader Background Canvas -->
+  <canvas id="rolesShaderBg" class="absolute top-0 left-0 w-full h-full opacity-100 pointer-events-none"></canvas>
+  
+  <!-- Gradient blend ke FAQ (putih) -->
+  <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-[6] pointer-events-none"></div>
   <div class="container mx-auto">
     <div class="text-center mb-16">
       <span class="section-badge inline-block px-4 py-2 bg-cyan-100 text-[#33C8DA] rounded-full text-sm font-semibold mb-4" data-aos="fade-down" data-aos-duration="800">ROLES</span>

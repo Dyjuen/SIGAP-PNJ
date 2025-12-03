@@ -13,9 +13,7 @@ final class CreateTKakManfaatTable extends AbstractMigration
         $table->addColumn('manfaat_id', 'integer', ['identity' => true])
               ->addColumn('kak_id', 'integer')
               ->addColumn('manfaat', 'text')
-              ->addColumn('sasaran_utama', 'text')
               ->addColumn('catatan_manfaat', 'text', ['null' => true])
-              ->addColumn('catatan_sasaran_utama', 'text', ['null' => true])
               ->addForeignKey('kak_id', 't_kak', 'kak_id', [
                   'delete' => 'CASCADE',
                   'update' => 'CASCADE'

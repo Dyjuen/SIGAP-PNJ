@@ -293,10 +293,109 @@ export function renderPencairanDanaPage(path, userRole) {
       .menu-icon i.ti {
         font-size: 24px !important;
       }
+
+      /* 16. Search bar styles */
+      .search-section {
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        animation: slideInLeft 0.6s ease-out forwards;
+        animation-delay: 0.1s;
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .search-container {
+        position: relative;
+        max-width: 500px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.875rem 1rem 0.875rem 3rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #00BCD4;
+        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9CA3AF;
+        pointer-events: none;
+        transition: color 0.3s ease;
+      }
+
+      .search-input:focus + .search-icon {
+        color: #00BCD4;
+      }
+
+      .clear-search {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #9CA3AF;
+        cursor: pointer;
+        padding: 0.25rem;
+        display: none;
+        transition: color 0.3s ease;
+      }
+
+      .clear-search:hover {
+        color: #EF4444;
+      }
+
+      .clear-search.visible {
+        display: block;
+      }
     </style>
 
     <div class="pencairan-dana-page">
 
+      <!-- Search Section -->
+      <div class="search-section">
+        <div class="search-container">
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Cari nama kegiatan, pelaksana, atau PJ..."
+          />
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <button class="clear-search" id="clearSearch" title="Clear search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
 
       <!-- Data Table -->
       <div class="card card-datatable table-responsive p-0">
@@ -338,10 +437,13 @@ export function renderPencairanDanaPage(path, userRole) {
   let state = {
     allKegiatan: [], // All activities fetched
     displayKegiatan: [], // Activities filtered for current approval level
+    filteredKegiatan: [], // Filtered by search
     currentPage: 1,
     itemsPerPage: 10,
     totalItems: 0,
     totalPages: 1,
+    searchQuery: '',
+    searchTimeout: null,
   };
 
   // ==============================================
@@ -372,7 +474,7 @@ export function renderPencairanDanaPage(path, userRole) {
   async function fetchKegiatan() {
     const tbody = document.getElementById("kegiatanTableBody");
     tbody.innerHTML =
-      '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+      '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
     try {
       const response = await apiRequest("/kegiatan");
       const kegiatanData = response.data.data
@@ -579,7 +681,8 @@ export function renderPencairanDanaPage(path, userRole) {
     }
 
     const startIndex = (state.currentPage - 1) * state.itemsPerPage;
-    const paginatedData = state.displayKegiatan.slice(
+    const dataToDisplay = state.searchQuery ? state.filteredKegiatan : state.displayKegiatan;
+    const paginatedData = dataToDisplay.slice(
       startIndex,
       startIndex + state.itemsPerPage
     );
@@ -712,6 +815,43 @@ export function renderPencairanDanaPage(path, userRole) {
   }
 
   // ==============================================
+  // SEARCH FUNCTIONS
+  // ==============================================
+  function performSearch(query) {
+    state.searchQuery = query.toLowerCase().trim();
+    
+    if (!state.searchQuery) {
+      state.filteredKegiatan = state.displayKegiatan;
+    } else {
+      state.filteredKegiatan = state.displayKegiatan.filter(item => {
+        const namaKegiatan = (item.nama_kegiatan || '').toLowerCase();
+        const pelaksana = (item.pelaksana_manual || '').toLowerCase();
+        const penanggungJawab = (item.penanggung_jawab_manual || '').toLowerCase();
+        return namaKegiatan.includes(state.searchQuery) || 
+               pelaksana.includes(state.searchQuery) || 
+               penanggungJawab.includes(state.searchQuery);
+      });
+    }
+    
+    state.currentPage = 1;
+    state.totalItems = state.filteredKegiatan.length;
+    state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage);
+    
+    renderTableRows();
+    renderPagination();
+  }
+
+  function debounceSearch(query) {
+    if (state.searchTimeout) {
+      clearTimeout(state.searchTimeout);
+    }
+    
+    state.searchTimeout = setTimeout(() => {
+      performSearch(query);
+    }, 300);
+  }
+
+  // ==============================================
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
@@ -760,6 +900,48 @@ export function renderPencairanDanaPage(path, userRole) {
   // ==============================================
   // INITIALIZATION
   // ==============================================
+  
+  // Setup search functionality
+  const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+      const query = e.target.value;
+      
+      if (clearSearch) {
+        if (query.length > 0) {
+          clearSearch.classList.add('visible');
+        } else {
+          clearSearch.classList.remove('visible');
+        }
+      }
+      
+      debounceSearch(query);
+    });
+    
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        this.value = '';
+        if (clearSearch) {
+          clearSearch.classList.remove('visible');
+        }
+        performSearch('');
+      }
+    });
+  }
+  
+  if (clearSearch) {
+    clearSearch.addEventListener('click', function() {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      this.classList.remove('visible');
+      performSearch('');
+    });
+  }
+  
   fetchKegiatan();
 
   // Initialize Vuexy menu (active state for current page)

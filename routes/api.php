@@ -196,6 +196,8 @@ if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/data$/', $uri)) {
 
 $router = new Router();
 
+$router->get('/dashboard/direktur', 'DashboardDirekturController@index', [new RoleMiddleware(['Direktur', 'Rektorat'])]);
+
 // ============================================
 // MASTER DATA ROUTES
 // ============================================

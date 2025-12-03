@@ -14,8 +14,34 @@ class AuthMiddleware implements Middleware
      */
     public function handle(): void
     {
-        $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+        $authHeader = null;
+
+        // --- DEBUGGING START ---
+        error_log("=== AUTH MIDDLEWARE DEBUG ===");
+        error_log("Checking for Authorization header...");
+        
+        $serverAuth = $_SERVER['HTTP_AUTHORIZATION'] ?? 'NULL';
+        $redirectAuth = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? 'NULL';
+        error_log("HTTP_AUTHORIZATION: " . $serverAuth);
+        error_log("REDIRECT_HTTP_AUTHORIZATION: " . $redirectAuth);
+        
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            error_log("getallheaders(): " . print_r($headers, true));
+        } else {
+            error_log("getallheaders() function does not exist.");
+        }
+        // --- DEBUGGING END ---
+
+        // Prioritize $_SERVER for Authorization header, as getallheaders() seems to be mangling it.
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+        } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        } elseif (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+        }
 
         if (!$authHeader) {
             Response::unauthorized('Token tidak ditemukan. Silakan login terlebih dahulu.');

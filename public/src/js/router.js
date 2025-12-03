@@ -8,7 +8,7 @@ import { renderDashboardVerifikator } from "./pages/Verifikator/Dashboard.js";
 import { renderWadirDashboardPage } from "./pages/Wadir/Dashboard.js";
 import { renderPpkDashboardPage } from "./pages/Ppk/Dashboard.js";
 import { renderBendaharaDashboardPage } from "./pages/Bendahara/Dashboard.js";
-import { RektoratDashboardPage } from "./pages/Rektorat/DashboardPage.js";
+import { DirekturDashboardPage } from "./pages/Direktur/DashboardPage.js";
 import { renderNotFoundPage } from "./pages/NotFoundPage.js";
 import { renderUsulanKakPage } from "./pages/Pengusul/StepUsulanKak.js";
 import { renderPreviewKakPage } from "./pages/Pengusul/PreviewKak.js";
@@ -112,17 +112,15 @@ const roleBasedRoutes = {
     "/kegiatan/lpj/detail/": renderInputLpjPage,
   },
   Rektorat: {
-    "/dashboard": () => {
-      const rootElement = document.getElementById("root");
-      if (rootElement) {
-        import("./layout/AppLayout.js").then(({ renderDashboardLayout }) => {
-          renderDashboardLayout(RektoratDashboardPage(), "Rektorat");
-        });
-      }
-    },
+    "/dashboard": (path, userRole) => DirekturDashboardPage(path, userRole),
     "/kegiatan/monitoring": renderMonitoringKegiatanPage,
-    "/laporan": renderNotFoundPage,
-    "/panduan": renderNotFoundPage,
+    "/riwayat": renderRiwayatKAKPage,
+    "/riwayat/detail/": renderDetailKegiatanPage,
+    "/kegiatan/detail/": renderDetailKegiatanPage,
+  },
+  Direktur: {
+    "/dashboard": (path, userRole) => DirekturDashboardPage(path, userRole),
+    "/kegiatan/monitoring": renderMonitoringKegiatanPage,
     "/riwayat": renderRiwayatKAKPage,
     "/riwayat/detail/": renderDetailKegiatanPage,
     "/kegiatan/detail/": renderDetailKegiatanPage,

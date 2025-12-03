@@ -503,6 +503,72 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       .modal-content {
         animation: scaleIn 0.3s ease-out;
       }
+
+      /* Search bar styles */
+      .search-section {
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        animation: slideInLeft 0.6s ease-out forwards;
+        animation-delay: 0.1s;
+      }
+
+      .search-container {
+        position: relative;
+        max-width: 500px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.875rem 1rem 0.875rem 3rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #00BCD4;
+        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9CA3AF;
+        pointer-events: none;
+        transition: color 0.3s ease;
+      }
+
+      .search-input:focus + .search-icon {
+        color: #00BCD4;
+      }
+
+      .clear-search {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #9CA3AF;
+        cursor: pointer;
+        padding: 0.25rem;
+        display: none;
+        transition: color 0.3s ease;
+      }
+
+      .clear-search:hover {
+        color: #EF4444;
+      }
+
+      .clear-search.visible {
+        display: block;
+      }
     </style>
 
     <div class="mengajukan-kegiatan-page">
@@ -517,6 +583,29 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       <!-- Alert Container -->
       <div class="container-xxl">
         <div id="pageAlertContainer" style="display: none; margin-bottom: 1.5rem;"></div>
+      </div>
+
+      <!-- Search Section -->
+      <div class="search-section">
+        <div class="search-container">
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Cari nama kegiatan..."
+          />
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <button class="clear-search" id="clearSearch" title="Clear search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Main Table Card -->
@@ -589,6 +678,10 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   // STATE & SETUP
   // ==============================================
   let approvedTelaah = [];
+  let allApprovedTelaah = [];
+  let filteredTelaah = [];
+  let searchQuery = '';
+  let searchTimeout = null;
   let ajukanModalInstance = null;
   if (typeof bootstrap !== "undefined") {
     ajukanModalInstance = new bootstrap.Modal(
@@ -633,6 +726,8 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       const userIdParam = user ? `&pengusul_user_id=${user.user_id}` : '';
       const response = await apiRequest(`/kak?status=3${userIdParam}`);
       approvedTelaah = response.data;
+      allApprovedTelaah = response.data;
+      filteredTelaah = response.data;
       renderTableRows(approvedTelaah);
     } catch (error) {
       tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
@@ -767,6 +862,36 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   }
 
   // ==============================================
+  // SEARCH FUNCTIONS
+  // ==============================================
+  function performSearch(query) {
+    searchQuery = query.toLowerCase().trim();
+    
+    if (!searchQuery) {
+      filteredTelaah = allApprovedTelaah;
+    } else {
+      filteredTelaah = allApprovedTelaah.filter(item => {
+        const namaKegiatan = (item.nama_kegiatan || '').toLowerCase();
+        const pengusul = (item.pengusul_nama || '').toLowerCase();
+        return namaKegiatan.includes(searchQuery) || pengusul.includes(searchQuery);
+      });
+    }
+    
+    approvedTelaah = filteredTelaah;
+    renderTableRows(approvedTelaah);
+  }
+
+  function debounceSearch(query) {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    
+    searchTimeout = setTimeout(() => {
+      performSearch(query);
+    }, 300);
+  }
+
+  // ==============================================
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
@@ -834,5 +959,47 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   // ==============================================
   // INITIALIZATION
   // ==============================================
+  
+  // Setup search functionality
+  const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+      const query = e.target.value;
+      
+      if (clearSearch) {
+        if (query.length > 0) {
+          clearSearch.classList.add('visible');
+        } else {
+          clearSearch.classList.remove('visible');
+        }
+      }
+      
+      debounceSearch(query);
+    });
+    
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        this.value = '';
+        if (clearSearch) {
+          clearSearch.classList.remove('visible');
+        }
+        performSearch('');
+      }
+    });
+  }
+  
+  if (clearSearch) {
+    clearSearch.addEventListener('click', function() {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      this.classList.remove('visible');
+      performSearch('');
+    });
+  }
+  
   fetchApprovedTelaah();
 }
