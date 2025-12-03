@@ -113,8 +113,116 @@
   </head>
 
   <body>
+    <!-- Video Intro Splash Screen -->
+    <div id="videoIntro" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #1a1a1a;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    ">
+      <video id="introVideo" 
+        autoplay 
+        muted 
+        playsinline
+        style="
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          background: #1a1a1a;
+        ">
+        <source src="/assets/video/intro.mp4" type="video/mp4">
+        <source src="/assets/video/intro.webm" type="video/webm">
+        Your browser does not support the video tag.
+      </video>
+      
+      <!-- Skip button overlay -->
+      <div style="
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        background: rgba(84, 210, 232, 0.25);
+        backdrop-filter: blur(10px);
+        padding: 10px 20px;
+        border-radius: 50px;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 13px;
+        font-weight: 400;
+        border: 1px solid rgba(84, 210, 232, 0.35);
+        transition: all 0.3s ease;
+        pointer-events: none;
+        box-shadow: 0 2px 12px rgba(84, 210, 232, 0.2);
+        opacity: 0.6;
+      " id="skipHint">
+        Klik di mana saja untuk melewati
+      </div>
+    </div>
+
     <!-- Root Element - All content will be rendered here -->
     <div id="root"></div>
+    
+    <!-- Video Intro Script -->
+    <script>
+      (function() {
+        const videoIntro = document.getElementById('videoIntro');
+        const introVideo = document.getElementById('introVideo');
+        const skipHint = document.getElementById('skipHint');
+        
+        // Check if video intro was already shown in this session
+        const hasSeenIntro = sessionStorage.getItem('hasSeenIntro');
+        
+        if (hasSeenIntro === 'true') {
+          // Skip intro if already seen
+          videoIntro.style.display = 'none';
+          return;
+        }
+        
+        // Function to hide intro with fade out
+        function hideIntro() {
+          sessionStorage.setItem('hasSeenIntro', 'true');
+          videoIntro.style.transition = 'opacity 0.5s ease-out';
+          videoIntro.style.opacity = '0';
+          
+          setTimeout(() => {
+            videoIntro.style.display = 'none';
+          }, 500);
+        }
+        
+        // Hide intro when video ends
+        introVideo.addEventListener('ended', hideIntro);
+        
+        // Skip on click anywhere
+        videoIntro.addEventListener('click', function(e) {
+          hideIntro();
+        });
+        
+        // Optional: Skip on ESC key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && videoIntro.style.display !== 'none') {
+            hideIntro();
+          }
+        });
+        
+        // Add hover effect to skip hint
+        videoIntro.addEventListener('mouseenter', function() {
+          skipHint.style.opacity = '0.85';
+          skipHint.style.background = 'rgba(84, 210, 232, 0.4)';
+          skipHint.style.borderColor = 'rgba(84, 210, 232, 0.5)';
+        });
+        
+        videoIntro.addEventListener('mouseleave', function() {
+          skipHint.style.opacity = '0.6';
+          skipHint.style.background = 'rgba(84, 210, 232, 0.25)';
+          skipHint.style.borderColor = 'rgba(84, 210, 232, 0.35)';
+        });
+      })();
+    </script>
 
     <!-- Core JS -->
     <script src="/assets/vendor/libs/jquery/jquery.js"></script>
