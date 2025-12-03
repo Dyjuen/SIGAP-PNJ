@@ -14,8 +14,16 @@ class AuthMiddleware implements Middleware
      */
     public function handle(): void
     {
-        $headers = getallheaders();
+        $headers = function_exists('getallheaders') ? getallheaders() : [];
         $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+
+        // Fallback for Nginx/FPM if getallheaders misses it
+        if (!$authHeader && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+        }
+        if (!$authHeader && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        }
 
         if (!$authHeader) {
             Response::unauthorized('Token tidak ditemukan. Silakan login terlebih dahulu.');

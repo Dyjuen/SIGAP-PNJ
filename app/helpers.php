@@ -42,6 +42,14 @@ if (!function_exists('auth_user')) {
             $authHeader = trim($headers['Authorization']);
         }
 
+        // Fallback for Nginx/FPM
+        if (!$authHeader && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $authHeader = trim($_SERVER['HTTP_AUTHORIZATION']);
+        }
+        if (!$authHeader && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $authHeader = trim($_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
+        }
+
         if (empty($authHeader)) {
             return null;
         }
