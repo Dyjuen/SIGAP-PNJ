@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Kerangka Acuan Kerja (KAK)</title>
-    <!-- TEMPLATE VERSION: 2025-11-30-20:40 - TTD SEPARATED TO LAST PAGE -->
+    <!-- TEMPLATE VERSION: 2025-12-03-11:10 - ADDED CATEGORY SUBTOTALS IN RAB TABLE -->
     <style>
         @page {
-            margin: 2cm;
+            margin: 2cm 3cm;
         }
         body {
             font-family: 'Times New Roman', Times, serif;
             font-size: 12pt;
             line-height: 1.8;
             color: #000;
+            padding: 4cm 10cm; /* Increased side padding: 3cm → 4cm untuk margin kanan kiri lebih besar */
+            box-sizing: border-box;
+            max-width: 100%;
         }
         /* Cover Page Styles - ULTRA COMPACT */
         .cover-page {
             text-align: center;
-            padding: 40px 30px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             page-break-after: always;
+            padding: 60px 40px; /* Maintain cover page padding */
         }
         .cover-logo {
             width: 350px;
@@ -100,13 +103,14 @@
             margin: 0;
         }
         .section {
-            margin-bottom: 8px; /* 12px → 8px (LEBIH RAPAT LAGI) */
+            margin-bottom: 8px;
             page-break-inside: avoid;
+            padding: 0 15px; /* Added horizontal padding untuk margin dalam section */
         }
         .section-title {
             font-size: 13pt;
             font-weight: bold;
-            margin-bottom: 8px; /* 10px → 8px (LEBIH RAPAT) */
+            margin-bottom: 8px;
             color: #000;
         }
         .info-grid {
@@ -462,10 +466,31 @@
                 $no = 1;
                 $totalDiusulkan = 0;
                 $currentKategori = '';
+                $subtotalKategori = 0;
+                $itemCount = count($kegiatan['anggaran']);
+                $currentIndex = 0;
                 
                 foreach ($kegiatan['anggaran'] as $item): 
-                    // Group by kategori (if available)
+                    $currentIndex++;
+                    
+                    // Detect kategori change - print subtotal for previous kategori
                     if (isset($item['nama_kategori']) && $item['nama_kategori'] != $currentKategori) {
+                        // Print subtotal for previous kategori (if not first item)
+                        if ($currentKategori !== '' && $subtotalKategori > 0) {
+                            ?>
+                            <tr style="background-color: #f5f5f5;">
+                                <td colspan="9" style="text-align: right; border: 1px solid #000; padding: 8px; font-weight: bold;">
+                                    Subtotal <?= htmlspecialchars($currentKategori) ?>
+                                </td>
+                                <td style="text-align: right; border: 1px solid #000; padding: 8px; font-weight: bold;">
+                                    Rp <?= number_format($subtotalKategori, 0, ',', '.') ?>
+                                </td>
+                            </tr>
+                            <?php
+                            $subtotalKategori = 0; // Reset subtotal
+                        }
+                        
+                        // Set new kategori
                         $currentKategori = $item['nama_kategori'];
                         ?>
                         <tr style="background-color: #e0e0e0;">
@@ -483,6 +508,7 @@
                     
                     $jumlah = $volume * $item['harga_satuan'];
                     $totalDiusulkan += $jumlah;
+                    $subtotalKategori += $jumlah;
                 ?>
                 <tr>
                     <td style="text-align: center; width: 4%; border: 1px solid #000; padding: 8px;"><?= $no++ ?></td>
@@ -496,6 +522,21 @@
                     <td style="text-align: right; width: 15%; border: 1px solid #000; padding: 8px;"><?= number_format($item['harga_satuan'], 0, ',', '.') ?></td>
                     <td style="text-align: right; width: 15%; border: 1px solid #000; padding: 8px;"><?= number_format($jumlah, 0, ',', '.') ?></td>
                 </tr>
+                <?php 
+                    // Print subtotal for last kategori after last item
+                    if ($currentIndex === $itemCount && $subtotalKategori > 0) {
+                        ?>
+                        <tr style="background-color: #f5f5f5;">
+                            <td colspan="9" style="text-align: right; border: 1px solid #000; padding: 8px; font-weight: bold;">
+                                Subtotal <?= htmlspecialchars($currentKategori) ?>
+                            </td>
+                            <td style="text-align: right; border: 1px solid #000; padding: 8px; font-weight: bold;">
+                                Rp <?= number_format($subtotalKategori, 0, ',', '.') ?>
+                            </td>
+                        </tr>
+                        <?php
+                    }
+                ?>
                 <?php endforeach; ?>
                 
                 <tr style="background-color: #f0f0f0;">
@@ -578,7 +619,7 @@
 
     <!-- PENGESAHAN - HALAMAN TERPISAH -->
     <div class="signature-section" style="page-break-before: always; padding-top: 100px;">
-        <div style="text-align: left; margin-bottom: 40px;">
+        <div style="text-align: left; margin-bottom: 40px; margin-left: 40px;">
             <p style="margin: 0; font-size: 12pt;">Depok, <?= date('d F Y') ?></p>
         </div>
         
