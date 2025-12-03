@@ -55,10 +55,104 @@ export function renderDaftarLpjPage(path, userRole) {
     <style>
       .countdown-normal { color: #D97706; }
       .countdown-danger { color: #be123c; }
+
+      /* Search Section Styles */
+      .search-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+        animation: slideInLeft 0.4s ease-out;
+      }
+
+      .search-input-wrapper {
+        position: relative;
+        max-width: 500px;
+      }
+
+      .search-input-wrapper input {
+        width: 100%;
+        padding: 0.75rem 3rem 0.75rem 2.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+      }
+
+      .search-input-wrapper input:focus {
+        outline: none;
+        border-color: #00BCD4;
+        box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+      }
+
+      .search-input-wrapper .search-icon {
+        position: absolute;
+        left: 0.875rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+      }
+
+      .search-input-wrapper .clear-search {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 0.25rem;
+        display: none;
+        transition: color 0.2s ease;
+      }
+
+      .search-input-wrapper .clear-search:hover {
+        color: #475569;
+      }
+
+      .search-input-wrapper.has-value .clear-search {
+        display: block;
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
     </style>
     <div class="daftar-lpj-page">
       <!-- Statistics Cards -->
       ${isBendahara ? bendaharaStatCards : pengusulStatCards}
+
+      <!-- Search Section -->
+      <div class="search-section">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Cari nama kegiatan atau pengusul..."
+            autocomplete="off"
+          />
+          <button class="clear-search" id="clearSearch" title="Clear search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
 
       <!-- Table Card -->
       <div class="card-datatable">
@@ -93,9 +187,12 @@ function initializeDaftarLpj(userRole) {
 
   const state = {
     kegiatan: [],
+    allKegiatan: [],
     filteredKegiatan: [],
     filter: "all",
     countdownInterval: null,
+    searchQuery: "",
+    searchTimeout: null,
   };
 
   const tbody = document.getElementById("lpjTableBody");
@@ -135,6 +232,7 @@ function initializeDaftarLpj(userRole) {
       const userIdParam = user ? `?user_id=${user.user_id}` : '';
       const response = await apiRequest(`/dashboard/lpj${userIdParam}`);
       state.kegiatan = response.data.data || [];
+      state.allKegiatan = [...state.kegiatan];
       filterAndRender();
       updateStats();
       startCountdownTimers();
@@ -311,6 +409,35 @@ function initializeDaftarLpj(userRole) {
     }
   }
 
+  function performSearch() {
+    const query = state.searchQuery.toLowerCase().trim();
+    
+    if (!query) {
+      state.kegiatan = [...state.allKegiatan];
+      filterAndRender();
+      return;
+    }
+
+    state.kegiatan = state.allKegiatan.filter((item) => {
+      const namaKegiatan = (item.nama_kegiatan || "").toLowerCase();
+      const pengusulNama = (item.pengusul_nama || "").toLowerCase();
+      
+      return namaKegiatan.includes(query) || pengusulNama.includes(query);
+    });
+
+    filterAndRender();
+    updateStats();
+  }
+
+  function debounceSearch() {
+    if (state.searchTimeout) {
+      clearTimeout(state.searchTimeout);
+    }
+    state.searchTimeout = setTimeout(() => {
+      performSearch();
+    }, 300);
+  }
+
   function filterAndRender() {
     let filteredData = state.kegiatan;
 
@@ -411,6 +538,42 @@ function initializeDaftarLpj(userRole) {
       } else if (action === "selesaikan") {
         await completeLpj(id);
       }
+    });
+  }
+
+  // Search event listeners
+  const searchInput = document.getElementById("searchInput");
+  const clearSearchBtn = document.getElementById("clearSearch");
+  const searchWrapper = document.querySelector(".search-input-wrapper");
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      state.searchQuery = e.target.value;
+      if (state.searchQuery) {
+        searchWrapper.classList.add("has-value");
+      } else {
+        searchWrapper.classList.remove("has-value");
+      }
+      debounceSearch();
+    });
+
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        searchInput.value = "";
+        state.searchQuery = "";
+        searchWrapper.classList.remove("has-value");
+        performSearch();
+      }
+    });
+  }
+
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      state.searchQuery = "";
+      searchWrapper.classList.remove("has-value");
+      performSearch();
+      searchInput.focus();
     });
   }
 

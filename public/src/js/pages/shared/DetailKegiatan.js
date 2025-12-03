@@ -792,15 +792,13 @@ export function renderDetailKegiatanPage(path, userRole) {
                 <div class="step-content" id="penerima-manfaat">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Penerima Manfaat</h4>
                   
-                  <div class="mb-8">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-                    <div id="sasaranUtamaContainer">
-                      <!-- Dynamic content will be injected here -->
-                    </div>
+                  <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Penerima Manfaat (Sasaran Utama)</label>
+                    <textarea readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[100px] resize-y" style="border-color: #E5E7EB; background: #F9FAFB;" data-field="sasaranUtama"></textarea>
                   </div>
 
                   <div class="mb-8">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat yang Diperoleh</label>
                     <div id="manfaatContainer">
                       <!-- Dynamic content will be injected here -->
                     </div>
@@ -1147,15 +1145,14 @@ export function renderDetailKegiatanPage(path, userRole) {
       }
 
       // Populate Sasaran & Manfaat
-      const sasaranContainer = document.getElementById("sasaranUtamaContainer");
+      if (kakData.sasaran_utama) {
+        document.querySelector('[data-field="sasaranUtama"]').value = kakData.sasaran_utama;
+      }
+
       const manfaatContainer = document.getElementById("manfaatContainer");
-      sasaranContainer.innerHTML = "";
       manfaatContainer.innerHTML = "";
       if (kakData.manfaat && kakData.manfaat.length > 0) {
         kakData.manfaat.forEach((item) => {
-          if (item.sasaran_utama) {
-            sasaranContainer.innerHTML += createReadOnlyRow(item.sasaran_utama);
-          }
           if (item.manfaat) {
             manfaatContainer.innerHTML += createReadOnlyRow(item.manfaat);
           }

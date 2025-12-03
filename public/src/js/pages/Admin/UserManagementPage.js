@@ -512,6 +512,29 @@ const pageContent = `
                 </div>
             </div>
         </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input 
+              type="text" 
+              id="searchInput" 
+              placeholder="Cari nama, username, email, atau role..."
+              autocomplete="off"
+            />
+            <button class="clear-search" id="clearSearch" title="Clear search">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
         <div class="d-flex justify-content-end mb-4">
             <button class="btn btn-primary btn-tambah-akun" id="btnTambahAkun">
                 <i class="ti me-1">&#xeb4b;</i> Tambah Akun
@@ -764,7 +787,11 @@ const pageContent = `
   // ==============================================
   let state = {
     users: [],
+    allUsers: [],
+    filteredUsers: [],
     currentUser: null,
+    searchQuery: "",
+    searchTimeout: null,
   };
 
   let editProfileModalInstance = null;
@@ -856,6 +883,37 @@ const pageContent = `
   // UI FUNCTIONS
   // ==============================================
   
+  function performSearch() {
+    const query = state.searchQuery.toLowerCase().trim();
+    
+    if (!query) {
+      state.users = [...state.allUsers];
+      renderTableRows(state.users);
+      return;
+    }
+
+    state.filteredUsers = state.allUsers.filter((user) => {
+      const nama = (user.nama || "").toLowerCase();
+      const username = (user.username || "").toLowerCase();
+      const email = (user.email || "").toLowerCase();
+      const role = (user.role || "").toLowerCase();
+      
+      return nama.includes(query) || username.includes(query) || email.includes(query) || role.includes(query);
+    });
+
+    state.users = [...state.filteredUsers];
+    renderTableRows(state.users);
+  }
+
+  function debounceSearch() {
+    if (state.searchTimeout) {
+      clearTimeout(state.searchTimeout);
+    }
+    state.searchTimeout = setTimeout(() => {
+      performSearch();
+    }, 300);
+  }
+
   function showTableLoading() {
     const tbody = document.getElementById('userTableBody');
     if (tbody) {
@@ -883,6 +941,7 @@ const pageContent = `
             // Add a static status for now, as it's not in the API response
             status: 'Aktif' 
         }));
+        state.allUsers = [...state.users];
         renderTableRows(state.users);
         updateStats();
     } catch (error) {
@@ -1315,6 +1374,44 @@ const pageContent = `
       } finally {
         setButtonLoading('btnSaveAkunBaru', false);
       }
+    });
+  }
+
+  // ==============================================
+  // SEARCH EVENT LISTENERS
+  // ==============================================
+  const searchInput = document.getElementById("searchInput");
+  const clearSearchBtn = document.getElementById("clearSearch");
+  const searchWrapper = document.querySelector(".search-input-wrapper");
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      state.searchQuery = e.target.value;
+      if (state.searchQuery) {
+        searchWrapper.classList.add("has-value");
+      } else {
+        searchWrapper.classList.remove("has-value");
+      }
+      debounceSearch();
+    });
+
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        searchInput.value = "";
+        state.searchQuery = "";
+        searchWrapper.classList.remove("has-value");
+        performSearch();
+      }
+    });
+  }
+
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      state.searchQuery = "";
+      searchWrapper.classList.remove("has-value");
+      performSearch();
+      searchInput.focus();
     });
   }
 

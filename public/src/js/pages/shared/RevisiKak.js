@@ -1505,23 +1505,20 @@ export function renderRevisiKakPage(path, userRole) {
                 <!-- Step 2: Penerima Manfaat -->
                 <div class="step-content" id="penerima-manfaat">
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Penerima Manfaat</h4>
-                  <div class="grid grid-cols-2 gap-6">
-                    <div class="mb-8">
-                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-                      <div id="sasaranUtamaContainer">
-                        <!-- Dynamic content will be injected here -->
-                      </div>
-                    </div>
-
-                    <div class="mb-8">
-                      <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
-                      <div id="manfaatContainer">
-                        <!-- Dynamic content will be injected here -->
-                      </div>
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
+                    <div id="sasaranUtamaContainer">
+                      <!-- ONE sasaran utama from t_kak -->
                     </div>
                   </div>
-                  <div id="penerimaManfaatDynamicContainer"></div>
-                  ${isPengusul ? `<button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addPenerimaManfaat()">Tambah Penerima Manfaat</button>` : ''}
+
+                  <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat yang Diperoleh</label>
+                    <div id="manfaatContainer">
+                      <!-- MANY manfaat from t_kak_manfaat -->
+                    </div>
+                    ${isPengusul ? `<button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5 mt-4" style="background: #00BCD4; color: #FFFFFF;" onclick="addManfaat()">Tambah Manfaat</button>` : ''}
+                  </div>
                 </div>
 
                 <!-- Step 3: Strategi Pencapaian -->
@@ -1834,24 +1831,20 @@ export function renderRevisiKakPage(path, userRole) {
     }, { once: true });
   };
 
-  window.addPenerimaManfaat = function () {
-    const container = document.getElementById("penerimaManfaatDynamicContainer");
+  window.addManfaat = function () {
+    const container = document.getElementById("manfaatContainer");
     const newItem = document.createElement("div");
-    newItem.className = "penerima-manfaat-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
+    newItem.className = "manfaat-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
     newItem.innerHTML = `
-      <div class="flex-1">
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
-        <input type="text" class="sasaran-utama-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Sasaran">
-      </div>
-      <div class="flex-1">
-        <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat</label>
-        <input type="text" class="manfaat-input w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input Manfaat">
-      </div>
-      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 self-end visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+      <input type="text" class="manfaat-input flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input Manfaat">
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
       </button>
     `;
     container.appendChild(newItem);
+    newItem.addEventListener('animationend', () => {
+      newItem.classList.remove('new-item-animation');
+    });
   };
 
   window.addTahapanPelaksanaan = function () {
@@ -2440,9 +2433,7 @@ export function renderRevisiKakPage(path, userRole) {
             if (!pk) return;
 
             if (config.tableName === 't_kak_manfaat') {
-              if (item.catatan_sasaran_utama) {
-                rowComments[config.tableName][`${pk}_sasaran_utama`] = item.catatan_sasaran_utama;
-              }
+              // Only load catatan_manfaat (sasaran_utama moved to t_kak)
               if (item.catatan_manfaat) {
                 rowComments[config.tableName][`${pk}_manfaat`] = item.catatan_manfaat;
               }
@@ -2451,6 +2442,12 @@ export function renderRevisiKakPage(path, userRole) {
             }
           });
         }
+      }
+
+      // Load catatan_sasaran_utama from t_kak header
+      if (kakData.catatan_sasaran_utama) {
+        if (!rowComments['t_kak']) rowComments['t_kak'] = {};
+        rowComments['t_kak'][`${kakData.kak_id}_sasaran_utama`] = kakData.catatan_sasaran_utama;
       }
 
       updateCommentCount();
@@ -2472,26 +2469,53 @@ export function renderRevisiKakPage(path, userRole) {
         }
       }
 
-      // Populate Sasaran & Manfaat
+      // Populate Sasaran Utama (header level from t_kak)
       const sasaranContainer = document.getElementById("sasaranUtamaContainer");
-      const manfaatContainer = document.getElementById("manfaatContainer");
       sasaranContainer.innerHTML = "";
+      console.log('DEBUG Sasaran Utama:', kakData.sasaran_utama);
+      console.log('DEBUG KAK ID:', kakData.kak_id);
+      if (kakData.sasaran_utama) {
+        // Use textarea for long text instead of input
+        sasaranContainer.innerHTML = `
+          <div class="row-with-comment" data-row-type="t_kak" data-pk-name="kak_id" data-pk-value="${kakData.kak_id}" data-field-name="sasaran_utama">
+            <div class="input-with-comment">
+              <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[100px] resize-y" style="${inputStyle}" ${inputAttr}>${kakData.sasaran_utama}</textarea>
+            </div>
+            <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Sasaran Utama">
+              <i class="ti ti-message-circle-2">&#xeaed;</i>
+            </button>
+          </div>
+        `;
+        if (kakData.catatan_sasaran_utama) {
+          updateCommentButton(
+            `.row-with-comment[data-row-type="t_kak"][data-pk-value="${kakData.kak_id}"][data-field-name="sasaran_utama"] .row-comment-icon`, 
+            kakData.catatan_sasaran_utama
+          );
+        }
+      }
+      
+      // Populate Manfaat (detail level from t_kak_manfaat)
+      const manfaatContainer = document.getElementById("manfaatContainer");
       manfaatContainer.innerHTML = "";
       if (kakData.manfaat && kakData.manfaat.length > 0) {
         kakData.manfaat.forEach((item, index) => {
-          if (item.sasaran_utama) {
-            sasaranContainer.innerHTML += createReadOnlyRow(item.sasaran_utama, index, "t_kak_manfaat", item.manfaat_id, "manfaat_id", "sasaran_utama");
-          }
           if (item.manfaat) {
-            manfaatContainer.innerHTML += createReadOnlyRow(item.manfaat, index, "t_kak_manfaat", item.manfaat_id, "manfaat_id", "manfaat");
+            manfaatContainer.innerHTML += createReadOnlyRow(
+              item.manfaat, 
+              index, 
+              "t_kak_manfaat", 
+              item.manfaat_id, 
+              "manfaat_id", 
+              "manfaat"
+            );
           }
         });
         kakData.manfaat.forEach((item) => {
-          if (item.catatan_sasaran_utama) {
-            updateCommentButton(`.row-with-comment[data-row-type="t_kak_manfaat"][data-pk-value="${item.manfaat_id}"][data-field-name="sasaran_utama"] .row-comment-icon`, item.catatan_sasaran_utama);
-          }
           if (item.catatan_manfaat) {
-            updateCommentButton(`.row-with-comment[data-row-type="t_kak_manfaat"][data-pk-value="${item.manfaat_id}"][data-field-name="manfaat"] .row-comment-icon`, item.catatan_manfaat);
+            updateCommentButton(
+              `.row-with-comment[data-row-type="t_kak_manfaat"][data-pk-value="${item.manfaat_id}"][data-field-name="manfaat"] .row-comment-icon`, 
+              item.catatan_manfaat
+            );
           }
         });
       }
@@ -2832,7 +2856,8 @@ export function renderRevisiKakPage(path, userRole) {
     };
     const rowLabel = btn.getAttribute("data-label");
     let commentText = "";
-    if (currentCommentTarget.table === 't_kak_manfaat' && currentCommentTarget.field) {
+    // Handle tables with fieldName (t_kak, t_kak_manfaat)
+    if (currentCommentTarget.field) {
         const key = `${currentCommentTarget.pk}_${currentCommentTarget.field}`;
         commentText = (rowComments[currentCommentTarget.table]?.[key]) || "";
     } else {
@@ -2906,66 +2931,25 @@ export function renderRevisiKakPage(path, userRole) {
   };
 
     window.saveRowComment = function () {
-
       const comment = document.getElementById("rowCommentInput").value.trim();
-
       const { table, pk, field } = currentCommentTarget;
 
-  
-
-    if (table === 't_kak_manfaat' && field) {
-
-  
-
-              if (!rowComments[table]) rowComments[table] = {};
-
-  
-
-              const key = `${pk}_${field}`;
-
-  
-
-              if (comment) {
-
-  
-
-                  rowComments[table][key] = comment;
-
-  
-
-              } else {
-
-  
-
-                  delete rowComments[table][key];
-
-  
-
-              }
-
-  
-
-          } else {
-
-  
-
-               if (!rowComments[table]) {
-
-  
-
-                rowComments[table] = {};
-
-  
-
-              }
-
-  
-
-              if (comment) {
-
-  
-
-                rowComments[table][pk] = comment;
+      // Handle tables with fieldName (t_kak, t_kak_manfaat)
+      if (field) {
+        if (!rowComments[table]) rowComments[table] = {};
+        const key = `${pk}_${field}`;
+        if (comment) {
+          rowComments[table][key] = comment;
+        } else {
+          delete rowComments[table][key];
+        }
+      } else {
+        // Standard tables without fieldName (tahapan, target, anggaran, iku)
+        if (!rowComments[table]) {
+          rowComments[table] = {};
+        }
+        if (comment) {
+          rowComments[table][pk] = comment;
 
   
 
@@ -3046,6 +3030,7 @@ window.openCommentDetailModal = function() {
   };
 
   const tableToMainStep = {
+    't_kak': 1, // For sasaran_utama and other t_kak fields
     't_kak_manfaat': 1,
     't_kak_tahapan': 1,
     't_kak_target': 1,
@@ -3087,12 +3072,17 @@ window.openCommentDetailModal = function() {
       let displayLabel = getTableDisplayName(tableName);
       let rowIdForNav = rowId;
       
-      // Handle manfaat special case
-      if (tableName === 't_kak_manfaat' && rowId.includes('_')) {
+      // Handle tables with fieldName (t_kak, t_kak_manfaat)
+      if ((tableName === 't_kak' || tableName === 't_kak_manfaat') && rowId.includes('_')) {
         const parts = rowId.split('_');
         const fieldName = parts.slice(1).join('_');
         rowIdForNav = parts[0];
-        displayLabel += ` - ${fieldName === 'sasaran_utama' ? 'Sasaran Utama' : 'Manfaat'}`;
+        
+        if (tableName === 't_kak') {
+          displayLabel = fieldName === 'sasaran_utama' ? 'Sasaran Utama' : fieldName;
+        } else {
+          displayLabel += ` - ${fieldName === 'sasaran_utama' ? 'Sasaran Utama' : 'Manfaat'}`;
+        }
       }
 
       commentsByStep[step].push({
@@ -3179,6 +3169,7 @@ function getSectionFromField(fieldKey) {
 
 function getSectionFromTable(tableName) {
   const sectionMap = {
+    't_kak': 'penerima-manfaat', // For sasaran_utama
     't_kak_manfaat': 'penerima-manfaat',
     't_kak_tahapan': 'strategi-pencapaian',
     't_kak_target': 'indikator-kinerja',
@@ -3190,6 +3181,7 @@ function getSectionFromTable(tableName) {
 
 function getTableDisplayName(tableName) {
   const nameMap = {
+    't_kak': 'KAK', // Generic name for t_kak
     't_kak_manfaat': 'Penerima Manfaat',
     't_kak_tahapan': 'Tahapan Pelaksanaan',
     't_kak_target': 'Indikator Kinerja',
@@ -3350,25 +3342,27 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
 
     const anakPayload = {};
     for (const table in rowComments) {
-      if (table === 't_kak_manfaat') {
-        const groupedManfaat = {};
-        for (const key in rowComments[table]) {
-          const firstUnderscoreIndex = key.indexOf('_');
-          const id = key.substring(0, firstUnderscoreIndex);
-          const field = key.substring(firstUnderscoreIndex + 1);
-
-          if (!groupedManfaat[id]) {
-            groupedManfaat[id] = { id: id };
-          }
-
-          if (field === 'manfaat') {
-            groupedManfaat[id].catatan_manfaat = rowComments[table][key];
-          } else if (field === 'sasaran_utama') {
-            groupedManfaat[id].catatan_sasaran_utama = rowComments[table][key];
-          }
+      if (table === 't_kak') {
+        // Handle t_kak catatan (sasaran_utama, etc.) - merge into catatanKak
+        for (const compositeKey in rowComments[table]) {
+          const firstUnderscoreIndex = compositeKey.indexOf('_');
+          const fieldName = compositeKey.substring(firstUnderscoreIndex + 1); // Remove id prefix, get field name
+          // Field name is already the full field name (e.g., "sasaran_utama")
+          catatanKak[fieldName] = rowComments[table][compositeKey];
         }
-        anakPayload[table] = Object.values(groupedManfaat);
+      } else if (table === 't_kak_manfaat') {
+        // t_kak_manfaat now only has catatan_manfaat (no sasaran_utama)
+        anakPayload[table] = [];
+        for (const compositeKey in rowComments[table]) {
+          const firstUnderscoreIndex = compositeKey.indexOf('_');
+          const id = compositeKey.substring(0, firstUnderscoreIndex);
+          anakPayload[table].push({
+            id: id,
+            catatan_manfaat: rowComments[table][compositeKey]
+          });
+        }
       } else {
+        // Other child tables (tahapan, target, anggaran, iku)
         anakPayload[table] = [];
         for (const id in rowComments[table]) {
           anakPayload[table].push({
@@ -3542,22 +3536,23 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
           }
 
           // 2. Penerima Manfaat
-          const penerima_manfaat = [];
-          // Existing
-          const existingSasaran = document.querySelectorAll('#sasaranUtamaContainer input');
-          const existingManfaat = document.querySelectorAll('#manfaatContainer input');
-          existingSasaran.forEach((el, idx) => {
-              penerima_manfaat.push({
-                  sasaran_utama: el.value,
-                  manfaat: existingManfaat[idx] ? existingManfaat[idx].value : ""
-              });
+          // Sasaran Utama (ONE value from header textarea)
+          const sasaranUtamaTextarea = document.querySelector('#sasaranUtamaContainer textarea');
+          const sasaran_utama = sasaranUtamaTextarea ? sasaranUtamaTextarea.value : "";
+          
+          // Manfaat (ARRAY from detail rows)
+          const manfaat = [];
+          // Existing manfaat (readonly)
+          document.querySelectorAll('#manfaatContainer .row-with-comment input').forEach(el => {
+              if (el.value.trim()) {
+                  manfaat.push(el.value.trim());
+              }
           });
-          // New
-          document.querySelectorAll('#penerimaManfaatDynamicContainer .penerima-manfaat-item').forEach(row => {
-              penerima_manfaat.push({
-                  sasaran_utama: row.querySelector('.sasaran-utama-input').value,
-                  manfaat: row.querySelector('.manfaat-input').value
-              });
+          // New manfaat (editable)
+          document.querySelectorAll('#manfaatContainer .manfaat-item .manfaat-input').forEach(el => {
+              if (el.value.trim()) {
+                  manfaat.push(el.value.trim());
+              }
           });
 
           // 3. Tahapan
@@ -3681,7 +3676,8 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
               tanggal_mulai,
               tanggal_selesai,
               lokasi: kakDataState.lokasi,
-              penerima_manfaat,
+              sasaran_utama,
+              manfaat,
               tahapan_pelaksanaan,
               indikator_kinerja,
             },

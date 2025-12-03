@@ -14,6 +14,7 @@ final class CreateTKakTable extends AbstractMigration
               ->addColumn('tipe_kegiatan_id', 'integer', ['null' => true])
               ->addColumn('nama_kegiatan', 'string', ['limit' => 200])
               ->addColumn('deskripsi_kegiatan', 'text')
+              ->addColumn('sasaran_utama', 'text', ['null' => true])
               ->addColumn('metode_pelaksanaan', 'text', ['null' => true])
               ->addColumn('kurun_waktu_pelaksanaan', 'string', ['limit' => 255, 'null' => true])
               ->addColumn('tanggal_mulai', 'date', ['null' => true])
