@@ -3,20 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Kerangka Acuan Kerja (KAK)</title>
-    <!-- TEMPLATE VERSION: 2025-12-03-11:10 - ADDED CATEGORY SUBTOTALS IN RAB TABLE -->
+    <!-- TEMPLATE VERSION: 2025-12-03-11:15 - CENTERED PAPER EFFECT FOR PREVIEW -->
     <style>
         @page {
             margin: 2cm 3cm;
         }
+        
+        /* Preview Mode: Paper Effect */
+        html {
+            background: #525659; /* Dark background for contrast */
+        }
+        
         body {
             font-family: 'Times New Roman', Times, serif;
             font-size: 12pt;
             line-height: 1.8;
             color: #000;
-            padding: 4cm 10cm; /* Increased side padding: 3cm → 4cm untuk margin kanan kiri lebih besar */
+            background: #fff; /* White paper background */
+            max-width: 21cm; /* A4 width */
+            margin: 2cm auto; /* Centered with top/bottom margin */
+            padding: 2cm 3cm; /* Inner padding for content */
             box-sizing: border-box;
-            max-width: 100%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Paper shadow effect */
+            min-height: 29.7cm; /* A4 height */
         }
+        
         /* Cover Page Styles - ULTRA COMPACT */
         .cover-page {
             text-align: center;
@@ -26,7 +37,7 @@
             justify-content: center;
             align-items: center;
             page-break-after: always;
-            padding: 60px 40px; /* Maintain cover page padding */
+            padding: 40px 20px; /* Reduced padding for paper effect */
         }
         .cover-logo {
             width: 350px;
@@ -105,7 +116,7 @@
         .section {
             margin-bottom: 8px;
             page-break-inside: avoid;
-            padding: 0 15px; /* Added horizontal padding untuk margin dalam section */
+            padding: 0; /* Removed extra padding - body already has padding */
         }
         .section-title {
             font-size: 13pt;
@@ -347,30 +358,29 @@
     </div>
 
     <!-- III. PENERIMA MANFAAT -->
-    <?php if (!empty($kegiatan['manfaat'])): ?>
+    <?php if (!empty($kegiatan['sasaran_utama']) || !empty($kegiatan['manfaat'])): ?>
     <div class="section">
         <div class="section-title">III. PENERIMA MANFAAT</div>
-        <table cellpadding="4" cellspacing="0" border="1" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th style="width: 8%; background-color: #e8e8e8; border: 1px solid #000; padding: 5px; text-align: center; font-size: 10pt;">No</th>
-                    <th style="width: 46%; background-color: #e8e8e8; border: 1px solid #000; padding: 5px; text-align: center; font-size: 10pt;">Sasaran Utama</th>
-                    <th style="width: 46%; background-color: #e8e8e8; border: 1px solid #000; padding: 5px; text-align: center; font-size: 10pt;">Manfaat Yang Diharapkan</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php 
-                $no = 1;
-                foreach ($kegiatan['manfaat'] as $manfaat): 
-                ?>
-                <tr>
-                    <td style="width: 8%; border: 1px solid #000; padding: 8px; text-align: center;"><?= $no++ ?></td>
-                    <td style="width: 46%; border: 1px solid #000; padding: 8px;"><?= nl2br(htmlspecialchars($manfaat['sasaran_utama'])) ?></td>
-                    <td style="width: 46%; border: 1px solid #000; padding: 8px;"><?= nl2br(htmlspecialchars($manfaat['manfaat'])) ?></td>
-                </tr>
+        
+        <?php if (!empty($kegiatan['sasaran_utama'])): ?>
+        <div style="margin-bottom: 15px;">
+            <strong>Penerima Manfaat (Sasaran Utama):</strong>
+            <div class="content-text" style="margin-top: 5px;">
+                <?= nl2br(htmlspecialchars($kegiatan['sasaran_utama'])) ?>
+            </div>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (!empty($kegiatan['manfaat'])): ?>
+        <div>
+            <strong>Manfaat yang Diperoleh:</strong>
+            <ol style="margin-top: 10px;">
+                <?php foreach ($kegiatan['manfaat'] as $manfaatItem): ?>
+                <li><?= htmlspecialchars($manfaatItem['manfaat']) ?></li>
                 <?php endforeach; ?>
-            </tbody>
-        </table>
+            </ol>
+        </div>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
 
