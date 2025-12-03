@@ -80,6 +80,17 @@ if ($method === 'GET' && preg_match('/^\/kak\/(\d+)\/preview$/', $uri)) {
     exit;
 }
 
+// GET / (Root) - API Welcome Message
+if ($method === 'GET' && $uri === '/') {
+    echo json_encode([
+        'success' => true,
+        'message' => 'SIGAP PNJ API is running',
+        'version' => '1.0.0',
+        'timestamp' => date('Y-m-d H:i:s')
+    ]);
+    exit;
+}
+
 // =====================================================
 // 4. APPLY AUTH MIDDLEWARE FOR PROTECTED ROUTES
 // =====================================================
