@@ -353,4 +353,30 @@ class User
         $this->db->bind(':role_id', $roleId);
         return $this->db->resultSet();
     }
+
+    /**
+     * Find a Verifikator user based on tipe_kegiatan_id.
+     * Assumes a convention like 'verifikatorX' for username where X is tipe_kegiatan_id.
+     */
+    public function findVerifikatorByTipeKegiatanId(int $tipeKegiatanId)
+    {
+        // Role ID for Verifikator is 2
+        $verifikatorRoleId = 2;
+        $username = "verifikator" . $tipeKegiatanId;
+
+        $this->db->query("
+            SELECT
+                user_id,
+                username,
+                nama_lengkap,
+                email
+            FROM
+                m_users
+            WHERE
+                username = :username AND role_id = :role_id
+        ");
+        $this->db->bind(':username', $username);
+        $this->db->bind(':role_id', $verifikatorRoleId);
+        return $this->db->single();
+    }
 }

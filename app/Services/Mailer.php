@@ -115,11 +115,12 @@ class Mailer
                 }
             }
 
-            return $this->mail->send();
+            $this->mail->send();
+            return ['success' => true, 'to' => $to];
         } catch (Exception $e) {
             error_log("[PHPMailer Send Error]: " . $e->getMessage() . " ErrorInfo: " . $this->mail->ErrorInfo);
             // Instead of throwing, return the error message for display
-            return "Email send failed: " . $e->getMessage() . " ErrorInfo: " . $this->mail->ErrorInfo;
+            return ['success' => false, 'error' => "Email send failed: " . $e->getMessage() . " ErrorInfo: " . $this->mail->ErrorInfo, 'to' => $to];
         }
     }
 
@@ -200,16 +201,18 @@ class Mailer
         // Return null if no logo found
         return null;
     }
-
+    
     /**
-     * Get background path untuk embedded image di email
+     * Get background image path for embedded image
+     * Note: SVG cannot be embedded in emails, so use PNG/JPG
      */
     public function getBackgroundPath()
     {
         $possiblePaths = [
-            __DIR__ . '/../../public/assets/img/backgrounds/Auth.png',
-            __DIR__ . '/../../public/assets/img/backgrounds/auth.png',
+            __DIR__ . '/../../public/assets/img/background/email_bg.png',
             __DIR__ . '/../../public/assets/img/background.png',
+            __DIR__ . '/../../public/assets/img/background/email_bg.jpg',
+            __DIR__ . '/../../public/assets/img/background.jpg',
         ];
 
         foreach ($possiblePaths as $path) {
@@ -218,6 +221,8 @@ class Mailer
             }
         }
 
+        // Return null if no background image found
         return null;
     }
+
 }

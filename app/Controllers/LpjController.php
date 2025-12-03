@@ -18,6 +18,7 @@ class LpjController extends Controller
     private $kakAnggaranModel;
     private $kegiatanLampiranModel;
     private $logStatusModel;
+    private $mailService; // Add this line
     protected $user;
 
     public function __construct()
@@ -39,6 +40,7 @@ class LpjController extends Controller
         $this->kakAnggaranModel = new KAKAnggaran();
         $this->kegiatanLampiranModel = new KegiatanLampiran();
         $this->logStatusModel = new KegiatanLogStatus();
+        $this->mailService = new \App\Services\MailService(); // Initialize MailService
     }
 
     /**
@@ -160,6 +162,18 @@ class LpjController extends Controller
             $this->kegiatanModel->activateLpjApproval($kegiatanId);
 
             $db->commit();
+
+            // Notify Bendahara (Email)
+            $kakModel = new KAK(); // KAK model needed to get nama_kegiatan and pengusul_user_id
+            $kakData = $kakModel->find($kegiatan['kak_table_kak_id']);
+            $userModel = new \App\Models\User(); // Instantiate User model
+            $pengusulData = $userModel->findById($kakData['pengusul_user_id']); 
+
+            $kegiatanDataForEmail = [
+                'nama_kegiatan' => $kakData['nama_kegiatan'],
+                'pengusul_nama' => $pengusulData['nama_lengkap'] ?? 'N/A',
+            ];
+            $this->mailService->notifyLPJSubmitted($kegiatanId, $kegiatanDataForEmail);
 
             return Response::success(null, 'LPJ berhasil disubmit dan menunggu review dari Bendahara LPJ.');
 

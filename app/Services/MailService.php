@@ -62,10 +62,7 @@ class MailService
             $this->getEmbeddedImages()
         );
 
-        if (is_string($sendResult)) { // If it's a string, it's an error message
-            return $sendResult;
-        }
-        return true; // Otherwise, it was successful
+        return $sendResult; // Return the structured array from Mailer::send()
     }
 
     // ==================== KAK WORKFLOW ====================
@@ -76,7 +73,20 @@ class MailService
     public function notifyKAKSubmitted($kakId, $kakData)
     {
         try {
-            $verifikators = $this->userModel->findByRoleId(2); // role_id 2 = Verifikator
+            // Fetch full KAK data to get tipe_kegiatan_id
+            $fullKakData = $this->kakModel->find($kakId);
+            if (!$fullKakData || !isset($fullKakData['tipe_kegiatan_id'])) {
+                error_log("Error: KAK not found or tipe_kegiatan_id missing for kakId: {$kakId}");
+                return false;
+            }
+
+            // Find the specific Verifikator based on tipe_kegiatan_id
+            $verifikator = $this->userModel->findVerifikatorByTipeKegiatanId($fullKakData['tipe_kegiatan_id']);
+
+            if (!$verifikator || empty($verifikator['email'])) {
+                error_log("Error: No Verifikator found or email missing for tipe_kegiatan_id: {$fullKakData['tipe_kegiatan_id']}");
+                return false;
+            }
 
             $htmlBody = $this->mailer->renderTemplate('kak-submitted', [
                 'nama_kegiatan' => $kakData['nama_kegiatan'],
@@ -86,13 +96,12 @@ class MailService
                 'actionLink' => $this->baseUrl . '/app/kak/verify/' . $kakId,
             ]);
 
-            foreach ($verifikators as $v) {
-                $this->sendWithEmbeddedImages(
-                    $v['email'],
-                    "🔔 KAK Baru Membutuhkan Verifikasi",
-                    $htmlBody
-                );
-            }
+            // Send email only to the specific Verifikator
+            $this->sendWithEmbeddedImages(
+                $verifikator['email'],
+                "🔔 KAK Baru Membutuhkan Verifikasi",
+                $htmlBody
+            );
 
             return true;
         } catch (\Exception $e) {
