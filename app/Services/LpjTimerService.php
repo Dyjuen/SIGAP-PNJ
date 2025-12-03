@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Core\Database;
 use App\Models\Kegiatan;
 use App\Models\Notifikasi;
+use App\Models\User;
+use App\Services\MailService;
 use DateTime;
 
 class LpjTimerService
@@ -12,6 +14,8 @@ class LpjTimerService
     private $db;
     private $kegiatanModel;
     private $notifikasiModel;
+    private $userModel;
+    private $mailService;
     
     // Durasi deadline LPJ (14 hari)
     const LPJ_DEADLINE_DAYS = 14;
@@ -21,6 +25,8 @@ class LpjTimerService
         $this->db = Database::getInstance()->getConnection();
         $this->kegiatanModel = new Kegiatan();
         $this->notifikasiModel = new Notifikasi();
+        $this->userModel = new User();
+        $this->mailService = new MailService();
     }
 
     /**
@@ -68,12 +74,12 @@ class LpjTimerService
      */
     public function checkAndSendReminders(): array
     {
-        $results = [
-            'h7_sent' => 0,
-            'h3_sent' => 0,
-            'h1_sent' => 0,
-            'overdue_sent' => 0
-        ];
+        $sentEmails = [];
+        $failedEmails = [];
+        $h7SentCount = 0;
+        $h3SentCount = 0;
+        $h1SentCount = 0;
+        $overdueSentCount = 0;
 
         // Get kegiatan yang perlu reminder
         $kegiatan = $this->getKegiatanNeedingReminders();
@@ -82,35 +88,58 @@ class LpjTimerService
             $daysLeft = $this->getDaysUntilDeadline($k['tgl_batas_lpj']);
             
             // H-7
-            if ($daysLeft <= 7 && $daysLeft > 6 && !$k['lpj_reminder_h7_sent']) {
-                $this->sendReminder($k, 7);
-                $this->markReminderSent($k['kegiatan_id'], 'h7');
-                $results['h7_sent']++;
+            if ($daysLeft <= 7 && $daysLeft > 6 && !$this->hasSentReminderRecently($k['kegiatan_id'], 'h7')) {
+                $result = $this->sendReminder($k, 7);
+                if ($result && $result['status'] === 'sent') {
+                    $sentEmails[] = $result;
+                    $h7SentCount++;
+                } elseif ($result) {
+                    $failedEmails[] = $result;
+                }
             }
             
             // H-3
-            if ($daysLeft <= 3 && $daysLeft > 2 && !$k['lpj_reminder_h3_sent']) {
-                $this->sendReminder($k, 3);
-                $this->markReminderSent($k['kegiatan_id'], 'h3');
-                $results['h3_sent']++;
+            if ($daysLeft <= 3 && $daysLeft > 2 && !$this->hasSentReminderRecently($k['kegiatan_id'], 'h3')) {
+                $result = $this->sendReminder($k, 3);
+                if ($result && $result['status'] === 'sent') {
+                    $sentEmails[] = $result;
+                    $h3SentCount++;
+                } elseif ($result) {
+                    $failedEmails[] = $result;
+                }
             }
             
             // H-1
-            if ($daysLeft <= 1 && $daysLeft > 0 && !$k['lpj_reminder_h1_sent']) {
-                $this->sendReminder($k, 1);
-                $this->markReminderSent($k['kegiatan_id'], 'h1');
-                $results['h1_sent']++;
+            if ($daysLeft <= 1 && $daysLeft > 0 && !$this->hasSentReminderRecently($k['kegiatan_id'], 'h1')) {
+                $result = $this->sendReminder($k, 1);
+                if ($result && $result['status'] === 'sent') {
+                    $sentEmails[] = $result;
+                    $h1SentCount++;
+                } elseif ($result) {
+                    $failedEmails[] = $result;
+                }
             }
             
             // Overdue
-            if ($daysLeft < 0 && !$k['lpj_overdue_notified']) {
-                $this->sendOverdueNotification($k);
-                $this->markOverdueNotified($k['kegiatan_id']);
-                $results['overdue_sent']++;
+            if ($daysLeft < 0 && !$this->hasSentReminderRecently($k['kegiatan_id'], 'overdue')) {
+                $result = $this->sendOverdueNotification($k);
+                if ($result && $result['status'] === 'sent') {
+                    $sentEmails[] = $result;
+                    $overdueSentCount++;
+                } elseif ($result) {
+                    $failedEmails[] = $result;
+                }
             }
         }
 
-        return $results;
+        return [
+            'sent' => $sentEmails,
+            'failed' => $failedEmails,
+            'h7_sent' => $h7SentCount,
+            'h3_sent' => $h3SentCount,
+            'h1_sent' => $h1SentCount,
+            'overdue_sent' => $overdueSentCount
+        ];
     }
 
     /**
@@ -119,8 +148,6 @@ class LpjTimerService
     private function getKegiatanNeedingReminders(): array
     {
         $sql = "SELECT k.kegiatan_id, t.nama_kegiatan, k.tgl_batas_lpj,
-                       k.lpj_reminder_h7_sent, k.lpj_reminder_h3_sent,
-                       k.lpj_reminder_h1_sent, k.lpj_overdue_notified,
                        t.pengusul_user_id
                 FROM t_kegiatan k
                 JOIN t_kak t ON k.kak_id = t.kak_id
@@ -146,7 +173,7 @@ class LpjTimerService
     /**
      * Kirim reminder notification
      */
-    private function sendReminder(array $kegiatan, int $daysLeft): void
+    private function sendReminder(array $kegiatan, int $daysLeft): ?array
     {
         $pesan = "Reminder: Anda memiliki {$daysLeft} hari untuk submit LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\"";
         
@@ -156,12 +183,35 @@ class LpjTimerService
             'link_tujuan' => '/pengusul/kegiatan/' . $kegiatan['kegiatan_id'] . '/lpj',
             'is_read' => false
         ]);
+
+        $proposer = $this->userModel->findById($kegiatan['pengusul_user_id']);
+        if ($proposer && !empty($proposer['email'])) {
+            $kegiatanDataForEmail = [
+                'nama_kegiatan' => $kegiatan['nama_kegiatan'],
+                'pengusul_nama' => $proposer['nama_lengkap'],
+                'pengusul_email' => $proposer['email'],
+                'kegiatan_id' => $kegiatan['kegiatan_id']
+            ];
+
+            switch ($daysLeft) {
+                case 7:
+                    $this->mailService->remindLPJH7($kegiatanDataForEmail);
+                    break;
+                case 3:
+                    $this->mailService->remindLPJH3($kegiatanDataForEmail);
+                    break;
+                case 1:
+                    $sendResult = $this->mailService->remindLPJH1($kegiatanDataForEmail);
+                    return ['status' => $sendResult['success'] ? 'sent' : 'failed', 'to' => $sendResult['to'], 'subject' => "Reminder: {$daysLeft} Hari Lagi Deadline LPJ", 'error' => $sendResult['error'] ?? null];
+            }
+        }
+        return null;
     }
 
     /**
      * Kirim notifikasi overdue
      */
-    private function sendOverdueNotification(array $kegiatan): void
+    private function sendOverdueNotification(array $kegiatan): ?array
     {
         $daysOverdue = abs($this->getDaysUntilDeadline($kegiatan['tgl_batas_lpj']));
         $pesan = "PERINGATAN: Anda terlambat {$daysOverdue} hari submit LPJ untuk kegiatan \"{$kegiatan['nama_kegiatan']}\"";
@@ -172,27 +222,55 @@ class LpjTimerService
             'link_tujuan' => '/pengusul/kegiatan/' . $kegiatan['kegiatan_id'] . '/lpj',
             'is_read' => false
         ]);
+
+        $proposer = $this->userModel->findById($kegiatan['pengusul_user_id']);
+        if ($proposer && !empty($proposer['email'])) {
+            $kegiatanDataForEmail = [
+                'nama_kegiatan' => $kegiatan['nama_kegiatan'],
+                'pengusul_nama' => $proposer['nama_lengkap'],
+                'pengusul_email' => $proposer['email'],
+                'kegiatan_id' => $kegiatan['kegiatan_id']
+            ];
+            $sendResult = $this->mailService->alertLPJOverdue($kegiatanDataForEmail, $daysOverdue);
+            return ['status' => $sendResult['success'] ? 'sent' : 'failed', 'to' => $sendResult['to'], 'subject' => "OVERDUE: LPJ Terlambat {$daysOverdue} Hari!", 'error' => $sendResult['error'] ?? null];
+        }
+        return null;
     }
 
-    /**
-     * Mark reminder sebagai sudah dikirim
-     */
-    private function markReminderSent(int $kegiatanId, string $type): void
+    private function hasSentReminderRecently(int $kegiatanId, string $reminderType): bool
     {
-        $column = "lpj_reminder_{$type}_sent";
-        $sql = "UPDATE t_kegiatan SET {$column} = 1 WHERE kegiatan_id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $kegiatanId]);
-    }
+        $linkLike = '%/kegiatan/' . $kegiatanId . '/lpj%';
+        $pesanLike = '';
+        switch ($reminderType) {
+            case 'h7':
+                $pesanLike = '%7 hari%';
+                break;
+            case 'h3':
+                $pesanLike = '%3 hari%';
+                break;
+            case 'h1':
+                $pesanLike = '%1 hari%';
+                break;
+            case 'overdue':
+                $pesanLike = '%terlambat%';
+                break;
+        }
 
-    /**
-     * Mark overdue notification sudah dikirim
-     */
-    private function markOverdueNotified(int $kegiatanId): void
-    {
-        $sql = "UPDATE t_kegiatan SET lpj_overdue_notified = 1 WHERE kegiatan_id = :id";
+        if (empty($pesanLike)) {
+            return false;
+        }
+
+        $sql = "SELECT COUNT(*) as count 
+                FROM t_notifikasi 
+                WHERE link_tujuan LIKE :linkLike 
+                  AND pesan LIKE :pesanLike 
+                  AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
+        
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $kegiatanId]);
+        $stmt->execute([':linkLike' => $linkLike, ':pesanLike' => $pesanLike]);
+        $result = $stmt->fetch();
+        
+        return ($result && $result['count'] > 0);
     }
 
     /**

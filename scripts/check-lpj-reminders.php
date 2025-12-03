@@ -12,8 +12,25 @@
  * Atau jalankan: php scripts/check-lpj-reminders.php
  */
 
-// Load autoloader dan bootstrap
+// Load autoloader and bootstrap
 require_once __DIR__ . '/../vendor/autoload.php';
+
+// Define ROOT constant
+if (!defined('ROOT')) {
+    define('ROOT', dirname(__DIR__));
+}
+
+// Load environment variables
+try {
+    $dotenv = Dotenv\Dotenv::createImmutable(ROOT);
+    $dotenv->load();
+} catch (\Dotenv\Exception\InvalidPathException $e) {
+    die("Could not find .env file. Please create one from .env.example.");
+}
+
+// Load database configuration
+require_once ROOT . '/config/database.php';
+
 require_once __DIR__ . '/../app/helpers.php';
 
 use App\Services\LpjTimerService;
@@ -22,7 +39,11 @@ use App\Services\LpjTimerService;
 date_default_timezone_set('Asia/Jakarta');
 
 // Log start
-$logFile = __DIR__ . '/../storage/logs/lpj-cron-' . date('Y-m-d') . '.log';
+$logDir = __DIR__ . '/../storage/logs';
+if (!is_dir($logDir)) {
+    mkdir($logDir, 0755, true);
+}
+$logFile = $logDir . '/lpj-cron-' . date('Y-m-d') . '.log';
 $startTime = date('Y-m-d H:i:s');
 
 function logMessage($message, $logFile) {
@@ -37,17 +58,24 @@ try {
     $lpjService = new LpjTimerService();
     
     // Check and send reminders
-    $results = $lpjService->checkAndSendReminders();
+    $emailResults = $lpjService->checkAndSendReminders();
     
     // Log results
-    logMessage("Results:", $logFile);
-    logMessage("  - H-7 reminders sent: {$results['h7_sent']}", $logFile);
-    logMessage("  - H-3 reminders sent: {$results['h3_sent']}", $logFile);
-    logMessage("  - H-1 reminders sent: {$results['h1_sent']}", $logFile);
-    logMessage("  - Overdue notifications sent: {$results['overdue_sent']}", $logFile);
+    logMessage("Email Sending Results:", $logFile);
+    logMessage("  - H-7 reminders sent: " . $emailResults['h7_sent'], $logFile);
+    logMessage("  - H-3 reminders sent: " . $emailResults['h3_sent'], $logFile);
+    logMessage("  - H-1 reminders sent: " . $emailResults['h1_sent'], $logFile);
+    logMessage("  - Overdue notifications sent: " . $emailResults['overdue_sent'], $logFile);
+    logMessage("  Total emails sent: " . count($emailResults['sent']), $logFile);
     
-    $totalSent = array_sum($results);
-    logMessage("Total notifications sent: {$totalSent}", $logFile);
+    foreach ($emailResults['sent'] as $sentEmail) {
+        logMessage("    SENT: '{$sentEmail['subject']}' to {$sentEmail['to']}", $logFile);
+    }
+    logMessage("  Total failed: " . count($emailResults['failed']), $logFile);
+    foreach ($emailResults['failed'] as $failedEmail) {
+        logMessage("    FAILED: '{$failedEmail['subject']}' to {$failedEmail['to']} - Error: {$failedEmail['error']}", $logFile);
+    }
+    
     logMessage("Status: SUCCESS", $logFile);
     
     // Exit dengan status success
