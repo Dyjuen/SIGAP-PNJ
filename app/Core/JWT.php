@@ -94,7 +94,8 @@ class JWT
             return $matches[1];
         }
 
-        return null;
+        // Fallback: Return the header value as-is if "Bearer" is missing
+        return trim($authHeader);
     }
 
     /**
