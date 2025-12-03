@@ -151,7 +151,7 @@ class Mailer
      */
     public function renderTemplate($templateName, $data = [])
     {
-        $templatePath = __DIR__ . '/../Views/emails/' . $templateName . '.php';
+        $templatePath = __DIR__ . '/../../public/emails/' . $templateName . '.php';
         
         if (!file_exists($templatePath)) {
             throw new Exception("Email template not found: {$templateName}");

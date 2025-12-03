@@ -19,6 +19,7 @@ use App\Models\KAKTarget;
 use App\Models\Notifikasi;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\MailService;
 use App\Models\Iku;
 use App\Validators\KAKValidator;
 
@@ -1217,6 +1218,18 @@ class KAKController
             ]);
 
             Response::success(null, "KAK berhasil disetujui.");
+            // Send email to Pengusul
+            $mailService = new MailService();
+            $proposer = $this->userModel->findById($data['pengusul_user_id']);
+
+            if ($proposer && $proposer['email']) {
+                $mailService->sendKakApprovedVerifikatorEmail(
+                    $proposer['email'],
+                    $proposer['nama_lengkap'],
+                    $data['nama_kegiatan'],
+                    $id
+                );
+            }
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
