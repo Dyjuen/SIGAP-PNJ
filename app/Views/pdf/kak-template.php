@@ -6,7 +6,7 @@
     <!-- TEMPLATE VERSION: 2025-12-03-11:15 - CENTERED PAPER EFFECT FOR PREVIEW -->
     <style>
         @page {
-            margin: 2cm 3cm;
+            margin: 1.2cm 2cm; /* Minimal margin untuk maksimalkan space */
         }
         
         /* Preview Mode: Paper Effect */
@@ -16,13 +16,13 @@
         
         body {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 12pt;
-            line-height: 1.8;
+            font-size: 11pt; /* Reduced dari 12pt untuk lebih compact */
+            line-height: 1.5; /* Reduced dari 1.6 untuk lebih compact */
             color: #000;
             background: #fff; /* White paper background */
             max-width: 21cm; /* A4 width */
-            margin: 2cm auto; /* Centered with top/bottom margin */
-            padding: 2cm 3cm; /* Inner padding for content */
+            margin: 0.8cm auto; /* Minimal margin untuk preview */
+            padding: 1.2cm 2cm; /* Match @page margin */
             box-sizing: border-box;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Paper shadow effect */
             min-height: 29.7cm; /* A4 height */
@@ -105,41 +105,44 @@
         }
         .doc-title {
             text-align: center;
-            margin: 30px 0;
+            margin: 10px 0 15px 0; /* Minimal top margin, reasonable bottom */
         }
         .doc-title h1 {
-            font-size: 18pt;
+            font-size: 16pt; /* Reduced dari 18pt */
             font-weight: bold;
             text-decoration: underline;
             margin: 0;
         }
         .section {
-            margin-bottom: 8px;
-            page-break-inside: avoid;
-            padding: 0; /* Removed extra padding - body already has padding */
+            margin-bottom: 12px; /* Minimal gap antar section */
+            padding: 0;
+        }
+        .section.no-break {
+            page-break-inside: avoid; /* Only for short sections */
         }
         .section-title {
-            font-size: 13pt;
+            font-size: 12pt; /* Reduced dari 13pt */
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 6px; /* Minimal gap */
             color: #000;
+            page-break-after: avoid; /* Title tidak boleh terpisah dari content */
         }
         .info-grid {
-            margin-bottom: 10px;
+            margin-bottom: 3px; /* Minimal */
         }
         .info-row {
-            margin-bottom: 8px;
+            margin-bottom: 3px; /* Minimal */
         }
         .info-table {
             width: 100%;
             border: none;
-            margin: 10px 0;
+            margin: 3px 0; /* Minimal */
         }
         .info-table td {
             border: none;
-            padding: 5px 0;
+            padding: 2px 0; /* Minimal */
             vertical-align: top;
-            font-size: 11pt;
+            font-size: 10pt; /* Reduced dari 11pt */
         }
         .info-table .label {
             width: 200px;
@@ -166,26 +169,28 @@
         }
         .content-text {
             text-align: justify;
-            margin: 10px 0;
+            margin: 5px 0; /* Minimal */
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
+            margin: 8px 0; /* Minimal */
+            page-break-inside: auto; /* Allow table splitting if needed */
         }
         table th {
             background-color: #e8e8e8;
             color: #000;
-            padding: 10px;
+            padding: 6px; /* Reduced dari 10px */
             text-align: center;
-            font-size: 11pt;
+            font-size: 10pt; /* Reduced dari 11pt */
             font-weight: bold;
             border: 1px solid #000;
+            page-break-after: avoid; /* Header tidak boleh terpisah */
         }
         table td {
-            padding: 8px;
+            padding: 5px; /* Reduced dari 8px */
             border: 1px solid #000;
-            font-size: 11pt;
+            font-size: 10pt; /* Reduced dari 11pt */
         }
         .text-right {
             text-align: right;
@@ -201,11 +206,11 @@
             font-weight: bold;
         }
         ul, ol {
-            margin: 10px 0;
-            padding-left: 30px;
+            margin: 5px 0; /* Minimal */
+            padding-left: 20px; /* Minimal indent */
         }
         li {
-            margin-bottom: 8px;
+            margin-bottom: 3px; /* Minimal */
             text-align: justify;
         }
         .signature-section {
@@ -221,9 +226,6 @@
             border-top: 1px solid #000;
             margin-top: 80px;
             margin-bottom: 5px;
-        }
-        .page-break {
-            page-break-before: always;
         }
         .doc-footer {
             font-size: 9pt;
@@ -307,7 +309,7 @@
     <!-- ISI DOKUMEN MULAI DARI HALAMAN 2 (LEMBAR PENGESAHAN REMOVED) -->
 
     <!-- I. INFORMASI UMUM KEGIATAN -->
-    <div class="section">
+    <div class="section no-break">
         <div class="section-title">I. INFORMASI UMUM KEGIATAN</div>
         
         <table class="info-table" cellpadding="0" cellspacing="0" border="0">
@@ -363,9 +365,11 @@
         <div class="section-title">III. PENERIMA MANFAAT</div>
         
         <?php if (!empty($kegiatan['sasaran_utama'])): ?>
-        <div style="margin-bottom: 15px;">
-            <strong>Penerima Manfaat (Sasaran Utama):</strong>
-            <div class="content-text" style="margin-top: 5px;">
+        <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 8px;">
+                <strong>1. Sasaran Utama</strong>
+            </div>
+            <div class="content-text" style="margin-left: 30px; text-align: justify;">
                 <?= nl2br(htmlspecialchars($kegiatan['sasaran_utama'])) ?>
             </div>
         </div>
@@ -373,12 +377,23 @@
         
         <?php if (!empty($kegiatan['manfaat'])): ?>
         <div>
-            <strong>Manfaat yang Diperoleh:</strong>
-            <ol style="margin-top: 10px;">
-                <?php foreach ($kegiatan['manfaat'] as $manfaatItem): ?>
-                <li><?= htmlspecialchars($manfaatItem['manfaat']) ?></li>
+            <div style="margin-bottom: 8px;">
+                <strong>2. Manfaat Kegiatan</strong>
+            </div>
+            <div class="content-text" style="margin-left: 30px; text-align: justify;">
+                Manfaat yang didapatkan setelah mengikuti kegiatan ini, yaitu:
+            </div>
+            <div style="margin-left: 30px; margin-top: 8px;">
+                <?php 
+                $alphabet = range('a', 'z');
+                foreach ($kegiatan['manfaat'] as $index => $manfaatItem): 
+                ?>
+                <div style="margin-bottom: 8px; text-align: justify;">
+                    <span style="display: inline-block; width: 30px;"><?= $alphabet[$index] ?>.</span>
+                    <span style="display: inline-block; width: calc(100% - 35px); vertical-align: top;"><?= htmlspecialchars($manfaatItem['manfaat']) ?></span>
+                </div>
                 <?php endforeach; ?>
-            </ol>
+            </div>
         </div>
         <?php endif; ?>
     </div>
@@ -440,7 +455,7 @@
     <?php endif; ?>
 
     <!-- VI. RINCIAN ANGGARAN BIAYA (RAB) -->
-    <div class="section page-break">
+    <div class="section">
         <div class="section-title">VI. RINCIAN ANGGARAN BIAYA (RAB)</div>
         
         <?php if (!empty($kegiatan['anggaran'])): ?>
