@@ -120,6 +120,32 @@ class MailService
     }
 
     /**
+     * Z. Verifikator Approve KAK (Notification to Proposer via email)
+     * This is a specific request from the user for automation.
+     */
+    public function sendKakApprovedVerifikatorEmail($recipientEmail, $recipientName, $kakName, $kakId)
+    {
+        try {
+            $htmlBody = $this->mailer->renderTemplate('kak-approved-verifikator', [
+                'nama_pengusul' => $recipientName,
+                'nama_kegiatan' => $kakName,
+                'kak_id' => $kakId,
+                'link_detail' => $this->baseUrl . '/app/kak/detail/' . $kakId,
+                'actionLink' => $this->baseUrl . '/app/kak/detail/' . $kakId,
+            ]);
+
+            return $this->sendWithEmbeddedImages(
+                $recipientEmail,
+                "✅ KAK Anda Telah Disetujui Verifikator",
+                $htmlBody
+            );
+        } catch (\Exception $e) {
+            error_log("Error sending KAK approved by verifikator email: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * C. Verifikator Minta Revisi → Kirim ke Pengusul
      */
     public function notifyKAKRevisionRequested($kakId, $kakData, $catatan)
