@@ -1,0 +1,548 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Core\Response;
+use App\Core\Database;
+use App\Middlewares\AuthMiddleware;
+
+class DashboardDirekturController
+{
+    private $db;
+    private $userData;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance();
+        
+        // Get authenticated user
+        try {
+            $this->userData = AuthMiddleware::getAuthUser();
+        } catch (\Exception $e) {
+            $this->userData = null;
+        }
+    }
+
+    /**
+     * Get complete dashboard data
+     * GET /api/dashboard/direktur
+     */
+    public function index()
+    {
+        try {
+            if (!$this->userData) {
+                Response::unauthorized('User tidak terautentikasi.');
+                return;
+            }
+
+            // Get time range from query params (default: 6 months)
+            $period = $_GET['period'] ?? '6months';
+            $startDate = $this->getStartDate($period);
+            
+            $data = [
+                'overview' => $this->getOverview($startDate),
+                'by_jurusan' => $this->getByJurusan($startDate),
+                'trends' => $this->getTrends($startDate),
+                'recent_activities' => $this->getRecentActivities(10),
+                'period' => $period,
+                'start_date' => $startDate,
+                'end_date' => date('Y-m-d')
+            ];
+
+            Response::success($data, 'Data dashboard direktur berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil data dashboard: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Get overview statistics
+     */
+    private function getOverview($startDate)
+    {
+        // Total KAK yang diajukan (exclude status_id = 4/Ditolak)
+        $this->db->query("
+            SELECT COUNT(*) as total
+            FROM t_kak
+            WHERE status_id != 4
+            AND created_at >= :start_date
+        ");
+        $this->db->bind(':start_date', $startDate);
+        $totalKak = $this->db->single()['total'];
+
+        // Kegiatan selesai (LPJ approved)
+        $this->db->query("
+            SELECT COUNT(DISTINCT k.kegiatan_id) as total
+            FROM t_kegiatan k
+            JOIN t_kak t ON k.kak_id = t.kak_id
+            WHERE EXISTS (
+                SELECT 1 FROM t_kegiatan_approval
+                WHERE kegiatan_id = k.kegiatan_id
+                AND approval_level = 'Bendahara-Setor'
+                AND status = 'Disetujui'
+            )
+            AND t.created_at >= :start_date
+        ");
+        $this->db->bind(':start_date', $startDate);
+        $kegiatanSelesai = $this->db->single()['total'];
+
+        // Kegiatan berlangsung (NOT LPJ approved yet)
+        $this->db->query("
+            SELECT COUNT(DISTINCT k.kegiatan_id) as total
+            FROM t_kegiatan k
+            JOIN t_kak t ON k.kak_id = t.kak_id
+            WHERE NOT EXISTS (
+                SELECT 1 FROM t_kegiatan_approval
+                WHERE kegiatan_id = k.kegiatan_id
+                AND approval_level = 'Bendahara-Setor'
+                AND status = 'Disetujui'
+            )
+            AND t.created_at >= :start_date
+        ");
+        $this->db->bind(':start_date', $startDate);
+        $kegiatanBerlangsung = $this->db->single()['total'];
+
+        // Total Dana Diminta
+        $this->db->query("
+            SELECT COALESCE(SUM(jumlah_diusulkan), 0) as total
+            FROM t_kak_anggaran tka
+            JOIN t_kak t ON tka.kak_id = t.kak_id
+            WHERE t.status_id != 4
+            AND t.created_at >= :start_date
+        ");
+        $this->db->bind(':start_date', $startDate);
+        $danaDiminta = $this->db->single()['total'];
+
+        // Total Dana Terserap (calculated)
+        $danaTerserap = $this->getTotalDanaTerserap($startDate);
+
+        // Calculate percentage
+        $persentaseSerapan = $danaDiminta > 0 
+            ? round(($danaTerserap / $danaDiminta) * 100, 2) 
+            : 0;
+
+        // Growth comparison (vs previous period)
+        $growth = $this->calculateGrowth($startDate);
+
+        return [
+            'total_kak' => (int) $totalKak,
+            'kegiatan_selesai' => (int) $kegiatanSelesai,
+            'kegiatan_berlangsung' => (int) $kegiatanBerlangsung,
+            'total_kegiatan' => (int) ($kegiatanSelesai + $kegiatanBerlangsung),
+            'dana_diminta' => (float) $danaDiminta,
+            'dana_terserap' => (float) $danaTerserap,
+            'persentase_serapan' => (float) $persentaseSerapan,
+            'growth_vs_previous' => $growth
+        ];
+    }
+
+    /**
+     * Get data by jurusan
+     */
+    private function getByJurusan($startDate)
+    {
+        // Get all users with their jurusan
+        $this->db->query("
+            SELECT user_id, nama_lengkap, email
+            FROM m_users
+        ");
+        $users = $this->db->resultSet();
+
+        // Map users to jurusan
+        $jurusanUsers = [];
+        foreach ($users as $user) {
+            $jurusan = $this->parseJurusan($user['nama_lengkap']);
+            if (!isset($jurusanUsers[$jurusan])) {
+                $jurusanUsers[$jurusan] = [];
+            }
+            $jurusanUsers[$jurusan][] = $user['user_id'];
+        }
+
+        $result = [];
+
+        foreach ($jurusanUsers as $namaJurusan => $userIds) {
+            if (empty($userIds)) continue;
+
+            $userIdsString = implode(',', $userIds);
+
+            // KAK diajukan
+            $this->db->query("
+                SELECT COUNT(*) as total
+                FROM t_kak
+                WHERE pengusul_user_id IN ({$userIdsString})
+                AND status_id != 4
+                AND created_at >= :start_date
+            ");
+            $this->db->bind(':start_date', $startDate);
+            $kakDiajukan = $this->db->single()['total'];
+
+            // Kegiatan selesai
+            $this->db->query("
+                SELECT COUNT(DISTINCT k.kegiatan_id) as total
+                FROM t_kegiatan k
+                JOIN t_kak t ON k.kak_id = t.kak_id
+                WHERE t.pengusul_user_id IN ({$userIdsString})
+                AND EXISTS (
+                    SELECT 1 FROM t_kegiatan_approval
+                    WHERE kegiatan_id = k.kegiatan_id
+                    AND approval_level = 'Bendahara-Setor'
+                    AND status = 'Disetujui'
+                )
+                AND t.created_at >= :start_date
+            ");
+            $this->db->bind(':start_date', $startDate);
+            $kegiatanSelesai = $this->db->single()['total'];
+
+            // Kegiatan berlangsung
+            $this->db->query("
+                SELECT COUNT(DISTINCT k.kegiatan_id) as total
+                FROM t_kegiatan k
+                JOIN t_kak t ON k.kak_id = t.kak_id
+                WHERE t.pengusul_user_id IN ({$userIdsString})
+                AND NOT EXISTS (
+                    SELECT 1 FROM t_kegiatan_approval
+                    WHERE kegiatan_id = k.kegiatan_id
+                    AND approval_level = 'Bendahara-Setor'
+                    AND status = 'Disetujui'
+                )
+                AND t.created_at >= :start_date
+            ");
+            $this->db->bind(':start_date', $startDate);
+            $kegiatanBerlangsung = $this->db->single()['total'];
+
+            // Dana diminta
+            $this->db->query("
+                SELECT COALESCE(SUM(tka.jumlah_diusulkan), 0) as total
+                FROM t_kak_anggaran tka
+                JOIN t_kak t ON tka.kak_id = t.kak_id
+                WHERE t.pengusul_user_id IN ({$userIdsString})
+                AND t.status_id != 4
+                AND t.created_at >= :start_date
+            ");
+            $this->db->bind(':start_date', $startDate);
+            $danaDiminta = $this->db->single()['total'];
+
+            // Dana terserap
+            $danaTerserap = $this->getDanaTereserapByUserIds($userIds, $startDate);
+
+            $persentaseSerapan = $danaDiminta > 0 
+                ? round(($danaTerserap / $danaDiminta) * 100, 2) 
+                : 0;
+
+            $result[] = [
+                'nama_jurusan' => $namaJurusan,
+                'kak_diajukan' => (int) $kakDiajukan,
+                'kegiatan_selesai' => (int) $kegiatanSelesai,
+                'kegiatan_berlangsung' => (int) $kegiatanBerlangsung,
+                'dana_diminta' => (float) $danaDiminta,
+                'dana_terserap' => (float) $danaTerserap,
+                'persentase_serapan' => (float) $persentaseSerapan
+            ];
+        }
+
+        // Sort by dana_diminta descending
+        usort($result, function($a, $b) {
+            return $b['dana_diminta'] - $a['dana_diminta'];
+        });
+
+        return $result;
+    }
+
+    /**
+     * Get historical trends (monthly breakdown)
+     */
+    private function getTrends($startDate)
+    {
+        $trends = [];
+        $currentDate = new \DateTime($startDate);
+        $endDate = new \DateTime();
+
+        while ($currentDate <= $endDate) {
+            $monthStart = $currentDate->format('Y-m-01');
+            $monthEnd = $currentDate->format('Y-m-t');
+            $monthLabel = $currentDate->format('M Y');
+
+            // Total kegiatan in this month
+            $this->db->query("
+                SELECT COUNT(*) as total
+                FROM t_kegiatan k
+                JOIN t_kak t ON k.kak_id = t.kak_id
+                WHERE t.created_at BETWEEN :start AND :end
+            ");
+            $this->db->bind(':start', $monthStart);
+            $this->db->bind(':end', $monthEnd);
+            $totalKegiatan = $this->db->single()['total'];
+
+            // Dana diminta in this month
+            $this->db->query("
+                SELECT COALESCE(SUM(tka.jumlah_diusulkan), 0) as total
+                FROM t_kak_anggaran tka
+                JOIN t_kak t ON tka.kak_id = t.kak_id
+                WHERE t.created_at BETWEEN :start AND :end
+                AND t.status_id != 4
+            ");
+            $this->db->bind(':start', $monthStart);
+            $this->db->bind(':end', $monthEnd);
+            $danaDiminta = $this->db->single()['total'];
+
+            $trends[] = [
+                'periode' => $monthLabel,
+                'bulan' => $currentDate->format('Y-m'),
+                'total_kegiatan' => (int) $totalKegiatan,
+                'dana_diminta' => (float) $danaDiminta
+            ];
+
+            $currentDate->modify('+1 month');
+        }
+
+        return $trends;
+    }
+
+    /**
+     * Get recent activities
+     */
+    private function getRecentActivities($limit = 10)
+    {
+        $this->db->query("
+            SELECT 
+                t.nama_kegiatan,
+                u.nama_lengkap as pengusul_nama,
+                ka.approval_level,
+                ka.status,
+                ka.created_at,
+                k.kegiatan_id
+            FROM t_kegiatan_approval ka
+            JOIN t_kegiatan k ON ka.kegiatan_id = k.kegiatan_id
+            JOIN t_kak t ON k.kak_id = t.kak_id
+            JOIN m_users u ON t.pengusul_user_id = u.user_id
+            ORDER BY ka.created_at DESC
+            LIMIT :limit
+        ");
+        $this->db->bind(':limit', $limit);
+        
+        $activities = $this->db->resultSet();
+
+        foreach ($activities as &$activity) {
+            $activity['jurusan'] = $this->parseJurusan($activity['pengusul_nama']);
+            $activity['time_ago'] = $this->timeAgo($activity['created_at']);
+        }
+
+        return $activities;
+    }
+
+    /**
+     * Helper: Parse jurusan from nama lengkap
+     */
+    private function parseJurusan($namaLengkap)
+    {
+        $patterns = [
+            'Teknik Informatika Komputer' => '/Teknik Informatika Komputer|Informatika Komputer|jurusantik@/i',
+            'Teknik Sipil' => '/Teknik Sipil|jurusansipil@/i',
+            'Teknik Mesin' => '/Teknik Mesin|jurusanmesin@/i',
+            'Teknik Grafika dan Penerbitan' => '/Grafika dan Penerbitan|Grafika|Penerbitan|jurusantgr@/i',
+            'Akutansi' => '/Administrasi Komersial|Admin Komersial|jurusanak@/i',
+            'Administrasi Niaga' => '/Administrasi Niaga|Admin Niaga|jurusanniaga@/i',
+            'Teknik Elektro' => '/Teknik Elektro|jurusante@/i',
+        ];
+
+        foreach ($patterns as $jurusan => $pattern) {
+            if (preg_match($pattern, $namaLengkap)) {
+                return $jurusan;
+            }
+        }
+
+        return 'Unit Lain';
+    }
+
+    /**
+     * Helper: Get total dana terserap across all kegiatan
+     */
+    private function getTotalDanaTerserap($startDate)
+    {
+        // Get all kegiatan IDs in period
+        $this->db->query("
+            SELECT k.kegiatan_id, k.kak_id
+            FROM t_kegiatan k
+            JOIN t_kak t ON k.kak_id = t.kak_id
+            WHERE t.created_at >= :start_date
+        ");
+        $this->db->bind(':start_date', $startDate);
+        $kegiatanList = $this->db->resultSet();
+
+        $totalTerserap = 0;
+
+        foreach ($kegiatanList as $kegiatan) {
+            $totalTerserap += $this->getDanaTerserap($kegiatan['kegiatan_id'], $kegiatan['kak_id']);
+        }
+
+        return $totalTerserap;
+    }
+
+    /**
+     * Helper: Get dana terserap by user IDs (for per-jurusan calculation)
+     */
+    private function getDanaTereserapByUserIds($userIds, $startDate)
+    {
+        if (empty($userIds)) return 0;
+
+        $userIdsString = implode(',', $userIds);
+
+        $this->db->query("
+            SELECT k.kegiatan_id, k.kak_id
+            FROM t_kegiatan k
+            JOIN t_kak t ON k.kak_id = t.kak_id
+            WHERE t.pengusul_user_id IN ({$userIdsString})
+            AND t.created_at >= :start_date
+        ");
+        $this->db->bind(':start_date', $startDate);
+        $kegiatanList = $this->db->resultSet();
+
+        $totalTerserap = 0;
+
+        foreach ($kegiatanList as $kegiatan) {
+            $totalTerserap += $this->getDanaTerserap($kegiatan['kegiatan_id'], $kegiatan['kak_id']);
+        }
+
+        return $totalTerserap;
+    }
+
+    /**
+     * Helper: Get dana terserap for single kegiatan
+     */
+    private function getDanaTerserap($kegiatanId, $kakId)
+    {
+        // Check if LPJ Done (Bendahara-Setor Disetujui)
+        $this->db->query("
+            SELECT 1 as done
+            FROM t_kegiatan_approval
+            WHERE kegiatan_id = :kegiatan_id
+            AND approval_level = 'Bendahara-Setor'
+            AND status = 'Disetujui'
+        ");
+        $this->db->bind(':kegiatan_id', $kegiatanId);
+        $lpjDone = $this->db->single();
+
+        if ($lpjDone) {
+            // Sum dari realisasi (manual calculation)
+            $this->db->query("
+                SELECT COALESCE(SUM(
+                    COALESCE(realisasi_volume1, 1) *
+                    COALESCE(realisasi_volume2, 1) *
+                    COALESCE(realisasi_volume3, 1) *
+                    COALESCE(realisasi_harga_satuan, 0)
+                ), 0) as total
+                FROM t_kak_anggaran
+                WHERE kak_id = :kak_id
+            ");
+            $this->db->bind(':kak_id', $kakId);
+            return $this->db->single()['total'];
+        } else {
+            // Sum dari pencairan dana
+            $this->db->query("
+                SELECT COALESCE(SUM(jumlah_dicairkan), 0) as total
+                FROM t_pencairan_dana
+                WHERE kegiatan_id = :kegiatan_id
+            ");
+            $this->db->bind(':kegiatan_id', $kegiatanId);
+            return $this->db->single()['total'];
+        }
+    }
+
+    /**
+     * Helper: Calculate growth percentage vs previous period
+     */
+    private function calculateGrowth($startDate)
+    {
+        $currentStart = new \DateTime($startDate);
+        $currentEnd = new \DateTime();
+        
+        $diff = $currentStart->diff($currentEnd);
+        $daysDiff = $diff->days;
+
+        $previousStart = clone $currentStart;
+        $previousStart->modify("-{$daysDiff} days");
+        $previousEnd = clone $currentStart;
+        $previousEnd->modify("-1 day");
+
+        // Current period count
+        $this->db->query("
+            SELECT COUNT(*) as total
+            FROM t_kegiatan k
+            JOIN t_kak t ON k.kak_id = t.kak_id
+            WHERE t.created_at >= :start_date
+        ");
+        $this->db->bind(':start_date', $startDate);
+        $currentCount = $this->db->single()['total'];
+
+        // Previous period count
+        $this->db->query("
+            SELECT COUNT(*) as total
+            FROM t_kegiatan k
+            JOIN t_kak t ON k.kak_id = t.kak_id
+            WHERE t.created_at BETWEEN :start AND :end
+        ");
+        $this->db->bind(':start', $previousStart->format('Y-m-d'));
+        $this->db->bind(':end', $previousEnd->format('Y-m-d'));
+        $previousCount = $this->db->single()['total'];
+
+        if ($previousCount == 0) {
+            return $currentCount > 0 ? 100 : 0;
+        }
+
+        $growth = (($currentCount - $previousCount) / $previousCount) * 100;
+        return round($growth, 2);
+    }
+
+    /**
+     * Helper: Get start date based on period
+     */
+    private function getStartDate($period)
+    {
+        $date = new \DateTime();
+        
+        switch ($period) {
+            case '3months':
+                $date->modify('-3 months');
+                break;
+            case '6months':
+                $date->modify('-6 months');
+                break;
+            case '1year':
+                $date->modify('-1 year');
+                break;
+            case 'year':
+                $date = new \DateTime(date('Y-01-01'));
+                break;
+            case 'all':
+                $date = new \DateTime('2020-01-01');
+                break;
+            default:
+                $date->modify('-6 months');
+        }
+        
+        return $date->format('Y-m-d');
+    }
+
+    /**
+     * Helper: Time ago formatter
+     */
+    private function timeAgo($datetime)
+    {
+        $now = new \DateTime();
+        $ago = new \DateTime($datetime);
+        $diff = $now->diff($ago);
+
+        if ($diff->days > 30) {
+            return $ago->format('d M Y');
+        } elseif ($diff->days > 0) {
+            return $diff->days . ' hari lalu';
+        } elseif ($diff->h > 0) {
+            return $diff->h . ' jam lalu';
+        } elseif ($diff->i > 0) {
+            return $diff->i . ' menit lalu';
+        } else {
+            return 'Baru saja';
+        }
+    }
+}
