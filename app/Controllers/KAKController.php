@@ -848,6 +848,22 @@ class KAKController
                 }
             }
 
+            // Notify Verifikator (Email)
+            $pengusulData = $this->userModel->findById($data['pengusul_user_id']);
+            $kakDataForEmail = [
+                'nama_kegiatan' => $data['nama_kegiatan'],
+                'pengusul_nama' => $pengusulData['nama_lengkap'] ?? 'N/A',
+            ];
+            $this->mailService->notifyKAKSubmitted($id, $kakDataForEmail);
+
+            // Notify Verifikator (Email)
+            $pengusulData = $this->userModel->findById($data['pengusul_user_id']);
+            $kakDataForEmail = [
+                'nama_kegiatan' => $data['nama_kegiatan'],
+                'pengusul_nama' => $pengusulData['nama_lengkap'] ?? 'N/A',
+            ];
+            $this->mailService->notifyKAKSubmitted($id, $kakDataForEmail);
+
             Response::success(null, "KAK berhasil disubmit untuk verifikasi.");
         } catch (\Exception $e) {
             if ($this->db->inTransaction()) {
