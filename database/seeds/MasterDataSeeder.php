@@ -169,26 +169,26 @@ class MasterDataSeeder extends AbstractSeed
         // 1. Admin
         $users[] = ['username' => 'admin', 'password_hash' => password_hash('admin123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Administrator', 'email' => 'admin@pnj.ac.id', 'role_id' => $adminRole];
         // 2. Verifikator
-        $users[] = ['username' => 'verifikator1', 'password_hash' => password_hash('verif1123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Verifikator Keuangan 1', 'email' => 'verifikator1@pnj.ac.id', 'role_id' => $verifikatorRole];
-        $users[] = ['username' => 'verifikator2', 'password_hash' => password_hash('verif2123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Verifikator Keuangan 2', 'email' => 'verifikator2@pnj.ac.id', 'role_id' => $verifikatorRole];
-        $users[] = ['username' => 'verifikator3', 'password_hash' => password_hash('verif3123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Verifikator Keuangan 3', 'email' => 'verifikator3@pnj.ac.id', 'role_id' => $verifikatorRole];
-        $users[] = ['username' => 'verifikator4', 'password_hash' => password_hash('verif4123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Verifikator Keuangan 4', 'email' => 'verifikator4@pnj.ac.id', 'role_id' => $verifikatorRole];
+        $users[] = ['username' => 'verifikator1', 'password_hash' => password_hash('verif1123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Verifikator Akademik', 'email' => 'verifikator1@pnj.ac.id', 'role_id' => $verifikatorRole];
+        $users[] = ['username' => 'verifikator2', 'password_hash' => password_hash('verif2123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Verifikator Keuangan', 'email' => 'verifikator2@pnj.ac.id', 'role_id' => $verifikatorRole];
+        $users[] = ['username' => 'verifikator3', 'password_hash' => password_hash('verif3123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Verifikator Kemahasiswaan', 'email' => 'verifikator3@pnj.ac.id', 'role_id' => $verifikatorRole];
+        $users[] = ['username' => 'verifikator4', 'password_hash' => password_hash('verif4123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Verifikator Kerja Sama', 'email' => 'verifikator4@pnj.ac.id', 'role_id' => $verifikatorRole];
         // 3. Pengusul
-        $users[] = ['username' => 'jurusantik', 'password_hash' => password_hash('tik123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Dosen Jurusan Akuntansi', 'email' => 'jurusantik@pnj.ac.id', 'role_id' => $pengusulRole];
-        $users[] = ['username' => 'jurusansipil', 'password_hash' => password_hash('sipil123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Dosen Jurusan Teknik Sipil', 'email' => 'jurusansipil@pnj.ac.id', 'role_id' => $pengusulRole];
-        $users[] = ['username' => 'jurusanmesin', 'password_hash' => password_hash('mesin123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Dosen Jurusan Teknik Mesin', 'email' => 'jurusanmesin@pnj.ac.id', 'role_id' => $pengusulRole];
-        $users[] = ['username' => 'jurusantgp', 'password_hash' => password_hash('tgp123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Dosen Jurusan Teknik Grafika dan Penerbitan', 'email' => 'jurusantgp@pnj.ac.id', 'role_id' => $pengusulRole];
-        $users[] = ['username' => 'jurusanak', 'password_hash' => password_hash('ak123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Dosen Jurusan Administrasi Komersial', 'email' => 'jurusanak@pnj.ac.id', 'role_id' => $pengusulRole];
-        $users[] = ['username' => 'jurusanan', 'password_hash' => password_hash('an123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Dosen Jurusan Administrasi Niaga', 'email' => 'jurusanan@pnj.ac.id', 'role_id' => $pengusulRole];
-        $users[] = ['username' => 'jurusante', 'password_hash' => password_hash('te123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Dosen Jurusan Teknik Elektro', 'email' => 'jurusante@pnj.ac.id', 'role_id' => $pengusulRole];
+        $users[] = ['username' => 'jurusantik', 'password_hash' => password_hash('tik123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Admin Jurusan Teknik Informatika Komputer', 'email' => 'jurusantik@pnj.ac.id', 'role_id' => $pengusulRole];
+        $users[] = ['username' => 'jurusansipil', 'password_hash' => password_hash('sipil123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Admin Jurusan Teknik Sipil', 'email' => 'jurusansipil@pnj.ac.id', 'role_id' => $pengusulRole];
+        $users[] = ['username' => 'jurusanmesin', 'password_hash' => password_hash('mesin123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Admin Jurusan Teknik Mesin', 'email' => 'jurusanmesin@pnj.ac.id', 'role_id' => $pengusulRole];
+        $users[] = ['username' => 'jurusantgp', 'password_hash' => password_hash('tgp123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Admin Jurusan Teknik Grafika dan Penerbitan', 'email' => 'jurusantgp@pnj.ac.id', 'role_id' => $pengusulRole];
+        $users[] = ['username' => 'jurusanak', 'password_hash' => password_hash('ak123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Admin Jurusan Akuntansi', 'email' => 'jurusanak@pnj.ac.id', 'role_id' => $pengusulRole];
+        $users[] = ['username' => 'jurusanan', 'password_hash' => password_hash('an123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Admin Jurusan Administrasi Niaga', 'email' => 'jurusanan@pnj.ac.id', 'role_id' => $pengusulRole];
+        $users[] = ['username' => 'jurusante', 'password_hash' => password_hash('te123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Admin Jurusan Teknik Elektro', 'email' => 'jurusante@pnj.ac.id', 'role_id' => $pengusulRole];
         // 4. PPK
-        $users[] = ['username' => 'ppk', 'password_hash' => password_hash('ppk123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Siti Aminah, S.E.', 'email' => 'ppk@pnj.ac.id', 'role_id' => $ppkRole];
+        $users[] = ['username' => 'ppk', 'password_hash' => password_hash('ppk123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Falih Elmanda', 'email' => 'ppk@pnj.ac.id', 'role_id' => $ppkRole];
         // 5. Wadir
-        $users[] = ['username' => 'wadir', 'password_hash' => password_hash('wadir123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Prof. Dr. Ir. Widodo', 'email' => 'wadir@pnj.ac.id', 'role_id' => $wadirRole];
+        $users[] = ['username' => 'wadir2', 'password_hash' => password_hash('wadir2123', PASSWORD_BCRYPT), 'nama_lengkap' => '', 'email' => 'Utami Puji Lestari S.E., M.Ak., Ph.D', 'role_id' => $wadirRole];
         // 6. Bendahara
-        $users[] = ['username' => 'bendahara', 'password_hash' => password_hash('bendahara123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Rina Wijayanti, S.Ak', 'email' => 'bendahara@pnj.ac.id', 'role_id' => $bendaharaRole];
+        $users[] = ['username' => 'bendahara', 'password_hash' => password_hash('bendahara123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Mba Amanah', 'email' => 'bendahara@pnj.ac.id', 'role_id' => $bendaharaRole];
         // 7. Rektorat
-        $users[] = ['username' => 'rektorat', 'password_hash' => password_hash('rektorat123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Rektorat PNJ', 'email' => 'rektorat@pnj.ac.id', 'role_id' => $rektoratRole];
+        $users[] = ['username' => 'rektorat', 'password_hash' => password_hash('rektorat123', PASSWORD_BCRYPT), 'nama_lengkap' => 'Dr. Syamsurizal, S.E., M.M.', 'email' => 'rektorat@pnj.ac.id', 'role_id' => $rektoratRole];
 
         $this->table('m_users')->insert($users)->saveData();
 
