@@ -17,6 +17,8 @@ use App\Core\FileUpload;
 use App\Middlewares\AuthMiddleware;
 use App\Models\KAK;
 use App\Services\LpjTimerService;
+use App\Services\MailService;
+use App\Models\PencairanDana;
 
 class KegiatanController
 {
@@ -30,6 +32,8 @@ class KegiatanController
     private $userModel;
     private $roleModel;
     private $userData;
+    private $mailService;
+    private $pencairanDanaModel;
 
     public function __construct()
     {
@@ -42,6 +46,8 @@ class KegiatanController
         $this->kakModel = new KAK();
         $this->userModel = new User();
         $this->roleModel = new Role();
+        $this->mailService = new MailService();
+        $this->pencairanDanaModel = new PencairanDana();
         
         // Get authenticated user data
         $this->userData = AuthMiddleware::getAuthUser();
@@ -718,6 +724,28 @@ class KegiatanController
                 'catatan' => "Disetujui oleh {$expectedRole}." . ($catatan ? " Catatan: {$catatan}" : "")
             ]);
 
+            if ($expectedRole === 'PPK') {
+                $proposer = $this->userModel->findById($kegiatan['pengusul_user_id']);
+                if ($proposer && !empty($proposer['email'])) {
+                    $kegiatanDataForEmail = [
+                        'nama_kegiatan' => $kegiatan['nama_kegiatan'],
+                        'pengusul_nama' => $proposer['nama_lengkap'],
+                        'pengusul_email' => $proposer['email']
+                    ];
+                    $this->mailService->notifyKegiatanApprovedByPPK($kegiatanId, $kegiatanDataForEmail);
+                }
+            } elseif ($expectedRole === 'Wadir2') { // Add this new condition
+                $proposer = $this->userModel->findById($kegiatan['pengusul_user_id']);
+                if ($proposer && !empty($proposer['email'])) {
+                    $kegiatanDataForEmail = [
+                        'nama_kegiatan' => $kegiatan['nama_kegiatan'],
+                        'pengusul_nama' => $proposer['nama_lengkap'],
+                        'pengusul_email' => $proposer['email']
+                    ];
+                    $this->mailService->notifyKegiatanApprovedByWadir($kegiatanId, $kegiatanDataForEmail);
+                }
+            }
+
             // --- END OF LPJ TIMER LOGIC (REMOVED) ---
 
             // 6. Activate Next Step or Finalize
@@ -875,6 +903,20 @@ class KegiatanController
                 'pesan' => "Pencairan untuk kegiatan \"{$kegiatan['nama_kegiatan']}\" telah selesai. Anda sekarang dapat mengunggah LPJ.",
                 'link_tujuan' => '/pengusul/lpj/' . $kegiatanId,
             ]);
+
+            // 10. Send Email to Pengusul
+            $proposer = $this->userModel->findById($kegiatan['pengusul_user_id']);
+            if ($proposer && !empty($proposer['email'])) {
+                $pencairanInfo = $this->pencairanDanaModel->getSisaDana($kegiatanId);
+                $jumlahCair = $pencairanInfo['total_dicairkan'];
+
+                $kegiatanDataForEmail = [
+                    'nama_kegiatan' => $kegiatan['nama_kegiatan'],
+                    'pengusul_nama' => $proposer['nama_lengkap'],
+                    'pengusul_email' => $proposer['email']
+                ];
+                $this->mailService->notifyFundsReleased($kegiatanId, $kegiatanDataForEmail, $jumlahCair);
+            }
 
             $db->commit();
             Response::success(null, 'Proses pencairan berhasil diselesaikan dan tahap LPJ telah dimulai.');
