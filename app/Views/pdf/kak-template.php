@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Kerangka Acuan Kerja (KAK)</title>
-    <!-- TEMPLATE VERSION: 2025-11-30-20:40 - TTD SEPARATED TO LAST PAGE -->
+    <!-- TEMPLATE VERSION: 2025-12-03-11:05 - INCREASED SIDE MARGINS FOR PREVIEW -->
     <style>
         @page {
-            margin: 2cm;
+            margin: 2cm 3cm;
         }
         body {
             font-family: 'Times New Roman', Times, serif;
             font-size: 12pt;
             line-height: 1.8;
             color: #000;
+            padding: 2cm 4cm; /* Increased side padding: 3cm → 4cm untuk margin kanan kiri lebih besar */
+            box-sizing: border-box;
+            max-width: 100%;
         }
         /* Cover Page Styles - ULTRA COMPACT */
         .cover-page {
             text-align: center;
-            padding: 40px 30px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             page-break-after: always;
+            padding: 40px 30px; /* Maintain cover page padding */
         }
         .cover-logo {
             width: 350px;
@@ -100,13 +103,14 @@
             margin: 0;
         }
         .section {
-            margin-bottom: 8px; /* 12px → 8px (LEBIH RAPAT LAGI) */
+            margin-bottom: 8px;
             page-break-inside: avoid;
+            padding: 0 15px; /* Added horizontal padding untuk margin dalam section */
         }
         .section-title {
             font-size: 13pt;
             font-weight: bold;
-            margin-bottom: 8px; /* 10px → 8px (LEBIH RAPAT) */
+            margin-bottom: 8px;
             color: #000;
         }
         .info-grid {
