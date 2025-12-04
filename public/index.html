@@ -186,6 +186,14 @@
           return;
         }
         
+        // Detect if user is on mobile device (exclude iPad/tablets)
+        const isMobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768 && !/iPad/i.test(navigator.userAgent));
+        
+        // Set video source based on device type
+        const videoSource = isMobile ? '/assets/video/introm.mp4' : '/assets/video/intro.mp4';
+        introVideo.src = videoSource;
+        introVideo.load();
+        
         // Function to hide intro with fade out
         function hideIntro() {
           sessionStorage.setItem('hasSeenIntro', 'true');
