@@ -521,10 +521,6 @@ export function renderBendaharaDashboardPage(path, userRole) {
     updateActiveFilterVisuals();
   }
 
-  }
-
-  async function viewDisbursementDetails(kegiatanId) {
-
   async function viewDisbursementDetails(kegiatanId) {
     try {
       const response = await apiRequest(`/kegiatan/${kegiatanId}`);
