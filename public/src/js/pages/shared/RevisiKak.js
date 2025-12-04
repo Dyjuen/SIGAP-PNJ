@@ -436,52 +436,7 @@ export function renderRevisiKakPage(path, userRole) {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
-/* Custom close button - Absolute Positioning Fix */
-#commentDetailModal .btn-close {
-  background: #FFFFFF; /* Pure white background */
-  border: 2px solid #FFFFFF; /* Pure white border */
-  border-radius: 12px;
-  width: 44px;
-  height: 44px;
-  opacity: 1;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 0;
-  backdrop-filter: blur(10px);
-  cursor: pointer;
-  
-  /* Absolute positioning */
-  position: absolute;
-  top: 50%;
-  right: 2rem; /* Match header padding */
-  transform: translateY(calc(-50% + 2px));
-}
 
-#commentDetailModal .btn-close:hover {
-  background: #F0F0F0; /* Slightly darker white on hover */
-  border-color: #F0F0F0; /* Slightly darker white border on hover */
-  transform: translateY(calc(-50% + 2px)) rotate(90deg) scale(1.05); /* Combine transforms */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* X marks using a hardcoded Unicode character */
-#commentDetailModal .btn-close::before {
-  content: 'X'; /* Capital 'X' character */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #000 !important; /* Solid black icon */
-  font-size: 1.75rem;
-  line-height: 1;
-  font-weight: 900; /* Bolder font */
-  z-index: 999; /* Highest z-index */
-}
-
-/* Remove default Bootstrap close button styles */
-#commentDetailModal .btn-close:focus {
-  box-shadow: none;
-  outline: none;
-}
 
 #commentDetailModal .modal-body {
   padding: 2rem;
@@ -1417,6 +1372,21 @@ export function renderRevisiKakPage(path, userRole) {
         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
         letter-spacing: -0.5px;
       }
+
+      /* FIX: Disable generic button animations for close buttons */
+      .btn-close {
+        transform: none !important;
+        transition: none !important;
+        box-shadow: none !important;
+      }
+      .btn-close:hover {
+        transform: none !important;
+        box-shadow: none !important;
+        opacity: 0.75;
+      }
+      .btn-close::after {
+        display: none !important;
+      }
     </style>
 
     <div class="kerangka-acuan-kerja-page">
@@ -1691,7 +1661,7 @@ export function renderRevisiKakPage(path, userRole) {
     <div class="modal fade" id="fieldCommentModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
             <h5 class="modal-title">
               Catatan Revisi untuk <span id="fieldCommentLabel" style="color: #00BCD4; font-weight: 700;"></span>
             </h5>
@@ -1737,7 +1707,7 @@ export function renderRevisiKakPage(path, userRole) {
     <div class="modal fade" id="rowCommentModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
             <h5 class="modal-title">
               Catatan Revisi untuk <span id="rowCommentLabel" style="color: #00BCD4; font-weight: 700;"></span>
             </h5>
