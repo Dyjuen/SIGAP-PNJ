@@ -601,28 +601,40 @@ export function renderDashboardVerifikator(path, userRole) {
       btn.addEventListener("click", async () => {
         const kakId = btn.dataset.id;
         
-        // Prompt for Kode MAK
-        const { value: kodeAnggaran } = await Swal.fire({
-          title: 'Input Kode MAK',
-          input: 'text',
-          inputLabel: 'Masukkan Kode Mata Anggaran Kegiatan',
-          inputPlaceholder: 'Contoh: 1234.5678',
+        // Prompt for Mata Anggaran details
+        const { value: formValues } = await Swal.fire({
+          title: 'Input Data Mata Anggaran',
+          html:
+            '<div style="text-align: left;">' +
+            '<label for="swal-input1" class="form-label">Kode MAK</label>' +
+            '<input id="swal-input1" class="form-control mb-3" placeholder="Contoh: MAK123">' +
+            '<label for="swal-input2" class="form-label">Nama Sumber Dana</label>' +
+            '<input id="swal-input2" class="form-control mb-3" placeholder="Contoh: APBN">' +
+            '<label for="swal-input3" class="form-label">Tahun Anggaran</label>' +
+            '<input id="swal-input3" class="form-control mb-3" type="number" placeholder="Contoh: 2025">' +
+            '<label for="swal-input4" class="form-label">Total Pagu</label>' +
+            '<input id="swal-input4" class="form-control" type="number" step="0.01" placeholder="Contoh: 10000000">' +
+            '</div>',
+          focusConfirm: false,
           showCancelButton: true,
           confirmButtonText: 'Setujui',
           cancelButtonText: 'Batal',
           confirmButtonColor: '#00BCD4',
-          inputValidator: (value) => {
-            if (!value) {
-              return 'Kode MAK harus diisi!'
+          preConfirm: () => {
+            return {
+              kode_anggaran: document.getElementById('swal-input1').value,
+              nama_sumber_dana: document.getElementById('swal-input2').value,
+              tahun_anggaran: document.getElementById('swal-input3').value,
+              total_pagu: document.getElementById('swal-input4').value
             }
           }
         });
 
-        if (kodeAnggaran) {
+        if (formValues && formValues.kode_anggaran) {
           try {
             await apiRequest(`/kak/${kakId}/approve`, {
               method: "POST",
-              body: JSON.stringify({ kode_anggaran: kodeAnggaran }),
+              body: JSON.stringify(formValues),
             });
 
             showSuccess(`Usulan berhasil disetujui!`);

@@ -12,10 +12,9 @@ final class CreateMMataAnggaranTable extends AbstractMigration
         
         $table->addColumn('mata_anggaran_id', 'integer', ['identity' => true])
               ->addColumn('kode_anggaran', 'string', ['limit' => 50])
-              ->addColumn('nama_sumber_dana', 'string', ['limit' => 100])
-              ->addColumn('tahun_anggaran', 'integer', ['limit' => 4])
-              ->addColumn('total_pagu', 'decimal', ['precision' => 15, 'scale' => 2])
-              ->addIndex(['kode_anggaran'], ['unique' => true])
+              ->addColumn('nama_sumber_dana', 'string', ['limit' => 100, 'null' => true])
+              ->addColumn('tahun_anggaran', 'integer', ['limit' => 4, 'null' => true])
+              ->addColumn('total_pagu', 'decimal', ['precision' => 15, 'scale' => 2, 'null' => true])
               ->create();
     }
 }

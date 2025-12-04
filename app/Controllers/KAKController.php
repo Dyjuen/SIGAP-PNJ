@@ -1169,27 +1169,32 @@ class KAKController
 
             $input = json_decode(file_get_contents('php://input'), true);
             $kodeAnggaran = $input['kode_anggaran'] ?? null;
-
-            if (empty($kodeAnggaran)) {
-                Response::badRequest("Kode MAK (Mata Anggaran) wajib diisi.");
-            }
+            $namaSumberDana = $input['nama_sumber_dana'] ?? null;
+            $tahunAnggaran = $input['tahun_anggaran'] ?? null;
+            $totalPagu = $input['total_pagu'] ?? null;
 
             $db->beginTransaction();
 
-            // Handle Mata Anggaran (Check existing or Create new)
-            $db->query("SELECT mata_anggaran_id FROM m_mata_anggaran WHERE kode_anggaran = :kode");
-            $db->bind(':kode', $kodeAnggaran);
-            $existingMak = $db->single();
+            $makId = null;
 
-            if ($existingMak) {
-                $makId = $existingMak['mata_anggaran_id'];
-            } else {
-                // Create new Mata Anggaran with default values for required fields
-                $db->query("INSERT INTO m_mata_anggaran (kode_anggaran, nama_sumber_dana, tahun_anggaran, total_pagu) VALUES (:kode, '-', :thn, 0)");
+            if (!empty($kodeAnggaran)) {
+                // Handle Mata Anggaran (Check existing or Create new)
+                $db->query("SELECT mata_anggaran_id FROM m_mata_anggaran WHERE kode_anggaran = :kode");
                 $db->bind(':kode', $kodeAnggaran);
-                $db->bind(':thn', date('Y'));
-                $db->execute();
-                $makId = $db->lastInsertId();
+                $existingMak = $db->single();
+
+                if ($existingMak) {
+                    $makId = $existingMak['mata_anggaran_id'];
+                } else {
+                    // Create new Mata Anggaran with provided values
+                    $db->query("INSERT INTO m_mata_anggaran (kode_anggaran, nama_sumber_dana, tahun_anggaran, total_pagu) VALUES (:kode, :sumber, :tahun, :pagu)");
+                    $db->bind(':kode', $kodeAnggaran);
+                    $db->bind(':sumber', $namaSumberDana);
+                    $db->bind(':tahun', $tahunAnggaran);
+                    $db->bind(':pagu', $totalPagu);
+                    $db->execute();
+                    $makId = $db->lastInsertId();
+                }
             }
 
             // Update KAK status and link to Mata Anggaran
