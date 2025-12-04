@@ -1210,17 +1210,37 @@ export function renderUsulanKakPage(path, userRole) {
     };
 
     const ikuRows = document.querySelectorAll("#ikuRenstraContainer .iku-item");
+    let totalNilai = 0;
+
     if (ikuRows.length > 0) {
       ikuRows.forEach((row) => {
         const select = row.querySelector("select");
         const input = row.querySelector("input[type='number']");
+        
         if (!select.value) addError(select, "IKU wajib dipilih.");
+        
         if (!input.value) {
           addError(input, "Nilai wajib diisi.");
-        } else if (parseFloat(input.value) <= 0) {
-          addError(input, "Nilai harus lebih dari 0.");
+        } else {
+          const val = parseFloat(input.value);
+          if (val <= 0) {
+            addError(input, "Nilai harus lebih dari 0.");
+          } else {
+            totalNilai += val;
+          }
         }
       });
+
+      // Validate the sum of IKU values
+      if (totalNilai > 100) {
+        ikuRows.forEach((row) => {
+          const input = row.querySelector("input[type='number']");
+          // Only add error if it doesn't already have one (e.g. empty or <= 0)
+          if (!input.classList.contains("is-invalid")) {
+             addError(input, `Total melebihi 100% (Total: ${totalNilai}%)`);
+          }
+        });
+      }
     }
 
     if (!isValid) {
@@ -2107,7 +2127,7 @@ export function renderUsulanKakPage(path, userRole) {
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
         <div class="flex gap-2 items-center">
-          <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" step="1" value="${target}">
+          <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" step="1" value="${target}" oninput="if(parseFloat(this.value) > 100) this.value = 100;">
           <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
         </div>
       </div>
@@ -2157,7 +2177,7 @@ export function renderUsulanKakPage(path, userRole) {
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)
           </label>
           <div class="flex gap-2 items-center">
-            <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" value="${persentase}">
+            <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" value="${persentase}" oninput="if(parseFloat(this.value) > 100) this.value = 100;">
             <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
           </div>
         </div>
