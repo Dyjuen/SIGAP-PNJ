@@ -7,6 +7,7 @@ class FileUpload
     private $uploadPath;
     private $maxSize;
     private $allowedMimeTypes;
+    private $allowedTypes;
 
     /**
      * Constructor
