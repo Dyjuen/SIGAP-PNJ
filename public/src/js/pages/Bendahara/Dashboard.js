@@ -404,6 +404,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
               <th style="width: 18%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>
               <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Diminta</th>
               <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Dicairkan</th>
+              <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Belum Dicairkan</th>
               <th style="width: 11%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Status</th>
               <th style="width: 10%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Aksi</th>
             </tr>
@@ -520,107 +521,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
     updateActiveFilterVisuals();
   }
 
-  async function handleDisbursementAction(kegiatanId) {
-    // Step 1 — Ask for nominal using SweetAlert2
-    const { value: nominal } = await Swal.fire({
-      title: "Masukkan Nominal Pencairan",
-      html: `
-        <input id="swal-input-nominal" class="swal2-input" placeholder="Masukkan nominal dana..." style="width: 85%; max-width: 100%;">
-      `,
-      showCancelButton: true,
-      confirmButtonColor: "#00BCD4",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Lanjut",
-      cancelButtonText: "Batal",
-      didOpen: () => {
-        const input = Swal.getPopup().querySelector('#swal-input-nominal');
-        if (typeof AutoNumeric !== 'undefined') {
-          new AutoNumeric(input, {
-            currencySymbol: 'Rp ',
-            digitGroupSeparator: '.',
-            decimalCharacter: ',',
-            decimalPlaces: 0,
-            minimumValue: '0'
-          });
-        } else {
-          input.type = 'number';
-        }
-      },
-      preConfirm: () => {
-        const input = Swal.getPopup().querySelector('#swal-input-nominal');
-        let value;
-        if (typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(input)) {
-          value = AutoNumeric.getAutoNumericElement(input).getNumber();
-        } else {
-          value = input.value;
-        }
-
-        if (!value || value <= 0) {
-          Swal.showValidationMessage("Nominal tidak valid. Harap masukkan angka positif.");
-        }
-        return parseFloat(value);
-      }
-    });
-
-    if (nominal === undefined) return; // Cancelled
-
-    if (isNaN(nominal) || nominal <= 0) {
-      showError("Nominal tidak valid. Harap masukkan angka positif.");
-      return;
-    }
-
-    const kegiatan = state.allKegiatan.find((k) => k.kegiatan_id == kegiatanId);
-    if (!kegiatan) {
-      showError("Kegiatan tidak ditemukan.");
-      return;
-    }
-
-    const totalDiminta = parseFloat(kegiatan.total_anggaran_diusulkan || 0);
-    const sudahDicairkan = parseFloat(kegiatan.dana_dicairkan || 0);
-    const sisaDana = totalDiminta - sudahDicairkan;
-
-    if (nominal > sisaDana) {
-      showError(
-        `Nominal pencairan (${formatCurrency(
-          nominal
-        )}) melebihi sisa dana yang tersedia (${formatCurrency(sisaDana)}).`
-      );
-      return;
-    }
-
-    // Step 2 — Confirmation modal
-    const confirmResult = await Swal.fire({
-      title: "Konfirmasi Pencairan",
-      text: `Anda yakin ingin mencairkan Rp ${nominal.toLocaleString(
-        "id-ID"
-      )} untuk kegiatan ini?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#00BCD4",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Ya, cairkan",
-      cancelButtonText: "Batal",
-    });
-
-    if (!confirmResult.isConfirmed) return;
-
-    // Step 3 — API call
-    try {
-      await apiRequest(`/kegiatan/${kegiatanId}/cairkan`, {
-        method: "POST",
-        body: JSON.stringify({ nominal_pencairan: nominal }),
-      });
-
-      // Step 4 — Success popup
-      showSuccess(
-        `Dana Rp ${nominal.toLocaleString("id-ID")} berhasil dicairkan.`
-      );
-
-      fetchKegiatan(); // Refresh data
-    } catch (error) {
-      showError(`Gagal mencairkan dana: ${error.message}`);
-    }
   }
+
+  async function viewDisbursementDetails(kegiatanId) {
 
   async function viewDisbursementDetails(kegiatanId) {
     try {
@@ -710,7 +613,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
     tbody.innerHTML = "";
     if (!data || data.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="8" class="text-center">Tidak ada data kegiatan.</td></tr>';
+        '<tr><td colspan="9" class="text-center">Tidak ada data kegiatan.</td></tr>';
       updatePaginationInfo(0, 0, 0);
       return;
     }
@@ -751,9 +654,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
         statusBadge =
           '<span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>';
         actionButtons = `
-          <button class="btn btn-sm me-2 btn-disburse" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" data-id="${kegiatan.kegiatan_id}" title="Cairkan Dana">
+          <a href="/bendahara/kegiatan/pencairan" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" title="Cairkan Dana">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-cash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="7" y="9" width="14" height="10" rx="2" /><circle cx="14" cy="14" r="2" /><path d="M17 9v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h2" /></svg>
-          </button>
+          </a>
           <a href="/bendahara/kegiatan/riwayat/detail/${kegiatan.kak_id}" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" title="Lihat Detail">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
           </a>
@@ -790,6 +693,11 @@ export function renderBendaharaDashboardPage(path, userRole) {
             kegiatan.dana_dicairkan || 0
           )}</strong>
         </td>
+        <td style="width: 14%;">
+          <strong style="color: #ef4444;">${formatCurrency(
+            (kegiatan.total_anggaran_diusulkan || 0) - (kegiatan.dana_dicairkan || 0)
+          )}</strong>
+        </td>
         <td style="width: 11%; text-align: center;">
           ${statusBadge}
         </td>
@@ -808,12 +716,6 @@ export function renderBendaharaDashboardPage(path, userRole) {
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
-    document.querySelectorAll(".btn-disburse").forEach((btn) => {
-      btn.addEventListener("click", () =>
-        handleDisbursementAction(btn.dataset.id)
-      );
-    });
-
     document.querySelectorAll(".btn-view-detail").forEach((btn) => {
       btn.addEventListener("click", () =>
         viewDisbursementDetails(btn.dataset.id)

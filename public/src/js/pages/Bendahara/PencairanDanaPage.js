@@ -409,6 +409,7 @@ export function renderPencairanDanaPage(path, userRole) {
               <th>Catatan Wadir 2</th>
               <th style="text-align: center;">Uang Dicairkan</th>
               <th style="text-align: center;">Uang Diminta</th>
+              <th style="text-align: center;">Uang Belum Dicairkan</th>
               <th style="text-align: center;">Aksi</th>
             </tr>
           </thead>
@@ -676,7 +677,7 @@ export function renderPencairanDanaPage(path, userRole) {
     tbody.innerHTML = "";
     if (!state.displayKegiatan || state.displayKegiatan.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="8" class="text-center">Tidak ada kegiatan yang menunggu pencairan dana.</td></tr>';
+        '<tr><td colspan="9" class="text-center">Tidak ada kegiatan yang menunggu pencairan dana.</td></tr>';
       return;
     }
 
@@ -715,6 +716,9 @@ export function renderPencairanDanaPage(path, userRole) {
         </td>
         <td style="text-align: center;">
           ${formatRupiah(item.total_anggaran_diusulkan)}
+        </td>
+        <td style="text-align: center;">
+          ${formatRupiah(item.total_anggaran_diusulkan - (item.dana_dicairkan || 0))}
         </td>
         <td style="text-align: center;">
           <button class="btn btn-sm btn-action btn-cairkan me-2" data-id="${
