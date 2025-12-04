@@ -3445,6 +3445,15 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
       cancelButtonText: "Batal",
     }).then(async (result) => {
       if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Mengirim Revisi...',
+          text: 'Harap tunggu, sistem sedang memproses permintaan Anda.',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
         try {
           await apiRequest(`/kak/${usulanId}/revise`, {
             method: "POST",
