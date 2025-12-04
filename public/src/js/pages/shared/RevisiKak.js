@@ -1893,24 +1893,68 @@ export function renderRevisiKakPage(path, userRole) {
     container.appendChild(newItem);
   };
 
+  function renderIkuOptions() {
+    if (!masterState.iku || masterState.iku.length === 0) return;
+
+    // IDs from existing (saved) rows - assume these cannot be changed/removed in this view
+    const existingIkuIds = (kakDataState && kakDataState.iku) 
+      ? kakDataState.iku.map(item => String(item.iku_id)) 
+      : [];
+
+    const ikuSelects = document.querySelectorAll("#ikuRenstraContainer select");
+    
+    // Collect all selected values from other dropdowns
+    const selectedValues = Array.from(ikuSelects)
+      .map(s => s.value)
+      .filter(v => v);
+
+    // Combine with existing IDs
+    const allTakenIds = new Set([...existingIkuIds, ...selectedValues]);
+
+    ikuSelects.forEach((select) => {
+      const currentValue = select.value;
+      
+      // Clear existing options except placeholder
+      select.innerHTML = '<option value="">Pilih IKU</option>';
+
+      masterState.iku.forEach((iku) => {
+        const idStr = String(iku.iku_id);
+        // Add option if it's not taken OR if it's the current value of this select
+        if (!allTakenIds.has(idStr) || idStr === currentValue) {
+          const option = document.createElement("option");
+          option.value = iku.iku_id;
+          option.textContent = iku.nama_iku;
+          select.appendChild(option);
+        }
+      });
+      
+      // Restore value
+      select.value = currentValue;
+    });
+  }
+
+  window.removeIkuField = function (btn) {
+    const item = btn.closest(".dynamic-field-item");
+    if (!item) return;
+
+    item.classList.add("removing");
+    item.addEventListener("animationend", () => {
+      item.remove();
+      renderIkuOptions();
+    }, { once: true });
+  };
+
   window.addIkuField = function () {
     const container = document.getElementById("ikuRenstraContainer");
     const newItem = document.createElement("div");
     newItem.className = "iku-item dynamic-field-item new-item-animation row-item mb-4";
     
-    let ikuOptions = '<option value="">Pilih IKU</option>';
-    if (masterState.iku) {
-        masterState.iku.forEach(iku => {
-            ikuOptions += `<option value="${iku.iku_id}">${iku.nama_iku}</option>`;
-        });
-    }
-
     newItem.innerHTML = `
       <div class="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
-            ${ikuOptions}
+            <option value="">Pilih IKU</option>
           </select>
         </div>
         <div>
@@ -1920,12 +1964,20 @@ export function renderRevisiKakPage(path, userRole) {
             <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
           </div>
         </div>
-        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeIkuField(this)">
           <span class="text-xl font-bold">−</span>
         </button>
       </div>
     `;
     container.appendChild(newItem);
+    
+    const selectElement = newItem.querySelector('select');
+    selectElement.addEventListener('change', () => {
+        renderIkuOptions();
+    });
+
+    // Populate initial options
+    renderIkuOptions();
   };
 
   function calculateTotals() {
@@ -1990,11 +2042,11 @@ export function renderRevisiKakPage(path, userRole) {
 
     // Determine if this is creating from existing data (itemData) or new row
     const uraian = itemData ? itemData.uraian : '';
-    const vol1 = itemData ? itemData.volume1 : '0';
+    const vol1 = itemData ? itemData.volume1 : '';
     const sat1 = itemData ? itemData.satuan1_id : '';
-    const vol2 = itemData ? itemData.volume2 : '0';
+    const vol2 = itemData ? itemData.volume2 : '';
     const sat2 = itemData ? itemData.satuan2_id : '';
-    const vol3 = itemData ? itemData.volume3 : '0';
+    const vol3 = itemData ? itemData.volume3 : '';
     const sat3 = itemData ? itemData.satuan3_id : '';
     const harga = itemData ? itemData.harga_satuan : '';
 
@@ -2006,7 +2058,7 @@ export function renderRevisiKakPage(path, userRole) {
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                <input type="number" min="0" value="${vol1}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+                <input type="number" min="0" value="${vol1}" placeholder="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
@@ -2016,7 +2068,7 @@ export function renderRevisiKakPage(path, userRole) {
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                <input type="number" min="0" value="${vol2}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+                <input type="number" min="0" value="${vol2}" placeholder="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
@@ -2026,7 +2078,7 @@ export function renderRevisiKakPage(path, userRole) {
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-                <input type="number" min="0" value="${vol3}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+                <input type="number" min="0" value="${vol3}" placeholder="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
@@ -2206,9 +2258,9 @@ export function renderRevisiKakPage(path, userRole) {
   `;
 
   const createRabRow = (item, index) => {
-    const vol1 = isVerifikator && !item.volume1 ? "" : item.volume1 || "0";
-    const vol2 = isVerifikator && !item.volume2 ? "" : item.volume2 || "0";
-    const vol3 = isVerifikator && !item.volume3 ? "" : item.volume3 || "0";
+    const vol1 = isVerifikator && !item.volume1 ? "" : item.volume1 || "";
+    const vol2 = isVerifikator && !item.volume2 ? "" : item.volume2 || "";
+    const vol3 = isVerifikator && !item.volume3 ? "" : item.volume3 || "";
 
     const satuanOptions = (satuanId) => {
       if (isVerifikator) {
@@ -2246,7 +2298,7 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol1}">
+                    <input type="number" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol1}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
@@ -2256,7 +2308,7 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol2}">
+          <input type="number" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol2}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
@@ -2266,7 +2318,7 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol3}">
+          <input type="number" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol3}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>

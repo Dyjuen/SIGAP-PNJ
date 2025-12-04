@@ -1512,35 +1512,52 @@ export function renderUsulanKakPage(path, userRole) {
     }
   }
 
-  // Populate IKU dropdowns from API
-  async function populateIkuDropdowns() {
-    try {
-      const response = await apiRequest("/master/iku");
-      const ikuData = response.data;
+  let cachedIkuData = null;
 
-      const ikuSelects = document.querySelectorAll(
-        "#ikuRenstraContainer select"
-      );
-      ikuSelects.forEach((select) => {
-        const currentValue = select.value;
-        const isPlaceholder =
-          select.options.length > 0 && select.options[0].value === "";
-        while (select.options.length > (isPlaceholder ? 1 : 0)) {
-          select.remove(isPlaceholder ? 1 : 0);
-        }
+  function renderIkuOptions() {
+    if (!cachedIkuData) return;
 
-        ikuData.forEach((iku) => {
+    const ikuSelects = document.querySelectorAll("#ikuRenstraContainer select");
+    
+    // Collect all selected values from other dropdowns
+    const selectedValues = Array.from(ikuSelects)
+      .map(s => s.value)
+      .filter(v => v);
+
+    ikuSelects.forEach((select) => {
+      const currentValue = select.value;
+      
+      // Clear existing options except placeholder
+      select.innerHTML = '<option value="">Pilih IKU</option>';
+
+      cachedIkuData.forEach((iku) => {
+        // Add option if it's not selected elsewhere OR if it's the current value of this select
+        if (!selectedValues.includes(String(iku.iku_id)) || String(iku.iku_id) === currentValue) {
           const option = document.createElement("option");
           option.value = iku.iku_id;
           option.textContent = iku.nama_iku;
           select.appendChild(option);
-        });
-        select.value = currentValue;
+        }
       });
-    } catch (error) {
-      console.error("Error populating IKU dropdowns:", error);
-      showError("Gagal memuat data IKU. Silakan coba lagi.");
+      
+      // Restore value
+      select.value = currentValue;
+    });
+  }
+
+  // Populate IKU dropdowns from API
+  async function populateIkuDropdowns() {
+    if (!cachedIkuData) {
+      try {
+        const response = await apiRequest("/master/iku");
+        cachedIkuData = response.data;
+      } catch (error) {
+        console.error("Error populating IKU dropdowns:", error);
+        showError("Gagal memuat data IKU. Silakan coba lagi.");
+        return;
+      }
     }
+    renderIkuOptions();
   }
 
   // Populate Satuan dropdowns from API
@@ -2090,7 +2107,7 @@ export function renderUsulanKakPage(path, userRole) {
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
         <div class="flex gap-2 items-center">
-          <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" step="1">
+          <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" step="1" value="${target}">
           <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
         </div>
       </div>
@@ -2103,6 +2120,23 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.addEventListener('animationend', () => {
       newItem.classList.remove('new-item-animation');
     });
+  };
+
+  window.removeIkuField = function (btn) {
+    const item = btn.closest(".dynamic-field-item");
+    if (!item) return;
+
+    const container = item.parentElement;
+    if (container.querySelectorAll(".dynamic-field-item:not(.removing)").length > 1) {
+      item.classList.add("removing");
+      item.addEventListener("animationend", () => {
+        item.remove();
+        updateRemoveButtonVisibility(container);
+        renderIkuOptions();
+      }, { once: true });
+    } else {
+      showError("Minimal harus ada 1 field!");
+    }
   };
 
   window.addIkuField = function (itemData = null) {
@@ -2127,7 +2161,7 @@ export function renderUsulanKakPage(path, userRole) {
             <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
           </div>
         </div>
-        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeIkuField(this)">
           <span class="text-xl font-bold">−</span>
         </button>
       </div>
@@ -2138,10 +2172,17 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.addEventListener('animationend', () => {
       newItem.classList.remove('new-item-animation');
     });
+    
+    const selectElement = newItem.querySelector('select');
+    selectElement.addEventListener('change', () => {
+        renderIkuOptions();
+    });
+
     // Set selected IKU after the element is created and dropdowns are populated
     populateIkuDropdowns().then(() => {
       if (ikuId) {
-        newItem.querySelector('select').value = ikuId;
+        selectElement.value = ikuId;
+        renderIkuOptions();
       }
     });
   };
@@ -2156,11 +2197,11 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.className = 'rab-item dynamic-field-item new-item-animation mb-8 p-6 rounded-lg';
 
     const uraian = itemData ? itemData.uraian : '';
-    const vol1 = itemData ? itemData.volume1 : '0';
+    const vol1 = itemData ? itemData.volume1 : '';
     const sat1 = itemData ? itemData.satuan1_id : '';
-    const vol2 = itemData ? itemData.volume2 : '0';
+    const vol2 = itemData ? itemData.volume2 : '';
     const sat2 = itemData ? itemData.satuan2_id : '';
-    const vol3 = itemData ? itemData.volume3 : '0';
+    const vol3 = itemData ? itemData.volume3 : '';
     const sat3 = itemData ? itemData.satuan3_id : '';
     const harga = itemData ? itemData.harga_satuan : '';
     const inputStyle = `style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`;
@@ -2173,7 +2214,7 @@ export function renderUsulanKakPage(path, userRole) {
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                <input type="number" min="0" value="${vol1}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+                <input type="number" min="0" value="${vol1}" placeholder="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
@@ -2183,7 +2224,7 @@ export function renderUsulanKakPage(path, userRole) {
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-                <input type="number" min="0" value="${vol2}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+                <input type="number" min="0" value="${vol2}" placeholder="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
@@ -2193,7 +2234,7 @@ export function renderUsulanKakPage(path, userRole) {
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-                <input type="number" min="0" value="${vol3}" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
+                <input type="number" min="0" value="${vol3}" placeholder="0" class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${inputStyle}>
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
