@@ -2,24 +2,20 @@
 
 namespace App\Models;
 
-use App\Core\Database;
+use App\Core\Model;
+use PDO;
 
-class User
+class User extends Model
 {
-    private $db;
-
-    public function __construct()
-    {
-        // Menggunakan instance Database Singleton dari Core
-        $this->db = Database::getInstance();
-    }
+    protected $table = 'm_users';
+    protected $primaryKey = 'user_id';
 
     /**
      * Find user by ID
      */
     public function findById($userId)
     {
-        $this->db->query("
+        $stmt = $this->db->prepare("
             SELECT 
                 user_id, 
                 username, 
@@ -27,10 +23,10 @@ class User
                 email, 
                 created_at
             FROM m_users 
-            WHERE user_id = :user_id
+            WHERE user_id = ?
         ");
-        $this->db->bind(':user_id', $userId);
-        return $this->db->single();
+        $stmt->execute([$userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -38,7 +34,7 @@ class User
      */
     public function findByUsername($username)
     {
-        $this->db->query("
+        $stmt = $this->db->prepare("
             SELECT 
                 u.user_id, 
                 u.username, 
@@ -52,10 +48,10 @@ class User
             LEFT JOIN 
                 m_roles r ON u.role_id = r.role_id
             WHERE 
-                u.username = :username
+                u.username = ?
         ");
-        $this->db->bind(':username', $username);
-        return $this->db->single();
+        $stmt->execute([$username]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -63,7 +59,7 @@ class User
      */
     public function findByEmail($email)
     {
-        $this->db->query("
+        $stmt = $this->db->prepare("
             SELECT 
                 u.user_id, 
                 u.username, 
@@ -77,10 +73,10 @@ class User
             LEFT JOIN 
                 m_roles r ON u.role_id = r.role_id
             WHERE 
-                u.email = :email
+                u.email = ?
         ");
-        $this->db->bind(':email', $email);
-        return $this->db->single();
+        $stmt->execute([$email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -88,7 +84,7 @@ class User
      */
     public function findByUsernameAndEmail($username, $email)
     {
-        $this->db->query("
+        $stmt = $this->db->prepare("
             SELECT 
                 u.user_id, 
                 u.username, 
@@ -97,11 +93,10 @@ class User
             FROM 
                 m_users u
             WHERE 
-                u.username = :username AND u.email = :email
+                u.username = ? AND u.email = ?
         ");
-        $this->db->bind(':username', $username);
-        $this->db->bind(':email', $email);
-        return $this->db->single();
+        $stmt->execute([$username, $email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -109,7 +104,7 @@ class User
      */
     public function getUserWithRoles($userId)
     {
-        $this->db->query("
+        $stmt = $this->db->prepare("
             SELECT 
                 u.user_id, 
                 u.username, 
@@ -122,10 +117,10 @@ class User
             LEFT JOIN 
                 m_roles r ON u.role_id = r.role_id
             WHERE 
-                u.user_id = :user_id
+                u.user_id = ?
         ");
-        $this->db->bind(':user_id', $userId);
-        $user = $this->db->single();
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         // Convert roles dari string ke array
         if ($user && $user['roles']) {
@@ -153,20 +148,20 @@ class User
         // Hash password
         $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
         
-        $this->db->query("
+        $stmt = $this->db->prepare("
             INSERT INTO m_users 
             (username, password_hash, nama_lengkap, email, role_id, created_at) 
             VALUES 
-            (:username, :password_hash, :nama_lengkap, :email, :role_id, NOW())
+            (?, ?, ?, ?, ?, NOW())
         ");
         
-        $this->db->bind(':username', $data['username']);
-        $this->db->bind(':password_hash', $hashedPassword);
-        $this->db->bind(':nama_lengkap', $data['nama_lengkap']);
-        $this->db->bind(':email', $data['email']);
-        $this->db->bind(':role_id', $data['role_id']);
-        
-        $this->db->execute();
+        $stmt->execute([
+            $data['username'],
+            $hashedPassword,
+            $data['nama_lengkap'],
+            $data['email'],
+            $data['role_id']
+        ]);
         
         return $this->db->lastInsertId();
     }
@@ -176,19 +171,19 @@ class User
      */
     public function updateProfile($userId, $data)
     {
-        $this->db->query("
+        $stmt = $this->db->prepare("
             UPDATE m_users 
             SET 
-                nama_lengkap = :nama_lengkap,
-                email = :email
-            WHERE user_id = :user_id
+                nama_lengkap = ?,
+                email = ?
+            WHERE user_id = ?
         ");
         
-        $this->db->bind(':nama_lengkap', $data['nama_lengkap']);
-        $this->db->bind(':email', $data['email']);
-        $this->db->bind(':user_id', $userId);
-        
-        return $this->db->execute();
+        return $stmt->execute([
+            $data['nama_lengkap'],
+            $data['email'],
+            $userId
+        ]);
     }
 
     /**
@@ -198,16 +193,16 @@ class User
     {
         $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
         
-        $this->db->query("
+        $stmt = $this->db->prepare("
             UPDATE m_users 
-            SET password_hash = :password_hash 
-            WHERE user_id = :user_id
+            SET password_hash = ? 
+            WHERE user_id = ?
         ");
         
-        $this->db->bind(':password_hash', $hashedPassword);
-        $this->db->bind(':user_id', $userId);
-        
-        return $this->db->execute();
+        return $stmt->execute([
+            $hashedPassword,
+            $userId
+        ]);
     }
 
     /**
@@ -216,23 +211,22 @@ class User
     public function usernameExists($username, $excludeUserId = null)
     {
         if ($excludeUserId) {
-            $this->db->query("
+            $stmt = $this->db->prepare("
                 SELECT COUNT(*) as total 
                 FROM m_users 
-                WHERE username = :username AND user_id != :user_id
+                WHERE username = ? AND user_id != ?
             ");
-            $this->db->bind(':username', $username);
-            $this->db->bind(':user_id', $excludeUserId);
+            $stmt->execute([$username, $excludeUserId]);
         } else {
-            $this->db->query("
+            $stmt = $this->db->prepare("
                 SELECT COUNT(*) as total 
                 FROM m_users 
-                WHERE username = :username
+                WHERE username = ?
             ");
-            $this->db->bind(':username', $username);
+            $stmt->execute([$username]);
         }
         
-        $result = $this->db->single();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'] > 0;
     }
 
@@ -242,23 +236,22 @@ class User
     public function emailExists($email, $excludeUserId = null)
     {
         if ($excludeUserId) {
-            $this->db->query("
+            $stmt = $this->db->prepare("
                 SELECT COUNT(*) as total 
                 FROM m_users 
-                WHERE email = :email AND user_id != :user_id
+                WHERE email = ? AND user_id != ?
             ");
-            $this->db->bind(':email', $email);
-            $this->db->bind(':user_id', $excludeUserId);
+            $stmt->execute([$email, $excludeUserId]);
         } else {
-            $this->db->query("
+            $stmt = $this->db->prepare("
                 SELECT COUNT(*) as total 
                 FROM m_users 
-                WHERE email = :email
+                WHERE email = ?
             ");
-            $this->db->bind(':email', $email);
+            $stmt->execute([$email]);
         }
         
-        $result = $this->db->single();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'] > 0;
     }
 
@@ -281,8 +274,10 @@ class User
                 m_roles r ON u.role_id = r.role_id
         ";
 
+        $params = [];
         if ($excludeUserId) {
-            $sql .= " WHERE u.user_id != :exclude_user_id";
+            $sql .= " WHERE u.user_id != ?";
+            $params[] = $excludeUserId;
         }
 
         $sql .= "
@@ -290,13 +285,9 @@ class User
                 u.created_at DESC
         ";
         
-        $this->db->query($sql);
-
-        if ($excludeUserId) {
-            $this->db->bind(':exclude_user_id', $excludeUserId);
-        }
-        
-        $users = $this->db->resultSet();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Convert role dari string ke array untuk setiap user
         foreach ($users as &$user) {
@@ -311,9 +302,8 @@ class User
      */
     public function deleteUser($userId)
     {
-        $this->db->query("DELETE FROM m_users WHERE user_id = :user_id");
-        $this->db->bind(':user_id', $userId);
-        return $this->db->execute();
+        $stmt = $this->db->prepare("DELETE FROM m_users WHERE user_id = ?");
+        return $stmt->execute([$userId]);
     }
 
     /**
@@ -321,16 +311,16 @@ class User
      */
     public function updateUserRole($userId, $roleId)
     {
-        $this->db->query("
+        $stmt = $this->db->prepare("
             UPDATE m_users 
-            SET role_id = :role_id 
-            WHERE user_id = :user_id
+            SET role_id = ? 
+            WHERE user_id = ?
         ");
         
-        $this->db->bind(':role_id', $roleId);
-        $this->db->bind(':user_id', $userId);
-        
-        return $this->db->execute();
+        return $stmt->execute([
+            $roleId,
+            $userId
+        ]);
     }
 
     /**
@@ -338,7 +328,7 @@ class User
      */
     public function findByRoleId($roleId)
     {
-        $this->db->query("
+        $stmt = $this->db->prepare("
             SELECT
                 user_id,
                 username,
@@ -348,10 +338,10 @@ class User
             FROM
                 m_users
             WHERE
-                role_id = :role_id
+                role_id = ?
         ");
-        $this->db->bind(':role_id', $roleId);
-        return $this->db->resultSet();
+        $stmt->execute([$roleId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -364,7 +354,7 @@ class User
         $verifikatorRoleId = 2;
         $username = "verifikator" . $tipeKegiatanId;
 
-        $this->db->query("
+        $stmt = $this->db->prepare("
             SELECT
                 user_id,
                 username,
@@ -373,10 +363,9 @@ class User
             FROM
                 m_users
             WHERE
-                username = :username AND role_id = :role_id
+                username = ? AND role_id = ?
         ");
-        $this->db->bind(':username', $username);
-        $this->db->bind(':role_id', $verifikatorRoleId);
-        return $this->db->single();
+        $stmt->execute([$username, $verifikatorRoleId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
