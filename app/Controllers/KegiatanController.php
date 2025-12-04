@@ -220,8 +220,17 @@ class KegiatanController
 
             // Restructure data for frontend and add debug info
             $anggaranItems = $kegiatan['anggaran_items'] ?? [];
+            
+            // Fetch attachments (lampiran) associated with the budget items
+            $anggaranIds = array_map(fn($item) => $item['anggaran_id'], $anggaranItems);
+            $lampiran = [];
+            if (!empty($anggaranIds)) {
+                $lampiran = $this->lampiranModel->findByAnggaranIds($anggaranIds);
+            }
+
             $lpjData = [
                 'anggaran_items' => $anggaranItems,
+                'lampiran' => $lampiran,
                 'status' => !empty($kegiatan['lpj_submitted_at']) ? 'submitted' : 'new'
             ];
             unset($kegiatan['anggaran_items']);
@@ -231,7 +240,8 @@ class KegiatanController
                 'lpj' => $lpjData,
                 '_debug' => [
                     'kak_id_queried' => $kegiatan['kak_id'],
-                    'anggaran_items_found' => count($anggaranItems)
+                    'anggaran_items_found' => count($anggaranItems),
+                    'lampiran_found' => count($lampiran)
                 ]
             ];
 

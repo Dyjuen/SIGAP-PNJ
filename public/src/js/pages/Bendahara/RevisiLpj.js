@@ -491,7 +491,7 @@ export function renderRevisiLpjPage(path, userRole) {
         color: white;
         border: none;
         border-radius: 8px;
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 1.25rem;
         font-weight: 600;
         transition: all 0.3s ease;
         position: relative; /* Needed for pseudo-element */
@@ -1062,42 +1062,71 @@ export function renderRevisiLpjPage(path, userRole) {
 
   function calculateRevisiLpjTotals() {
     let grandTotal = 0;
-    
-    document.querySelectorAll('.category-section').forEach(section => {
-        let subtotal = 0;
-        section.querySelectorAll('.border-hover-draw').forEach(row => {
-            const realisasiGrid = row.querySelector('.realisasi-grid');
-            if (!realisasiGrid) return;
 
-            const vol1Input = realisasiGrid.querySelector('input[data-field="realisasi_volume1"]');
-            const vol2Input = realisasiGrid.querySelector('input[data-field="realisasi_volume2"]');
-            const vol3Input = realisasiGrid.querySelector('input[data-field="realisasi_volume3"]');
-            const hargaInput = realisasiGrid.querySelector('input[data-field="realisasi_harga_satuan"]');
+    document.querySelectorAll(".category-section").forEach((section) => {
+      let subtotal = 0;
+      section.querySelectorAll(".border-hover-draw").forEach((row) => {
+        const realisasiGrid = row.querySelector(".realisasi-grid");
+        if (!realisasiGrid) return;
 
-            const v1 = parseFloat(vol1Input?.value) || 0;
-            const v2 = (vol2Input?.value === "" || vol2Input?.value === null || vol2Input?.value === "0") ? 1 : parseFloat(vol2Input.value);
-            const v3 = (vol3Input?.value === "" || vol3Input?.value === null || vol3Input?.value === "0") ? 1 : parseFloat(vol3Input.value);
-            
-            let harga = 0;
-            if (typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(hargaInput)) {
-                harga = AutoNumeric.getAutoNumericElement(hargaInput).getNumber();
-            } else {
-                harga = parseFloat(hargaInput?.value.replace(/[^0-9]/g, '')) || 0;
-            }
+        const vol1Input = realisasiGrid.querySelector(
+          'input[data-field="realisasi_volume1"]'
+        );
+        const vol2Input = realisasiGrid.querySelector(
+          'input[data-field="realisasi_volume2"]'
+        );
+        const vol3Input = realisasiGrid.querySelector(
+          'input[data-field="realisasi_volume3"]'
+        );
+        const hargaInput = realisasiGrid.querySelector(
+          'input[data-field="realisasi_harga_satuan"]'
+        );
 
-            subtotal += (v1 * v2 * v3 * harga);
-        });
-        
-        const subtotalEl = section.querySelector('.subtotal-display');
-        if (subtotalEl) {
-            subtotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal);
+        const v1 = parseFloat(vol1Input?.value) || 0;
+        const v2 =
+          vol2Input?.value === "" ||
+          vol2Input?.value === null ||
+          vol2Input?.value === "0"
+            ? 1
+            : parseFloat(vol2Input.value);
+        const v3 =
+          vol3Input?.value === "" ||
+          vol3Input?.value === null ||
+          vol3Input?.value === "0"
+            ? 1
+            : parseFloat(vol3Input.value);
+
+        let harga = 0;
+        if (
+          typeof AutoNumeric !== "undefined" &&
+          AutoNumeric.getAutoNumericElement(hargaInput)
+        ) {
+          harga = AutoNumeric.getAutoNumericElement(hargaInput).getNumber();
+        } else {
+          harga = parseFloat(hargaInput?.value.replace(/[^0-9]/g, "")) || 0;
         }
-        grandTotal += subtotal;
+
+        subtotal += v1 * v2 * v3 * harga;
+      });
+
+      const subtotalEl = section.querySelector(".subtotal-display");
+      if (subtotalEl) {
+        subtotalEl.textContent = new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          minimumFractionDigits: 0,
+        }).format(subtotal);
+      }
+      grandTotal += subtotal;
     });
 
-    const grandTotalEl = document.getElementById('grand-total-lpj');
+    const grandTotalEl = document.getElementById("grand-total-lpj");
     if (grandTotalEl) {
-        grandTotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(grandTotal);
+      grandTotalEl.textContent = new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+      }).format(grandTotal);
     }
   }
 
@@ -1121,11 +1150,11 @@ export function renderRevisiLpjPage(path, userRole) {
 
       updateBendaharaButtonVisibility(kegiatan.lpj_status);
 
-      document.getElementById("kegiatan-title").textContent = "Nama Kegiatan: " +
-        kegiatan.nama_kegiatan;
+      document.getElementById("kegiatan-title").textContent =
+        "Nama Kegiatan: " + kegiatan.nama_kegiatan;
 
-      document.getElementById("pengusul-name").textContent = "Pengusul: " +
-        kegiatan.pelaksana_manual;
+      document.getElementById("pengusul-name").textContent =
+        "Pengusul: " + kegiatan.pelaksana_manual;
 
       const groupedAnggaran = anggaran.reduce((acc, item) => {
         const category = item.nama_kategori_belanja || "Lain-lain";
@@ -1149,9 +1178,13 @@ export function renderRevisiLpjPage(path, userRole) {
 
       for (const category in groupedAnggaran) {
         const categorySection = document.createElement("div");
-        const isLastCategory = Object.keys(groupedAnggaran).indexOf(category) === Object.keys(groupedAnggaran).length - 1;
-        categorySection.className = `category-section mb-8 ${!isLastCategory ? 'spectacular-divider' : ''}`;
-        
+        const isLastCategory =
+          Object.keys(groupedAnggaran).indexOf(category) ===
+          Object.keys(groupedAnggaran).length - 1;
+        categorySection.className = `category-section mb-8 ${
+          !isLastCategory ? "spectacular-divider" : ""
+        }`;
+
         categorySection.innerHTML = `
             <div class="flex justify-between items-center mb-6">
                 <h4 class="text-xl font-semibold text-gray-700">${category}</h4>
@@ -1176,8 +1209,8 @@ export function renderRevisiLpjPage(path, userRole) {
       }
 
       // Grand Total
-      const totalSection = document.createElement('div');
-      totalSection.className = 'spectacular-total-card';
+      const totalSection = document.createElement("div");
+      totalSection.className = "spectacular-total-card";
       totalSection.innerHTML = `
         <div class="total-label">
             <i class="ti ti-receipt-2"></i>
@@ -1191,31 +1224,40 @@ export function renderRevisiLpjPage(path, userRole) {
       updateAllCommentIcons();
 
       // Initialize AutoNumeric
-      if (typeof AutoNumeric !== 'undefined') {
-          const numericOptions = {
-              currencySymbol: 'Rp ',
-              digitGroupSeparator: '.',
-              decimalCharacter: ',',
-              decimalPlaces: 0,
-              minimumValue: '0',
-              readOnly: !isPengusul // Readonly if not pengusul
-          };
+      if (typeof AutoNumeric !== "undefined") {
+        const numericOptions = {
+          currencySymbol: "Rp ",
+          digitGroupSeparator: ".",
+          decimalCharacter: ",",
+          decimalPlaces: 0,
+          minimumValue: "0",
+          readOnly: !isPengusul, // Readonly if not pengusul
+        };
 
-          anggaranContainer.querySelectorAll('.autonumeric-currency').forEach(el => {
-              const rawValue = el.dataset.rawValue;
-              const anElement = new AutoNumeric(el, numericOptions);
-              if (rawValue !== undefined && rawValue !== null && rawValue !== "") {
-                  anElement.set(rawValue);
-              }
-              el.addEventListener('autoNumeric:rawValueModified', calculateRevisiLpjTotals);
+        anggaranContainer
+          .querySelectorAll(".autonumeric-currency")
+          .forEach((el) => {
+            const rawValue = el.dataset.rawValue;
+            const anElement = new AutoNumeric(el, numericOptions);
+            if (
+              rawValue !== undefined &&
+              rawValue !== null &&
+              rawValue !== ""
+            ) {
+              anElement.set(rawValue);
+            }
+            el.addEventListener(
+              "autoNumeric:rawValueModified",
+              calculateRevisiLpjTotals
+            );
           });
       }
 
       // Event listener for volume inputs
-      anggaranContainer.addEventListener('input', (e) => {
-          if (e.target.matches('input[type="number"]')) {
-              calculateRevisiLpjTotals();
-          }
+      anggaranContainer.addEventListener("input", (e) => {
+        if (e.target.matches('input[type="number"]')) {
+          calculateRevisiLpjTotals();
+        }
       });
 
       // Initial calculation
@@ -1267,7 +1309,10 @@ export function renderRevisiLpjPage(path, userRole) {
       ? `style="border-color: #E5E7EB; background: #FFFFFF;"`
       : readOnlyStyle;
 
-    const realisasiHargaVal = item.realisasi_harga_satuan !== undefined ? item.realisasi_harga_satuan : (item.harga_satuan || 0);
+    const realisasiHargaVal =
+      item.realisasi_harga_satuan !== undefined
+        ? item.realisasi_harga_satuan
+        : item.harga_satuan || 0;
 
     const lampiranListHTML =
       lampiran.length > 0
@@ -1287,8 +1332,8 @@ export function renderRevisiLpjPage(path, userRole) {
                      <a href="javascript:void(0);" 
                         data-lampiran-id="${file.lampiran_id}" 
                         class="text-blue-600 hover:underline text-sm view-file-btn">${
-                file.nama_file_asli
-              }</a>
+                          file.nama_file_asli
+                        }</a>
 
                    </div>
 
@@ -1306,7 +1351,7 @@ export function renderRevisiLpjPage(path, userRole) {
                               file.nama_file_asli
                             }" title="Komentar">
 
-                              <i class="ti ti-message-circle-2"></i>
+                                <i class="ti ti-message-circle-2">&#xeaed;</i>
 
                             </button>`
                           : ""
@@ -1316,7 +1361,7 @@ export function renderRevisiLpjPage(path, userRole) {
                         isPengusul
                           ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
 
-                                                                      <i class="ti ti-trash"></i>
+                                                                      <i class="ti ti-trash">&#xeb41;</i>
                             </button>`
                           : ""
                       }
@@ -1333,7 +1378,9 @@ export function renderRevisiLpjPage(path, userRole) {
 
     return `
 
-        <div class="mb-4 p-4 rounded-xl border-hover-draw" data-anggaran-id="${item.anggaran_id}">
+        <div class="mb-4 p-4 rounded-xl border-hover-draw" data-anggaran-id="${
+          item.anggaran_id
+        }">
 
           
 
@@ -1495,11 +1542,11 @@ export function renderRevisiLpjPage(path, userRole) {
 
                           <input type="file" class="input-add-lampiran" data-anggaran-id="${item.anggaran_id}" multiple style="display: none;" />
 
-                          <button type="button" class="btn-add-lampiran btn btn-sm btn-outline-primary" data-anggaran-id="${item.anggaran_id}">
+                                                    <button type="button" class="btn-add-lampiran btn btn-sm btn-outline-primary" data-anggaran-id="${item.anggaran_id}">
 
-                            <i class="ti ti-plus"></i> Tambah File
+                                                      <i class="ti ti-script-plus">&#xf2d8;</i> Tambah File
 
-                          </button>
+                                                    </button>
 
                         </div>`
                           : ""
@@ -1720,7 +1767,7 @@ export function renderRevisiLpjPage(path, userRole) {
             "LPJ berhasil disetujui. Status LPJ adalah 'Setor Fisik'.",
             "success"
           );
-          window.location.reload(); // Reload page to update buttons and status
+          window.location.href = "/bendahara/kegiatan/lpj"; // Reload page to update buttons and status
         } catch (error) {
           Swal.fire("Error", `Gagal menyetujui LPJ: ${error.message}`, "error");
         }
@@ -1797,32 +1844,36 @@ export function renderRevisiLpjPage(path, userRole) {
     });
 
     try {
-      const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+      const token =
+        localStorage.getItem("auth_token") ||
+        sessionStorage.getItem("auth_token");
       const response = await fetch(`/api/lampiran/${lampiranId}/stream`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || `Gagal mengambil file (status: ${response.status})`);
+        throw new Error(
+          errorData.message ||
+            `Gagal mengambil file (status: ${response.status})`
+        );
       }
 
       const blob = await response.blob();
       const fileUrl = URL.createObjectURL(blob);
-      
+
       Swal.close();
-      window.open(fileUrl, '_blank');
-      
+      window.open(fileUrl, "_blank");
+
       // Revoke the object URL after a short delay to allow the new tab to load
       setTimeout(() => URL.revokeObjectURL(fileUrl), 1000);
-
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Gagal Membuka File',
-        text: error.message
+        icon: "error",
+        title: "Gagal Membuka File",
+        text: error.message,
       });
     }
   }

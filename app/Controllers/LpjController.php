@@ -108,43 +108,42 @@ class LpjController extends Controller
                 // Update the t_kak_anggaran table
                 $this->kakAnggaranModel->update($anggaranId, $updateData);
 
-                            // Handle file upload if exists for this item
-                            if (isset($files['name'][$anggaranId]) && is_array($files['name'][$anggaranId])) {
-                                foreach ($files['name'][$anggaranId] as $fileIndex => $fileName) {
-                                    if ($files['error'][$anggaranId][$fileIndex] === UPLOAD_ERR_OK) {
-                                        $fileToUpload = [
-                                            'name' => $files['name'][$anggaranId][$fileIndex],
-                                            'type' => $files['type'][$anggaranId][$fileIndex],
-                                            'tmp_name' => $files['tmp_name'][$anggaranId][$fileIndex],
-                                            'error' => $files['error'][$anggaranId][$fileIndex],
-                                            'size' => $files['size'][$anggaranId][$fileIndex],
-                                        ];
-                                        
-                                        $uploadResult = $uploader->upload($fileToUpload);
-                                        if (!$uploadResult['success']) {
-                                            throw new \Exception("Gagal mengupload file bukti '{$fileName}' untuk item anggaran ID {$anggaranId}: " . $uploadResult['message']);
-                                        }
-                                        $uploadedFiles[] = $uploadResult['file_path'];
-                
-                                                                // Create a record in t_kegiatan_lampiran
-                                                                error_log("Attempting to create lampiran record for anggaran_id {$anggaranId}: " . json_encode([
-                                                                    'anggaran_id' => $anggaranId,
-                                                                    'nama_file_asli' => $uploadResult['original_name'],
-                                                                    'path_file_disimpan' => $uploadResult['file_path'],
-                                                                    'uploader_user_id' => $this->user['user_id'],
-                                                                    'catatan' => 'Bukti LPJ untuk item anggaran.',
-                                                                ]));
-                                                                $this->kegiatanLampiranModel->create([                                            'anggaran_id' => $anggaranId,
-                                            'nama_file_asli' => $uploadResult['original_name'],
-                                            'path_file_disimpan' => $uploadResult['file_path'],
-                                            'uploader_user_id' => $this->user['user_id'],
-                                            'catatan' => 'Bukti LPJ untuk item anggaran.',
-                                        ]);
-                                    }
-                                }
-                            }            }
+                            // The file upload logic will be handled in a separate loop below
+            }
 
-            // 3. Update Kegiatan status
+            // 3. Process file uploads
+            if (!empty($files)) {
+                foreach ($files['name'] as $anggaranId => $fileList) {
+                    if (!is_array($fileList)) continue;
+                    foreach ($fileList as $fileIndex => $fileName) {
+                        if (isset($files['error'][$anggaranId][$fileIndex]) && $files['error'][$anggaranId][$fileIndex] === UPLOAD_ERR_OK) {
+                            $fileToUpload = [
+                                'name' => $fileName,
+                                'type' => $files['type'][$anggaranId][$fileIndex],
+                                'tmp_name' => $files['tmp_name'][$anggaranId][$fileIndex],
+                                'error' => $files['error'][$anggaranId][$fileIndex],
+                                'size' => $files['size'][$anggaranId][$fileIndex],
+                            ];
+                            
+                            $uploadResult = $uploader->upload($fileToUpload);
+                            if (!$uploadResult['success']) {
+                                throw new \Exception("Gagal mengupload file '{$fileName}': " . $uploadResult['message']);
+                            }
+                            $uploadedFiles[] = $uploadResult['file_path'];
+    
+                            $this->kegiatanLampiranModel->create([
+                                'anggaran_id' => $anggaranId,
+                                'nama_file_asli' => $uploadResult['original_name'],
+                                'path_file_disimpan' => $uploadResult['file_path'],
+                                'uploader_user_id' => $this->user['user_id'],
+                                'catatan' => null,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            // 4. Update Kegiatan status
             $this->kegiatanModel->update($kegiatanId, ['lpj_submitted_at' => date('Y-m-d H:i:s')]);
             
             $oldStatus = $kegiatan['status_id'];
