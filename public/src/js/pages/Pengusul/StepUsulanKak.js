@@ -578,7 +578,7 @@ export function renderUsulanKakPage(path, userRole) {
         <div class="progress-step-item flex items-center justify-center gap-3 px-4 cursor-pointer" data-main-step="1">
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300"
                style="background: #00BCD4; color: #FFFFFF; box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);">
-            1
+            <i class="ti ti-file-text" style="font-size: 1.5rem; line-height: 1;">&#xef40;</i>
           </div>
           <div class="text-left">
             <div class="progress-step-text text-sm font-semibold" style="color: #00BCD4;">Kerangka Acuan Kerja</div>
@@ -589,7 +589,7 @@ export function renderUsulanKakPage(path, userRole) {
         <div class="progress-step-item flex items-center justify-center gap-3 px-4 cursor-pointer" data-main-step="2">
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300"
                style="background: #E5E7EB; color: #6B7280;">
-            2
+            <i class="ti ti-chart-bar" style="font-size: 1.5rem; line-height: 1;">&#xea59;</i>
           </div>
           <div class="text-left">
             <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Indikator Kinerja Utama</div>
@@ -600,7 +600,7 @@ export function renderUsulanKakPage(path, userRole) {
         <div class="progress-step-item flex items-center justify-center gap-3 px-4 cursor-pointer" data-main-step="3">
           <div class="progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300"
                style="background: #E5E7EB; color: #6B7280;">
-            3
+            <i class="ti ti-currency-dollar" style="font-size: 1.5rem; line-height: 1;">&#xeb84;</i>
           </div>
           <div class="text-left">
             <div class="progress-step-text text-sm font-semibold" style="color: #6B7280;">Rencana Anggaran Biaya</div>
@@ -1382,7 +1382,7 @@ export function renderUsulanKakPage(path, userRole) {
         circle.style.background = "#00BCD4";
         circle.style.color = "#FFFFFF";
         circle.style.boxShadow = "0 4px 12px rgba(0, 188, 212, 0.4)";
-        circle.innerHTML = `${stepNum}`;
+        circle.innerHTML = `<i class="${iconsForSteps[stepNum].class}" style="font-size: 1.5rem; line-height: 1;">${iconsForSteps[stepNum].entity}</i>`;
         text.style.color = "#00BCD4";
         if (subtext) subtext.style.color = "#00BCD4";
       } else {
@@ -1390,7 +1390,7 @@ export function renderUsulanKakPage(path, userRole) {
         circle.style.background = "#E5E7EB";
         circle.style.color = "#6B7280";
         circle.style.boxShadow = "none";
-        circle.innerHTML = `${stepNum}`;
+        circle.innerHTML = `<i class="${iconsForSteps[stepNum].class}" style="font-size: 1.5rem; line-height: 1;">${iconsForSteps[stepNum].entity}</i>`;
         text.style.color = "#6B7280";
         if (subtext) subtext.style.color = "#9CA3AF";
       }
@@ -2089,7 +2089,10 @@ export function renderUsulanKakPage(path, userRole) {
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input" value="${target}">
+        <div class="flex gap-2 items-center">
+          <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" step="1">
+          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+        </div>
       </div>
       <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>

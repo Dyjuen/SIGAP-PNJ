@@ -1881,7 +1881,10 @@ export function renderRevisiKakPage(path, userRole) {
       </div>
       <div class='w-full'>
         <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-        <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input">
+        <div class="flex gap-2 items-center">
+          <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" step="1">
+          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+        </div>
       </div>
       <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
@@ -2156,9 +2159,10 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.persentase_target || ""
-  }">
+        <div class="flex gap-2 items-center">
+          <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input" min="0" max="100" step="1" style="${inputStyle}" ${inputAttr} value="${item.persentase_target || ""}">
+          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+        </div>
         </div>
       </div>
       <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Indikator Kinerja #${
