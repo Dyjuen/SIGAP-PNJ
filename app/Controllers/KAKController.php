@@ -1173,6 +1173,11 @@ class KAKController
             $tahunAnggaran = $input['tahun_anggaran'] ?? null;
             $totalPagu = $input['total_pagu'] ?? null;
 
+            // Validasi: Kode Anggaran (MAK) wajib diisi
+            if (empty($kodeAnggaran)) {
+                Response::badRequest("Kode Anggaran (MAK) wajib diisi.");
+            }
+
             $db->beginTransaction();
 
             $makId = null;

@@ -606,7 +606,7 @@ export function renderDashboardVerifikator(path, userRole) {
           title: 'Input Data Mata Anggaran',
           html:
             '<div style="text-align: left;">' +
-            '<label for="swal-input1" class="form-label">Kode MAK</label>' +
+            '<label for="swal-input1" class="form-label">Kode MAK <span class="text-danger">*</span></label>' +
             '<input id="swal-input1" class="form-control mb-3" placeholder="Contoh: MAK123">' +
             '<label for="swal-input2" class="form-label">Nama Sumber Dana</label>' +
             '<input id="swal-input2" class="form-control mb-3" placeholder="Contoh: APBN">' +
@@ -621,8 +621,13 @@ export function renderDashboardVerifikator(path, userRole) {
           cancelButtonText: 'Batal',
           confirmButtonColor: '#00BCD4',
           preConfirm: () => {
+            const kodeAnggaran = document.getElementById('swal-input1').value;
+            if (!kodeAnggaran) {
+              Swal.showValidationMessage(`Kode MAK wajib diisi.`);
+              return false;
+            }
             return {
-              kode_anggaran: document.getElementById('swal-input1').value,
+              kode_anggaran: kodeAnggaran,
               nama_sumber_dana: document.getElementById('swal-input2').value,
               tahun_anggaran: document.getElementById('swal-input3').value,
               total_pagu: document.getElementById('swal-input4').value
@@ -630,7 +635,7 @@ export function renderDashboardVerifikator(path, userRole) {
           }
         });
 
-        if (formValues && formValues.kode_anggaran) {
+        if (formValues) {
           try {
             await apiRequest(`/kak/${kakId}/approve`, {
               method: "POST",
