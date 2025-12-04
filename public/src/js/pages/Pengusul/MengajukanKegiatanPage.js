@@ -616,7 +616,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
               <th style="width: 50px; text-align: center;">
                 <input type="checkbox" class="form-check-input" id="selectAll">
               </th>
-              <th>ID KAK</th>
+              <th>No.</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Tanggal Diajukan</th>
               <th>Tanggal Disetujui</th>
@@ -840,7 +840,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       return;
     }
 
-    data.forEach((item) => {
+    data.forEach((item, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td style="text-align: center;">
@@ -850,7 +850,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         </td>
         <td>
           <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${
-            item.kak_id
+            index + 1
           }</span>
         </td>
         <td>
