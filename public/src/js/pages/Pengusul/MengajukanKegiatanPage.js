@@ -735,21 +735,41 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   }
 
   async function submitKegiatan(formData) {
-    setButtonLoading("btnSelesaiAjukan", true);
-    hideModalError();
+    ajukanModalInstance.hide();
+
+    Swal.fire({
+      title: 'Mengajukan Kegiatan...',
+      text: 'Harap tunggu, sistem sedang memproses permintaan Anda.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       await apiRequest("/kegiatan", {
         method: "POST",
         body: formData,
       });
 
-      ajukanModalInstance.hide();
       fetchApprovedTelaah(); // Refresh the list
-      showPageAlert("Kegiatan berhasil diajukan!", "success"); // Use showPageAlert for success
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Berhasil Diajukan!',
+        text: 'Kegiatan telah berhasil diajukan dan alur persetujuan dimulai.',
+        timer: 2500,
+        showConfirmButton: false
+      });
+
     } catch (error) {
-      showModalError(error.message || "Gagal mengajukan kegiatan."); // Use showPageAlert for error
-    } finally {
-      setButtonLoading("btnSelesaiAjukan", false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Mengajukan',
+        text: error.message || "Terjadi kesalahan saat mengajukan kegiatan.",
+      }).then(() => {
+        ajukanModalInstance.show(); // Re-show modal on error
+      });
     }
   }
 

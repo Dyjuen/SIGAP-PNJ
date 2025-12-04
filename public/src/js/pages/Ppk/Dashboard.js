@@ -159,8 +159,17 @@ export function renderPpkDashboardPage(path, userRole) {
     if (!confirmResult.isConfirmed) return;
 
     // ===============================
-    // Step 3: API request
+    // Step 3: Show loader and make API request
     // ===============================
+    Swal.fire({
+      title: "Menyetujui Kegiatan...",
+      text: "Harap tunggu, sistem sedang memproses persetujuan.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       await apiRequest(`/kegiatan/${kegiatanId}/approve`, {
         method: "POST",

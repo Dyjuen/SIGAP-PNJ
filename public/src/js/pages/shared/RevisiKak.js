@@ -3558,6 +3558,14 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
       cancelButtonText: "Batal",
     }).then(async (result) => {
       if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Mengirim Ulang KAK...',
+          text: 'Harap tunggu, sistem sedang memproses dan menyimpan revisi Anda.',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
         try {
           // Helpers
           const getVal = (el) => el ? el.value : "";

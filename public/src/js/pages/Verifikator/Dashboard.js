@@ -636,6 +636,14 @@ export function renderDashboardVerifikator(path, userRole) {
         });
 
         if (formValues) {
+          Swal.fire({
+            title: 'Menyetujui KAK...',
+            text: 'Harap tunggu, sistem sedang memproses persetujuan.',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
           try {
             await apiRequest(`/kak/${kakId}/approve`, {
               method: "POST",

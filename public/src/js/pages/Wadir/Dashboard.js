@@ -175,7 +175,16 @@ export function renderWadirDashboardPage(path, userRole) {
 
     if (!confirmResult.isConfirmed) return;
 
-    // --- Step 3: Send request ---
+    // --- Step 3: Show loader and send request ---
+    Swal.fire({
+      title: isApprove ? "Menyetujui Kegiatan..." : "Mengajukan Revisi...",
+      text: "Harap tunggu, sistem sedang memproses permintaan Anda.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       await apiRequest(`/kegiatan/${kegiatanId}/${action}`, {
         method: "POST",

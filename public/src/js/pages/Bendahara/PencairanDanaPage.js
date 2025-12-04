@@ -885,7 +885,16 @@ export function renderPencairanDanaPage(path, userRole) {
 
     if (!confirmResult.isConfirmed) return;
 
-    // Step 2 — Execute the request
+    // Step 2 — Show loader and execute the request
+    Swal.fire({
+      title: "Menyelesaikan Proses Pencairan...",
+      text: "Harap tunggu, sistem sedang memproses permintaan Anda.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       await apiRequest(`/kegiatan/${kegiatanId}/selesaikan-pencairan`, {
         method: "POST",
