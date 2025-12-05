@@ -1262,7 +1262,6 @@ export function renderInputLpjPage(path, userRole) {
         right: -50px;
         width: 200px;
         height: 200px;
-        background: radial-gradient(circle, rgba(0, 188, 212, 0.08) 0%, transparent 70%);
         border-radius: 50%;
         pointer-events: none;
       }
