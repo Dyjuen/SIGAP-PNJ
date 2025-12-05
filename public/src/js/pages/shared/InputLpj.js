@@ -1393,9 +1393,9 @@ export function renderInputLpjPage(path, userRole) {
       <div class="flex justify-center mb-8">
         <div class="flex items-center gap-3 px-6 py-4 rounded-full" style="background: rgba(0, 188, 212, 0.1);">
           <div id="pageIcon" class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg" style="background: #00BCD4;">
-            <i class="ti ti-${
+            <span class="ti tabler-${
               isViewOnly || isBendahara ? "eye" : "file-pencil"
-            }"></i>
+            } text-2xl"></span>
           </div>
           <span id="pageTitle" class="font-semibold text-base" style="color: #00BCD4;">
             ${isViewOnly ? "Detail" : "Input"} Laporan Pertanggungjawaban
