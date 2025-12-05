@@ -631,13 +631,19 @@ export function renderBendaharaDashboardPage(path, userRole) {
           kegiatan.current_approval?.status === "Aktif";
 
       if (isLpjVerification) {
-        statusBadge =
-          '<span class="badge bg-label-info" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Verifikasi LPJ</span>';
-        actionButtons = `
+        if (!kegiatan.lpj_submitted_at) {
+          statusBadge =
+            '<span class="badge bg-label-secondary" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu Penyerahan LPJ</span>';
+          actionButtons = `<span class="text-muted" style="font-size: 0.875rem;"></span>`;
+        } else {
+          statusBadge =
+            '<span class="badge bg-label-info" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Verifikasi LPJ</span>';
+          actionButtons = `
           <a href="/bendahara/kegiatan/lpj/revisi/${kegiatan.kegiatan_id}" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);" title="Verifikasi LPJ">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 15l2 2l4 -4" /></svg>
           </a>
         `;
+        }
       } else if (isDisbursed) {
         statusBadge =
           '<span class="badge bg-label-success" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Dicairkan</span>';
@@ -798,11 +804,12 @@ export function renderBendaharaDashboardPage(path, userRole) {
       }
     });
 
-    // LPJ submitted but not yet verified: Bendahara-LPJ step is Active
+    // LPJ submitted but not yet verified: Bendahara-LPJ step is Active AND lpj_submitted_at is NOT NULL
     const lpjCount = allData.filter((k) => {
       return (
         k.current_approval?.approval_level === "Bendahara-LPJ" &&
-        k.current_approval?.status === "Aktif"
+        k.current_approval?.status === "Aktif" &&
+        k.lpj_submitted_at !== null
       );
     }).length;
 
