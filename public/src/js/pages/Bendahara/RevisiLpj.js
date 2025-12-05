@@ -947,7 +947,7 @@ export function renderRevisiLpjPage(path, userRole) {
       <!-- Action Buttons (Fixed at bottom) -->
       <div class="action-buttons">
         <button class="lpj-custom-btn btn-back-style" onclick="history.back()">
-          <i class="ti ti-arrow-left"></i> Kembali
+          <i class="ti ti-arrow-left">&#xea1b;</i> Kembali
         </button>
         ${
           isBendahara
@@ -971,7 +971,7 @@ export function renderRevisiLpjPage(path, userRole) {
             ? `
           <div class="flex gap-4">
             <button class="lpj-custom-btn btn-resubmit-style" id="btn-resubmit-lpj">
-              <i class="ti ti-device-floppy"></i> Submit Ulang LPJ
+              <i class="ti ti-send">&#xeb1e;</i> Submit ulang Revisi
             </button>
           </div>
         `
