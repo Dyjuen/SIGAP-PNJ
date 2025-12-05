@@ -114,7 +114,10 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="sk-fold-cube"></div>
             <div class="sk-fold-cube"></div>
           </div>
-          <h5>LOADING...</h5>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:2rem;">
+            <div class="sk-chase sk-chase-primary"><div class="sk-chase-dot"></div><div class="sk-chase-dot"></div><div class="sk-chase-dot"></div><div class="sk-chase-dot"></div><div class="sk-chase-dot"></div><div class="sk-chase-dot"></div></div>
+            <div style="margin-top:1rem;color:#64748b;font-size:0.875rem;">Memuat...</div>
+          </div>
         `;
         const notiflixBlock = card.querySelector('.notiflix-block');
         if (notiflixBlock) {

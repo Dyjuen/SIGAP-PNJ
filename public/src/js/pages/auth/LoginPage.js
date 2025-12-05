@@ -640,7 +640,7 @@ export function renderLoginPage() {
   function setLoading(isLoading) {
     if (isLoading) {
       loginButton.disabled = true;
-      loginButton.innerHTML = '<span class="spinner"></span>Loading...';
+      loginButton.innerHTML = window.createButtonSpinner ? window.createButtonSpinner('#ffffff') + 'Masuk...' : '<span class="spinner"></span>Loading...';
       usernameInput.disabled = true;
       passwordInput.disabled = true;
       captchaInput.disabled = true;

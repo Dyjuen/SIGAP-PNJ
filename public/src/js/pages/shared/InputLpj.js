@@ -1407,7 +1407,7 @@ export function renderInputLpjPage(path, userRole) {
       <div class="main-step-content active">
         <div class="bg-white rounded-xl shadow-lg p-8">
           <div id="rabSectionsContainer">
-            <div class="text-center p-8">Loading...</div>
+            <div class="text-center p-8">${window.createLoadingState ? window.createLoadingState('Memuat data LPJ...') : 'Loading...'}</div>
           </div>
         </div>
       </div>

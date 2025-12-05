@@ -664,6 +664,10 @@ export function renderPengusulDashboardPage(path, userRole) {
         .catch(err => console.error("Error fetching stats:", err));
 
       // 2. Fetch Monitoring Kegiatan
+      const kegiatanTbody = document.getElementById("monitoringKegiatanTable");
+      if (kegiatanTbody) {
+        kegiatanTbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(3, 'Memuat data kegiatan...') : '<tr><td colspan="3" class="text-center">Loading...</td></tr>';
+      }
       fetch(`/api/dashboard/kegiatan?per_page=5&page=1${userIdParamAmp}`, { headers })
         .then(res => res.json())
         .then(data => {
@@ -680,6 +684,10 @@ export function renderPengusulDashboardPage(path, userRole) {
         });
 
       // 3. Fetch Monitoring LPJ
+      const lpjTbody = document.getElementById("monitoringLpjTable");
+      if (lpjTbody) {
+        lpjTbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(3, 'Memuat data LPJ...') : '<tr><td colspan="3" class="text-center">Loading...</td></tr>';
+      }
       fetch(`/api/dashboard/lpj?per_page=5&page=1${userIdParamAmp}`, { headers })
         .then(res => res.json())
         .then(data => {

@@ -338,8 +338,7 @@ export function renderDashboardVerifikator(path, userRole) {
   async function initializeDashboard() {
     const tbody = document.getElementById("usulanTableBody");
     if (tbody) {
-      tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align: center;">Loading...</td></tr>';
+      tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat data verifikasi...') : '<tr><td colspan="7" style="text-align: center;">Loading...</td></tr>';
     }
 
     try {

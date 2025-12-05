@@ -252,7 +252,7 @@ export function DirekturDashboardPage(path, userRole) {
           <button class="modal-close" id="closeModal">${icons.close}</button>
         </div>
         <div class="modal-body" id="modalBody">
-          <div style="text-align:center; padding:2rem; color:#cbd5e1;">Loading...</div>
+          <div style="text-align:center; padding:2rem; color:#cbd5e1;">${window.createLoadingState ? window.createLoadingState('Memuat statistik...', '#00BCD4', '40px') : 'Loading...'}</div>
         </div>
       </div>
     </div>

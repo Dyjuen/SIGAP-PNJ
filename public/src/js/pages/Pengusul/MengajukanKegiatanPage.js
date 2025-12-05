@@ -663,8 +663,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
           <div class="modal-footer">
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
             <button type="button" class="btn btn-primary" id="btnSelesaiAjukan">
-              <span class="button-text">Selesai</span>
-              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+              Selesai
             </button>
           </div>
         </div>
@@ -719,8 +718,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
 
   async function fetchApprovedTelaah() {
     const tbody = document.getElementById("kegiatanTableBody");
-    tbody.innerHTML =
-      '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+    tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat daftar kegiatan...') : '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
     try {
       const user = JSON.parse(localStorage.getItem("auth_user"));
       const userIdParam = user ? `&pengusul_user_id=${user.user_id}` : '';
@@ -821,12 +819,16 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     const button = document.getElementById(buttonId);
     if (!button) return;
 
-    const textSpan = button.querySelector(".button-text");
-    const spinner = button.querySelector(".spinner-border");
+    if (window.setButtonLoading) {
+      window.setButtonLoading(button, isLoading, 'Memproses...');
+    } else {
+      const textSpan = button.querySelector(".button-text");
+      const spinner = button.querySelector(".spinner-border");
 
-    button.disabled = isLoading;
-    if (spinner) spinner.classList.toggle("d-none", !isLoading);
-    if (textSpan) textSpan.style.opacity = isLoading ? "0" : "1";
+      button.disabled = isLoading;
+      if (spinner) spinner.classList.toggle("d-none", !isLoading);
+      if (textSpan) textSpan.style.opacity = isLoading ? "0" : "1";
+    }
   }
 
   function renderTableRows(data) {

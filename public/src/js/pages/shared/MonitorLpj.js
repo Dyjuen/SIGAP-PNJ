@@ -226,7 +226,7 @@ function initializeDaftarLpj(userRole) {
   }
 
   async function fetchData() {
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center">Loading...</td></tr>`;
+    tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat data LPJ...') : `<tr><td colspan="7" class="text-center">Loading...</td></tr>`;
     try {
       const user = JSON.parse(localStorage.getItem("auth_user"));
       const userIdParam = user ? `?user_id=${user.user_id}` : '';

@@ -2500,9 +2500,12 @@ export function renderUsulanKakPage(path, userRole) {
         return;
       }
 
-      btnSubmitRab.disabled = true;
-      btnSubmitRab.innerHTML =
-        'Submitting... <span class="spinner-border spinner-border-sm"></span>';
+      if (window.setButtonLoading) {
+        window.setButtonLoading(btnSubmitRab, true, 'Submitting...');
+      } else {
+        btnSubmitRab.disabled = true;
+        btnSubmitRab.innerHTML = 'Submitting...';
+      }
 
       try {
         const formData = collectFormData();
@@ -2554,8 +2557,12 @@ export function renderUsulanKakPage(path, userRole) {
           errorMessage += "\n" + formatErrors(error.details);
         }
         showError(errorMessage);
-        btnSubmitRab.disabled = false;
-        btnSubmitRab.innerHTML = "Submit";
+        if (window.setButtonLoading) {
+          window.setButtonLoading(btnSubmitRab, false);
+        } else {
+          btnSubmitRab.disabled = false;
+          btnSubmitRab.innerHTML = "Submit";
+        }
       }
     });
   }

@@ -1352,7 +1352,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
     if (!tbody) return;
 
     if (state.isLoading) {
-      tbody.innerHTML = `<tr><td colspan="3" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>`;
+      tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(3, 'Memuat kegiatan...') : `<tr><td colspan="3" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>`;
       return;
     }
 

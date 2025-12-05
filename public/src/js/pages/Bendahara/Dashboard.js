@@ -463,8 +463,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
   async function fetchKegiatan() {
     const tbody = document.getElementById("disbursementTableBody");
-    tbody.innerHTML =
-      '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
+    tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(8, 'Memuat data pencairan...') : '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
     try {
       const response = await apiRequest("/kegiatan");
       const kegiatanData = response.data.data

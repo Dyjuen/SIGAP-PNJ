@@ -99,7 +99,7 @@ export function renderPpkDashboardPage(path, userRole) {
 
   async function fetchKegiatan() {
       const tbody = document.getElementById("monitoringTableBody");
-      tbody.innerHTML = '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+      tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat data kegiatan...') : '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
       try {
           const response = await apiRequest('/kegiatan');
           const kegiatanData = response.data.data ? response.data.data : response.data;

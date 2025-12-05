@@ -645,8 +645,7 @@ const pageContent = `
               Batal
             </button>
             <button type="button" class="btn btn-modern-primary" id="btnSaveProfile">
-              <span class="button-text">Simpan Perubahan</span>
-              <span class="spinner-border spinner-border-modern d-none" role="status" aria-hidden="true"></span>
+              Simpan Perubahan
             </button>
           </div>
         </div>
@@ -750,8 +749,7 @@ const pageContent = `
               Batal
             </button>
             <button type="button" class="btn btn-modern-primary" id="btnSaveAkunBaru">
-              <span class="button-text">Simpan Akun</span>
-              <span class="spinner-border spinner-border-modern d-none" role="status" aria-hidden="true"></span>
+              Simpan Akun
             </button>
           </div>
         </div>
@@ -917,12 +915,9 @@ const pageContent = `
   function showTableLoading() {
     const tbody = document.getElementById('userTableBody');
     if (tbody) {
-      tbody.innerHTML = `
+      tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat data pengguna...') : `
         <tr>
           <td colspan="7" class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
             <p class="mt-2">Memuat data pengguna...</p>
           </td>
         </tr>
@@ -985,17 +980,21 @@ const pageContent = `
     const button = document.getElementById(buttonId);
     if (!button) return;
     
-    const textSpan = button.querySelector('.button-text');
-    const spinner = button.querySelector('.spinner-border');
-    
-    if (isLoading) {
-      button.disabled = true;
-      if (spinner) spinner.classList.remove('d-none');
-      if (textSpan) textSpan.style.opacity = '0';
+    if (window.setButtonLoading) {
+      window.setButtonLoading(button, isLoading, 'Memproses...');
     } else {
-      button.disabled = false;
-      if (spinner) spinner.classList.add('d-none');
-      if (textSpan) textSpan.style.opacity = '1';
+      const textSpan = button.querySelector('.button-text');
+      const spinner = button.querySelector('.spinner-border');
+      
+      if (isLoading) {
+        button.disabled = true;
+        if (spinner) spinner.classList.remove('d-none');
+        if (textSpan) textSpan.style.opacity = '0';
+      } else {
+        button.disabled = false;
+        if (spinner) spinner.classList.add('d-none');
+        if (textSpan) textSpan.style.opacity = '1';
+      }
     }
   }
 
