@@ -954,10 +954,10 @@ export function renderRevisiLpjPage(path, userRole) {
             ? `
           <div class="flex gap-4">
             <button class="lpj-custom-btn btn-revise-style" id="btn-request-revision" style="display: none;">
-              <i class="ti ti-send"></i> Kirim Revisi
+              <i class="ti ti-send">&#xeb1e;</i> Kirim Revisi
             </button>
             <button class="lpj-custom-btn btn-approve-style" id="btn-approve-lpj" style="display: none;">
-              <i class="ti ti-check"></i> Setuju
+              <i class="ti ti-check">&#xea5e;</i> Setuju
             </button>
             <button class="lpj-custom-btn btn-complete-style" id="btn-complete-lpj" style="display: none;">
               <i class="ti ti-check-double"></i> Selesaikan LPJ

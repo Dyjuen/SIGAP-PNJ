@@ -2258,9 +2258,8 @@ export function renderInputLpjPage(path, userRole) {
         buttons = `
           ${backButton}
           <button id="submitLpjButton" class="btn-primary-action" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); color: #FFFFFF;">
-            ${
-              state.status === "revisi" ? "Submit Revisi LPJ" : "Submit LPJ"
-            } <span>✓</span>
+              <i class="ti ti-send">&#xeb1e;</i>
+            ${state.status === "revisi" ? "Submit Revisi LPJ" : "Submit LPJ"}
           </button>
         `;
       } else {
