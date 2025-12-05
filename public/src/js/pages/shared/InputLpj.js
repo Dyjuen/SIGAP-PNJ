@@ -2332,9 +2332,15 @@ export function renderInputLpjPage(path, userRole) {
 
     // --- END VALIDATION ---
 
-    const button = document.getElementById("submitLpjButton");
-    button.disabled = true;
-    button.innerHTML = "Submitting...";
+    Swal.fire({
+      title: "Mengirim LPJ...",
+      text: "Harap tunggu, sistem sedang memproses permintaan Anda.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       const formData = collectLpjData();
       await apiRequest(`/kegiatan/${kegiatanId}/lpj`, {
@@ -2353,11 +2359,6 @@ export function renderInputLpjPage(path, userRole) {
         title: "Gagal",
         text: `Gagal submit LPJ: ${error.message}`,
       });
-    } finally {
-      button.disabled = false;
-      button.innerHTML = `${
-        state.status === "revisi" ? "Submit Revisi LPJ" : "Submit LPJ"
-      } <span>✓</span>`;
     }
   }
 

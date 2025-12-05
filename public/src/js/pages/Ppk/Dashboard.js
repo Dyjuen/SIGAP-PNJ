@@ -48,7 +48,7 @@ export function renderPpkDashboardPage(path, userRole) {
               <th style="width: 50px; text-align: center;">
                 <input type="checkbox" class="form-check-input" id="selectAll">
               </th>
-              <th>ID</th>
+              <th>No.</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Pengusul</th>
               <th>Tanggal Diajukan</th>
@@ -239,7 +239,7 @@ export function renderPpkDashboardPage(path, userRole) {
         return;
     }
 
-    data.forEach((kegiatan) => {
+    data.forEach((kegiatan, index) => {
       const row = document.createElement("tr");
 
       row.innerHTML = `
@@ -247,7 +247,7 @@ export function renderPpkDashboardPage(path, userRole) {
           <input type="checkbox" class="form-check-input row-checkbox">
         </td>
         <td>
-          <span class="number-badge">${kegiatan.kegiatan_id}</span>
+          <span class="number-badge">${index + 1}</span>
         </td>
         <td>
           <strong>${kegiatan.nama_kegiatan}</strong>
