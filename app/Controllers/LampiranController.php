@@ -369,9 +369,11 @@ class LampiranController
     }
 
     /**
-     * Save catatan for a lampiran, restricted to Bendahara.
+     * Save catatan for a lampiran, restricted to Bendahara/Admin.
+     * Lampiran akan ditandai sebagai revision_requested, tidak dihapus langsung.
      * 
      * POST /api/lampiran/{id}/catatan
+     * Body: { "catatan": "Perbaiki lampiran ini..." }
      */
     public function saveCatatan()
     {
@@ -397,20 +399,172 @@ class LampiranController
             $data = json_decode(file_get_contents('php://input'), true);
             $catatan = $data['catatan'] ?? null;
 
-            if ($catatan === null) {
+            if ($catatan === null || trim($catatan) === '') {
                 Response::badRequest('Catatan tidak boleh kosong.');
             }
 
-            // Update the record
-            $this->lampiranModel->update($lampiranId, ['catatan' => $catatan]);
+            // Update lampiran dengan status revision_requested dan simpan catatan
+            // Lampiran TIDAK dihapus, hanya ditandai untuk revisi
+            $this->lampiranModel->addReviewerNotes($lampiranId, $catatan, $this->user['user_id']);
 
             // Fetch the updated record to return
             $updatedLampiran = $this->lampiranModel->find($lampiranId);
 
-            Response::success($updatedLampiran, 'Catatan berhasil disimpan.');
+            Response::success($updatedLampiran, 'Catatan berhasil disimpan. Pengusul perlu melakukan revisi lampiran ini.');
 
         } catch (\Exception $e) {
             Response::error('Gagal menyimpan catatan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Approve a lampiran, restricted to Bendahara/Admin.
+     * 
+     * POST /api/lampiran/{id}/approve
+     */
+    public function approveLampiran()
+    {
+        try {
+            // Authorization: Only Bendahara or Admin can approve
+            if (!$this->hasRole('Bendahara') && !$this->hasRole('Admin')) {
+                Response::forbidden('Anda tidak memiliki akses untuk approve lampiran.');
+            }
+
+            // Get lampiran_id from URL
+            $lampiranId = $this->extractLampiranIdOnly();
+            if (!$lampiranId) {
+                Response::badRequest('Lampiran ID tidak valid.');
+            }
+
+            // Get lampiran from DB
+            $lampiran = $this->lampiranModel->find($lampiranId);
+            if (!$lampiran) {
+                Response::notFound('Lampiran tidak ditemukan.');
+            }
+
+            // Approve lampiran
+            $this->lampiranModel->approveLampiran($lampiranId, $this->user['user_id']);
+
+            // Fetch the updated record to return
+            $updatedLampiran = $this->lampiranModel->find($lampiranId);
+
+            Response::success($updatedLampiran, 'Lampiran berhasil disetujui.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal approve lampiran: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Resubmit lampiran (pengusul upload lampiran revisi)
+     * Lampiran yang diminta revisi akan di-archive, yang baru menjadi pending.
+     * 
+     * POST /api/lampiran/{id}/resubmit
+     * Content-Type: multipart/form-data
+     */
+    public function resubmit()
+    {
+        try {
+            // Get lampiran_id dari URL
+            $lampiranId = $this->extractLampiranIdOnly();
+            if (!$lampiranId) {
+                Response::badRequest('Lampiran ID tidak valid.');
+            }
+
+            // Get lampiran from DB
+            $lampiran = $this->lampiranModel->find($lampiranId);
+            if (!$lampiran) {
+                Response::notFound('Lampiran tidak ditemukan.');
+            }
+
+            // Check if lampiran memiliki revision request
+            if ($lampiran['status_lampiran'] !== 'revision_requested') {
+                Response::error('Lampiran ini tidak memerlukan revisi.', 400);
+            }
+
+            // Check if file exists
+            if (!isset($_FILES['file'])) {
+                Response::badRequest('File tidak ditemukan. Gunakan key "file" untuk upload.');
+            }
+
+            // Upload file
+            $uploadResult = $this->fileUpload->upload($_FILES['file']);
+
+            if (!$uploadResult['success']) {
+                Response::error($uploadResult['message'], 400);
+            }
+
+            // Get keterangan from POST data (optional)
+            $keterangan = $_POST['keterangan'] ?? null;
+
+            // Data untuk lampiran baru
+            $newLampiranData = [
+                'anggaran_id' => $lampiran['anggaran_id'],
+                'nama_file_asli' => $uploadResult['original_name'],
+                'path_file_disimpan' => $uploadResult['file_path'],
+                'uploader_user_id' => $this->user['user_id'],
+                'catatan' => $keterangan
+            ];
+
+            // Resubmit sebagai revisi (parent lampiran akan di-archive)
+            $newLampiranId = $this->lampiranModel->resubmitAsRevision($lampiranId, $newLampiranData);
+
+            if (!$newLampiranId) {
+                Response::error('Gagal membuat revisi lampiran.', 500);
+            }
+
+            // Get created lampiran
+            $lampiran = $this->lampiranModel->find($newLampiranId);
+
+            Response::created($lampiran, 'Lampiran revisi berhasil diupload. Lampiranmu telah tersimpan dalam riwayat untuk referensi.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal resubmit lampiran: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Get lampiran history (termasuk previous revisions)
+     * 
+     * GET /api/lampiran/{id}/history
+     */
+    public function getHistory()
+    {
+        try {
+            // Get lampiran_id from URL
+            $lampiranId = $this->extractLampiranIdOnly();
+            if (!$lampiranId) {
+                Response::badRequest('Lampiran ID tidak valid.');
+            }
+
+            // Get lampiran from DB
+            $lampiran = $this->lampiranModel->find($lampiranId);
+            if (!$lampiran) {
+                Response::notFound('Lampiran tidak ditemukan.');
+            }
+
+            // Authorization: Only Bendahara or related pengusul can view history
+            if (!$this->hasRole('Bendahara') && !$this->hasRole('Admin')) {
+                $anggaran = $this->kakAnggaranModel->find($lampiran['anggaran_id']);
+                if (!$anggaran) {
+                    Response::forbidden('Tidak dapat memverifikasi anggaran terkait lampiran ini.');
+                }
+                $kak = $this->kakModel->find($anggaran['kak_id']);
+                if (!$kak || $kak['pengusul_user_id'] != $this->user['user_id']) {
+                    Response::forbidden('Anda tidak memiliki akses untuk melihat riwayat lampiran ini.');
+                }
+            }
+
+            // Get history
+            $history = $this->lampiranModel->getLampiranHistory($lampiranId);
+
+            Response::success([
+                'history' => $history,
+                'total_revisions' => count($history)
+            ], 'Riwayat lampiran berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil riwayat lampiran: ' . $e->getMessage(), 500);
         }
     }
 
@@ -421,8 +575,8 @@ class LampiranController
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
-        // Pattern: /api/lampiran/{id}/catatan or /api/lampiran/{id}/stream
-        if (preg_match('/\/lampiran\/(\d+)\/(?:catatan|stream)$/', $uri, $matches)) {
+        // Pattern: /api/lampiran/{id}/catatan or /api/lampiran/{id}/stream or /api/lampiran/{id}/resubmit or /api/lampiran/{id}/approve or /api/lampiran/{id}/history
+        if (preg_match('/\/lampiran\/(\d+)\/(?:catatan|stream|resubmit|approve|history)$/', $uri, $matches)) {
             return (int) $matches[1];
         }
 
