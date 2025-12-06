@@ -669,16 +669,16 @@ export function renderUsulanKakPage(path, userRole) {
                   <h4 class="mb-6 font-bold text-xl" style="color: #00BCD4;">Penerima Manfaat</h4>
                   
                   <div class="mb-6">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Penerima Manfaat (Sasaran Utama)</label>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Sasaran Utama</label>
                     <textarea class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 min-h-[100px] resize-y" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Contoh: Mahasiswa, Dosen, Masyarakat Umum" id="sasaranUtama"></textarea>
                   </div>
 
                   <div class="mb-8">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat yang Diperoleh</label>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Output Kegiatan</label>
                     <div id="manfaatContainer">
                       <!-- Dynamic benefit rows will be inserted here -->
                     </div>
-                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addManfaat()">Tambah Manfaat</button>
+                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addManfaat()">Tambah Output Kegiatan</button>
                   </div>
                 </div>
 
@@ -1107,7 +1107,7 @@ export function renderUsulanKakPage(path, userRole) {
       // Penerima Manfaat (Refactored)
       const sasaranUtama = document.getElementById("sasaranUtama");
       if (!sasaranUtama.value)
-        addError(sasaranUtama, "Penerima Manfaat (Sasaran Utama) wajib diisi.");
+        addError(sasaranUtama, "Sasaran Utama wajib diisi.");
 
       const manfaatRows = document.querySelectorAll(
         "#manfaatContainer .manfaat-item"
@@ -2073,7 +2073,7 @@ export function renderUsulanKakPage(path, userRole) {
     const newItem = document.createElement("div");
     newItem.className = "manfaat-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
     newItem.innerHTML = `
-      <input type="text" class="manfaat-input flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input Manfaat" value="${value}">
+      <input type="text" class="manfaat-input flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Output Kegiatan" value="${value}">
       <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
         <span class="text-xl font-bold">−</span>
       </button>

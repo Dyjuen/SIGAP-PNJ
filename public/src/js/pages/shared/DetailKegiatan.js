@@ -798,7 +798,7 @@ export function renderDetailKegiatanPage(path, userRole) {
                   </div>
 
                   <div class="mb-8">
-                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Manfaat yang Diperoleh</label>
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Output Kegiatan</label>
                     <div id="manfaatContainer">
                       <!-- Dynamic content will be injected here -->
                     </div>
