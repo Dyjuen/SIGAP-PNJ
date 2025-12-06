@@ -396,17 +396,14 @@ export function renderBendaharaDashboardPage(path, userRole) {
         <table class="table">
           <thead>
             <tr>
-              <th style="width: 5%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">
-                <input type="checkbox" class="form-check-input" id="selectAll">
-              </th>
-              <th style="width: 6%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">ID</th>
-              <th style="width: 22%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Nama Kegiatan</th>
+              <th style="width: 4%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">No</th>
+              <th style="width: 24%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Nama Kegiatan</th>
               <th style="width: 18%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>
               <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Diminta</th>
               <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Dicairkan</th>
               <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Belum Dicairkan</th>
-              <th style="width: 11%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Status</th>
-              <th style="width: 10%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Aksi</th>
+              <th style="width: 10%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Status</th>
+              <th style="width: 6%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Aksi</th>
             </tr>
           </thead>
           <tbody id="disbursementTableBody">
@@ -581,6 +578,49 @@ export function renderBendaharaDashboardPage(path, userRole) {
     }
   }
 
+  async function handlePdfAction(kakId, action) {
+    const actionTitle = action === 'preview' ? 'Membuka Pratinjau PDF...' : 'Mengunduh PDF...';
+    const errorMessage = action === 'preview' ? 'Gagal membuka pratinjau PDF' : 'Gagal mengunduh PDF';
+  
+    Swal.fire({
+      title: actionTitle,
+      text: "Membuat token sementara...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+  
+    try {
+      // Step 1: Generate token
+      const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
+        method: 'POST',
+      });
+  
+      if (!tokenResponse.success) {
+        throw new Error(tokenResponse.message || 'Gagal membuat token');
+      }
+  
+      const tempToken = tokenResponse.data.download_token;
+  
+      // Step 2: Build URL and open/download
+      const url = action === 'preview'
+        ? `/api/kak/${kakId}/preview?t=${tempToken}`
+        : `/api/kak/${kakId}?t=${tempToken}`;
+  
+      Swal.close();
+      
+      setTimeout(() => {
+        window.open(url, '_blank');
+      }, 300);
+  
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: errorMessage,
+        text: error.message,
+      });
+    }
+  }
+
   // ==============================================
   // RENDER FUNCTIONS
   // ==============================================
@@ -608,7 +648,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
     tbody.innerHTML = "";
     if (!data || data.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="9" class="text-center">Tidak ada data kegiatan.</td></tr>';
+        '<tr><td colspan="8" class="text-center">Tidak ada data kegiatan.</td></tr>';
       updatePaginationInfo(0, 0, 0);
       return;
     }
@@ -616,7 +656,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
     // Update pagination info
     updatePaginationInfo(1, data.length, data.length);
 
-    data.forEach((kegiatan) => {
+    data.forEach((kegiatan, index) => {
       const row = document.createElement("tr");
 
       let statusBadge = "";
@@ -638,42 +678,55 @@ export function renderBendaharaDashboardPage(path, userRole) {
           statusBadge =
             '<span class="badge bg-label-info" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Verifikasi LPJ</span>';
           actionButtons = `
-          <a href="/bendahara/kegiatan/lpj/revisi/${kegiatan.kegiatan_id}" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);" title="Verifikasi LPJ">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 15l2 2l4 -4" /></svg>
-          </a>
-        `;
+            <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+              <a href="/bendahara/kegiatan/lpj/revisi/${kegiatan.kegiatan_id}" class="btn btn-sm" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Verifikasi LPJ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 15l2 2l4 -4" /></svg>
+              </a>
+            </div>
+          `;
         }
       } else if (isDisbursed) {
         statusBadge =
           '<span class="badge bg-label-success" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Dicairkan</span>';
         actionButtons = `
-          <a href="/bendahara/kegiatan/detail/${kegiatan.kak_id}" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" title="Lihat Detail">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-          </a>
-        `;
+            <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+              <a href="/bendahara/kegiatan/detail/${kegiatan.kak_id}" class="btn btn-sm" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Lihat Detail">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+              </a>
+              <button class="btn btn-sm btn-preview-pdf" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-kak-id="${kegiatan.kak_id}" title="Lihat PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
+              </button>
+              <button class="btn btn-sm btn-download-pdf" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-kak-id="${kegiatan.kak_id}" title="Download PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+              </button>
+            </div>
+          `;
       } else {
         statusBadge =
           '<span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>';
         actionButtons = `
-          <a href="/bendahara/kegiatan/pencairan" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);" title="Cairkan Dana">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-cash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="7" y="9" width="14" height="10" rx="2" /><circle cx="14" cy="14" r="2" /><path d="M17 9v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h2" /></svg>
-          </a>
-          <a href="/bendahara/kegiatan/riwayat/detail/${kegiatan.kak_id}" class="btn btn-sm me-2" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" title="Lihat Detail">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-          </a>
-        `;
+            <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+              <a href="/bendahara/kegiatan/pencairan" class="btn btn-sm" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Cairkan Dana">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="7" y="9" width="14" height="10" rx="2" /><circle cx="14" cy="14" r="2" /><path d="M17 9v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h2" /></svg>
+              </a>
+              <a href="/bendahara/kegiatan/riwayat/detail/${kegiatan.kak_id}" class="btn btn-sm" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Lihat Detail">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+              </a>
+              <button class="btn btn-sm btn-preview-pdf" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-kak-id="${kegiatan.kak_id}" title="Lihat PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
+              </button>
+              <button class="btn btn-sm btn-download-pdf" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-kak-id="${kegiatan.kak_id}" title="Download PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+              </button>
+            </div>
+          `;
       }
 
       row.innerHTML = `
-        <td style="width: 5%; text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox">
+        <td style="width: 4%; text-align: center;">
+          <span style="font-weight: 600; color: #64748b; font-size: 0.875rem;">${index + 1}</span>
         </td>
-        <td style="width: 6%;">
-          <span class="number-badge" style="background: #e0f7fa; color: #00BCD4; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.875rem;">${
-            kegiatan.kegiatan_id
-          }</span>
-        </td>
-        <td style="width: 22%;">
+        <td style="width: 24%;">
           <strong style="color: #1e293b;">${kegiatan.nama_kegiatan}</strong>
         </td>
         <td style="width: 18%;">
@@ -699,10 +752,10 @@ export function renderBendaharaDashboardPage(path, userRole) {
             (kegiatan.total_anggaran_diusulkan || 0) - (kegiatan.dana_dicairkan || 0)
           )}</strong>
         </td>
-        <td style="width: 11%; text-align: center;">
+        <td style="width: 10%; text-align: center;">
           ${statusBadge}
         </td>
-        <td style="width: 10%; text-align: center;">
+        <td style="width: 6%; text-align: center;">
           ${actionButtons}
         </td>
       `;
@@ -742,6 +795,19 @@ export function renderBendaharaDashboardPage(path, userRole) {
         applyFilter();
       });
     }
+
+    // --- PDF BUTTONS ---
+    document.querySelectorAll(".btn-preview-pdf").forEach((btn) => {
+        btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, 'preview')
+        );
+    });
+
+    document.querySelectorAll(".btn-download-pdf").forEach((btn) => {
+        btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, 'download')
+        );
+    });
   }
 
   function updateActiveFilterVisuals() {

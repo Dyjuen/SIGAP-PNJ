@@ -433,6 +433,49 @@ export function renderDashboardVerifikator(path, userRole) {
     }
   }
 
+  async function handlePdfAction(kakId, action) {
+    const actionTitle = action === 'preview' ? 'Membuka Pratinjau PDF...' : 'Mengunduh PDF...';
+    const errorMessage = action === 'preview' ? 'Gagal membuka pratinjau PDF' : 'Gagal mengunduh PDF';
+  
+    Swal.fire({
+      title: actionTitle,
+      text: "Membuat token sementara...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+  
+    try {
+      // Step 1: Generate token
+      const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
+        method: 'POST',
+      });
+  
+      if (!tokenResponse.success) {
+        throw new Error(tokenResponse.message || 'Gagal membuat token');
+      }
+  
+      const tempToken = tokenResponse.data.download_token;
+  
+      // Step 2: Build URL and open/download
+      const url = action === 'preview'
+        ? `/api/kak/${kakId}/preview?t=${tempToken}`
+        : `/api/kak/${kakId}?t=${tempToken}`;
+  
+      Swal.close();
+      
+      setTimeout(() => {
+        window.open(url, '_blank');
+      }, 300);
+  
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: errorMessage,
+        text: error.message,
+      });
+    }
+  }
+
   // ==============================================
   // HELPER FUNCTIONS
   // ==============================================
@@ -459,14 +502,20 @@ export function renderDashboardVerifikator(path, userRole) {
     switch (statusId) {
       case 2: // Menunggu Verifikasi
         return `
-          <button class="btn btn-sm btn-success me-2 btn-approve" data-id="${kakId}" title="Setujui">
-             Setujui
+          <button class="btn btn-sm me-2 btn-approve" data-id="${kakId}" title="Setujui" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
           </button>
-          <button class="btn btn-sm btn-warning me-2 btn-revise" data-id="${kakId}" title="Revisi">
-             Revisi
+          <button class="btn btn-sm me-2 btn-revise" data-id="${kakId}" title="Revisi" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
           </button>
-          <button class="btn btn-sm btn-danger btn-reject" data-id="${kakId}" title="Tolak">
-             Tolak
+          <button class="btn btn-sm me-2 btn-reject" data-id="${kakId}" title="Tolak" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+          </button>
+          <button class="btn btn-sm me-2 btn-preview-pdf" data-kak-id="${kakId}" title="Lihat PDF" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-search"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
+          </button>
+          <button class="btn btn-sm btn-download-pdf" data-kak-id="${kakId}" title="Download PDF" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
           </button>
         `;
       default:
@@ -711,6 +760,19 @@ export function renderDashboardVerifikator(path, userRole) {
         // Step 3: Call your backend action
         handleAction(btn.dataset.id, "reject", { catatan });
       });
+    });
+
+    // --- PDF BUTTONS ---
+    document.querySelectorAll(".btn-preview-pdf").forEach((btn) => {
+        btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, 'preview')
+        );
+    });
+
+    document.querySelectorAll(".btn-download-pdf").forEach((btn) => {
+        btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, 'download')
+        );
     });
   }
 

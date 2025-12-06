@@ -235,6 +235,49 @@ export function renderWadirDashboardPage(path, userRole) {
       }
     }
 
+    async function handlePdfAction(kakId, action) {
+      const actionTitle = action === 'preview' ? 'Membuka Pratinjau PDF...' : 'Mengunduh PDF...';
+      const errorMessage = action === 'preview' ? 'Gagal membuka pratinjau PDF' : 'Gagal mengunduh PDF';
+    
+      Swal.fire({
+        title: actionTitle,
+        text: "Membuat token sementara...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+    
+      try {
+        // Step 1: Generate token
+        const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
+          method: 'POST',
+        });
+    
+        if (!tokenResponse.success) {
+          throw new Error(tokenResponse.message || 'Gagal membuat token');
+        }
+    
+        const tempToken = tokenResponse.data.download_token;
+    
+        // Step 2: Build URL and open/download
+        const url = action === 'preview'
+          ? `/api/kak/${kakId}/preview?t=${tempToken}`
+          : `/api/kak/${kakId}?t=${tempToken}`;
+    
+        Swal.close();
+        
+        setTimeout(() => {
+          window.open(url, '_blank');
+        }, 300);
+    
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: errorMessage,
+          text: error.message,
+        });
+      }
+    }
+
   // ==============================================
   // RENDER FUNCTIONS
   // ==============================================
@@ -297,6 +340,12 @@ export function renderWadirDashboardPage(path, userRole) {
           <button class="btn btn-sm me-2 btn-view-detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" data-id="${kegiatan.kak_id}" title="Lihat">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>          
           </button>
+          <button class="btn btn-sm me-2 btn-preview-pdf" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);" data-kak-id="${kegiatan.kak_id}" title="Lihat PDF">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-search"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
+          </button>
+          <button class="btn btn-sm btn-download-pdf" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);" data-kak-id="${kegiatan.kak_id}" title="Download PDF">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+          </button>
         </td>
       `;
 
@@ -335,6 +384,19 @@ export function renderWadirDashboardPage(path, userRole) {
             const kakId = this.dataset.id;
             window.location.href = `/${userRole.toLowerCase()}/kegiatan/detail/${kakId}`;
         });
+    });
+
+    // --- PDF BUTTONS ---
+    document.querySelectorAll(".btn-preview-pdf").forEach((btn) => {
+        btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, 'preview')
+        );
+    });
+
+    document.querySelectorAll(".btn-download-pdf").forEach((btn) => {
+        btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, 'download')
+        );
     });
   }
 
