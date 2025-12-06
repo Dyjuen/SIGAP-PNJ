@@ -620,21 +620,28 @@ class LampiranController
                 }
             }
 
-            // Check if file exists on server
-            $baseUploadDir = __DIR__ . '/../../storage/uploads/documents/';
-            $filePath = $baseUploadDir . basename($lampiran['path_file_disimpan']);
+            // The path stored in the DB should be relative to the document root.
+            $relativePath = $lampiran['path_file_disimpan'];
+
+            // Construct the full, absolute path
+            $fullPath = $_SERVER['DOCUMENT_ROOT'] . $relativePath;
             
-            if (!file_exists($filePath)) {
+            // Normalize the path to resolve '..' and '.' and check existence
+            $realPath = realpath($fullPath);
+
+            if ($realPath === false || !file_exists($realPath)) {
+                // Log the failure for debugging
+                error_log("File not found for streaming. Lampiran ID: {$lampiranId}. Path checked: {$fullPath}");
                 Response::notFound('File tidak ditemukan di server.');
                 return;
             }
 
             // Stream file for inline viewing
-            $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+            $mimeType = mime_content_type($realPath) ?: 'application/octet-stream';
 
             header('Content-Type: ' . $mimeType);
             header('Content-Disposition: inline; filename="' . basename($lampiran['nama_file_asli']) . '"');
-            header('Content-Length: ' . filesize($filePath));
+            header('Content-Length: ' . filesize($realPath));
             header('Cache-Control: no-cache, must-revalidate');
             header('Expires: 0');
             
