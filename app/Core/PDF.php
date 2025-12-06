@@ -38,8 +38,8 @@ class PDF extends TCPDF
         $pdf->SetMargins(15, 15, 15);
         $pdf->SetAutoPageBreak(TRUE, 15);
 
-        // Set font
-        $pdf->SetFont('helvetica', '', 10);
+        // Set font - Times New Roman untuk dokumen formal
+        $pdf->SetFont('times', '', 12);
         
         // Set image scale
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
