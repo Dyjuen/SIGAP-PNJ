@@ -922,14 +922,14 @@ export function renderRevisiLpjPage(path, userRole) {
     </style>
 
     <div class="lpj-review-page">
-      <div class="main-step-content active">
+      <div class=" active">
         <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
           <h3 class="font-bold text-2xl text-gray-800" id="kegiatan-title">Memuat...</h3>
           <p class="text-gray-500" id="pengusul-name">Oleh: Memuat...</p>
         </div>
       </div>
 
-      <div class="main-step-content active">
+      <div class=" active">
         <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
           <div id="anggaran-container">
               <div class="text-center p-8">Memuat item anggaran...</div>
@@ -1315,15 +1315,23 @@ export function renderRevisiLpjPage(path, userRole) {
               (file) => `
 
                                                 <div class="lampiran-item border-hover-draw ${
-                                                  lampiranComments[file.lampiran_id] ? "has-comment" : ""
-                                                } ${file.status_lampiran === 'archived' ? 'archived-lampiran' : ''}" data-lampiran-id="${file.lampiran_id}">
+                                                  lampiranComments[
+                                                    file.lampiran_id
+                                                  ]
+                                                    ? "has-comment"
+                                                    : ""
+                                                } ${
+                file.status_lampiran === "archived" ? "archived-lampiran" : ""
+              }" data-lampiran-id="${file.lampiran_id}">
                                 
                                                    <div class="lampiran-content">
                                 
                                                      <i class="ti ti-file-text text-gray-400"></i>
                                 
                                                      <a href="javascript:void(0);"
-                                                        data-lampiran-id="${file.lampiran_id}"
+                                                        data-lampiran-id="${
+                                                          file.lampiran_id
+                                                        }"
                                                         class="text-blue-600 hover:underline text-sm view-file-btn">${
                                                           file.nama_file_asli
                                                         }</a>
@@ -1333,9 +1341,12 @@ export function renderRevisiLpjPage(path, userRole) {
                                                    <div class="flex items-center gap-2">
                                 
                                                       ${
-                                                        isBendahara || isPengusul
+                                                        isBendahara ||
+                                                        isPengusul
                                                           ? `<button type="button" class="lampiran-comment-btn ${
-                                                              lampiranComments[file.lampiran_id]
+                                                              lampiranComments[
+                                                                file.lampiran_id
+                                                              ]
                                                                 ? "has-comment"
                                                                 : ""
                                                             }" data-lampiran-id="${
