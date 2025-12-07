@@ -46,7 +46,7 @@ export function renderPpkDashboardPage(path, userRole) {
           <thead>
             <tr>
               <th style="width: 50px; text-align: center;">
-                <input type="checkbox" class="form-check-input" id="selectAll">
+                <!-- Checkbox removed -->
               </th>
               <th>No.</th>
               <th>Nama Usulan Kegiatan</th>
@@ -309,7 +309,7 @@ export function renderPpkDashboardPage(path, userRole) {
 
       row.innerHTML = `
         <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox">
+          <!-- Checkbox removed -->
         </td>
         <td>
           <span class="number-badge">${index + 1}</span>
