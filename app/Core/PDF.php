@@ -34,18 +34,32 @@ class PDF extends TCPDF
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
 
-        // Set margins
-        $pdf->SetMargins(15, 15, 15);
+        // Set margins - REDUCED untuk spacing lebih rapat
+        $pdf->SetMargins(20, 15, 20); // Left, Top, Right
         $pdf->SetAutoPageBreak(TRUE, 15);
 
-        // Set font - Times New Roman untuk dokumen formal
+        // Add a page FIRST
+        $pdf->AddPage();
+
+        // Set font AFTER AddPage - Times New Roman untuk dokumen formal
+        // Use 'times' which is TCPDF built-in Times New Roman equivalent
         $pdf->SetFont('times', '', 12);
         
         // Set image scale
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-        // Add a page
-        $pdf->AddPage();
+        
+        // CRITICAL: Set cell padding to MINIMAL for tighter spacing
+        $pdf->setCellPaddings(0, 0, 0, 0); // Left, Top, Right, Bottom - ALL ZERO
+        
+        // Set cell margins to MINIMAL
+        $pdf->setCellMargins(0, 0, 0, 0); // Left, Top, Right, Bottom - ALL ZERO
+        
+        // Set line height multiplier for tighter text spacing
+        $pdf->setCellHeightRatio(1.1); // Reduced from default 1.25
+        
+        // Enable tag processing for better HTML/CSS support
+        $pdf->setHtmlVSpace(array('p' => array(0 => array('h' => 0.5, 'n' => 0.5), 1 => array('h' => 0.5, 'n' => 0.5))));
+        $pdf->setHtmlVSpace(array('div' => array(0 => array('h' => 0.3, 'n' => 0.3), 1 => array('h' => 0.3, 'n' => 0.3))));
 
         // Write HTML content
         $pdf->writeHTML($html, true, false, true, false, '');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Kerangka Acuan Kerja (KAK)</title>
-    <!-- TEMPLATE VERSION: 2025-12-03-11:15 - CENTERED PAPER EFFECT FOR PREVIEW -->
+    <!-- TEMPLATE VERSION: 2025-12-07-SUPER-RAPAT - 8px spacing between sections -->
 <style>
     @page {
         margin: 2cm 2.5cm; /* Standard margin untuk dokumen formal */
@@ -126,9 +126,8 @@
         line-height: 1.4;
     }
     
-    /* Section Spacing - ANTAR BAB (TETAP BESAR) */
+    /* Section Spacing - DIATUR DENGAN INLINE STYLES */
     .section {
-        margin-bottom: 30px; /* Breathable section spacing - JARAK ANTAR BAB */
         padding: 0;
     }
     .section.no-break {
@@ -137,7 +136,6 @@
     .section-title {
         font-size: 13pt;
         font-weight: bold;
-        margin-bottom: 15px; /* Clear title-to-content gap */
         color: #000;
         page-break-after: avoid; /* Title tidak boleh terpisah dari content */
         line-height: 1.4;
@@ -251,27 +249,7 @@
         font-family: 'Times New Roman', Times, serif !important;
     }
     
-    /* Super compact spacing for subsections */
-    div[style*="margin-bottom: 20px"] {
-        margin-bottom: 12px !important; /* Subsection spacing - SUPER COMPACT */
-    }
-    
-    div[style*="margin-bottom: 8px"] {
-        margin-bottom: 5px !important; /* Lebih rapat */
-    }
-    
-    div[style*="margin-bottom: 10px"] {
-        margin-bottom: 3px !important; /* Minimal spacing */
-    }
-    
-    div[style*="margin-top: 10px"] {
-        margin-top: 5px !important; /* Minimal top spacing */
-    }
-    
-    div[style*="margin-top: 8px"] {
-        margin-top: 5px !important; /* Consistent top spacing */
-    }
-    
+    /* Minimal spacing adjustments - let inline styles control most spacing */
     div[style*="margin-left: 30px"] {
         margin-left: 30px !important;
     }
@@ -384,10 +362,10 @@
     <!-- ISI DOKUMEN MULAI DARI HALAMAN 2 (LEMBAR PENGESAHAN REMOVED) -->
 
     <!-- I. INFORMASI UMUM KEGIATAN -->
-    <div style="margin-bottom: 30px; padding: 0;">
-        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 15px; color: #000; line-height: 1.4;">I. INFORMASI UMUM KEGIATAN</div>
+    <div style="margin-bottom: 5px; padding: 0; page-break-inside: avoid;">
+        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 3px; margin-top: 0; color: #000; line-height: 1.4;">I. INFORMASI UMUM KEGIATAN</div>
         
-        <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; border: none; margin: 10px 0 20px 0;">
+        <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; border: none; margin: 5px 0 10px 0;">
             <tr>
                 <td style="width: 220px; font-weight: normal; vertical-align: top; border: none; padding: 6px 0; font-size: 11pt; line-height: 1.6; font-family: 'Times New Roman', Times, serif;">Nama Kegiatan</td>
                 <td style="width: 25px; vertical-align: top; border: none; padding: 6px 0; text-align: center; font-size: 11pt; line-height: 1.6; font-family: 'Times New Roman', Times, serif;">:</td>
@@ -427,8 +405,8 @@
     </div>
 
     <!-- II. GAMBARAN UMUM KEGIATAN -->
-    <div style="margin-bottom: 30px; padding: 0;">
-        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 15px; color: #000; line-height: 1.4;">II. GAMBARAN UMUM KEGIATAN</div>
+    <div style="margin-bottom: 5px; padding: 0; page-break-inside: avoid;">
+        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 3px; margin-top: 0; color: #000; line-height: 1.4;">II. GAMBARAN UMUM KEGIATAN</div>
         <div style="text-align: justify; margin: 5px 0; line-height: 1.5; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">
             <?= nl2br(htmlspecialchars($kegiatan['gambaran_umum'] ?? $kegiatan['deskripsi_kegiatan'] ?? 'Tidak ada deskripsi')) ?>
         </div>
@@ -436,35 +414,35 @@
 
     <!-- III. PENERIMA MANFAAT -->
     <?php if (!empty($kegiatan['sasaran_utama']) || !empty($kegiatan['manfaat'])): ?>
-    <div style="margin-bottom: 30px; padding: 0;">
-        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 15px; color: #000; line-height: 1.4;">III. PENERIMA MANFAAT</div>
+    <div style="margin-bottom: 5px; padding: 0; page-break-inside: avoid;">
+        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 3px; margin-top: 0; color: #000; line-height: 1.4;">III. PENERIMA MANFAAT</div>
         
         <?php if (!empty($kegiatan['sasaran_utama'])): ?>
-        <div style="margin-bottom: 12px;">
-            <div style="margin-bottom: 5px;">
+        <div style="margin-bottom: 5px; page-break-inside: avoid;">
+            <div style="margin-bottom: 3px;">
                 <strong style="font-family: 'Times New Roman', Times, serif; font-size: 12pt;">1. Sasaran Utama</strong>
             </div>
-            <div style="margin-left: 30px; text-align: justify; margin-top: 3px; font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5;">
+            <div style="margin-left: 30px; text-align: justify; margin-top: 2px; font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5;">
                 <?= nl2br(htmlspecialchars($kegiatan['sasaran_utama'])) ?>
             </div>
         </div>
         <?php endif; ?>
         
         <?php if (!empty($kegiatan['manfaat'])): ?>
-        <div>
-            <div style="margin-bottom: 5px;">
+        <div style="page-break-inside: avoid;">
+            <div style="margin-bottom: 3px;">
                 <strong style="font-family: 'Times New Roman', Times, serif; font-size: 12pt;">2. Manfaat Kegiatan</strong>
             </div>
-            <div style="margin-left: 30px; text-align: justify; margin-top: 3px; font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5;">
+            <div style="margin-left: 30px; text-align: justify; margin-top: 2px; font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5;">
                 Manfaat yang didapatkan setelah mengikuti kegiatan ini, yaitu:
             </div>
-            <div style="margin-left: 30px; margin-top: 5px;">
+            <div style="margin-left: 30px; margin-top: 3px;">
                 <?php 
                 $alphabet = range('a', 'z');
                 foreach ($kegiatan['manfaat'] as $index => $manfaatItem): 
                 ?>
-                <div style="margin-bottom: 2px; text-align: justify; line-height: 1.3; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">
-                    <span style="display: inline-block; width: 18px; font-family: 'Times New Roman', Times, serif; font-size: 12pt; vertical-align: top;"><?= $alphabet[$index] ?>.</span><span style="display: inline-block; width: calc(100% - 22px); vertical-align: top; font-family: 'Times New Roman', Times, serif; font-size: 12pt;"><?= htmlspecialchars($manfaatItem['manfaat']) ?></span>
+                <div style="margin-bottom: 1px; text-align: justify; line-height: 1.3; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">
+                    <?= $alphabet[$index] ?>. <?= htmlspecialchars($manfaatItem['manfaat']) ?>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -474,11 +452,11 @@
     <?php endif; ?>
 
     <!-- IV. STRATEGI PENCAPAIAN -->
-    <div style="margin-bottom: 30px; padding: 0;">
-        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 15px; color: #000; line-height: 1.4;">IV. STRATEGI PENCAPAIAN</div>
+    <div style="margin-bottom: 5px; padding: 0; page-break-inside: avoid;">
+        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 3px; margin-top: 0; color: #000; line-height: 1.4;">IV. STRATEGI PENCAPAIAN</div>
         
         <?php if (!empty($kegiatan['metode_pelaksanaan'])): ?>
-        <div style="margin-bottom: 12px;">
+        <div style="margin-bottom: 10px; page-break-inside: avoid;">
             <strong style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">Metode Pelaksanaan:</strong>
             <div style="margin-top: 3px; font-family: 'Times New Roman', Times, serif; font-size: 12pt; text-align: justify; line-height: 1.5;">
                 <?= nl2br(htmlspecialchars($kegiatan['metode_pelaksanaan'])) ?>
@@ -487,7 +465,7 @@
         <?php endif; ?>
         
         <?php if (!empty($kegiatan['tahapan'])): ?>
-        <div>
+        <div style="page-break-inside: avoid;">
             <strong style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">Tahapan Pelaksanaan:</strong>
             <ol style="margin-top: 3px; margin-bottom: 5px; padding-left: 30px; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">
                 <?php foreach ($kegiatan['tahapan'] as $tahapan): ?>
@@ -500,15 +478,15 @@
 
     <!-- V. INDIKATOR KINERJA / TARGET KEBERHASILAN -->
     <?php if (!empty($kegiatan['target'])): ?>
-    <div style="margin-bottom: 30px; padding: 0;">
-        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 15px; color: #000; line-height: 1.4;">V. INDIKATOR KINERJA / TARGET KEBERHASILAN</div>
-        <table cellpadding="3" cellspacing="0" border="1" style="width: 100%; border-collapse: collapse; margin: 0;">
+    <div style="margin-bottom: 5px; padding: 0; page-break-inside: avoid;">
+        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 3px; margin-top: 0; color: #000; line-height: 1.4;">V. INDIKATOR KINERJA / TARGET KEBERHASILAN</div>
+        <table cellpadding="5" cellspacing="0" border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
-                <tr>
-                    <th style="width: 8%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.4; font-family: 'Times New Roman', Times, serif;">No</th>
-                    <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.4; font-family: 'Times New Roman', Times, serif;">Bulan</th>
-                    <th style="width: 62%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.4; font-family: 'Times New Roman', Times, serif;">Indikator Keberhasilan</th>
-                    <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.4; font-family: 'Times New Roman', Times, serif;">Target (%)</th>
+                <tr style="background-color: #e8e8e8;">
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">No</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Bulan</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Indikator Keberhasilan</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Target (%)</font></th>
                 </tr>
             </thead>
             <tbody>
@@ -517,10 +495,10 @@
                 foreach ($kegiatan['target'] as $target): 
                 ?>
                 <tr>
-                    <td style="width: 8%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.4; font-family: 'Times New Roman', Times, serif;"><?= $no++ ?></td>
-                    <td style="width: 15%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.4; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($target['bulan_indikator']) ?></td>
-                    <td style="width: 62%; border: 1px solid #000; padding: 5px; line-height: 1.4; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($target['deskripsi_target']) ?></td>
-                    <td style="width: 15%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.4; font-family: 'Times New Roman', Times, serif;"><?= number_format($target['persentase_target'], 0) ?>%</td>
+                    <td style="text-align: center;"><font face="times"><?= $no++ ?></font></td>
+                    <td style="text-align: center;"><font face="times"><?= htmlspecialchars($target['bulan_indikator']) ?></font></td>
+                    <td><font face="times"><?= htmlspecialchars($target['deskripsi_target']) ?></font></td>
+                    <td style="text-align: center;"><font face="times"><?= number_format($target['persentase_target'], 0) ?>%</font></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -529,35 +507,23 @@
     <?php endif; ?>
 
     <!-- VI. RINCIAN ANGGARAN BIAYA (RAB) -->
-    <div style="margin-bottom: 30px; padding: 0;">
-        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 15px; color: #000; line-height: 1.4;">VI. RINCIAN ANGGARAN BIAYA (RAB)</div>
+    <div style="margin-bottom: 5px; padding: 0;">
+        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 3px; margin-top: 0; color: #000; line-height: 1.4;">VI. RINCIAN ANGGARAN BIAYA (RAB)</div>
         
         <?php if (!empty($kegiatan['anggaran'])): ?>
-        <table cellpadding="3" cellspacing="0" border="1" style="width: 100%; border-collapse: collapse; margin: 0;">
-            <colgroup>
-                <col style="width: 4%;">
-                <col style="width: 20%;">
-                <col style="width: 7%;">
-                <col style="width: 8%;">
-                <col style="width: 7%;">
-                <col style="width: 8%;">
-                <col style="width: 7%;">
-                <col style="width: 9%;">
-                <col style="width: 15%;">
-                <col style="width: 15%;">
-            </colgroup>
+        <table cellpadding="4" cellspacing="0" border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
-                <tr>
-                    <th style="width: 4%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">No</th>
-                    <th style="width: 20%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Uraian</th>
-                    <th style="width: 7%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Vol 1</th>
-                    <th style="width: 8%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Sat 1</th>
-                    <th style="width: 7%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Vol 2</th>
-                    <th style="width: 8%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Sat 2</th>
-                    <th style="width: 7%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Vol 3</th>
-                    <th style="width: 9%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Sat 3</th>
-                    <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Harga Satuan (Rp)</th>
-                    <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 9pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Jumlah (Rp)</th>
+                <tr style="background-color: #e8e8e8;">
+                    <th style="text-align: center; font-size: 10pt; width: 4%;"><font face="times">No</font></th>
+                    <th style="text-align: center; font-size: 10pt; width: 18%;"><font face="times">Uraian</font></th>
+                    <th style="text-align: center; font-size: 10pt; width: 6%;"><font face="times">Vol 1</font></th>
+                    <th style="text-align: center; font-size: 10pt; width: 7%;"><font face="times">Sat 1</font></th>
+                    <th style="text-align: center; font-size: 10pt; width: 6%;"><font face="times">Vol 2</font></th>
+                    <th style="text-align: center; font-size: 10pt; width: 7%;"><font face="times">Sat 2</font></th>
+                    <th style="text-align: center; font-size: 10pt; width: 6%;"><font face="times">Vol 3</font></th>
+                    <th style="text-align: center; font-size: 10pt; width: 7%;"><font face="times">Sat 3</font></th>
+                    <th style="text-align: center; font-size: 10pt; width: 18%;"><font face="times">Harga Satuan (Rp)</font></th>
+                    <th style="text-align: center; font-size: 10pt; width: 21%;"><font face="times">Jumlah (Rp)</font></th>
                 </tr>
             </thead>
             <tbody>
@@ -578,11 +544,11 @@
                         if ($currentKategori !== '' && $subtotalKategori > 0) {
                             ?>
                             <tr style="background-color: #f5f5f5;">
-                                <td colspan="9" style="text-align: right; border: 1px solid #000; padding: 8px; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
-                                    Subtotal <?= htmlspecialchars($currentKategori) ?>
+                                <td colspan="9" style="text-align: right; font-weight: bold;">
+                                    <font face="times">Subtotal <?= htmlspecialchars($currentKategori) ?></font>
                                 </td>
-                                <td style="text-align: right; border: 1px solid #000; padding: 8px; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
-                                    Rp <?= number_format($subtotalKategori, 0, ',', '.') ?>
+                                <td style="text-align: right; font-weight: bold;">
+                                    <font face="times">Rp <?= number_format($subtotalKategori, 0, ',', '.') ?></font>
                                 </td>
                             </tr>
                             <?php
@@ -592,9 +558,9 @@
                         // Set new kategori
                         $currentKategori = $item['nama_kategori'];
                         ?>
-                        <tr style="background-color: #e0e0e0;">
-                            <td colspan="10" style="font-weight: bold; padding: 8px; border: 1px solid #000; font-family: 'Times New Roman', Times, serif;">
-                                <?= htmlspecialchars($currentKategori) ?>
+                        <tr style="background-color: #d0d0d0;">
+                            <td colspan="10" style="font-weight: bold;">
+                                <font face="times"><?= htmlspecialchars($currentKategori) ?></font>
                             </td>
                         </tr>
                         <?php
@@ -610,27 +576,27 @@
                     $subtotalKategori += $jumlah;
                 ?>
                 <tr>
-                    <td style="text-align: center; width: 4%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= $no++ ?></td>
-                    <td style="width: 20%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($item['uraian']) ?></td>
-                    <td style="text-align: center; width: 7%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= number_format($item['volume1'], 0, ',', '.') ?></td>
-                    <td style="text-align: center; width: 8%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($item['nama_satuan1'] ?? '-') ?></td>
-                    <td style="text-align: center; width: 7%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= $item['volume2'] ? number_format($item['volume2'], 0, ',', '.') : '-' ?></td>
-                    <td style="text-align: center; width: 8%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($item['nama_satuan2'] ?? '-') ?></td>
-                    <td style="text-align: center; width: 7%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= $item['volume3'] ? number_format($item['volume3'], 0, ',', '.') : '-' ?></td>
-                    <td style="text-align: center; width: 9%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($item['nama_satuan3'] ?? '-') ?></td>
-                    <td style="text-align: right; width: 15%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= number_format($item['harga_satuan'], 0, ',', '.') ?></td>
-                    <td style="text-align: right; width: 15%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= number_format($jumlah, 0, ',', '.') ?></td>
+                    <td style="text-align: center; width: 4%;"><font face="times"><?= $no++ ?></font></td>
+                    <td style="width: 18%;"><font face="times"><?= htmlspecialchars($item['uraian']) ?></font></td>
+                    <td style="text-align: center; width: 6%;"><font face="times"><?= number_format($item['volume1'], 0, ',', '.') ?></font></td>
+                    <td style="text-align: center; width: 7%;"><font face="times"><?= htmlspecialchars($item['nama_satuan1'] ?? '-') ?></font></td>
+                    <td style="text-align: center; width: 6%;"><font face="times"><?= $item['volume2'] ? number_format($item['volume2'], 0, ',', '.') : '-' ?></font></td>
+                    <td style="text-align: center; width: 7%;"><font face="times"><?= htmlspecialchars($item['nama_satuan2'] ?? '-') ?></font></td>
+                    <td style="text-align: center; width: 6%;"><font face="times"><?= $item['volume3'] ? number_format($item['volume3'], 0, ',', '.') : '-' ?></font></td>
+                    <td style="text-align: center; width: 7%;"><font face="times"><?= htmlspecialchars($item['nama_satuan3'] ?? '-') ?></font></td>
+                    <td style="text-align: right; width: 18%;"><font face="times"><?= number_format($item['harga_satuan'], 0, ',', '.') ?></font></td>
+                    <td style="text-align: right; width: 21%;"><font face="times"><?= number_format($jumlah, 0, ',', '.') ?></font></td>
                 </tr>
                 <?php 
                     // Print subtotal for last kategori after last item
                     if ($currentIndex === $itemCount && $subtotalKategori > 0) {
                         ?>
                         <tr style="background-color: #f5f5f5;">
-                            <td colspan="9" style="text-align: right; border: 1px solid #000; padding: 6px; font-weight: bold; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">
-                                Subtotal <?= htmlspecialchars($currentKategori) ?>
+                            <td colspan="9" style="text-align: right; font-weight: bold;">
+                                <font face="times">Subtotal <?= htmlspecialchars($currentKategori) ?></font>
                             </td>
-                            <td style="text-align: right; border: 1px solid #000; padding: 6px; font-weight: bold; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">
-                                Rp <?= number_format($subtotalKategori, 0, ',', '.') ?>
+                            <td style="text-align: right; font-weight: bold;">
+                                <font face="times">Rp <?= number_format($subtotalKategori, 0, ',', '.') ?></font>
                             </td>
                         </tr>
                         <?php
@@ -638,15 +604,15 @@
                 ?>
                 <?php endforeach; ?>
                 
-                <tr style="background-color: #f0f0f0;">
-                    <td colspan="9" style="text-align: right; border: 1px solid #000; padding: 8px; font-family: 'Times New Roman', Times, serif;"><strong style="font-family: 'Times New Roman', Times, serif;">TOTAL ANGGARAN DIUSULKAN</strong></td>
-                    <td style="text-align: right; border: 1px solid #000; padding: 8px; font-family: 'Times New Roman', Times, serif;"><strong style="font-family: 'Times New Roman', Times, serif;">Rp <?= number_format($totalDiusulkan, 0, ',', '.') ?></strong></td>
+                <tr style="background-color: #e8e8e8;">
+                    <td colspan="9" style="text-align: right; font-weight: bold;"><font face="times">TOTAL ANGGARAN DIUSULKAN</font></td>
+                    <td style="text-align: right; font-weight: bold;"><font face="times">Rp <?= number_format($totalDiusulkan, 0, ',', '.') ?></font></td>
                 </tr>
                 
                 <?php if (isset($kegiatan['total_anggaran_disetujui']) && $kegiatan['total_anggaran_disetujui']): ?>
-                <tr style="background-color: #f0f0f0;">
-                    <td colspan="9" style="text-align: right; border: 1px solid #000; padding: 8px; font-family: 'Times New Roman', Times, serif;"><strong style="font-family: 'Times New Roman', Times, serif;">TOTAL ANGGARAN DISETUJUI</strong></td>
-                    <td style="text-align: right; border: 1px solid #000; padding: 8px; font-family: 'Times New Roman', Times, serif;"><strong style="font-family: 'Times New Roman', Times, serif;">Rp <?= number_format($kegiatan['total_anggaran_disetujui'], 0, ',', '.') ?></strong></td>
+                <tr style="background-color: #e8e8e8;">
+                    <td colspan="9" style="text-align: right; font-weight: bold;"><font face="times">TOTAL ANGGARAN DISETUJUI</font></td>
+                    <td style="text-align: right; font-weight: bold;"><font face="times">Rp <?= number_format($kegiatan['total_anggaran_disetujui'], 0, ',', '.') ?></font></td>
                 </tr>
                 <?php endif; ?>
             </tbody>
@@ -658,15 +624,15 @@
 
     <!-- VII. INDIKATOR KINERJA UTAMA (IKU) -->
     <?php if (!empty($kegiatan['iku'])): ?>
-    <div style="margin-bottom: 30px; padding: 0;">
-        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 15px; color: #000; line-height: 1.4;">VII. KETERKAITAN DENGAN INDIKATOR KINERJA UTAMA (IKU)</div>
-        <table cellpadding="3" cellspacing="0" border="1" style="width: 100%; border-collapse: collapse; margin: 0;">
+    <div style="margin-bottom: 5px; padding: 0; page-break-inside: avoid;">
+        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 3px; margin-top: 0; color: #000; line-height: 1.4;">VII. KETERKAITAN DENGAN INDIKATOR KINERJA UTAMA (IKU)</div>
+        <table cellpadding="5" cellspacing="0" border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
-                <tr>
-                    <th style="width: 8%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">No</th>
-                    <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Kode IKU</th>
-                    <th style="width: 62%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Nama IKU</th>
-                    <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Target Kontribusi (%)</th>
+                <tr style="background-color: #e8e8e8;">
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">No</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Kode IKU</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Nama IKU</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Target Kontribusi (%)</font></th>
                 </tr>
             </thead>
             <tbody>
@@ -675,10 +641,10 @@
                 foreach ($kegiatan['iku'] as $iku): 
                 ?>
                 <tr>
-                    <td style="width: 8%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= $no++ ?></td>
-                    <td style="width: 15%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($iku['kode_iku']) ?></td>
-                    <td style="width: 62%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($iku['nama_iku']) ?></td>
-                    <td style="width: 15%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= number_format($iku['persentase_target'], 0) ?>%</td>
+                    <td style="text-align: center;"><font face="times"><?= $no++ ?></font></td>
+                    <td style="text-align: center;"><font face="times"><?= htmlspecialchars($iku['kode_iku']) ?></font></td>
+                    <td><font face="times"><?= htmlspecialchars($iku['nama_iku']) ?></font></td>
+                    <td style="text-align: center;"><font face="times"><?= number_format($iku['persentase_target'], 0) ?>%</font></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -688,15 +654,15 @@
 
     <!-- VIII. LAMPIRAN DOKUMEN -->
     <?php if (!empty($kegiatan['lampiran'])): ?>
-    <div style="margin-bottom: 30px; padding: 0;">
-        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 15px; color: #000; line-height: 1.4;">VIII. LAMPIRAN DOKUMEN PENDUKUNG</div>
-        <table cellpadding="3" cellspacing="0" border="1" style="width: 100%; border-collapse: collapse; margin: 0;">
+    <div style="margin-bottom: 5px; padding: 0; page-break-inside: avoid;">
+        <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; font-weight: bold; margin-bottom: 3px; margin-top: 0; color: #000; line-height: 1.4;">VIII. LAMPIRAN DOKUMEN PENDUKUNG</div>
+        <table cellpadding="5" cellspacing="0" border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
-                <tr>
-                    <th style="width: 8%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">No</th>
-                    <th style="width: 52%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Nama File</th>
-                    <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Tipe File</th>
-                    <th style="width: 25%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Tanggal Upload</th>
+                <tr style="background-color: #e8e8e8;">
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">No</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Nama File</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Tipe File</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Tanggal Upload</font></th>
                 </tr>
             </thead>
             <tbody>
@@ -705,10 +671,10 @@
                 foreach ($kegiatan['lampiran'] as $lampiran): 
                 ?>
                 <tr>
-                    <td style="width: 8%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= $no++ ?></td>
-                    <td style="width: 52%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($lampiran['nama_file_asli']) ?></td>
-                    <td style="width: 15%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= strtoupper(htmlspecialchars($lampiran['tipe_file'])) ?></td>
-                    <td style="width: 25%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= date('d F Y H:i', strtotime($lampiran['created_at'])) ?></td>
+                    <td style="text-align: center;"><font face="times"><?= $no++ ?></font></td>
+                    <td><font face="times"><?= htmlspecialchars($lampiran['nama_file_asli']) ?></font></td>
+                    <td style="text-align: center;"><font face="times"><?= strtoupper(htmlspecialchars($lampiran['tipe_file'])) ?></font></td>
+                    <td style="text-align: center;"><font face="times"><?= date('d F Y H:i', strtotime($lampiran['created_at'])) ?></font></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -716,26 +682,27 @@
     </div>
     <?php endif; ?>
 
-    <!-- PENGESAHAN - HALAMAN TERPISAH -->
-    <div style="page-break-before: always; padding-top: 100px; margin-top: 80px; text-align: right;">
+    <!-- PENGESAHAN -->
+    <div style="page-break-before: always; padding-top: 60px;">
         <div style="text-align: left; margin-bottom: 40px; margin-left: 40px;">
             <p style="margin: 0; font-size: 12pt; font-family: 'Times New Roman', Times, serif;">Depok, <?= date('d F Y') ?></p>
         </div>
         
-        <table style="width: 100%; border: none; margin-top: 50px;">
+        <table style="width: 100%; border: none; margin-top: 50px;" cellpadding="0" cellspacing="0">
             <tr>
-                <td style="width: 50%; border: none; vertical-align: top; text-align: center; padding-right: 20px;">
+                <td style="width: 40%; border: none; vertical-align: top; text-align: center;">
                     <strong style="font-size: 12pt; font-family: 'Times New Roman', Times, serif;">Mengetahui,</strong><br>
                     <strong style="font-size: 12pt; font-family: 'Times New Roman', Times, serif;">Kepala Bagian</strong><br>
                     <div style="height: 100px;"></div>
-                    <div style="border-bottom: 1px solid #000; width: 250px; display: inline-block;"></div>
+                    <div style="border-bottom: 1px solid #000; width: 150px; display: inline-block;"></div>
                     <br><br>
                     <strong style="font-size: 11pt; font-family: 'Times New Roman', Times, serif;">(...........................)</strong>
                 </td>
-                <td style="width: 50%; border: none; vertical-align: top; text-align: center; padding-left: 20px;">
+                <td style="width: 20%; border: none;"></td>
+                <td style="width: 40%; border: none; vertical-align: top; text-align: center;">
                     <strong style="font-size: 12pt; font-family: 'Times New Roman', Times, serif;">Pengusul Kegiatan,</strong><br><br>
                     <div style="height: 100px;"></div>
-                    <div style="border-bottom: 1px solid #000; width: 250px; display: inline-block;"></div>
+                    <div style="border-bottom: 1px solid #000; width: 150px; display: inline-block;"></div>
                     <br><br>
                     <strong style="font-size: 11pt; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($kegiatan['pengusul_nama']) ?></strong>
                 </td>

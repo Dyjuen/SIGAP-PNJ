@@ -11,7 +11,7 @@ class KAK extends Model {
      */
     public function findByUser($user_id) {
         // query() adalah method dari Core/Model.php
-        $sql = "SELECT * FROM {$this->table} WHERE user_id = ? ORDER BY created_at DESC";
+        $sql = "SELECT * FROM {$this->table} WHERE user_id = ? ORDER BY kak_id ASC";
         return $this->query($sql, [$user_id])->fetchAll(\PDO::FETCH_ASSOC);
     }
     
@@ -19,7 +19,7 @@ class KAK extends Model {
      * Fungsi kustom untuk mengambil data berdasarkan status_id
      */
         public function findByStatus($status_id) {
-            $sql = "SELECT * FROM {$this->table} WHERE status_id = ? ORDER BY created_at DESC";
+            $sql = "SELECT * FROM {$this->table} WHERE status_id = ? ORDER BY kak_id ASC";
             return $this->query($sql, [$status_id])->fetchAll(\PDO::FETCH_ASSOC);
         }
     
@@ -32,12 +32,14 @@ class KAK extends Model {
                 $sql = "SELECT 
                             t.*,
                             u.nama_lengkap AS pengusul_nama,
+                            COALESCE(tkg.penanggung_jawab_manual, u.nama_lengkap) AS pengusul_nama,
                             ks.nama_status,
                             tk.nama_tipe AS nama_tipe_kegiatan,
                             ma.kode_anggaran,
                             ma.nama_sumber_dana
                         FROM t_kak t
                         LEFT JOIN m_users u ON t.pengusul_user_id = u.user_id
+                        LEFT JOIN t_kegiatan tkg ON t.kak_id = tkg.kak_id
                         LEFT JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
                         LEFT JOIN m_tipe_kegiatan tk ON t.tipe_kegiatan_id = tk.tipe_kegiatan_id
                         LEFT JOIN m_mata_anggaran ma ON t.mata_anggaran_id = ma.mata_anggaran_id
