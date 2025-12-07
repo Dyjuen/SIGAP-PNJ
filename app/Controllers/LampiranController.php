@@ -246,14 +246,8 @@ class LampiranController
                 Response::error('Lampiran hanya bisa dihapus jika kegiatan berstatus Draft atau Revisi.', 400);
             }
 
-            // Delete file from server
-            $filePath = $_SERVER['DOCUMENT_ROOT'] . $lampiran['file_path'];
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-
-            // Delete from database
-            $this->lampiranModel->delete($lampiranId);
+            // Archive from database
+            $this->lampiranModel->update($lampiranId, ['status_lampiran' => 'archived']);
 
             Response::success(null, 'File berhasil dihapus.');
 

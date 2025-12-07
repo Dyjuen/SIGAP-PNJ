@@ -209,4 +209,20 @@ class KegiatanLampiran extends Model
         $stmt->execute([$anggaranId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Dapatkan semua lampiran untuk suatu kegiatan, termasuk yang diarsipkan.
+     * @param int $kegiatanId
+     * @return array
+     */
+    public function getByKegiatanId($kegiatanId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT * FROM {$this->table}
+            WHERE kegiatan_id = ?
+            ORDER BY created_at ASC
+        ");
+        $stmt->execute([$kegiatanId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
