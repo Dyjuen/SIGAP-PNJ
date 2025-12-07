@@ -136,7 +136,6 @@ class LpjController extends Controller
                                 'nama_file_asli' => $uploadResult['original_name'],
                                 'path_file_disimpan' => $uploadResult['file_path'],
                                 'uploader_user_id' => $this->user['user_id'],
-                                'catatan' => null,
                             ]);
                         }
                     }
