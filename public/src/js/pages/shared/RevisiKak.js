@@ -1965,45 +1965,6 @@ export function renderRevisiKakPage(path, userRole) {
         renderIkuOptions();
     });
 
-    const fieldCommentInput = document.getElementById("fieldCommentInput");
-    if (fieldCommentInput) {
-      fieldCommentInput.addEventListener("keydown", function(e) {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          saveFieldComment();
-        }
-      });
-    }
-
-    const rowCommentInput = document.getElementById("rowCommentInput");
-    if (rowCommentInput) {
-      rowCommentInput.addEventListener("keydown", function(e) {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          saveRowComment();
-        }
-      });
-    }
-
-    // Focus input when modal opens
-    const fieldCommentModal = document.getElementById('fieldCommentModal');
-    if (fieldCommentModal) {
-        fieldCommentModal.addEventListener('shown.bs.modal', function () {
-            if (fieldCommentInput && !fieldCommentInput.disabled) {
-                fieldCommentInput.focus();
-            }
-        });
-    }
-
-    const rowCommentModal = document.getElementById('rowCommentModal');
-    if (rowCommentModal) {
-        rowCommentModal.addEventListener('shown.bs.modal', function () {
-            if (rowCommentInput && !rowCommentInput.disabled) {
-                rowCommentInput.focus();
-            }
-        });
-    }
-
     // Populate options
     renderIkuOptions();
     
@@ -2926,6 +2887,46 @@ export function renderRevisiKakPage(path, userRole) {
         rabContainer.addEventListener('input', (e) => {
             if (e.target.matches('input[type="number"]')) {
                 calculateTotals();
+            }
+        });
+    }
+
+    // Enter key submission for comment modals
+    const fieldCommentInput = document.getElementById("fieldCommentInput");
+    if (fieldCommentInput) {
+      fieldCommentInput.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          saveFieldComment();
+        }
+      });
+    }
+
+    const rowCommentInput = document.getElementById("rowCommentInput");
+    if (rowCommentInput) {
+      rowCommentInput.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          saveRowComment();
+        }
+      });
+    }
+
+    // Focus input when modal opens
+    const fieldCommentModal = document.getElementById('fieldCommentModal');
+    if (fieldCommentModal) {
+        fieldCommentModal.addEventListener('shown.bs.modal', function () {
+            if (fieldCommentInput && !fieldCommentInput.disabled) {
+                fieldCommentInput.focus();
+            }
+        });
+    }
+
+    const rowCommentModal = document.getElementById('rowCommentModal');
+    if (rowCommentModal) {
+        rowCommentModal.addEventListener('shown.bs.modal', function () {
+            if (rowCommentInput && !rowCommentInput.disabled) {
+                rowCommentInput.focus();
             }
         });
     }

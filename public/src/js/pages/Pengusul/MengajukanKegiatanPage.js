@@ -663,7 +663,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-label-secondary" tabindex="-1" data-bs-dismiss="modal">Batal</button>
             <button type="button" class="btn btn-primary" id="btnSelesaiAjukan">
               Selesai
             </button>
