@@ -88,7 +88,8 @@ class KAKValidator extends Validator
                     $iku_validator = new Validator();
                     $iku_rules = [
                         'iku_id' => 'required',
-                        'persentase_target' => 'required',
+                        'target' => 'required',
+                        'satuan_id' => 'required',
                     ];
                     if (!$iku_validator->validate($iku_item, $iku_rules)) {
                         $this->errors['target_iku.' . $index] = $iku_validator->getErrors();

@@ -666,7 +666,7 @@
                     <th style="width: 8%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">No</th>
                     <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Kode IKU</th>
                     <th style="width: 62%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Nama IKU</th>
-                    <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Target Kontribusi (%)</th>
+                    <th style="width: 15%; background-color: #e8e8e8; border: 1px solid #000; padding: 4px; text-align: center; font-size: 10pt; line-height: 1.3; font-family: 'Times New Roman', Times, serif;">Target</th>
                 </tr>
             </thead>
             <tbody>
@@ -678,7 +678,7 @@
                     <td style="width: 8%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= $no++ ?></td>
                     <td style="width: 15%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($iku['kode_iku']) ?></td>
                     <td style="width: 62%; border: 1px solid #000; padding: 5px; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= htmlspecialchars($iku['nama_iku']) ?></td>
-                    <td style="width: 15%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= number_format($iku['persentase_target'], 0) ?>%</td>
+                    <td style="width: 15%; border: 1px solid #000; padding: 5px; text-align: center; line-height: 1.3; font-family: 'Times New Roman', Times, serif;"><?= number_format($iku['target'], 0, ',', '.') ?> <?= htmlspecialchars($iku['nama_satuan'] ?? '') ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

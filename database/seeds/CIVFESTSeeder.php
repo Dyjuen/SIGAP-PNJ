@@ -36,6 +36,14 @@ class CIVFESTSeeder extends AbstractSeed
         $s_org = $this->fetchRow("SELECT satuan_id FROM m_satuan WHERE nama_satuan = 'Orang'");
         $id_org = $s_org ? $s_org['satuan_id'] : 1;
 
+        // Add Satuan for 'Persen' (if it doesn't exist)
+        $s_persen = $this->fetchRow("SELECT satuan_id FROM m_satuan WHERE nama_satuan = 'Persen'");
+        if (!$s_persen) {
+            $this->table('m_satuan')->insert(['nama_satuan' => 'Persen'])->saveData();
+            $s_persen = $this->fetchRow("SELECT satuan_id FROM m_satuan WHERE nama_satuan = 'Persen'");
+        }
+        $id_persen = $s_persen ? $s_persen['satuan_id'] : 1; // Fallback to 1 if not found/created
+
         // Kategori Belanja
         $k_brg = $this->fetchRow("SELECT kategori_belanja_id FROM m_kategori_belanja WHERE kode = 'BRG'");
         $id_brg = $k_brg ? $k_brg['kategori_belanja_id'] : 1;
@@ -337,7 +345,8 @@ class CIVFESTSeeder extends AbstractSeed
             [
                 'kak_id' => $kakId,
                 'iku_id' => $id_iku2,
-                'persentase_target' => 100.00 // Assuming contributes to 100% of this IKU target for this activity
+                'target' => 100, // Target number
+                'satuan_id' => $id_persen // Satuan for percentage
             ]
         ];
         $this->table('t_kak_iku')->insert($ikuData)->saveData();

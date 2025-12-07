@@ -1037,17 +1037,18 @@ export function renderDetailKegiatanPage(path, userRole) {
 
   const createIkuRow = (item) => `
     <div class="row-item">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="col-span-1">
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
           <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${getNameById(item.iku_id, masterState.iku, "iku_id", "nama_iku")}">
         </div>
         <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
-          <div class="flex gap-2 items-center">
-            <input type="text" readonly class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.persentase_target || "0"}">
-            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-          </div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Target</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.target || "0"}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan</label>
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.nama_satuan || (item.satuan_id ? getNameById(item.satuan_id, masterState.satuan, "satuan_id", "nama_satuan") : "-")}">
         </div>
       </div>
     </div>

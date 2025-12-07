@@ -399,9 +399,10 @@ class KAKController
                 'tahapan'   => "SELECT * FROM t_kak_tahapan WHERE kak_id=:id ORDER BY urutan ASC",
                 'indikator' => "SELECT * FROM t_kak_indikator WHERE kak_id=:id",
                 'target'    => "SELECT * FROM t_kak_target WHERE kak_id=:id",
-                'iku'       => "SELECT tki.*, mi.kode_iku, mi.nama_iku 
+                'iku'       => "SELECT tki.*, mi.kode_iku, mi.nama_iku, ms.nama_satuan 
                                                 FROM t_kak_iku tki 
                                                 LEFT JOIN m_iku mi ON tki.iku_id = mi.iku_id 
+                                                LEFT JOIN m_satuan ms ON tki.satuan_id = ms.satuan_id
                                                 WHERE tki.kak_id = :id",
                 'anggaran'  => "
                                 SELECT 
@@ -542,6 +543,8 @@ class KAKController
 
             if (!empty($k['indikator_kinerja'])) {
                 foreach ($k['indikator_kinerja'] as $i) {
+                    $persen = isset($i['persentase_target']) && $i['persentase_target'] !== '' ? $i['persentase_target'] : null;
+
                     $this->db->query("
                         INSERT INTO t_kak_target
                         (kak_id, bulan_indikator, deskripsi_target, persentase_target)
@@ -550,7 +553,7 @@ class KAKController
                     $this->db->bind(':id', $id);
                     $this->db->bind(':bulan', $i['bulan_indikator']);
                     $this->db->bind(':desk', $i['deskripsi_target']);
-                    $this->db->bind(':p', $i['persentase_target']);
+                    $this->db->bind(':p', $persen);
                     $this->db->execute();
                 }
             }
@@ -567,14 +570,18 @@ class KAKController
                         Response::badRequest("IKU dengan ID '{$iku['iku_id']}' tidak ditemukan. Pastikan semua IKU ID valid.");
                     }
 
+                    $target = isset($iku['target']) && $iku['target'] !== '' ? $iku['target'] : 0;
+                    $satuanId = isset($iku['satuan_id']) && $iku['satuan_id'] !== '' ? $iku['satuan_id'] : null;
+
                     $this->db->query("
                         INSERT INTO t_kak_iku
-                        (kak_id, iku_id, persentase_target)
-                        VALUES (:id, :iku, :p)
+                        (kak_id, iku_id, target, satuan_id)
+                        VALUES (:id, :iku, :t, :s)
                     ");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':iku', $iku['iku_id']);
-                    $this->db->bind(':p', $iku['persentase_target']);
+                    $this->db->bind(':t', $target);
+                    $this->db->bind(':s', $satuanId);
                     $this->db->execute();
                 }
             }
@@ -584,6 +591,11 @@ class KAKController
                     $v1 = isset($r['volume1']) && $r['volume1'] !== '' ? (float)$r['volume1'] : null;
                     $v2 = isset($r['volume2']) && $r['volume2'] !== '' ? (float)$r['volume2'] : null;
                     $v3 = isset($r['volume3']) && $r['volume3'] !== '' ? (float)$r['volume3'] : null;
+                    
+                    $s1 = isset($r['satuan1_id']) && $r['satuan1_id'] !== '' ? $r['satuan1_id'] : null;
+                    $s2 = isset($r['satuan2_id']) && $r['satuan2_id'] !== '' ? $r['satuan2_id'] : null;
+                    $s3 = isset($r['satuan3_id']) && $r['satuan3_id'] !== '' ? $r['satuan3_id'] : null;
+
                     $harga = (float)($r['harga_satuan'] ?? 0);
                     $jumlah = ($v1 ?? 1) * ($v2 ?? 1) * ($v3 ?? 1) * $harga;
 
@@ -595,11 +607,11 @@ class KAKController
                     $this->db->bind(':id', $id);
                     $this->db->bind(':u', $r['uraian']);
                     $this->db->bind(':v1', $v1);
-                    $this->db->bind(':s1', $r['satuan1_id']);
+                    $this->db->bind(':s1', $s1);
                     $this->db->bind(':v2', $v2);
-                    $this->db->bind(':s2', $r['satuan2_id'] ?? null);
+                    $this->db->bind(':s2', $s2);
                     $this->db->bind(':v3', $v3);
-                    $this->db->bind(':s3', $r['satuan3_id'] ?? null);
+                    $this->db->bind(':s3', $s3);
                     $this->db->bind(':h', $harga);
                     $this->db->bind(':j', $jumlah);
                     $this->db->bind(':kat', $r['kategori_belanja_id']);
@@ -724,21 +736,27 @@ class KAKController
 
             if (!empty($k['indikator_kinerja'])) {
                 foreach ($k['indikator_kinerja'] as $i) {
+                    $persen = isset($i['persentase_target']) && $i['persentase_target'] !== '' ? $i['persentase_target'] : null;
+
                     $this->db->query("INSERT INTO t_kak_target (kak_id, bulan_indikator, deskripsi_target, persentase_target) VALUES (:id, :bulan, :desk, :p)");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':bulan', $i['bulan_indikator']);
                     $this->db->bind(':desk', $i['deskripsi_target']);
-                    $this->db->bind(':p', $i['persentase_target']);
+                    $this->db->bind(':p', $persen);
                     $this->db->execute();
                 }
             }
 
             if (!empty($input['target_iku'])) {
                 foreach ($input['target_iku'] as $iku) {
-                    $this->db->query("INSERT INTO t_kak_iku (kak_id, iku_id, persentase_target) VALUES (:id, :iku, :p)");
+                    $target = isset($iku['target']) && $iku['target'] !== '' ? $iku['target'] : 0;
+                    $satuanId = isset($iku['satuan_id']) && $iku['satuan_id'] !== '' ? $iku['satuan_id'] : null;
+
+                    $this->db->query("INSERT INTO t_kak_iku (kak_id, iku_id, target, satuan_id) VALUES (:id, :iku, :t, :s)");
                     $this->db->bind(':id', $id);
                     $this->db->bind(':iku', $iku['iku_id']);
-                    $this->db->bind(':p', $iku['persentase_target']);
+                    $this->db->bind(':t', $target);
+                    $this->db->bind(':s', $satuanId);
                     $this->db->execute();
                 }
             }
@@ -748,6 +766,11 @@ class KAKController
                     $v1 = isset($r['volume1']) && $r['volume1'] !== '' ? (float)$r['volume1'] : null;
                     $v2 = isset($r['volume2']) && $r['volume2'] !== '' ? (float)$r['volume2'] : null;
                     $v3 = isset($r['volume3']) && $r['volume3'] !== '' ? (float)$r['volume3'] : null;
+                    
+                    $s1 = isset($r['satuan1_id']) && $r['satuan1_id'] !== '' ? $r['satuan1_id'] : null;
+                    $s2 = isset($r['satuan2_id']) && $r['satuan2_id'] !== '' ? $r['satuan2_id'] : null;
+                    $s3 = isset($r['satuan3_id']) && $r['satuan3_id'] !== '' ? $r['satuan3_id'] : null;
+
                     $harga = (float)($r['harga_satuan'] ?? 0);
                     $jumlah = ($v1 ?? 1) * ($v2 ?? 1) * ($v3 ?? 1) * $harga;
 
@@ -755,11 +778,11 @@ class KAKController
                     $this->db->bind(':id', $id);
                     $this->db->bind(':u', $r['uraian']);
                     $this->db->bind(':v1', $v1);
-                    $this->db->bind(':s1', $r['satuan1_id']);
+                    $this->db->bind(':s1', $s1);
                     $this->db->bind(':v2', $v2);
-                    $this->db->bind(':s2', $r['satuan2_id'] ?? null);
+                    $this->db->bind(':s2', $s2);
                     $this->db->bind(':v3', $v3);
-                    $this->db->bind(':s3', $r['satuan3_id'] ?? null);
+                    $this->db->bind(':s3', $s3);
                     $this->db->bind(':h', $harga);
                     $this->db->bind(':j', $jumlah);
                     $this->db->bind(':kat', $r['kategori_belanja_id']);

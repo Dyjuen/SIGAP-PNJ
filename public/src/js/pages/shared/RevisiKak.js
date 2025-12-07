@@ -11,7 +11,7 @@ export function renderRevisiKakPage(path, userRole) {
     ? ""
     : "color: #4B5563 !important; border-color: #F3F4F6 !important; background: #F3F4F6 !important; cursor: default; ";
   const pageContent = `
-    <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
     <style>
     /* Daterangepicker theme overrides */
     .daterangepicker { border-color: #00BCD4 !important; }
@@ -1920,7 +1920,7 @@ export function renderRevisiKakPage(path, userRole) {
     newItem.className = "iku-item dynamic-field-item new-item-animation row-item mb-4";
     
     newItem.innerHTML = `
-      <div class="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
+      <div class="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
@@ -1928,11 +1928,14 @@ export function renderRevisiKakPage(path, userRole) {
           </select>
         </div>
         <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
-          <div class="flex gap-2 items-center">
-            <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100">
-            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-          </div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Target</label>
+          <input type="number" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;">
+            <option value="">Pilih Satuan</option>
+          </select>
         </div>
         <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeIkuField(this)">
           <span class="text-xl font-bold">−</span>
@@ -1941,13 +1944,24 @@ export function renderRevisiKakPage(path, userRole) {
     `;
     container.appendChild(newItem);
     
-    const selectElement = newItem.querySelector('select');
+    const selectElement = newItem.querySelector('select:not(.satuan-select)');
     selectElement.addEventListener('change', () => {
         renderIkuOptions();
     });
 
-    // Populate initial options
+    // Populate options
     renderIkuOptions();
+    
+    // Populate Satuan dropdown
+    if (masterState.satuan && masterState.satuan.length > 0) {
+        const satuanSelect = newItem.querySelector('.satuan-select');
+        masterState.satuan.forEach(satuan => {
+            const option = document.createElement("option");
+            option.value = satuan.satuan_id;
+            option.textContent = satuan.nama_satuan;
+            satuanSelect.appendChild(option);
+        });
+    }
   };
 
   function calculateTotals() {
@@ -2195,37 +2209,44 @@ export function renderRevisiKakPage(path, userRole) {
     </div>
   `;
 
-  const createIkuRow = (item, index) => `
+  const createIkuRow = (item, index) => {
+    // Safely handle potential null/undefined for satuan_id
+    const satuanValue = item.satuan_id 
+        ? getNameById(item.satuan_id, masterState.satuan, "satuan_id", "nama_satuan") 
+        : (item.nama_satuan || "-");
+
+    return `
     <div class="row-with-comment" data-row-type="t_kak_iku" data-pk-name="kak_iku_id" data-pk-value="${
       item.kak_iku_id || item.iku_id
     }">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="col-span-1">
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${getNameById(
-    item.iku_id,
-    masterState.iku,
-    "iku_id",
-    "nama_iku"
-  )}">
+            item.iku_id,
+            masterState.iku,
+            "iku_id",
+            "nama_iku"
+          )}">
         </div>
         <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)</label>
-          <div class="flex gap-2 items-center">
-                        <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.persentase_target || "0"
-  }">
-            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-          </div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Target</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
+            item.target || "0"
+          }">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan</label>
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${satuanValue}">
         </div>
       </div>
-      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="IKU & Nilai #${
+      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="IKU & Target #${
         index + 1
       }">
         <i class="ti ti-message-circle-2">&#xeaed;</i>
       </button>
     </div>
-  `;
+  `};
 
   const createRabRow = (item, index) => {
     const vol1 = isVerifikator && !item.volume1 ? "" : item.volume1 || "";
@@ -3645,25 +3666,37 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
           if (kakDataState.iku) {
               document.querySelectorAll('#ikuRenstraContainer .row-with-comment').forEach((row, idx) => {
                   const original = kakDataState.iku[idx];
-                  // 2nd input is percentage
-                  const inputs = row.querySelectorAll('input');
-                  const percentInput = inputs.length > 1 ? inputs[1] : null; 
-                  if (original && percentInput) {
+                  // Structure: Indikator (input), Target (input), Satuan (input)
+                  // We can't easily change values of existing rows in Revisi view if they are read-only inputs.
+                  // However, if the logic allows updating existing ones, we need to parse them.
+                  // BUT, `createIkuRow` renders inputs with `value` from `original`.
+                  // The user (Pengusul) can only ADD new rows or potentially DELETE existing ones (if logic supported, but `removeField` is general).
+                  // If Pengusul CANNOT edit existing rows inline (they are readonly), then we just push the original data or data from DOM.
+                  
+                  // Since `createIkuRow` makes them readonly, we assume we just keep them as is.
+                  // We push `original` ID and values.
+                  
+                  if (original) {
                       target_iku.push({
-                          iku_id: original.iku_id || original.kak_iku_id, // Fallback logic
-                          persentase_target: parseFloat(percentInput.value) || 0
+                          iku_id: original.iku_id || original.kak_iku_id,
+                          target: parseFloat(original.target) || 0,
+                          satuan_id: parseInt(original.satuan_id) || 0
                       });
                   }
               });
           }
           // New
           document.querySelectorAll('#ikuRenstraContainer .iku-item').forEach(row => {
-              const select = row.querySelector('select');
+              const selects = row.querySelectorAll('select');
+              const ikuSelect = selects[0];
+              const satuanSelect = selects[1];
               const input = row.querySelector('input[type="number"]');
-              if (select.value) {
+              
+              if (ikuSelect && ikuSelect.value) {
                   target_iku.push({
-                      iku_id: parseInt(select.value),
-                      persentase_target: parseFloat(input.value) || 0
+                      iku_id: parseInt(ikuSelect.value),
+                      target: parseFloat(input.value) || 0,
+                      satuan_id: parseInt(satuanSelect.value) || 0
                   });
               }
           });
