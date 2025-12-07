@@ -473,7 +473,7 @@ export function renderPencairanDanaPage(path, userRole) {
   }
 
   async function fetchKegiatan() {
-    const tbody = document.getElementById("pencairanTableBody");
+    const tbody = document.getElementById("kegiatanTableBody");
     tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(8, 'Memuat data pencairan dana...') : '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
     try {
       const response = await apiRequest("/kegiatan");
