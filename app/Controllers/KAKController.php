@@ -601,9 +601,9 @@ class KAKController
                     $v2 = isset($r['volume2']) && $r['volume2'] !== '' ? (float)$r['volume2'] : null;
                     $v3 = isset($r['volume3']) && $r['volume3'] !== '' ? (float)$r['volume3'] : null;
                     
-                    $s1 = isset($r['satuan1_id']) && $r['satuan1_id'] !== '' ? $r['satuan1_id'] : null;
-                    $s2 = isset($r['satuan2_id']) && $r['satuan2_id'] !== '' ? $r['satuan2_id'] : null;
-                    $s3 = isset($r['satuan3_id']) && $r['satuan3_id'] !== '' ? $r['satuan3_id'] : null;
+                    $s1 = isset($r['satuan1_id']) && $r['satuan1_id'] !== '' && $r['satuan1_id'] != 0 ? $r['satuan1_id'] : null;
+                    $s2 = isset($r['satuan2_id']) && $r['satuan2_id'] !== '' && $r['satuan2_id'] != 0 ? $r['satuan2_id'] : null;
+                    $s3 = isset($r['satuan3_id']) && $r['satuan3_id'] !== '' && $r['satuan3_id'] != 0 ? $r['satuan3_id'] : null;
 
                     $harga = (float)($r['harga_satuan'] ?? 0);
                     $jumlah = ($v1 ?? 1) * ($v2 ?? 1) * ($v3 ?? 1) * $harga;
@@ -784,9 +784,9 @@ class KAKController
                     $v2 = isset($r['volume2']) && $r['volume2'] !== '' ? (float)$r['volume2'] : null;
                     $v3 = isset($r['volume3']) && $r['volume3'] !== '' ? (float)$r['volume3'] : null;
                     
-                    $s1 = isset($r['satuan1_id']) && $r['satuan1_id'] !== '' ? $r['satuan1_id'] : null;
-                    $s2 = isset($r['satuan2_id']) && $r['satuan2_id'] !== '' ? $r['satuan2_id'] : null;
-                    $s3 = isset($r['satuan3_id']) && $r['satuan3_id'] !== '' ? $r['satuan3_id'] : null;
+                    $s1 = isset($r['satuan1_id']) && $r['satuan1_id'] !== '' && $r['satuan1_id'] != 0 ? $r['satuan1_id'] : null;
+                    $s2 = isset($r['satuan2_id']) && $r['satuan2_id'] !== '' && $r['satuan2_id'] != 0 ? $r['satuan2_id'] : null;
+                    $s3 = isset($r['satuan3_id']) && $r['satuan3_id'] !== '' && $r['satuan3_id'] != 0 ? $r['satuan3_id'] : null;
 
                     $harga = (float)($r['harga_satuan'] ?? 0);
                     $jumlah = ($v1 ?? 1) * ($v2 ?? 1) * ($v3 ?? 1) * $harga;
