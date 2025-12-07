@@ -1363,17 +1363,14 @@ export function renderRevisiLpjPage(path, userRole) {
 
                       ${
                         isPengusul && file.status_lampiran !== 'archived'
-                          ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
-
-                                                                      <i class="ti ti-trash">&#xeb41;</i>
-                            </button>`
+                          ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file"><i class="ti ti-trash">&#xeb41;</i></button>`
                           : ""
                       }
 
                    </div>
 
                 </div>
-            )
+            `)
 
             .join("")
         : '<p class="text-xs text-gray-400 italic no-files">Tidak ada bukti terlampir untuk item ini.</p>';
