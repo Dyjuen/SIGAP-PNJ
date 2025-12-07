@@ -1985,6 +1985,25 @@ export function renderRevisiKakPage(path, userRole) {
       });
     }
 
+    // Focus input when modal opens
+    const fieldCommentModal = document.getElementById('fieldCommentModal');
+    if (fieldCommentModal) {
+        fieldCommentModal.addEventListener('shown.bs.modal', function () {
+            if (fieldCommentInput && !fieldCommentInput.disabled) {
+                fieldCommentInput.focus();
+            }
+        });
+    }
+
+    const rowCommentModal = document.getElementById('rowCommentModal');
+    if (rowCommentModal) {
+        rowCommentModal.addEventListener('shown.bs.modal', function () {
+            if (rowCommentInput && !rowCommentInput.disabled) {
+                rowCommentInput.focus();
+            }
+        });
+    }
+
     // Populate options
     renderIkuOptions();
     
@@ -2934,8 +2953,19 @@ export function renderRevisiKakPage(path, userRole) {
     fieldCommentLabelEl.textContent = fieldLabel;
     let container = btn.closest(".row-with-comment");
     if (!container) container = btn.closest(".input-with-comment");
-    const input = container.querySelector("input, textarea");
-    currentFieldValueEl.textContent = (input ? input.value : "") || "(Kosong)";
+    const input = container.querySelector("input, textarea, select");
+    
+    let currentValue = "";
+    if (input) {
+        if (input.tagName.toLowerCase() === 'select') {
+            const selectedOption = input.options[input.selectedIndex];
+            currentValue = selectedOption ? selectedOption.text : "";
+        } else {
+            currentValue = input.value;
+        }
+    }
+    
+    currentFieldValueEl.textContent = currentValue || "(Kosong)";
 
     if (isVerifikator) {
       fieldCommentInputContainer.style.display = "block";
