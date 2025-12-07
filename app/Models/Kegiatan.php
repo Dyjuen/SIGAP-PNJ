@@ -220,7 +220,11 @@ class Kegiatan extends Model
                         ks.status_id,
                         (SELECT COALESCE(SUM(pd.jumlah_dicairkan), 0) FROM t_pencairan_dana pd WHERE pd.kegiatan_id = k.kegiatan_id) as dana_dicairkan,
                         (SELECT MAX(pd.tanggal_pencairan) FROM t_pencairan_dana pd WHERE pd.kegiatan_id = k.kegiatan_id) as disbursement_date,
-                        (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_diusulkan";
+                        COALESCE(
+                            (SELECT SUM(tka.jumlah_diusulkan) FROM t_kegiatan_anggaran tka WHERE tka.kegiatan_id = k.kegiatan_id),
+                            (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id),
+                            0
+                        ) as total_anggaran_diusulkan";
 
         $page = $filters['page'] ?? 1;
         $perPage = $filters['per_page'] ?? 10;
@@ -413,7 +417,12 @@ class Kegiatan extends Model
                     k.*, 
                     t.*, 
                     u.nama_lengkap as pengusul_nama, 
-                    u.email as pengusul_email
+                    u.email as pengusul_email,
+                    COALESCE(
+                        (SELECT SUM(tka.jumlah_diusulkan) FROM t_kegiatan_anggaran tka WHERE tka.kegiatan_id = k.kegiatan_id),
+                        (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id),
+                        0
+                    ) as total_anggaran_diusulkan
                 FROM t_kegiatan k
                 JOIN t_kak t ON k.kak_id = t.kak_id
                 JOIN m_users u ON t.pengusul_user_id = u.user_id
@@ -421,11 +430,23 @@ class Kegiatan extends Model
 
         $kegiatan = $this->query($sql, [$kegiatanId])->fetch(PDO::FETCH_ASSOC);
         if ($kegiatan) {
-            $sqlAnggaran = "SELECT ka.*, kb.nama as nama_kategori
-                            FROM t_kak_anggaran ka
-                            LEFT JOIN m_kategori_belanja kb ON ka.kategori_belanja_id = kb.kategori_belanja_id
-                            WHERE ka.kak_id = ?";
-            $kegiatan['anggaran_items'] = $this->query($sqlAnggaran, [$kegiatan['kak_id']])->fetchAll(PDO::FETCH_ASSOC);
+            // Check if t_kegiatan_anggaran has data
+            $sqlCheck = "SELECT COUNT(*) FROM t_kegiatan_anggaran WHERE kegiatan_id = ?";
+            $hasKegiatanAnggaran = $this->query($sqlCheck, [$kegiatanId])->fetchColumn() > 0;
+
+            if ($hasKegiatanAnggaran) {
+                $sqlAnggaran = "SELECT ka.*, kb.nama as nama_kategori
+                                FROM t_kegiatan_anggaran ka
+                                LEFT JOIN m_kategori_belanja kb ON ka.kategori_belanja_id = kb.kategori_belanja_id
+                                WHERE ka.kegiatan_id = ?";
+                $kegiatan['anggaran_items'] = $this->query($sqlAnggaran, [$kegiatanId])->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                $sqlAnggaran = "SELECT ka.*, kb.nama as nama_kategori
+                                FROM t_kak_anggaran ka
+                                LEFT JOIN m_kategori_belanja kb ON ka.kategori_belanja_id = kb.kategori_belanja_id
+                                WHERE ka.kak_id = ?";
+                $kegiatan['anggaran_items'] = $this->query($sqlAnggaran, [$kegiatan['kak_id']])->fetchAll(PDO::FETCH_ASSOC);
+            }
 
             // Fetch associated files for each budget item
             if (!empty($kegiatan['anggaran_items'])) {
@@ -462,7 +483,11 @@ class Kegiatan extends Model
                     t.pengusul_user_id, 
                     t.status_id, 
                     t.nama_kegiatan,
-                    (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id) as total_anggaran_disetujui,
+                    COALESCE(
+                        (SELECT SUM(tka.jumlah_diusulkan) FROM t_kegiatan_anggaran tka WHERE tka.kegiatan_id = k.kegiatan_id),
+                        (SELECT SUM(ta.jumlah_diusulkan) FROM t_kak_anggaran ta WHERE ta.kak_id = t.kak_id),
+                        0
+                    ) as total_anggaran_disetujui,
                     (SELECT COALESCE(SUM(pd.jumlah_dicairkan), 0) FROM t_pencairan_dana pd WHERE pd.kegiatan_id = k.kegiatan_id) as dana_dicairkan
                 FROM {$this->table} k
                 JOIN t_kak t ON k.kak_id = t.kak_id

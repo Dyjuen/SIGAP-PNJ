@@ -632,7 +632,7 @@
                     <th style="text-align: center; font-size: 11pt;"><font face="times">No</font></th>
                     <th style="text-align: center; font-size: 11pt;"><font face="times">Kode IKU</font></th>
                     <th style="text-align: center; font-size: 11pt;"><font face="times">Nama IKU</font></th>
-                    <th style="text-align: center; font-size: 11pt;"><font face="times">Target Kontribusi (%)</font></th>
+                    <th style="text-align: center; font-size: 11pt;"><font face="times">Target</font></th>
                 </tr>
             </thead>
             <tbody>
@@ -644,7 +644,7 @@
                     <td style="text-align: center;"><font face="times"><?= $no++ ?></font></td>
                     <td style="text-align: center;"><font face="times"><?= htmlspecialchars($iku['kode_iku']) ?></font></td>
                     <td><font face="times"><?= htmlspecialchars($iku['nama_iku']) ?></font></td>
-                    <td style="text-align: center;"><font face="times"><?= number_format($iku['persentase_target'], 0) ?>%</font></td>
+                    <td style="text-align: center;"><font face="times"><?= number_format($iku['target'], 0, ',', '.') ?> <?= htmlspecialchars($iku['nama_satuan'] ?? '') ?></font></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

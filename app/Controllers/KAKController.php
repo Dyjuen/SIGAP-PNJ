@@ -1217,9 +1217,10 @@ class KAKController
 
             $input = json_decode(file_get_contents('php://input'), true);
             $kodeAnggaran = $input['kode_anggaran'] ?? null;
-            $namaSumberDana = $input['nama_sumber_dana'] ?? null;
-            $tahunAnggaran = $input['tahun_anggaran'] ?? null;
-            $totalPagu = $input['total_pagu'] ?? null;
+            // Handle optional fields: convert empty strings to null
+            $namaSumberDana = isset($input['nama_sumber_dana']) && $input['nama_sumber_dana'] !== '' ? $input['nama_sumber_dana'] : null;
+            $tahunAnggaran = isset($input['tahun_anggaran']) && $input['tahun_anggaran'] !== '' ? $input['tahun_anggaran'] : null;
+            $totalPagu = isset($input['total_pagu']) && $input['total_pagu'] !== '' ? $input['total_pagu'] : null;
 
             // Validasi: Kode Anggaran (MAK) wajib diisi
             if (empty($kodeAnggaran)) {
