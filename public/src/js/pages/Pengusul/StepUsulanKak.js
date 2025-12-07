@@ -452,6 +452,12 @@ export function renderUsulanKakPage(path, userRole) {
         transform: translateY(-1px);
       }
 
+      /* Add focus outline for all buttons */
+      button:focus {
+        outline: 2px solid black; /* Black outline */
+        outline-offset: 2px; /* Space between button and outline */
+      }
+
       /* Step content fade in */
       .step-content {
         display: none;
@@ -1444,6 +1450,7 @@ export function renderUsulanKakPage(path, userRole) {
       addTahapanPelaksanaan();
       addIndikatorKinerja();
       addIkuField();
+      document.getElementById("namaKegiatan")?.focus(); // Auto-focus on Nama Kegiatan input
     }
   }
 
@@ -2304,7 +2311,7 @@ export function renderUsulanKakPage(path, userRole) {
                 <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm autonumeric-currency" placeholder="Input Harga" data-raw-value="${harga}" ${inputStyle}>
             </div>
             <div class="flex items-end pb-3">
-                <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+                <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)" tabindex="-1">
                     <span class="text-xl font-bold">−</span>
                 </button>
             </div>
