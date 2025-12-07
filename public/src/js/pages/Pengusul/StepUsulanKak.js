@@ -615,23 +615,23 @@ export function renderUsulanKakPage(path, userRole) {
           <div class="flex gap-8">
             <!-- Sidebar Menu -->
             <div class="flex flex-col gap-4 w-96">
-              <button class="menu-button border-2 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3 active" data-menu="gambaran-umum" style="border-color: #00BCD4; background: rgba(0, 188, 212, 0.1);">
+              <button class="menu-button border-2 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3 active" data-menu="gambaran-umum" style="border-color: #00BCD4; background: rgba(0, 188, 212, 0.1);" tabindex="-1">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-file-text">&#xff43;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Gambaran Umum</div>
               </button>
-              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="penerima-manfaat">
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="penerima-manfaat" tabindex="-1">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-users">&#xf7cd;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Penerima Manfaat</div>
               </button>
-              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="strategi-pencapaian">
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="strategi-pencapaian" tabindex="-1">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-target">&#xeb35;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Strategi Pencapaian</div>
               </button>
-              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="indikator-kinerja">
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="indikator-kinerja" tabindex="-1">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-chart-bar">&#xea59;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Indikator Kinerja</div>
               </button>
-              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="kurun-waktu">
+              <button class="menu-button border-2 border-gray-200 rounded-xl p-4 text-left cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center gap-3" data-menu="kurun-waktu" tabindex="-1">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center style=\"font-size: 5px\" font-bold text-sm" style="background: #00BCD4; color: #FFFFFF;"><i class="ti ti-calendar">&#xea53;</i></div>
                 <div class="font-semibold text-base" style="color: #00BCD4;">Kurun Waktu Pelaksanaan</div>
               </button>
@@ -2057,7 +2057,7 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.className = "manfaat-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
     newItem.innerHTML = `
       <input type="text" class="manfaat-input flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Output Kegiatan" value="${value}">
-      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)" tabindex="-1">
         <span class="text-xl font-bold">−</span>
       </button>
     `;
@@ -2074,7 +2074,7 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.className = "tahapan-item dynamic-field-item new-item-animation flex gap-4 items-start mb-4";
     newItem.innerHTML = `
       <input type="text" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';" placeholder="Input" value="${value}">
-      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)" tabindex="-1">
         <span class="text-xl font-bold">−</span>
       </button>
     `;
@@ -2114,7 +2114,7 @@ export function renderUsulanKakPage(path, userRole) {
           <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
         </div>
       </div>
-      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)">
+      <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex-shrink-0 flex items-center justify-center transition-all duration-300 hover:scale-110 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeField(this)" tabindex="-1">
         <span class="text-xl font-bold">−</span>
       </button>
     `;
@@ -2168,7 +2168,7 @@ export function renderUsulanKakPage(path, userRole) {
             <option value="">Pilih Satuan</option>
           </select>
         </div>
-        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeIkuField(this)">
+        <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 visible" style="background: #EF4444; color: #FFFFFF;" onclick="removeIkuField(this)" tabindex="-1">
           <span class="text-xl font-bold">−</span>
         </button>
       </div>

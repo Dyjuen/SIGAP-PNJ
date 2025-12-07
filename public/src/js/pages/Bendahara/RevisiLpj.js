@@ -634,7 +634,9 @@ export function renderRevisiLpjPage(path, userRole) {
         gap: 0.75rem;
         margin: 0 !important;
         flex: 1;
-        white-space: nowrap;
+        white-space: normal; /* Changed from nowrap */
+        word-break: break-word; /* Added to handle long filenames */
+        line-height: 1.2;
       }
 
       #lampiranCommentModal .modal-title i {
@@ -1057,6 +1059,16 @@ export function renderRevisiLpjPage(path, userRole) {
       .addEventListener("hidden.bs.modal", function () {
         document.getElementById("lampiranCommentInput").value = "";
       });
+
+    const commentInput = document.getElementById("lampiranCommentInput");
+    if (commentInput) {
+      commentInput.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          document.getElementById("saveLampiranCommentBtn").click();
+        }
+      });
+    }
 
     fetchAndPopulateData();
     attachEventListeners();
@@ -1562,8 +1574,8 @@ export function renderRevisiLpjPage(path, userRole) {
   function initializeComments(lampiran) {
     lampiranComments = {};
     lampiran.forEach((file) => {
-      if (file.catatan) {
-        lampiranComments[file.lampiran_id] = file.catatan;
+      if (file.catatan_reviewer) {
+        lampiranComments[file.lampiran_id] = file.catatan_reviewer;
       }
     });
     updateCommentCount();
@@ -1607,7 +1619,7 @@ export function renderRevisiLpjPage(path, userRole) {
 
     try {
       const response = await apiRequest(`/lampiran/${lampiranId}`);
-      const commentText = response.data.catatan || "";
+      const commentText = response.data.catatan_reviewer || "";
 
       if (isBendahara) {
         commentInput.value = commentText;

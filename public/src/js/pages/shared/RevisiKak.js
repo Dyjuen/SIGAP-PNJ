@@ -1965,6 +1965,26 @@ export function renderRevisiKakPage(path, userRole) {
         renderIkuOptions();
     });
 
+    const fieldCommentInput = document.getElementById("fieldCommentInput");
+    if (fieldCommentInput) {
+      fieldCommentInput.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          saveFieldComment();
+        }
+      });
+    }
+
+    const rowCommentInput = document.getElementById("rowCommentInput");
+    if (rowCommentInput) {
+      rowCommentInput.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          saveRowComment();
+        }
+      });
+    }
+
     // Populate options
     renderIkuOptions();
     
