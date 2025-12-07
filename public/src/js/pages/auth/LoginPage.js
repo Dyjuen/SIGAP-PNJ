@@ -725,6 +725,10 @@ export function renderLoginPage() {
           "/api/captcha?t=" + new Date().getTime();
         showError(response.message || "Login gagal!");
         setLoading(false);
+        if (captchaInput) {
+            captchaInput.value = "";
+            captchaInput.focus();
+        }
       }
     } catch (error) {
       // Handle error
@@ -735,6 +739,10 @@ export function renderLoginPage() {
       document.getElementById("captcha-image").src =
         "/api/captcha?t=" + new Date().getTime();
       setLoading(false);
+      if (captchaInput) {
+          captchaInput.value = "";
+          captchaInput.focus();
+      }
     }
   });
 

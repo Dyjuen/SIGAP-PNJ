@@ -728,7 +728,7 @@ export function renderUsulanKakPage(path, userRole) {
           </div>
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBack" tabindex="-1">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBack">
               <span>←</span> Back
             </button>
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnNext">
@@ -751,7 +751,7 @@ export function renderUsulanKakPage(path, userRole) {
 
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackIku" tabindex="-1">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackIku">
               <span>←</span> Back
             </button>
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnNextIku">
@@ -772,7 +772,7 @@ export function renderUsulanKakPage(path, userRole) {
           
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackRab" tabindex="-1">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackRab">
               <span>←</span> Back
             </button>
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnSubmitRab">
@@ -1825,9 +1825,9 @@ export function renderUsulanKakPage(path, userRole) {
               uraian: uraian,
               volume1: volume1,
               satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
-              volume2: parseInt(inputs[3].value) || null,
+              volume2: inputs[3].value !== '' ? parseFloat(inputs[3].value) : null,
               satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
-              volume3: parseInt(inputs[5].value) || null,
+              volume3: inputs[5].value !== '' ? parseFloat(inputs[5].value) : null,
               satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
               harga_satuan: harga_satuan,
             });

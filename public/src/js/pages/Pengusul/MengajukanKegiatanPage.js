@@ -929,6 +929,19 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       });
     }
 
+    if (ajukanModalInstance) {
+      // Focus input when modal opens
+      const modalEl = document.getElementById("ajukanKegiatanModal");
+      if (modalEl) {
+        modalEl.addEventListener('shown.bs.modal', function () {
+          const firstInput = document.getElementById("penanggungJawab");
+          if (firstInput) {
+            firstInput.focus();
+          }
+        });
+      }
+    }
+
     // Prevent default form submission for the modal form
     const ajukanKegiatanForm = document.getElementById("ajukanKegiatanForm");
     if (ajukanKegiatanForm) {

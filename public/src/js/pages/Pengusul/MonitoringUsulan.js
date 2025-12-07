@@ -712,7 +712,6 @@ export function renderMonitoringUsulanPage(path, userRole) {
               <th style="width: 80px;">No.</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Tanggal Diajukan</th>
-              <th>Tanggal Disetujui</th>
               <th style="text-align: center;">Status</th>
               <th style="width: 100px; text-align: center;">Dokumen</th>
               <th style="text-align: center;">Aksi</th>
@@ -993,9 +992,6 @@ export function renderMonitoringUsulanPage(path, userRole) {
         </td>
         <td>
           <div>${formatDate(activity.created_at)}</div>
-        </td>
-        <td>
-          <div>${formatDate(activity.updated_at)}</div>
         </td>
         <td style="text-align: center;">
           <span class="badge ${statusBadge.class}">${statusBadge.text}</span>

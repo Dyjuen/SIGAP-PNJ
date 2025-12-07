@@ -1702,7 +1702,7 @@ export function renderRevisiKakPage(path, userRole) {
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" tabindex="-1">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
             ${
@@ -1748,7 +1748,7 @@ export function renderRevisiKakPage(path, userRole) {
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" tabindex="-1">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
             ${
