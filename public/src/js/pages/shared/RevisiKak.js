@@ -1460,6 +1460,22 @@ export function renderRevisiKakPage(path, userRole) {
                   </div>
 
                   <div class="mb-6">
+                    <label class="block font-semibold mb-2 text-sm" style="color: #374151;">
+                      Tipe Kegiatan <span class="text-red-500">*</span>
+                    </label>
+                    <div class="row-with-comment">
+                      <div class="input-with-comment">
+                        <select id="tipeKegiatan" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} data-field="tipeKegiatan">
+                          <option value="">Pilih Tipe Kegiatan</option>
+                        </select>
+                      </div>
+                      <button class="row-comment-icon" onclick="openFieldCommentModal(this)" data-field="tipeKegiatan" data-label="Tipe Kegiatan">
+                        <i class="ti ti-message-circle-2">&#xeaed;</i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="mb-6">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Gambaran Umum Kegiatan</label>
                     <div class="row-with-comment">
                       <div class="input-with-comment">
@@ -2006,6 +2022,35 @@ export function renderRevisiKakPage(path, userRole) {
     const grandTotalEl = document.getElementById('grand-total-rab');
     if (grandTotalEl) {
         grandTotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(grandTotal);
+    }
+  }
+
+  async function populateTipeKegiatanDropdown() {
+    try {
+      const response = await apiRequest("/master/tipe-kegiatan");
+      const tipeKegiatanData = response.data;
+
+      const selectElement = document.getElementById("tipeKegiatan");
+      if (!selectElement) return;
+
+      // Clear existing options except placeholder
+      selectElement.innerHTML = '<option value="">Pilih Tipe Kegiatan</option>';
+
+      tipeKegiatanData.forEach(tipe => {
+        const option = document.createElement("option");
+        option.value = tipe.tipe_kegiatan_id;
+        option.textContent = tipe.nama_tipe;
+        selectElement.appendChild(option);
+      });
+      // Restore previous value if exists (after fetchAndPopulateData)
+      if (kakDataState && kakDataState.tipe_kegiatan_id) {
+        selectElement.value = kakDataState.tipe_kegiatan_id;
+      }
+    } catch (error) {
+      console.error("Error populating Tipe Kegiatan dropdown:", error);
+      if (typeof Swal !== "undefined") {
+        Swal.fire("Error", "Gagal memuat data Tipe Kegiatan. Silakan coba lagi.", "error");
+      }
     }
   }
 
@@ -2708,7 +2753,7 @@ export function renderRevisiKakPage(path, userRole) {
     updateMainStepDisplay();
     updateStepDisplay();
     attachEventListeners();
-    updateCommentCount();
+    populateTipeKegiatanDropdown(); // Populate dropdown on init
     loadDateRangePicker();
     
     // Update menu button revision status on page load
@@ -3563,9 +3608,11 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
           
           // 1. General Info
           const nama_kegiatan = getVal(document.querySelector('[data-field="namaKegiatan"]'));
+          const tipe_kegiatan_id = parseInt(getVal(document.querySelector('[data-field="tipeKegiatan"]'))) || null;
           const deskripsi_kegiatan = getVal(document.querySelector('[data-field="gambaranUmum"]'));
           const metode_pelaksanaan = getVal(document.querySelector('[data-field="metodePelaksanaan"]'));
           const kurunWaktuRaw = getVal(document.querySelector('[data-field="kurunWaktu"]'));
+          
           
           let tanggal_mulai = kakDataState.tanggal_mulai;
           let tanggal_selesai = kakDataState.tanggal_selesai;

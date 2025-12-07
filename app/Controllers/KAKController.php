@@ -823,7 +823,7 @@ class KAKController
             }
             file_put_contents("debug_update.log", "EXCEPTION: " . $e->getMessage() . "\nTrace: " . $e->getTraceAsString() . "\n", FILE_APPEND);
             error_log('Gagal memperbarui KAK: ' . $e->getMessage());
-            Response::serverError('Gagal memperbarui KAK: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+            Response::serverError('Gagal memperbarui KAK. Silakan coba lagi nanti.');
         }
     }
 
