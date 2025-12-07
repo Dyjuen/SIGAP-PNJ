@@ -519,9 +519,6 @@ export function renderRiwayatKAKPage(path, userRole) {
         <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
           <thead>
             <tr>
-              <th style="width: 50px; text-align: center;">
-                <input type="checkbox" class="form-check-input custom-checkbox" id="selectAll">
-              </th>
               <th style="width: 60px;">No.</th>
               <th style="min-width: 250px;">Nama KAK</th>
               <th style="min-width: 130px;">Tanggal Dibuat</th>
@@ -565,6 +562,82 @@ export function renderRiwayatKAKPage(path, userRole) {
     searchQuery: '',
     searchTimeout: null
   };
+
+  // ==============================================
+  // API FUNCTIONS
+  // ==============================================
+  async function apiRequest(endpoint, options = {}) {
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
+    const defaultHeaders = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    const config = {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...options.headers,
+      },
+    };
+
+    try {
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (data.status === false || data.status === "error") {
+        throw new Error(data.message || "API request failed");
+      }
+      return data;
+    } catch (error) {
+      console.error("API Request Error:", error);
+      throw error;
+    }
+  }
+
+  async function handlePdfAction(kakId, action) {
+    const actionTitle = action === 'preview' ? 'Membuka Pratinjau PDF...' : 'Mengunduh PDF...';
+    const errorMessage = action === 'preview' ? 'Gagal membuka pratinjau PDF' : 'Gagal mengunduh PDF';
+  
+    Swal.fire({
+      title: actionTitle,
+      text: "Membuat token sementara...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+  
+    try {
+      // Step 1: Generate token
+      const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
+        method: 'POST',
+      });
+  
+      if (!tokenResponse.success) {
+        throw new Error(tokenResponse.message || 'Gagal membuat token');
+      }
+  
+      const tempToken = tokenResponse.data.download_token;
+  
+      // Step 2: Build URL and open/download
+      const url = action === 'preview'
+        ? `/api/kak/${kakId}/preview?t=${tempToken}`
+        : `/api/kak/${kakId}?t=${tempToken}`;
+  
+      Swal.close();
+      
+      setTimeout(() => {
+        window.open(url, '_blank');
+      }, 300);
+  
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: errorMessage,
+        text: error.message,
+      });
+    }
+  }
 
   // ==============================================
   // HELPER FUNCTIONS
@@ -635,7 +708,7 @@ export function renderRiwayatKAKPage(path, userRole) {
     if (paginatedData.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="7">
+          <td colspan="6">
             <div class="empty-state">
               <svg class="empty-state-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -662,14 +735,6 @@ export function renderRiwayatKAKPage(path, userRole) {
 
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td style="text-align: center;">
-          <input 
-            type="checkbox" 
-            class="form-check-input custom-checkbox row-checkbox" 
-            data-id="${item.id}"
-            ${isChecked ? "checked" : ""}
-          />
-        </td>
         <td>
           <span class="index-number">${globalIndex}</span>
         </td>
@@ -794,35 +859,6 @@ export function renderRiwayatKAKPage(path, userRole) {
       });
     }
 
-    const selectAll = document.getElementById("selectAll");
-    if (selectAll) {
-      selectAll.addEventListener("change", function () {
-        document
-          .querySelectorAll(".row-checkbox")
-          .forEach((cb) => {
-            cb.checked = this.checked;
-            const id = parseInt(cb.dataset.id);
-            if (this.checked) {
-              state.selectedItems.add(id);
-            } else {
-              state.selectedItems.delete(id);
-            }
-          });
-      });
-    }
-
-    document.querySelectorAll(".row-checkbox").forEach((checkbox) => {
-      checkbox.addEventListener("change", function() {
-        const id = parseInt(this.dataset.id);
-        if (this.checked) {
-          state.selectedItems.add(id);
-        } else {
-          state.selectedItems.delete(id);
-        }
-        updateSelectAll();
-      });
-    });
-
     document.querySelectorAll(".btn-view").forEach((btn) => {
       btn.addEventListener("click", function () {
         const id = this.getAttribute("data-id");
@@ -834,28 +870,12 @@ export function renderRiwayatKAKPage(path, userRole) {
     document.querySelectorAll(".btn-download").forEach((btn) => {
       btn.addEventListener("click", function () {
         const id = this.getAttribute("data-id");
-        // TODO: Implement actual download logic
-        if (window.showSuccess) {
-          window.showSuccess(`Fitur unduh untuk KAK ID: ${id} belum diimplementasikan.`);
-        }
+        handlePdfAction(id, 'download');
       });
     });
   }
 
-  function updateSelectAll() {
-    const allCheckboxes = document.querySelectorAll(".row-checkbox");
-    const checkedCount = document.querySelectorAll(
-      ".row-checkbox:checked"
-    ).length;
-    const selectAll = document.getElementById("selectAll");
 
-    if (selectAll) {
-      selectAll.checked =
-        checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAll.indeterminate =
-        checkedCount > 0 && checkedCount < allCheckboxes.length;
-    }
-  }
 
   // ==============================================
   // PAGINATION
@@ -1039,6 +1059,8 @@ export function renderRiwayatKAKPage(path, userRole) {
             tanggal_disetujui: null, 
             status: item.nama_status // Map nama_status to status
         }));
+
+        mappedData.sort((a, b) => a.id - b.id);
 
         // Store all data for search functionality
         state.allKakData = mappedData;

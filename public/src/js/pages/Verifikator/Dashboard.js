@@ -255,9 +255,6 @@ export function renderDashboardVerifikator(path, userRole) {
             <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
                 <thead>
                 <tr>
-                    <th style="width: 50px; text-align: center;">
-                    <input type="checkbox" class="form-check-input" id="selectAll">
-                    </th>
                     <th style="width: 80px;">No.</th>
                     <th>Nama Usulan Kegiatan</th>
                     <th>Pengusul</th>
@@ -338,7 +335,7 @@ export function renderDashboardVerifikator(path, userRole) {
   async function initializeDashboard() {
     const tbody = document.getElementById("usulanTableBody");
     if (tbody) {
-      tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat data verifikasi...') : '<tr><td colspan="7" style="text-align: center;">Loading...</td></tr>';
+      tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(6, 'Memuat data verifikasi...') : '<tr><td colspan="6" style="text-align: center;">Loading...</td></tr>';
     }
 
     try {
@@ -382,6 +379,7 @@ export function renderDashboardVerifikator(path, userRole) {
     state.displayUsulan = state.allUsulan.filter(
       (u) => u.status_id == statusId
     );
+    state.displayUsulan.sort((a, b) => a.kak_id - b.kak_id);
     state.totalItems = state.displayUsulan.length;
     state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage);
     state.currentPage = 1; // Reset to first page
@@ -550,11 +548,6 @@ export function renderDashboardVerifikator(path, userRole) {
 
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox" data-id="${
-            usulan.kak_id
-          }">
-        </td>
         <td>
           <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${
             startIndex + index + 1

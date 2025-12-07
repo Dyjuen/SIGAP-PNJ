@@ -545,9 +545,6 @@ const pageContent = `
             <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
                 <thead>
                 <tr>
-                    <th style="width: 50px; text-align: center;">
-                    <input type="checkbox" class="form-check-input" id="selectAll">
-                    </th>
                     <th style="width: 80px;">No.</th>
                     <th>Nama Pengusul</th>
                     <th>Username</th>
@@ -915,7 +912,7 @@ const pageContent = `
   function showTableLoading() {
     const tbody = document.getElementById('userTableBody');
     if (tbody) {
-      tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat data pengguna...') : `
+      tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(6, 'Memuat data pengguna...') : `
         <tr>
           <td colspan="7" class="text-center py-5">
             <p class="mt-2">Memuat data pengguna...</p>
@@ -936,6 +933,7 @@ const pageContent = `
             // Add a static status for now, as it's not in the API response
             status: 'Aktif' 
         }));
+        state.users.sort((a, b) => a.user_id - b.user_id);
         state.allUsers = [...state.users];
         renderTableRows(state.users);
         updateStats();
@@ -944,7 +942,7 @@ const pageContent = `
         if (tbody) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="text-center py-5">
+                    <td colspan="6" class="text-center py-5">
                         <p class="text-danger">Gagal memuat data pengguna.</p>
                         <p class="text-muted">${error.message || 'Silakan coba lagi nanti.'}</p>
                     </td>
@@ -1007,7 +1005,7 @@ const pageContent = `
     if (data.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="text-center py-5">
+                <td colspan="6" class="text-center py-5">
                     <p>Tidak ada data pengguna untuk ditampilkan.</p>
                 </td>
             </tr>
@@ -1026,9 +1024,6 @@ const pageContent = `
       row.dataset.userId = user.user_id;
 
       row.innerHTML = `
-        <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox">
-        </td>
         <td>
           <span class="number-badge">${index + 1}</span>
         </td>
@@ -1060,10 +1055,6 @@ const pageContent = `
   }
 
   function attachEventListeners() {
-    document.querySelectorAll('.row-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', updateSelectAll);
-    });
-
     document.querySelectorAll('.btn-edit-profile').forEach(btn => {
       btn.addEventListener('click', handleEditProfile);
     });
@@ -1084,23 +1075,6 @@ const pageContent = `
         );
         renderTableRows(filteredUsers);
       });
-    }
-  }
-
-  const selectAllCheckbox = document.getElementById('selectAll');
-  if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener('change', function() {
-      const checkboxes = document.querySelectorAll('.row-checkbox');
-      checkboxes.forEach(cb => cb.checked = this.checked);
-    });
-  }
-
-  function updateSelectAll() {
-    const allCheckboxes = document.querySelectorAll('.row-checkbox');
-    const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-    if (selectAllCheckbox) {
-      selectAllCheckbox.checked = checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
     }
   }
 

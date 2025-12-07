@@ -613,9 +613,6 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
           <thead>
             <tr>
-              <th style="width: 50px; text-align: center;">
-                <input type="checkbox" class="form-check-input" id="selectAll">
-              </th>
               <th>No.</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Tanggal Diajukan</th>
@@ -718,12 +715,13 @@ export function renderMengajukanKegiatanPage(path, userRole) {
 
   async function fetchApprovedTelaah() {
     const tbody = document.getElementById("kegiatanTableBody");
-    tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat daftar kegiatan...') : '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+    tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(6, 'Memuat daftar kegiatan...') : '<tr><td colspan="6" class="text-center">Loading...</td></tr>';
     try {
       const user = JSON.parse(localStorage.getItem("auth_user"));
       const userIdParam = user ? `&pengusul_user_id=${user.user_id}` : '';
       const response = await apiRequest(`/kak?status=3${userIdParam}`);
       approvedTelaah = response.data;
+      approvedTelaah.sort((a, b) => a.kak_id - b.kak_id);
       allApprovedTelaah = response.data;
       filteredTelaah = response.data;
       renderTableRows(approvedTelaah);
@@ -838,18 +836,13 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     tbody.innerHTML = "";
     if (!data || data.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="7" class="text-center">Tidak ada usulan KAK yang disetujui.</td></tr>';
+        '<tr><td colspan="6" class="text-center">Tidak ada usulan KAK yang disetujui.</td></tr>';
       return;
     }
 
     data.forEach((item, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox" data-id="${
-            item.kak_id
-          }">
-        </td>
         <td>
           <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${
             index + 1

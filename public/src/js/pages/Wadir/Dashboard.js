@@ -45,9 +45,6 @@ export function renderWadirDashboardPage(path, userRole) {
         <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
           <thead>
             <tr>
-              <th style="width: 50px; text-align: center;">
-                <input type="checkbox" class="form-check-input" id="selectAll">
-              </th>
               <th>No.</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Pengusul</th>
@@ -110,7 +107,7 @@ export function renderWadirDashboardPage(path, userRole) {
 
   async function fetchKegiatan() {
     const tbody = document.getElementById("monitoringTableBody");
-    tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat data kegiatan...') : '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+    tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(6, 'Memuat data kegiatan...') : '<tr><td colspan="6" class="text-center">Loading...</td></tr>';
     try {
       const response = await apiRequest("/kegiatan");
       const kegiatanData = response.data.data
@@ -125,6 +122,7 @@ export function renderWadirDashboardPage(path, userRole) {
           k.current_approval.approval_level === "Wadir2" &&
           k.current_approval.status === "Aktif"
       );
+      state.displayKegiatan.sort((a, b) => a.kegiatan_id - b.kegiatan_id);
 
       renderTableRows(state.displayKegiatan);
       updateStats(state.allKegiatan);
@@ -305,9 +303,6 @@ export function renderWadirDashboardPage(path, userRole) {
       const row = document.createElement("tr");
 
       row.innerHTML = `
-        <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox">
-        </td>
         <td>
           <span class="number-badge">${index + 1}</span>
         </td>

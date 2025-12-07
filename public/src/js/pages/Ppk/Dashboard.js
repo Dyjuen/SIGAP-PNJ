@@ -108,6 +108,7 @@ export function renderPpkDashboardPage(path, userRole) {
           state.displayKegiatan = state.allKegiatan.filter(k => 
               k.current_approval && k.current_approval.approval_level === 'PPK' && k.current_approval.status === 'Aktif'
           );
+          state.displayKegiatan.sort((a, b) => a.kegiatan_id - b.kegiatan_id);
 
           renderTableRows(state.displayKegiatan);
           updateStats(state.allKegiatan);

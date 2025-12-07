@@ -712,6 +712,27 @@ export function renderDetailKegiatanPage(path, userRole) {
         opacity: 0.8;
         box-shadow: 0 2px 4px rgba(0, 188, 212, 0.2);
       }
+      .download-fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+      .download-fab:hover {
+        transform: translateY(-5px) scale(1.1);
+        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
+      }
     </style>
 
     <div class="kerangka-acuan-kerja-page">
@@ -736,6 +757,8 @@ export function renderDetailKegiatanPage(path, userRole) {
           </div>
         </div>
       </div>
+
+<button id="downloadPdfBtn" class="download-fab" title="Download PDF"><i class="ti ti-download" style="font-size: 1.5rem;">&#xeb2d;</i></button>
 
       <!-- Main Step 1: Kerangka Acuan Kerja -->
       <div class="main-step-content active" id="main-step-1">
@@ -967,6 +990,49 @@ export function renderDetailKegiatanPage(path, userRole) {
   // ==============================================
   // API FUNCTIONS
   // ==============================================
+  async function handlePdfAction(kakId, action) {
+    const actionTitle = action === 'preview' ? 'Membuka Pratinjau PDF...' : 'Mengunduh PDF...';
+    const errorMessage = action === 'preview' ? 'Gagal membuka pratinjau PDF' : 'Gagal mengunduh PDF';
+  
+    Swal.fire({
+      title: actionTitle,
+      text: "Membuat token sementara...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+  
+    try {
+      // Step 1: Generate token
+      const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
+        method: 'POST',
+      });
+  
+      if (!tokenResponse.success) {
+        throw new Error(tokenResponse.message || 'Gagal membuat token');
+      }
+  
+      const tempToken = tokenResponse.data.download_token;
+  
+      // Step 2: Build URL and open/download
+      const url = action === 'preview'
+        ? `/api/kak/${kakId}/preview?t=${tempToken}`
+        : `/api/kak/${kakId}?t=${tempToken}`;
+  
+      Swal.close();
+      
+      setTimeout(() => {
+        window.open(url, '_blank');
+      }, 300);
+  
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: errorMessage,
+        text: error.message,
+      });
+    }
+  }
+
   async function apiRequest(endpoint, options = {}) {
     const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
     const headers = { ...options.headers, Authorization: `Bearer ${token}` };
@@ -1383,6 +1449,10 @@ export function renderDetailKegiatanPage(path, userRole) {
     document.getElementById("btnBackRab").addEventListener("click", () => {
       mainStep = 2;
       updateMainStepDisplay();
+    });
+
+    document.getElementById("downloadPdfBtn").addEventListener("click", () => {
+        handlePdfAction(kakId, 'download');
     });
   }
 

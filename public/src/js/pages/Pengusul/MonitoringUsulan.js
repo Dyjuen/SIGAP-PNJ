@@ -709,9 +709,6 @@ export function renderMonitoringUsulanPage(path, userRole) {
         <table class="table">
           <thead>
             <tr>
-              <th style="width: 50px; text-align: center;">
-                <input type="checkbox" class="form-check-input" id="selectAll">
-              </th>
               <th style="width: 80px;">No.</th>
               <th>Nama Usulan Kegiatan</th>
               <th>Tanggal Diajukan</th>
@@ -829,6 +826,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
     try {
       const response = await apiRequest(url);
       state.activities = response.data;
+      state.activities.sort((a, b) => a.kak_id - b.kak_id);
       state.filteredActivities = state.activities;
       state.totalEntries = state.filteredActivities.length;
       state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
@@ -986,9 +984,6 @@ export function renderMonitoringUsulanPage(path, userRole) {
       const row = document.createElement("tr");
       row.style.animationDelay = `${0.3 + index * 0.1}s`;
       row.innerHTML = `
-        <td style="text-align: center;">
-          <input type="checkbox" class="form-check-input row-checkbox">
-        </td>
         <td>
           <span class="number-badge">${globalIndex}</span>
         </td>
