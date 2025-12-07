@@ -77,7 +77,8 @@ class MasterDataSeeder extends AbstractSeed
             ['nama_satuan' => 'OJ'], ['nama_satuan' => 'Orang'], ['nama_satuan' => 'Unit'],
             ['nama_satuan' => 'Paket'], ['nama_satuan' => 'Lembar'], ['nama_satuan' => 'Hari'],
             ['nama_satuan' => 'Bulan'], ['nama_satuan' => 'Set'], ['nama_satuan' => 'Pcs'],
-            ['nama_satuan' => 'Kg'], ['nama_satuan' => 'Rim'], ['nama_satuan' => 'Kali']
+            ['nama_satuan' => 'Kg'], ['nama_satuan' => 'Rim'], ['nama_satuan' => 'Kali'],
+            ['nama satuan' => '%']
         ];
         $this->table('m_satuan')->insert($satuan)->saveData();
 

@@ -60,9 +60,11 @@ class KAK extends Model {
                     'iku'       => "SELECT 
                                         tki.*, 
                                         mi.kode_iku, 
-                                        mi.nama_iku 
+                                        mi.nama_iku,
+                                        ms.nama_satuan
                                     FROM t_kak_iku tki 
                                     LEFT JOIN m_iku mi ON tki.iku_id = mi.iku_id 
+                                    LEFT JOIN m_satuan ms ON tki.satuan_id = ms.satuan_id
                                     WHERE tki.kak_id = ?
                                     ORDER BY tki.iku_id ASC",
                     'anggaran'  => "SELECT 

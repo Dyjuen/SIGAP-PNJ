@@ -9,7 +9,7 @@ export function renderInputLpjPage(path, userRole) {
 
   // Bendahara sees read-only inputs. Pengusul can edit if status is 'Perlu Revisi' or new.
   const pageContent = `
-    <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
     <style>
     /* Daterangepicker theme overrides */
     .daterangepicker { border-color: #00BCD4 !important; }
@@ -1624,10 +1624,26 @@ export function renderInputLpjPage(path, userRole) {
   // --- RENDER FUNCTIONS ---
   function calculateLpjTotals() {
     let grandTotal = 0;
+    let isAllValid = true;
 
     document.querySelectorAll(".category-section").forEach((section) => {
       let subtotal = 0;
+      let rabSubtotal = 0;
+
       section.querySelectorAll(".rab-item").forEach((row) => {
+        const anggaranId = row.dataset.pkValue;
+        
+        // --- Calculate RAB Subtotal ---
+        const item = state.lpjData?.anggaran_items?.find(i => String(i.anggaran_id) === String(anggaranId));
+        if (item) {
+             const rV1 = parseFloat(item.volume1) || 0;
+             const rV2 = (!item.volume2 || item.volume2 == 0) ? 1 : parseFloat(item.volume2);
+             const rV3 = (!item.volume3 || item.volume3 == 0) ? 1 : parseFloat(item.volume3);
+             const rHarga = parseFloat(item.harga_satuan) || 0;
+             rabSubtotal += rV1 * rV2 * rV3 * rHarga;
+        }
+
+        // --- Calculate Realisasi Subtotal ---
         const realisasiGrid = row.querySelector(".realisasi-grid");
         if (!realisasiGrid) return;
 
@@ -1680,6 +1696,30 @@ export function renderInputLpjPage(path, userRole) {
           currency: "IDR",
           minimumFractionDigits: 0,
         }).format(subtotal);
+
+        // Validation: Check if Realisasi exceeds RAB
+        const subtotalContainer = subtotalEl.parentElement;
+        let warningEl = subtotalContainer.querySelector(".subtotal-warning");
+
+        if (subtotal > rabSubtotal) {
+            isAllValid = false;
+            subtotalEl.style.color = "#EF4444"; // Red for error
+            
+            if (!warningEl) {
+                warningEl = document.createElement("div");
+                warningEl.className = "subtotal-warning text-xs text-red-500 font-bold mt-1";
+                subtotalContainer.appendChild(warningEl);
+            }
+            const formattedRab = new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 0,
+            }).format(rabSubtotal);
+            warningEl.innerHTML = `<i class="ti ti-alert-circle"></i> Melebihi RAB (${formattedRab})`;
+        } else {
+            subtotalEl.style.color = "#00BCD4"; // Original color
+            if (warningEl) warningEl.remove();
+        }
       }
       grandTotal += subtotal;
     });
@@ -1692,6 +1732,8 @@ export function renderInputLpjPage(path, userRole) {
         minimumFractionDigits: 0,
       }).format(grandTotal);
     }
+    
+    return isAllValid;
   }
 
   function renderRABSections() {
@@ -2295,6 +2337,17 @@ export function renderInputLpjPage(path, userRole) {
 
   // --- DATA COLLECTION & SUBMISSION ---
   async function submitLpj(kegiatanId) {
+    // Validate Prices
+    const isPriceValid = calculateLpjTotals();
+    if (!isPriceValid) {
+         Swal.fire({
+            icon: "error",
+            title: "Validasi Anggaran Gagal",
+            text: "Total realisasi pada salah satu kategori melebihi total anggaran (RAB). Silakan periksa kembali input Anda.",
+         });
+         return;
+    }
+
     const rabSections = document.querySelectorAll(".rab-item");
     let allItemsValid = true;
 

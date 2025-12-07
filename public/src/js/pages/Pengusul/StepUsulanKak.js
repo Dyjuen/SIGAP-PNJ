@@ -16,7 +16,7 @@ export function renderUsulanKakPage(path, userRole) {
 
   const pageContent = `
     <!-- Add required CSS for daterangepicker in the head section -->
-    <link rel="stylesheet" href="../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
     
     <style>
       /* Border Drawing Animation - SUPER SMOOTH VERSION with POP-UP */
@@ -945,12 +945,12 @@ export function renderUsulanKakPage(path, userRole) {
   const loadDateRangePicker = () => {
     // Load moment.js
     const momentScript = document.createElement("script");
-    momentScript.src = "../../assets/vendor/libs/moment/moment.js";
+    momentScript.src = "/assets/vendor/libs/moment/moment.js";
     momentScript.onload = () => {
       // Load daterangepicker after moment is loaded
       const daterangeScript = document.createElement("script");
       daterangeScript.src =
-        "../../assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js";
+        "/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js";
       daterangeScript.onload = initializeDateRangePickers;
       document.head.appendChild(daterangeScript);
     };
@@ -1196,51 +1196,32 @@ export function renderUsulanKakPage(path, userRole) {
       const errorEl = document.createElement("p");
       errorEl.className = "validation-error text-red-500 text-xs italic absolute -bottom-5 left-0 z-10";
       errorEl.textContent = message;
-      // Check if the element is the numeric input for IKU
-      if (el.type === 'number' && el.parentElement.classList.contains('flex')) {
-        // Place error message after the parent of the flex container
-        const parent = el.parentElement.parentElement;
-        parent.classList.add('relative');
-        parent.appendChild(errorEl);
-      } else {
-        // Default behavior for other elements like select
-        el.parentElement.classList.add('relative');
-        el.parentElement.appendChild(errorEl);
-      }
+      el.parentElement.classList.add('relative');
+      el.parentElement.appendChild(errorEl);
     };
 
     const ikuRows = document.querySelectorAll("#ikuRenstraContainer .iku-item");
-    let totalNilai = 0;
 
     if (ikuRows.length > 0) {
       ikuRows.forEach((row) => {
-        const select = row.querySelector("select");
+        const selects = row.querySelectorAll("select");
+        const ikuSelect = selects[0];
+        const satuanSelect = selects[1];
         const input = row.querySelector("input[type='number']");
         
-        if (!select.value) addError(select, "IKU wajib dipilih.");
+        if (!ikuSelect.value) addError(ikuSelect, "IKU wajib dipilih.");
         
         if (!input.value) {
-          addError(input, "Nilai wajib diisi.");
+          addError(input, "Target wajib diisi.");
         } else {
           const val = parseFloat(input.value);
           if (val <= 0) {
-            addError(input, "Nilai harus lebih dari 0.");
-          } else {
-            totalNilai += val;
+            addError(input, "Target harus lebih dari 0.");
           }
         }
-      });
 
-      // Validate the sum of IKU values
-      if (totalNilai > 100) {
-        ikuRows.forEach((row) => {
-          const input = row.querySelector("input[type='number']");
-          // Only add error if it doesn't already have one (e.g. empty or <= 0)
-          if (!input.classList.contains("is-invalid")) {
-             addError(input, `Total melebihi 100% (Total: ${totalNilai}%)`);
-          }
-        });
-      }
+        if (!satuanSelect.value) addError(satuanSelect, "Satuan wajib dipilih.");
+      });
     }
 
     if (!isValid) {
@@ -1812,13 +1793,15 @@ export function renderUsulanKakPage(path, userRole) {
       if (!container) return [];
       return Array.from(container.querySelectorAll(".iku-item"))
         .map((row) => {
-          const inputs = row.querySelectorAll("input, select");
+          const selects = row.querySelectorAll("select");
+          const inputs = row.querySelectorAll("input");
           return {
-            iku_id: parseInt(inputs[0].value) || 0,
-            persentase_target: parseFloat(inputs[1].value) || 0,
+            iku_id: parseInt(selects[0].value) || 0,
+            target: parseFloat(inputs[0].value) || 0,
+            satuan_id: parseInt(selects[1].value) || 0,
           };
         })
-        .filter((item) => item.iku_id && item.persentase_target > 0);
+        .filter((item) => item.iku_id && item.target > 0 && item.satuan_id);
     };
 
     const getAnggaranItems = () => {
@@ -2164,9 +2147,11 @@ export function renderUsulanKakPage(path, userRole) {
     const newItem = document.createElement("div");
     newItem.className = "iku-item dynamic-field-item new-item-animation row-item mb-4"; // Added row-item and margin
     const ikuId = itemData ? itemData.iku_id : '';
-    const persentase = itemData ? itemData.persentase_target : '';
+    const target = itemData ? itemData.target : '';
+    const satuanId = itemData ? itemData.satuan_id : '';
+    
     newItem.innerHTML = `
-      <div class="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
+      <div class="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 items-end">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
           <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4" style="border-color: #E5E7EB; background: #FFFFFF;">
@@ -2174,12 +2159,14 @@ export function renderUsulanKakPage(path, userRole) {
           </select>
         </div>
         <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai (%)
-          </label>
-          <div class="flex gap-2 items-center">
-            <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" max="100" value="${persentase}" oninput="if(parseFloat(this.value) > 100) this.value = 100;">
-            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-          </div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Target</label>
+          <input type="number" class="w-full px-4 py-3 border-2 rounded-lg text-sm" placeholder="0" min="0" value="${target}">
+        </div>
+        <div>
+          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan</label>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm transition-all duration-300 focus:outline-none focus:ring-4 satuan-select" style="border-color: #E5E7EB; background: #FFFFFF;">
+            <option value="">Pilih Satuan</option>
+          </select>
         </div>
         <button type="button" class="remove-button border-0 w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0" style="background: #EF4444; color: #FFFFFF;" onclick="removeIkuField(this)">
           <span class="text-xl font-bold">−</span>
@@ -2193,18 +2180,26 @@ export function renderUsulanKakPage(path, userRole) {
       newItem.classList.remove('new-item-animation');
     });
     
-    const selectElement = newItem.querySelector('select');
+    const selectElement = newItem.querySelector('select:not(.satuan-select)');
     selectElement.addEventListener('change', () => {
         renderIkuOptions();
     });
 
-    // Set selected IKU after the element is created and dropdowns are populated
-    populateIkuDropdowns().then(() => {
-      if (ikuId) {
-        selectElement.value = ikuId;
-        renderIkuOptions();
-      }
-    });
+    // Populate IKU and Satuan dropdowns
+    Promise.all([
+        populateIkuDropdowns().then(() => {
+            if (ikuId) {
+                selectElement.value = ikuId;
+                renderIkuOptions();
+            }
+        }),
+        populateSatuanDropdowns().then(() => {
+            if (satuanId) {
+                const satuanSelect = newItem.querySelector('.satuan-select');
+                if (satuanSelect) satuanSelect.value = satuanId;
+            }
+        })
+    ]);
   };
 
   window.addRabItem = function (kategoriId, itemData = null) {
