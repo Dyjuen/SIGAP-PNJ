@@ -1663,7 +1663,7 @@ export function renderRevisiLpjPage(path, userRole) {
     try {
       const response = await apiRequest(`/lampiran/${lampiranId}/catatan`, {
         method: "POST",
-        body: JSON.stringify({ catatan: comment }),
+        body: JSON.stringify({ catatan_reviewer: comment }),
       });
 
       // Update local state only on success
@@ -1712,8 +1712,8 @@ export function renderRevisiLpjPage(path, userRole) {
   async function submitRevision() {
     // Kumpulkan semua catatan lampiran yang disimpan secara lokal untuk dikirim ke API.
     const lampiran_comments = [];
-    Object.entries(lampiranComments).forEach(([lampiranId, catatan]) => {
-      lampiran_comments.push({ id: lampiranId, catatan });
+    Object.entries(lampiranComments).forEach(([lampiranId, catatan_reviewer]) => {
+      lampiran_comments.push({ id: lampiranId, catatan_reviewer });
     });
 
     if (Object.keys(lampiranComments).length === 0) {

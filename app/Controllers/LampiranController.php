@@ -391,7 +391,7 @@ class LampiranController
 
             // Get catatan from request body
             $data = json_decode(file_get_contents('php://input'), true);
-            $catatan = $data['catatan'] ?? null;
+            $catatan = $data['catatan_reviewer'] ?? null;
 
             if ($catatan === null || trim($catatan) === '') {
                 Response::badRequest('Catatan tidak boleh kosong.');
