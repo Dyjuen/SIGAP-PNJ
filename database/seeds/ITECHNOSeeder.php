@@ -42,10 +42,10 @@ class ITECHNOSeeder extends AbstractSeed
         $id_hari = $s_hari ? $s_hari['satuan_id'] : 1;
 
         // Add Satuan for 'Persen' (if it doesn't exist)
-        $s_persen = $this->fetchRow("SELECT satuan_id FROM m_satuan WHERE nama_satuan = 'Persen'");
+        $s_persen = $this->fetchRow("SELECT satuan_id FROM m_satuan WHERE nama_satuan = '%'");
         if (!$s_persen) {
-            $this->table('m_satuan')->insert(['nama_satuan' => 'Persen'])->saveData();
-            $s_persen = $this->fetchRow("SELECT satuan_id FROM m_satuan WHERE nama_satuan = 'Persen'");
+            $this->table('m_satuan')->insert(['nama_satuan' => '%'])->saveData();
+            $s_persen = $this->fetchRow("SELECT satuan_id FROM m_satuan WHERE nama_satuan = '%'");
         }
         $id_persen = $s_persen ? $s_persen['satuan_id'] : 1; // Fallback to 1 if not found/created
 

@@ -1871,7 +1871,7 @@ export function renderRevisiKakPage(path, userRole) {
       ? kakDataState.iku.map(item => String(item.iku_id)) 
       : [];
 
-    const ikuSelects = document.querySelectorAll("#ikuRenstraContainer select");
+    const ikuSelects = document.querySelectorAll("#ikuRenstraContainer select:not(.satuan-select)");
     
     // Collect all selected values from other dropdowns
     const selectedValues = Array.from(ikuSelects)

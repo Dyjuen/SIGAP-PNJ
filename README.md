@@ -108,3 +108,5 @@ vendor/bin/phinx seed:run -s KegiatanLogStatusSeeder -c phinx.php
 vendor/bin/phinx seed:run -s KegiatanAnggaranSeeder -c phinx.php
 vendor/bin/phinx seed:run -s NotificationSeeder -c phinx.php
 vendor/bin/phinx seed:run -s PanduanSeeder -c phinx.php
+vendor/bin/phinx seed:run -s ITECHNOSeeder -c phinx.php
+vendor/bin/phinx seed:run -s CIVFESTSeeder -c phinx.php

@@ -559,11 +559,19 @@ class KAKController
             }
 
             if (!empty($input['target_iku'])) {
+                $processedIkus = [];
                 foreach ($input['target_iku'] as $iku) {
                     if (!isset($iku['iku_id'])) {
                         $this->db->rollBack();
                         Response::badRequest("IKU ID tidak boleh kosong dalam target_iku.");
                     }
+                    
+                    // Prevent duplicate IKU
+                    if (in_array($iku['iku_id'], $processedIkus)) {
+                        continue;
+                    }
+                    $processedIkus[] = $iku['iku_id'];
+
                     $existingIku = $this->ikuModel->find($iku['iku_id']);
                     if (!$existingIku) {
                         $this->db->rollBack();
@@ -571,7 +579,8 @@ class KAKController
                     }
 
                     $target = isset($iku['target']) && $iku['target'] !== '' ? $iku['target'] : 0;
-                    $satuanId = isset($iku['satuan_id']) && $iku['satuan_id'] !== '' ? $iku['satuan_id'] : null;
+                    // Handle 0 or empty string as NULL for foreign key
+                    $satuanId = isset($iku['satuan_id']) && $iku['satuan_id'] !== '' && $iku['satuan_id'] != 0 ? $iku['satuan_id'] : null;
 
                     $this->db->query("
                         INSERT INTO t_kak_iku
@@ -748,9 +757,17 @@ class KAKController
             }
 
             if (!empty($input['target_iku'])) {
+                $processedIkus = [];
                 foreach ($input['target_iku'] as $iku) {
+                    // Prevent duplicate IKU
+                    if (in_array($iku['iku_id'], $processedIkus)) {
+                        continue;
+                    }
+                    $processedIkus[] = $iku['iku_id'];
+
                     $target = isset($iku['target']) && $iku['target'] !== '' ? $iku['target'] : 0;
-                    $satuanId = isset($iku['satuan_id']) && $iku['satuan_id'] !== '' ? $iku['satuan_id'] : null;
+                    // Handle 0 or empty string as NULL for foreign key
+                    $satuanId = isset($iku['satuan_id']) && $iku['satuan_id'] !== '' && $iku['satuan_id'] != 0 ? $iku['satuan_id'] : null;
 
                     $this->db->query("INSERT INTO t_kak_iku (kak_id, iku_id, target, satuan_id) VALUES (:id, :iku, :t, :s)");
                     $this->db->bind(':id', $id);

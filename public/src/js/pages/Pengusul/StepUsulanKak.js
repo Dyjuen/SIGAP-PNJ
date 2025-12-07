@@ -1518,7 +1518,7 @@ export function renderUsulanKakPage(path, userRole) {
   function renderIkuOptions() {
     if (!cachedIkuData) return;
 
-    const ikuSelects = document.querySelectorAll("#ikuRenstraContainer select");
+    const ikuSelects = document.querySelectorAll("#ikuRenstraContainer select:not(.satuan-select)");
     
     // Collect all selected values from other dropdowns
     const selectedValues = Array.from(ikuSelects)
