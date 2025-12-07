@@ -646,7 +646,7 @@ class LampiranController
             header('Expires: 0');
             
             @ob_end_clean();
-            readfile($filePath);
+            readfile($realPath);
             exit;
 
         } catch (\Exception $e) {
