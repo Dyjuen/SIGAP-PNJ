@@ -275,9 +275,10 @@ class KAKController
         }
 
         $html = $this->generateKAKHTML($kakData);
-        header('Content-Type: text/html; charset=utf-8');
-        echo $html;
-        exit;
+        $filename = $this->generateFilename($kakData);
+        
+        // Use PDF::preview to render the PDF inline
+        PDF::preview($html, $filename);
     }
 
     private function generateFilename($kakData)
