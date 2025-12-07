@@ -643,6 +643,7 @@ class KAKController
 
     public function update($id)
     {
+        file_put_contents("debug_update.log", "UPDATE HIT for ID: $id\n", FILE_APPEND);
         try {
             if (!$this->userData) Response::unauthorized();
             $pengusul = $this->userData['user_id'];
@@ -662,13 +663,17 @@ class KAKController
                 Response::error("KAK hanya dapat diupdate jika statusnya Draft, Ditolak, atau Revisi.", 400);
             }
 
-            $input = json_decode(file_get_contents('php://input'), true);
+            $rawInput = file_get_contents('php://input');
+            file_put_contents("debug_update.log", "Raw Input: " . $rawInput . "\n", FILE_APPEND);
+            $input = json_decode($rawInput, true);
+            
             if (!$input || !isset($input['kak'])) {
                 Response::badRequest("Format JSON tidak valid");
             }
 
             $validator = new KAKValidator();
             if (!$validator->validateKAKData($input)) {
+                file_put_contents("debug_update.log", "Validation Error: " . json_encode($validator->getErrors()) . "\n", FILE_APPEND);
                 Response::validationError($validator->getErrors());
             }
 
@@ -759,6 +764,7 @@ class KAKController
             if (!empty($input['target_iku'])) {
                 $processedIkus = [];
                 foreach ($input['target_iku'] as $iku) {
+                    file_put_contents("debug_update.log", "Processing IKU: " . json_encode($iku) . "\n", FILE_APPEND);
                     // Prevent duplicate IKU
                     if (in_array($iku['iku_id'], $processedIkus)) {
                         continue;
@@ -780,6 +786,7 @@ class KAKController
 
             if (!empty($input['rab'])) {
                 foreach ($input['rab'] as $r) {
+                    file_put_contents("debug_update.log", "Processing RAB Item: " . json_encode($r) . "\n", FILE_APPEND);
                     $v1 = isset($r['volume1']) && $r['volume1'] !== '' ? (float)$r['volume1'] : null;
                     $v2 = isset($r['volume2']) && $r['volume2'] !== '' ? (float)$r['volume2'] : null;
                     $v3 = isset($r['volume3']) && $r['volume3'] !== '' ? (float)$r['volume3'] : null;
@@ -814,6 +821,7 @@ class KAKController
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
+            file_put_contents("debug_update.log", "EXCEPTION: " . $e->getMessage() . "\nTrace: " . $e->getTraceAsString() . "\n", FILE_APPEND);
             error_log('Gagal memperbarui KAK: ' . $e->getMessage());
             Response::serverError('Gagal memperbarui KAK. Silakan coba lagi nanti.');
         }
