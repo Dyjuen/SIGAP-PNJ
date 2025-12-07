@@ -728,7 +728,7 @@ export function renderUsulanKakPage(path, userRole) {
           </div>
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBack">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBack" tabindex="-1">
               <span>←</span> Back
             </button>
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnNext">
@@ -751,7 +751,7 @@ export function renderUsulanKakPage(path, userRole) {
 
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackIku">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackIku" tabindex="-1">
               <span>←</span> Back
             </button>
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnNextIku">
@@ -772,7 +772,7 @@ export function renderUsulanKakPage(path, userRole) {
           
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackRab">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackRab" tabindex="-1">
               <span>←</span> Back
             </button>
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnSubmitRab">
@@ -1956,10 +1956,28 @@ export function renderUsulanKakPage(path, userRole) {
           if (currentStep < totalSteps) {
             currentStep++;
             updateStepDisplay();
+            
+            // Focus logic for sub-step
+            setTimeout(() => {
+                 const activeStep = document.querySelector(`.step-content.active`);
+                 if(activeStep) {
+                     const firstInput = activeStep.querySelector('input, select, textarea');
+                     if(firstInput) firstInput.focus();
+                 }
+            }, 100);
           } else {
             // Move to main step 2
             mainStep = 2;
             updateMainStepDisplay();
+            
+            // Focus logic for main step 2
+             setTimeout(() => {
+                 const mainStep2 = document.getElementById('main-step-2');
+                 if(mainStep2 && mainStep2.classList.contains('active')) {
+                     const firstInput = mainStep2.querySelector('input, select, textarea');
+                     if(firstInput) firstInput.focus();
+                 }
+            }, 100);
           }
         }
       });
@@ -1982,6 +2000,14 @@ export function renderUsulanKakPage(path, userRole) {
         if (validateIkuStep()) {
           mainStep = 3;
           updateMainStepDisplay();
+          
+           setTimeout(() => {
+                 const mainStep3 = document.getElementById('main-step-3');
+                 if(mainStep3 && mainStep3.classList.contains('active')) {
+                     const firstInput = mainStep3.querySelector('input, select, textarea');
+                     if(firstInput) firstInput.focus();
+                 }
+            }, 100);
         }
       });
     }
@@ -2066,6 +2092,10 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.addEventListener('animationend', () => {
       newItem.classList.remove('new-item-animation');
     });
+    
+    // Focus newly added input
+    const inputs = newItem.querySelectorAll('input, select, textarea');
+    if(inputs.length > 0) inputs[0].focus();
   };
 
   window.addTahapanPelaksanaan = function (value = '') {
@@ -2083,6 +2113,10 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.addEventListener('animationend', () => {
       newItem.classList.remove('new-item-animation');
     });
+    
+    // Focus newly added input
+    const inputs = newItem.querySelectorAll('input, select, textarea');
+    if(inputs.length > 0) inputs[0].focus();
   };
 
   window.addIndikatorKinerja = function (itemData = null) {
@@ -2123,6 +2157,10 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.addEventListener('animationend', () => {
       newItem.classList.remove('new-item-animation');
     });
+    
+    // Focus newly added input
+    const inputs = newItem.querySelectorAll('input, select, textarea');
+    if(inputs.length > 0) inputs[0].focus();
   };
 
   window.removeIkuField = function (btn) {
@@ -2200,6 +2238,10 @@ export function renderUsulanKakPage(path, userRole) {
             }
         })
     ]);
+    
+    // Focus newly added input
+    const inputs = newItem.querySelectorAll('input, select, textarea');
+    if(inputs.length > 0) inputs[0].focus();
   };
 
   window.addRabItem = function (kategoriId, itemData = null) {

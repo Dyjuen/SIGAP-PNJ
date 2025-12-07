@@ -239,33 +239,54 @@ export function renderWadirDashboardPage(path, userRole) {
     
       Swal.fire({
         title: actionTitle,
-        text: "Membuat token sementara...",
+        text: "Sedang memproses...",
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
     
       try {
-        // Step 1: Generate token
+        // Step 1: Generate token (Required for both preview and download)
         const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
           method: 'POST',
         });
     
         if (!tokenResponse.success) {
-          throw new Error(tokenResponse.message || 'Gagal membuat token');
+          throw new Error(tokenResponse.message || 'Gagal membuat token akses file');
         }
     
         const tempToken = tokenResponse.data.download_token;
-    
-        // Step 2: Build URL and open/download
-        const url = action === 'preview'
-          ? `/api/kak/${kakId}/preview?t=${tempToken}`
-          : `/api/kak/${kakId}?t=${tempToken}`;
-    
-        Swal.close();
-        
-        setTimeout(() => {
-          window.open(url, '_blank');
-        }, 300);
+        const url = `/api/kak/${kakId}${action === 'preview' ? '/preview' : ''}?t=${tempToken}`;
+
+        if (action === 'preview') {
+          // Use fetch + blob for preview to avoid showing HTML error code
+          const response = await fetch(url);
+
+          if (!response.ok) {
+             const contentType = response.headers.get("content-type");
+             if (contentType && contentType.indexOf("application/json") !== -1) {
+                 const errorData = await response.json();
+                 throw new Error(errorData.message || 'Gagal mengambil file.');
+             } else {
+                 throw new Error(`HTTP Error: ${response.status}`);
+             }
+          }
+
+          const blob = await response.blob();
+          const fileUrl = URL.createObjectURL(blob);
+          
+          Swal.close();
+          window.open(fileUrl, '_blank');
+          
+          // Revoke URL after a delay
+          setTimeout(() => URL.revokeObjectURL(fileUrl), 10000);
+
+        } else {
+          // Download
+          Swal.close();
+          setTimeout(() => {
+              window.open(url, '_blank');
+          }, 300);
+        }
     
       } catch (error) {
         Swal.fire({

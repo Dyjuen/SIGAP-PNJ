@@ -590,13 +590,21 @@ export function renderBendaharaDashboardPage(path, userRole) {
     });
   
     try {
+      // Step 1: Generate token (Required for both preview and download)
+      const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
+        method: 'POST',
+      });
+  
+      if (!tokenResponse.success) {
+        throw new Error(tokenResponse.message || 'Gagal membuat token akses file');
+      }
+  
+      const tempToken = tokenResponse.data.download_token;
+      const url = `/api/kak/${kakId}${action === 'preview' ? '/preview' : ''}?t=${tempToken}`;
+
       if (action === 'preview') {
         // Use fetch + blob for preview to avoid showing HTML error code
-        const response = await fetch(`/api/kak/${kakId}/preview`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token")}`
-          }
-        });
+        const response = await fetch(url);
 
         if (!response.ok) {
            const contentType = response.headers.get("content-type");
@@ -618,24 +626,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
         setTimeout(() => URL.revokeObjectURL(fileUrl), 10000);
 
       } else {
-        // For download, we can use the token method or similar fetch method.
-        // Let's stick to the token method for download to trigger browser download behavior easier
-        // unless we want to use blob and anchor tag.
-        // Using token method for download as it was working or requested to be kept unless broken.
-        // But since I changed preview, let's keep download as is OR use the same blob method for consistency?
-        // The user specifically complained about "Lihat PDF" (preview) showing HTML.
-        
-        const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
-            method: 'POST',
-        });
-    
-        if (!tokenResponse.success) {
-            throw new Error(tokenResponse.message || 'Gagal membuat token');
-        }
-    
-        const tempToken = tokenResponse.data.download_token;
-        const url = `/api/kak/${kakId}?t=${tempToken}`;
-    
+        // Download
         Swal.close();
         setTimeout(() => {
             window.open(url, '_blank');

@@ -654,7 +654,6 @@ export function renderRevisiLpjPage(path, userRole) {
         min-width: 44px;
         min-height: 44px;
         opacity: 1;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         padding: 0;
         display: flex;
@@ -664,13 +663,16 @@ export function renderRevisiLpjPage(path, userRole) {
         margin: -4px 0 0 0;
         cursor: pointer;
         flex-shrink: 0;
+        transition: none !important;
+        transform: none !important;
+        box-shadow: none !important;
       }
 
       #lampiranCommentModal .btn-close:hover {
-        background: rgba(255, 255, 255, 0.25);
-        border-color: rgba(255, 255, 255, 0.5);
-        transform: rotate(90deg) scale(1.05);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: none !important;
+        box-shadow: none !important;
       }
 
       /* X marks using pseudo-elements - PERFECT CROSS */
