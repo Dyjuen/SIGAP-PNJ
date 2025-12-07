@@ -482,7 +482,6 @@ export function renderRevisiLpjPage(path, userRole) {
       .lampiran-item.archived-lampiran .lampiran-content {
         text-decoration: line-through;
       }
-      .lampiran-item.archived-lampiran .lampiran-comment-btn,
       .lampiran-item.archived-lampiran .btn-delete-lampiran {
         display: none; /* Hide action buttons for archived items */
       }

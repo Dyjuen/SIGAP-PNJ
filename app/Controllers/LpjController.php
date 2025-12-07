@@ -347,8 +347,7 @@ class LpjController extends Controller
                 foreach ($filesToDelete as $lampiranId) {
                     $lampiran = $this->kegiatanLampiranModel->find($lampiranId);
                     if ($lampiran) {
-                        $uploader->delete($lampiran['path_file_disimpan']);
-                        $this->kegiatanLampiranModel->delete($lampiranId);
+                        $this->kegiatanLampiranModel->update($lampiranId, ['status_lampiran' => 'archived']);
                     }
                 }
             }
