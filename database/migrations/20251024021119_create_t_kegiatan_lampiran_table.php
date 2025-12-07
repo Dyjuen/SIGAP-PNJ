@@ -15,7 +15,6 @@ final class CreateTKegiatanLampiranTable extends AbstractMigration
               ->addColumn('nama_file_asli', 'string', ['limit' => 255])
               ->addColumn('path_file_disimpan', 'string', ['limit' => 255])
               ->addColumn('uploader_user_id', 'integer')
-              ->addColumn('catatan', 'text', ['null' => true])
               ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
               ->addForeignKey('anggaran_id', 't_kak_anggaran', 'anggaran_id', [
                   'delete' => 'CASCADE',
