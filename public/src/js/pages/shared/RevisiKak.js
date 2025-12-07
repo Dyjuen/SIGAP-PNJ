@@ -2545,6 +2545,7 @@ export function renderRevisiKakPage(path, userRole) {
       updateCommentCount();
 
       document.querySelector('[data-field="namaKegiatan"]').value = kakData.nama_kegiatan || "";
+      document.querySelector('[data-field="tipeKegiatan"]').value = kakData.tipe_kegiatan_id || "";
       document.querySelector('[data-field="gambaranUmum"]').value = kakData.deskripsi_kegiatan || "";
       document.querySelector('[data-field="metodePelaksanaan"]').value = kakData.metode_pelaksanaan || "";
 
@@ -3793,6 +3794,7 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
           const payload = {
             kak: {
               nama_kegiatan,
+              tipe_kegiatan_id,
               deskripsi_kegiatan,
               metode_pelaksanaan,
               kurun_waktu_pelaksanaan,
