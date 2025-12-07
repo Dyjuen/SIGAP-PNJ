@@ -53,7 +53,7 @@ export function renderInputLpjPage(path, userRole) {
       .comment-icon:hover {
         background: #00BCD4;
         color: white;
-        transform: translateY(-50%) scale(1.1);
+        /* Removed transform for scaling */
       }
       
       .comment-icon.has-comment {
@@ -747,8 +747,7 @@ export function renderInputLpjPage(path, userRole) {
       }
 
       .bg-white.rounded-xl.shadow-lg:hover {
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
-        transform: translateY(-5px);
+        /* Removed transform and box-shadow for enlargement */
       }
       
       /* Row item animations */
@@ -775,7 +774,7 @@ export function renderInputLpjPage(path, userRole) {
       }
 
       .row-item:hover {
-        transform: translateX(5px) scale(1.02);
+        /* Removed transform for enlargement */
       }
 
       .row-item:nth-child(odd) {
@@ -942,7 +941,7 @@ export function renderInputLpjPage(path, userRole) {
 
       /* Subtle pop-up effect on hover */
       .border-hover-draw:hover {
-        transform: translateY(-4px) scale(1.01);
+        /* Removed transform for enlargement */
       }
 
       .border-hover-draw::before {
@@ -1404,10 +1403,14 @@ export function renderInputLpjPage(path, userRole) {
       </div>
 
       <!-- Main Content -->
-      <div class="main-step-content active">
+      <div class="active">
         <div class="bg-white rounded-xl shadow-lg p-8">
           <div id="rabSectionsContainer">
-            <div class="text-center p-8">${window.createLoadingState ? window.createLoadingState('Memuat data LPJ...') : 'Loading...'}</div>
+            <div class="text-center p-8">${
+              window.createLoadingState
+                ? window.createLoadingState("Memuat data LPJ...")
+                : "Loading..."
+            }</div>
           </div>
         </div>
       </div>
@@ -1593,6 +1596,7 @@ export function renderInputLpjPage(path, userRole) {
       state.lpjData = {
         anggaran_items: response.data.anggaran,
         lampiran: response.data.lampiran,
+        realisasi: response.data.realisasi,
         status: response.data.kegiatan.lpj_status, // Assuming this field exists and is reliable
       };
       state.status = response.data.kegiatan.lpj_status || "new";
@@ -1632,15 +1636,19 @@ export function renderInputLpjPage(path, userRole) {
 
       section.querySelectorAll(".rab-item").forEach((row) => {
         const anggaranId = row.dataset.pkValue;
-        
+
         // --- Calculate RAB Subtotal ---
-        const item = state.lpjData?.anggaran_items?.find(i => String(i.anggaran_id) === String(anggaranId));
+        const item = state.lpjData?.anggaran_items?.find(
+          (i) => String(i.anggaran_id) === String(anggaranId)
+        );
         if (item) {
-             const rV1 = parseFloat(item.volume1) || 0;
-             const rV2 = (!item.volume2 || item.volume2 == 0) ? 1 : parseFloat(item.volume2);
-             const rV3 = (!item.volume3 || item.volume3 == 0) ? 1 : parseFloat(item.volume3);
-             const rHarga = parseFloat(item.harga_satuan) || 0;
-             rabSubtotal += rV1 * rV2 * rV3 * rHarga;
+          const rV1 = parseFloat(item.volume1) || 0;
+          const rV2 =
+            !item.volume2 || item.volume2 == 0 ? 1 : parseFloat(item.volume2);
+          const rV3 =
+            !item.volume3 || item.volume3 == 0 ? 1 : parseFloat(item.volume3);
+          const rHarga = parseFloat(item.harga_satuan) || 0;
+          rabSubtotal += rV1 * rV2 * rV3 * rHarga;
         }
 
         // --- Calculate Realisasi Subtotal ---
@@ -1702,23 +1710,24 @@ export function renderInputLpjPage(path, userRole) {
         let warningEl = subtotalContainer.querySelector(".subtotal-warning");
 
         if (subtotal > rabSubtotal) {
-            isAllValid = false;
-            subtotalEl.style.color = "#EF4444"; // Red for error
-            
-            if (!warningEl) {
-                warningEl = document.createElement("div");
-                warningEl.className = "subtotal-warning text-xs text-red-500 font-bold mt-1";
-                subtotalContainer.appendChild(warningEl);
-            }
-            const formattedRab = new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-                minimumFractionDigits: 0,
-            }).format(rabSubtotal);
-            warningEl.innerHTML = `<i class="ti ti-alert-circle"></i> Melebihi RAB (${formattedRab})`;
+          isAllValid = false;
+          subtotalEl.style.color = "#EF4444"; // Red for error
+
+          if (!warningEl) {
+            warningEl = document.createElement("div");
+            warningEl.className =
+              "subtotal-warning text-xs text-red-500 font-bold mt-1";
+            subtotalContainer.appendChild(warningEl);
+          }
+          const formattedRab = new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+          }).format(rabSubtotal);
+          warningEl.innerHTML = `<i class="ti ti-alert-circle"></i> Melebihi RAB (${formattedRab})`;
         } else {
-            subtotalEl.style.color = "#00BCD4"; // Original color
-            if (warningEl) warningEl.remove();
+          subtotalEl.style.color = "#00BCD4"; // Original color
+          if (warningEl) warningEl.remove();
         }
       }
       grandTotal += subtotal;
@@ -1732,7 +1741,7 @@ export function renderInputLpjPage(path, userRole) {
         minimumFractionDigits: 0,
       }).format(grandTotal);
     }
-    
+
     return isAllValid;
   }
 
@@ -2105,8 +2114,8 @@ export function renderInputLpjPage(path, userRole) {
 
   
 
-                            <div><input type="text" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} value="${
-      item.realisasi_uraian || item.uraian || ""
+                            <div><input type="text" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_uraian" value="${
+      realisasiItem.uraian || item.uraian || ""
     }"></div>
 
   
@@ -2116,7 +2125,7 @@ export function renderInputLpjPage(path, userRole) {
   
 
                             <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_volume1" value="${
-      item.realisasi_volume1 || item.volume1 || ""
+      realisasiItem.volume1 || item.volume1 || ""
     }"></div>
 
   
@@ -2126,7 +2135,7 @@ export function renderInputLpjPage(path, userRole) {
   
 
                             <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_satuan1_id">${getSatuanOptions(
-      item.realisasi_satuan1_id || item.satuan1_id
+      realisasiItem.satuan1_id || item.satuan1_id
     )}</select>
 
   
@@ -2144,7 +2153,7 @@ export function renderInputLpjPage(path, userRole) {
   
 
                             <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_volume2" value="${
-      item.realisasi_volume2 || item.volume2 || ""
+      realisasiItem.volume2 || item.volume2 || ""
     }"></div>
 
   
@@ -2154,7 +2163,7 @@ export function renderInputLpjPage(path, userRole) {
   
 
                             <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_satuan2_id">${getSatuanOptions(
-      item.realisasi_satuan2_id || item.satuan2_id
+      realisasiItem.satuan2_id || item.satuan2_id
     )}</select></div>
 
   
@@ -2164,7 +2173,7 @@ export function renderInputLpjPage(path, userRole) {
   
 
                             <div><input type="number" min="0" ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_volume3" value="${
-      item.realisasi_volume3 || item.volume3 || ""
+      realisasiItem.volume3 || item.volume3 || ""
     }"></div>
 
   
@@ -2174,7 +2183,7 @@ export function renderInputLpjPage(path, userRole) {
   
 
                             <div><select ${inputAttr} class="${commonInputClasses}" ${currentInputStyleAttr} data-field="realisasi_satuan3_id">${getSatuanOptions(
-      item.realisasi_satuan3_id || item.satuan3_id
+      realisasiItem.satuan3_id || item.satuan3_id
     )}</select></div>
 
   
@@ -2340,12 +2349,12 @@ export function renderInputLpjPage(path, userRole) {
     // Validate Prices
     const isPriceValid = calculateLpjTotals();
     if (!isPriceValid) {
-         Swal.fire({
-            icon: "error",
-            title: "Validasi Anggaran Gagal",
-            text: "Total realisasi pada salah satu kategori melebihi total anggaran (RAB). Silakan periksa kembali input Anda.",
-         });
-         return;
+      Swal.fire({
+        icon: "error",
+        title: "Validasi Anggaran Gagal",
+        text: "Total realisasi pada salah satu kategori melebihi total anggaran (RAB). Silakan periksa kembali input Anda.",
+      });
+      return;
     }
 
     const rabSections = document.querySelectorAll(".rab-item");
@@ -2488,18 +2497,27 @@ export function renderInputLpjPage(path, userRole) {
       const anggaranId = section.dataset.pkValue;
       const realisasiGrid = section.querySelector(".realisasi-grid");
 
-      const uraian = realisasiGrid.querySelector('input[type="text"]').value;
-      const numberInputs = realisasiGrid.querySelectorAll(
-        'input[type="number"]'
-      );
-      const selectInputs = realisasiGrid.querySelectorAll("select");
-
-      const volume1 = numberInputs[0] ? numberInputs[0].value : "";
-      const satuan1_id = selectInputs[0] ? selectInputs[0].value : "";
-      const volume2 = numberInputs[1] ? numberInputs[1].value : "";
-      const satuan2_id = selectInputs[1] ? selectInputs[1].value : "";
-      const volume3 = numberInputs[2] ? numberInputs[2].value : "";
-      const satuan3_id = selectInputs[2] ? selectInputs[2].value : "";
+      const uraian = realisasiGrid.querySelector(
+        'input[data-field="realisasi_uraian"]'
+      ).value;
+      const volume1 = realisasiGrid.querySelector(
+        'input[data-field="realisasi_volume1"]'
+      ).value;
+      const satuan1_id = realisasiGrid.querySelector(
+        'select[data-field="realisasi_satuan1_id"]'
+      ).value;
+      const volume2 = realisasiGrid.querySelector(
+        'input[data-field="realisasi_volume2"]'
+      ).value;
+      const satuan2_id = realisasiGrid.querySelector(
+        'select[data-field="realisasi_satuan2_id"]'
+      ).value;
+      const volume3 = realisasiGrid.querySelector(
+        'input[data-field="realisasi_volume3"]'
+      ).value;
+      const satuan3_id = realisasiGrid.querySelector(
+        'select[data-field="realisasi_satuan3_id"]'
+      ).value;
 
       const harga_satuan_input = realisasiGrid.querySelector(
         'input[data-field="realisasi_harga_satuan"]'
