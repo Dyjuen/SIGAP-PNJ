@@ -672,9 +672,9 @@
                 ?>
                 <tr>
                     <td style="text-align: center;"><font face="times"><?= $no++ ?></font></td>
-                    <td><font face="times"><?= htmlspecialchars($lampiran['nama_file_asli']) ?></font></td>
-                    <td style="text-align: center;"><font face="times"><?= strtoupper(htmlspecialchars($lampiran['tipe_file'])) ?></font></td>
-                    <td style="text-align: center;"><font face="times"><?= date('d F Y H:i', strtotime($lampiran['created_at'])) ?></font></td>
+                    <td><font face="times"><?= htmlspecialchars($lampiran['nama_file_asli'] ?? 'Dokumen') ?></font></td>
+                    <td style="text-align: center;"><font face="times"><?= strtoupper(htmlspecialchars($lampiran['tipe_file'] ?? '-')) ?></font></td>
+                    <td style="text-align: center;"><font face="times"><?= isset($lampiran['created_at']) ? date('d F Y H:i', strtotime($lampiran['created_at'])) : '-' ?></font></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
