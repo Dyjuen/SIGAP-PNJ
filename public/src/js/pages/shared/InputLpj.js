@@ -1385,6 +1385,15 @@ export function renderInputLpjPage(path, userRole) {
         transform: scale(1.1);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
       }
+      .lampiran-item.archived-lampiran {
+        opacity: 0.6;
+      }
+      .lampiran-item.archived-lampiran .lampiran-content {
+        text-decoration: line-through;
+      }
+      .lampiran-item.archived-lampiran .btn-delete-lampiran {
+        display: none;
+      }
     </style>
 
     <div class="input-lpj-page">
@@ -1933,7 +1942,7 @@ export function renderInputLpjPage(path, userRole) {
         ? itemLampiran
             .map(
               (file) => `
-                <div class="lampiran-item border-hover-draw" data-lampiran-id="${
+                <div class="lampiran-item border-hover-draw ${file.status_lampiran === 'archived' ? 'archived-lampiran' : ''}" data-lampiran-id="${
                   file.lampiran_id
                 }">
                    <div class="lampiran-content">
@@ -1946,7 +1955,7 @@ export function renderInputLpjPage(path, userRole) {
                    </div>
                    <div class="flex items-center gap-2">
                       ${
-                        isPengusul && !isViewOnly
+                        isPengusul && !isViewOnly && file.status_lampiran !== 'archived'
                           ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
                                <i class="ti ti-trash">&#xeb41;</i>
                             </button>`
