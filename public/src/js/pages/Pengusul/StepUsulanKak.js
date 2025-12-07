@@ -452,6 +452,12 @@ export function renderUsulanKakPage(path, userRole) {
         transform: translateY(-1px);
       }
 
+      /* Add focus outline for all buttons */
+      button:focus {
+        outline: 2px solid black; /* Black outline */
+        outline-offset: 2px; /* Space between button and outline */
+      }
+
       /* Step content fade in */
       .step-content {
         display: none;
@@ -678,7 +684,7 @@ export function renderUsulanKakPage(path, userRole) {
                     <div id="manfaatContainer">
                       <!-- Dynamic benefit rows will be inserted here -->
                     </div>
-                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onclick="addManfaat()">Tambah Output Kegiatan</button>
+                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addManfaat()">Tambah Output Kegiatan</button>
                   </div>
                 </div>
 
@@ -696,7 +702,7 @@ export function renderUsulanKakPage(path, userRole) {
                     <div id="tahapanPelaksanaanContainer">
                       <!-- Dynamic rows will be inserted here -->
                     </div>
-                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onclick="addTahapanPelaksanaan()">Tambah</button>
+                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addTahapanPelaksanaan()">Tambah</button>
                   </div>
                 </div>
 
@@ -709,7 +715,7 @@ export function renderUsulanKakPage(path, userRole) {
                     <div id="indikatorKinerjaContainer">
                       <!-- Dynamic rows will be inserted here -->
                     </div>
-                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onclick="addIndikatorKinerja()">Tambah</button>
+                    <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIndikatorKinerja()">Tambah</button>
                   </div>
                 </div>
 
@@ -731,7 +737,7 @@ export function renderUsulanKakPage(path, userRole) {
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBack">
               <span>←</span> Back
             </button>
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnNext">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnNext">
               Next <span>→</span>
             </button>
           </div>
@@ -747,14 +753,14 @@ export function renderUsulanKakPage(path, userRole) {
             <!-- Dynamic IKU rows will be inserted here -->
           </div>
           
-          <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onclick="addIkuField()">Tambah</button>
+          <button type="button" class="border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onclick="addIkuField()">Tambah</button>
 
           <!-- Navigation Buttons -->
           <div class="flex justify-between mt-8">
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackIku">
               <span>←</span> Back
             </button>
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnNextIku">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnNextIku">
               Next <span>→</span>
             </button>
           </div>
@@ -775,7 +781,7 @@ export function renderUsulanKakPage(path, userRole) {
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 border-0 flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: rgba(0, 188, 212, 0.1); color: #00BCD4;" onmouseover="this.style.background='rgba(0, 188, 212, 0.2)';" onmouseout="this.style.background='rgba(0, 188, 212, 0.1)';" id="btnBackRab">
               <span>←</span> Back
             </button>
-            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 inline-block hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnSubmitRab">
+            <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnSubmitRab">
               Submit
             </button>
           </div>
@@ -1732,7 +1738,7 @@ export function renderUsulanKakPage(path, userRole) {
                   <div id="rab-items-container-${kategori.kategori_belanja_id}">
                       <!-- New RAB items will be inserted here -->
                   </div>
-                  <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4'," onclick="addRabItem(${kategori.kategori_belanja_id})">
+                  <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4'," onclick="addRabItem(${kategori.kategori_belanja_id})">
                       Tambah Item
                   </button>
               `;
@@ -2342,11 +2348,7 @@ export function renderUsulanKakPage(path, userRole) {
     newItem.addEventListener('animationend', () => {
       newItem.classList.remove('new-item-animation');
     });
-
-    const firstInput = newItem.querySelector('input');
-    if (firstInput) {
-      firstInput.focus();
-    }
+  }
 
   // Increment/Decrement value functions
   window.incrementValue = function (btn, step) {
