@@ -475,17 +475,6 @@ export function renderRevisiLpjPage(path, userRole) {
         border-color: #F87171; /* A slightly darker red for the border */
         background-color: #FEE2E2; /* A light red for the background */
       }
-      
-      .lampiran-item.archived-lampiran {
-        opacity: 0.6;
-      }
-      .lampiran-item.archived-lampiran .lampiran-content {
-        text-decoration: line-through;
-      }
-      .lampiran-item.archived-lampiran .lampiran-comment-btn,
-      .lampiran-item.archived-lampiran .btn-delete-lampiran {
-        display: none; /* Hide action buttons for archived items */
-      }
 
       /* Enhanced File Upload Styling */
 
@@ -1290,45 +1279,6 @@ export function renderRevisiLpjPage(path, userRole) {
     );
   }
 
-  function getLampiranStatusBadge(status) {
-    let badgeClass = "";
-    let statusText = "";
-    let icon = "";
-
-    switch (status) {
-      case "pending":
-        badgeClass = "bg-label-info";
-        statusText = "Pending";
-        icon = "ti ti-hourglass";
-        break;
-      case "revision_requested":
-        badgeClass = "bg-label-danger";
-        statusText = "Perlu Revisi";
-        icon = "ti ti-alert-circle";
-        break;
-      case "approved":
-        badgeClass = "bg-label-success";
-        statusText = "Disetujui";
-        icon = "ti ti-check";
-        break;
-      case "archived":
-        badgeClass = "bg-label-secondary";
-        statusText = "Dihapus";
-        icon = "ti ti-archive";
-        break;
-      default:
-        badgeClass = "bg-label-secondary";
-        statusText = "Tidak Diketahui";
-        icon = "ti ti-question-mark";
-    }
-
-    return `
-      <span class="badge ${badgeClass} ml-2">
-        <i class="${icon} mr-1"></i> ${statusText}
-      </span>
-    `;
-  }
-
   function createDetailedAnggaranRow(item, lampiran, index) {
     const commonInputClasses = "w-full px-4 py-3 border-2 rounded-lg text-sm";
 
@@ -1364,55 +1314,54 @@ export function renderRevisiLpjPage(path, userRole) {
             .map(
               (file) => `
 
-                                <div class="lampiran-item border-hover-draw ${
-                                  lampiranComments[file.lampiran_id] ? "has-comment" : ""
-                                } ${file.status_lampiran === 'archived' ? 'archived-lampiran' : ''}" data-lampiran-id="${file.lampiran_id}">
-                
-                                   <div class="lampiran-content">
-                
-                                     <i class="ti ti-file-text text-gray-400"></i>
-                
-                                     <a href="javascript:void(0);"
-                                        data-lampiran-id="${file.lampiran_id}"
-                                        class="text-blue-600 hover:underline text-sm view-file-btn">${
-                                          file.nama_file_asli
-                                        }</a>
-                                     ${getLampiranStatusBadge(file.status_lampiran)}
-                                   </div>
-                
-                                   <div class="flex items-center gap-2">
-                
-                                      ${
-                                        isBendahara || isPengusul
-                                          ? `<button type="button" class="lampiran-comment-btn ${
-                                              lampiranComments[file.lampiran_id]
-                                                ? "has-comment"
-                                                : ""
-                                            }" data-lampiran-id="${
-                                              file.lampiran_id
-                                            }" data-filename="${
-                                              file.nama_file_asli
-                                            }" title="Komentar">
-                
-                                                <i class="ti ti-message-circle-2">&#xeaed;</i>
-                
-                                            </button>`
-                                          : ""
-                                      }
-                
-                                      ${
-                                        isPengusul && file.status_lampiran !== 'approved' && file.status_lampiran !== 'archived'
-                                          ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
-                
-                                                                                      <i class="ti ti-trash">&#xeb41;</i>
-                                            </button>`
-                                          : ""
-                                      }
-                
-                                   </div>
-                
-                                </div>
-              `
+                                                <div class="lampiran-item border-hover-draw ${
+                                                  lampiranComments[file.lampiran_id] ? "has-comment" : ""
+                                                } ${file.status_lampiran === 'archived' ? 'archived-lampiran' : ''}" data-lampiran-id="${file.lampiran_id}">
+                                
+                                                   <div class="lampiran-content">
+                                
+                                                     <i class="ti ti-file-text text-gray-400"></i>
+                                
+                                                     <a href="javascript:void(0);"
+                                                        data-lampiran-id="${file.lampiran_id}"
+                                                        class="text-blue-600 hover:underline text-sm view-file-btn">${
+                                                          file.nama_file_asli
+                                                        }</a>
+                                
+                                                   </div>
+                                
+                                                   <div class="flex items-center gap-2">
+                                
+                                                      ${
+                                                        isBendahara || isPengusul
+                                                          ? `<button type="button" class="lampiran-comment-btn ${
+                                                              lampiranComments[file.lampiran_id]
+                                                                ? "has-comment"
+                                                                : ""
+                                                            }" data-lampiran-id="${
+                                                              file.lampiran_id
+                                                            }" data-filename="${
+                                                              file.nama_file_asli
+                                                            }" title="Komentar">
+                                
+                                                                <i class="ti ti-message-circle-2">&#xeaed;</i>
+                                
+                                                            </button>`
+                                                          : ""
+                                                      }
+                                
+                                                      ${
+                                                        isPengusul
+                                                          ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file">
+                                
+                                                                                                      <i class="ti ti-trash">&#xeb41;</i>
+                                                            </button>`
+                                                          : ""
+                                                      }
+                                
+                                                   </div>
+                                
+                                                </div>              `
             )
 
             .join("")
