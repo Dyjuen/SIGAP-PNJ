@@ -202,11 +202,16 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         padding: 1.5rem;
       }
       
-.modal-title {
+      .modal-title {
         font-weight: 600;
         color: #1f2937;
       }
       
+      .btn-close {
+        transition: none !important;
+        transform: none !important;
+        animation: none !important;
+      }      
       .modal-body {
         padding: 1.5rem;
       }
@@ -487,8 +492,8 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       }
 
       .btn:hover::before {
-        width: 300px;
-        height: 300px;
+        width: 50px;
+        height: 50px;
       }
 
       /* Skeleton loading */
