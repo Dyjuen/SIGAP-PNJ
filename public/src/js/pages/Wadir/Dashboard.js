@@ -4,6 +4,16 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderWadirDashboardPage(path, userRole) {
   const dashboardContent = `
     <div class="wadir-dashboard-page">
+      <style>
+        .video-placeholder {
+          background: #000;
+          border-radius: 12px;
+          height: 200px;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+      </style>
       <!-- Stats Cards -->
       <div class="row g-4 mb-4">
         <div class="col-sm-6 col-xl-6">
@@ -65,6 +75,20 @@ export function renderWadirDashboardPage(path, userRole) {
             Showing <span id="startEntry">1</span> to <span id="endEntry">10</span> of <span id="totalEntries">50</span> entries
           </div>
           <ul class="pagination"></ul>
+        </div>
+      </div>
+
+      <!-- Video Panduan Section -->
+      <div class="mt-4">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title mb-0">Video Panduan</h4>
+          </div>
+          <div class="card-body">
+            <div class="row g-4" id="videoList">
+               <div class="col-12 text-center text-muted py-4">Memuat video...</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -441,4 +465,65 @@ export function renderWadirDashboardPage(path, userRole) {
   // INITIALIZATION
   // ==============================================
   fetchKegiatan();
+  fetchVideos();
+
+  async function fetchVideos() {
+      try {
+        // Use common dashboard endpoint like Pengusul
+        const response = await apiRequest("/dashboard/video");
+        if (response.success && response.data) {
+            renderVideos(response.data);
+        } else {
+            renderVideos([]);
+        }
+      } catch (error) {
+        console.error("Error fetching videos:", error);
+        renderVideos([]);
+      }
+  }
+
+  function renderVideos(videos) {
+    const container = document.getElementById("videoList");
+    if (!container) return;
+
+    container.innerHTML = "";
+    if (!videos || videos.length === 0) {
+        container.innerHTML = `<div class="col-12 text-center text-muted py-4">Belum ada video panduan.</div>`;
+        return;
+    }
+
+    videos.forEach((video) => {
+        // Use path_media from database
+        let videoUrl = video.path_media || video.url || '';
+        let embedUrl = videoUrl;
+        
+        // Simple YouTube URL to Embed URL converter
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+            let videoId = '';
+            if (videoUrl.includes('youtube.com/watch?v=')) {
+                videoId = videoUrl.split('watch?v=')[1].split('&')[0];
+            } else if (videoUrl.includes('youtu.be/')) {
+                videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+            } else if (videoUrl.includes('youtube.com/embed/')) {
+                videoId = videoUrl.split('embed/')[1].split('?')[0];
+            }
+            if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+      const col = document.createElement("div");
+      col.className = "col-md-4";
+      
+      const videoCard = document.createElement("div");
+      videoCard.className = "video-placeholder";
+      videoCard.style.background = "black";
+      videoCard.style.position = "relative";
+      
+      videoCard.innerHTML = `
+        <iframe src="${embedUrl}" title="${video.judul_panduan || 'Video Panduan'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius: 12px;"></iframe>
+      `;
+      
+      col.appendChild(videoCard);
+      container.appendChild(col);
+    });
+  }
 }

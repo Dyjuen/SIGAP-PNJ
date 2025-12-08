@@ -215,6 +215,55 @@ export function renderDashboardVerifikator(path, userRole) {
         background: #D1FAE5 !important;
         color: #065F46 !important;
       }
+
+      /* Video Placeholder - Pengusul Style */
+      .video-placeholder {
+        background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+        border-radius: 12px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .video-placeholder::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, transparent 30%, rgba(0, 188, 212, 0.1) 50%, transparent 70%);
+        background-size: 200% 200%;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .video-placeholder:hover::before {
+        opacity: 1;
+        animation: shimmer 2s ease-in-out infinite;
+      }
+
+      .video-placeholder svg {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .video-placeholder:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 30px rgba(0, 188, 212, 0.2);
+      }
+
+      .video-placeholder:hover svg {
+        transform: scale(1.3);
+        stroke: #00BCD4;
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+      }
     </style>
 
     <div class="monitoring-usulan-page">
@@ -252,6 +301,18 @@ export function renderDashboardVerifikator(path, userRole) {
         </div>
 
         <div class="card card-datatable table-responsive p-0">
+            <div class="px-4 pt-4 pb-2 d-flex justify-content-between align-items-center">
+               <div class="d-flex align-items-center gap-2">
+                 <label class="text-muted small">Show</label>
+                 <select id="itemsPerPageSelect" class="form-select form-select-sm" style="width: 70px;">
+                   <option value="5">5</option>
+                   <option value="10" selected>10</option>
+                   <option value="25">25</option>
+                   <option value="50">50</option>
+                 </select>
+                 <label class="text-muted small">entries</label>
+               </div>
+            </div>
             <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
                 <thead>
                 <tr>
@@ -267,13 +328,42 @@ export function renderDashboardVerifikator(path, userRole) {
                 </tbody>
             </table>
             <div class="d-flex justify-content-between align-items-center px-4 pb-4">
-                <div class="text-muted" id="paginationInfo">Showing 1 to 10 of 50 entries</div>
+                <div class="text-muted small" id="paginationInfo">Showing 1 to 10 of 50 entries</div>
                 <nav aria-label="Page navigation">
                     <ul class="pagination mb-0" id="pagination">
                     </ul>
                 </nav>
             </div>
         </div>
+        
+        <!-- Video Panduan Section -->
+        <div class="card card-datatable mt-4">
+          <div class="px-4 pt-4 pb-2">
+            <h4 class="mb-0" style="color: #00BCD4; font-weight: 700;">Video Panduan</h4>
+            <p class="text-muted small mt-1">Panduan dalam menggunakan SIGAP</p>
+          </div>
+          <div class="p-4">
+            <div class="row g-4" id="videoList">
+               <!-- Initial Placeholders -->
+               <div class="col-md-4">
+                 <div class="video-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                 </div>
+               </div>
+               <div class="col-md-4">
+                 <div class="video-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                 </div>
+               </div>
+               <div class="col-md-4">
+                 <div class="video-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                 </div>
+               </div>
+            </div>
+          </div>
+        </div>
+
     </div>
   `;
 
@@ -659,6 +749,19 @@ export function renderDashboardVerifikator(path, userRole) {
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
+    // Pagination Limit Selector
+    const limitSelect = document.getElementById('itemsPerPageSelect');
+    if (limitSelect && !limitSelect.hasAttribute('data-listener')) {
+        limitSelect.setAttribute('data-listener', 'true');
+        limitSelect.addEventListener('change', (e) => {
+            state.itemsPerPage = parseInt(e.target.value);
+            state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage);
+            state.currentPage = 1;
+            renderTableRows();
+            renderPagination();
+        });
+    }
+
     document.querySelectorAll(".btn-approve").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const kakId = btn.dataset.id;
@@ -794,22 +897,28 @@ export function renderDashboardVerifikator(path, userRole) {
   // MODAL & STATS
   // ==============================================
   function setupModal() {
+    const modalElement = document.getElementById("revisiModal");
+    if (!modalElement) {
+      console.warn("[VERIFIKATOR] revisiModal element not found in DOM - skipping modal setup");
+      return;
+    }
+
     if (typeof bootstrap !== "undefined") {
-      revisiModalInstance = new bootstrap.Modal(
-        document.getElementById("revisiModal")
-      );
+      revisiModalInstance = new bootstrap.Modal(modalElement);
 
       const btnKirimRevisi = document.getElementById("btnKirimRevisi");
-      btnKirimRevisi.addEventListener("click", async () => {
-        const catatan = document.getElementById("revisiCatatan").value.trim();
-        const kakId = document.getElementById("revisiUsulanId").value;
-        if (!catatan) return alert("Catatan revisi harus diisi!");
+      if (btnKirimRevisi) {
+        btnKirimRevisi.addEventListener("click", async () => {
+          const catatan = document.getElementById("revisiCatatan").value.trim();
+          const kakId = document.getElementById("revisiUsulanId").value;
+          if (!catatan) return alert("Catatan revisi harus diisi!");
 
-        await handleAction(kakId, "revise", {
-          catatan_telaah: { deskripsi_kegiatan: catatan },
-        }); // Assuming note goes here
-        revisiModalInstance.hide();
-      });
+          await handleAction(kakId, "revise", {
+            catatan_telaah: { deskripsi_kegiatan: catatan },
+          }); // Assuming note goes here
+          revisiModalInstance.hide();
+        });
+      }
     } else {
       console.error("Bootstrap 5 JS not found. Modals will not work.");
     }
@@ -830,6 +939,78 @@ export function renderDashboardVerifikator(path, userRole) {
   // ==============================================
   initializeDashboard();
   setupModal();
+  fetchVideos();
+
+  function fetchVideos() {
+      console.log("[VERIFIKATOR] Fetching videos..."); // Debug
+      // Use local apiRequest helper
+      apiRequest("/dashboard/video")
+        .then(response => {
+            console.log("[VERIFIKATOR] Video API Response:", response); // Debug
+            if (response.success && response.data) {
+                renderVideos(response.data);
+            } else {
+                renderVideos([]);
+            }
+        })
+        .catch(error => {
+            console.error("[VERIFIKATOR] Error fetching videos:", error);
+            renderVideos([]);
+        });
+  }
+
+  function renderVideos(videos) {
+    const container = document.getElementById("videoList");
+    if (!container) {
+        console.error("[VERIFIKATOR] videoList container not found!"); // Debug
+        return;
+    }
+
+    console.log("[VERIFIKATOR] Rendering videos:", videos); // Debug
+
+    container.innerHTML = "";
+    if (!videos || videos.length === 0) {
+        container.innerHTML = `<div class="col-12 text-center text-muted py-4">Belum ada video panduan.</div>`;
+        return;
+    }
+
+    videos.forEach((video) => {
+        // Use path_media from database
+        let videoUrl = video.path_media || video.url || '';
+        let embedUrl = videoUrl;
+        
+        console.log("[VERIFIKATOR] Processing video:", video.judul_panduan, videoUrl); // Debug
+        
+        // Simple YouTube URL to Embed URL converter
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+            let videoId = '';
+            if (videoUrl.includes('youtube.com/watch?v=')) {
+                videoId = videoUrl.split('watch?v=')[1].split('&')[0];
+            } else if (videoUrl.includes('youtu.be/')) {
+                videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+            } else if (videoUrl.includes('youtube.com/embed/')) {
+                videoId = videoUrl.split('embed/')[1].split('?')[0];
+            }
+            if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+      const col = document.createElement("div");
+      col.className = "col-md-4";
+      
+      // Create inner card
+      const videoCard = document.createElement("div");
+      videoCard.className = "video-placeholder";
+      videoCard.style.background = "black";
+      videoCard.style.position = "relative";
+      
+      videoCard.innerHTML = `
+        <iframe src="${embedUrl}" title="${video.judul_panduan || 'Video Panduan'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius: 12px;"></iframe>
+      `;
+      
+      col.appendChild(videoCard);
+      container.appendChild(col);
+    });
+  }
 
   if (window.Helpers) {
     window.Helpers.init();

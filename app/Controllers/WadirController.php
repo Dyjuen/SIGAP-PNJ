@@ -89,4 +89,44 @@ class WadirController extends Controller
         $data = $pencairanModel->findAll();
         Response::json($data);
     }
+
+    public function getVideos()
+    {
+        $panduanModel = new \App\Models\Panduan();
+        $role_id = $this->user['role_id'] ?? null;
+        $userRoles = $this->user['roles'] ?? [];
+
+        if (in_array('Admin', $userRoles)) {
+             $panduan = $panduanModel->findAll();
+        } else {
+             $panduan = $panduanModel->findByRole($role_id);
+        }
+
+        $videos = [];
+        foreach ($panduan as $item) {
+            $isVideo = false;
+            // Logic detect video from PanduanController
+            if (empty($item['tipe_media']) || is_null($item['tipe_media'])) {
+                if (!empty($item['path_media'])) {
+                    if (filter_var($item['path_media'], FILTER_VALIDATE_URL) || 
+                        strpos($item['path_media'], 'youtube.com') !== false || 
+                        strpos($item['path_media'], 'youtu.be') !== false) {
+                        $isVideo = true;
+                    }
+                }
+            } elseif ($item['tipe_media'] === 'video') {
+                $isVideo = true;
+            }
+
+            if ($isVideo) {
+                $videos[] = [
+                    'title' => $item['judul_panduan'],
+                    'url' => $item['path_media'],
+                    'thumbnail' => null
+                ];
+            }
+        }
+
+        Response::success($videos, 'Data video panduan berhasil diambil.');
+    }
 }

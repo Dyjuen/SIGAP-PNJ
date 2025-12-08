@@ -331,6 +331,7 @@ $router->get('/dashboard/video', 'DashboardController@getVideos');
 // WADIR & REKTORAT ROUTES (Read-only)
 // ============================================
 $router->get('/wadir/summary', 'WadirController@getSummary', [new AuthMiddleware(), new RoleMiddleware(['Rektorat', 'PPK', 'Wadir'])]);
+$router->get('/wadir/video', 'WadirController@getVideos', [new AuthMiddleware(), new RoleMiddleware(['Rektorat', 'PPK', 'Wadir'])]);
 $router->get('/wadir/kak', 'WadirController@getAllKak', [new AuthMiddleware(), new RoleMiddleware(['Rektorat', 'PPK', 'Wadir'])]);
 $router->get('/wadir/kegiatan', 'WadirController@getAllKegiatan', [new AuthMiddleware(), new RoleMiddleware(['Rektorat', 'PPK', 'Wadir'])]);
 $router->get('/wadir/pencairan', 'WadirController@getAllPencairan', [new AuthMiddleware(), new RoleMiddleware(['Rektorat', 'PPK', 'Wadir'])]);

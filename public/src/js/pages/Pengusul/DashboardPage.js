@@ -722,11 +722,17 @@ export function renderPengusulDashboardPage(path, userRole) {
       fetch('/api/dashboard/video', { headers })
         .then(res => res.json())
         .then(data => {
+          console.log("Video API Response:", data); // Debug
           if (data.success && data.data) {
             renderVideos(data.data);
+          } else {
+            renderVideos([]);
           }
         })
-        .catch(err => console.error("Error fetching videos:", err));
+        .catch(err => {
+          console.error("Error fetching videos:", err);
+          renderVideos([]);
+        });
 
     } catch (error) {
       console.error("Dashboard fetch error:", error);
@@ -984,23 +990,30 @@ export function renderPengusulDashboardPage(path, userRole) {
     const container = document.getElementById("videoList");
     if (!container) return;
 
+    console.log("Rendering videos:", videos); // Debug
+
     container.innerHTML = "";
-    if (videos.length === 0) {
+    if (!videos || videos.length === 0) {
         container.innerHTML = `<div class="col-span-3 text-center text-gray-400 py-8">Belum ada video panduan.</div>`;
         return;
     }
 
     videos.forEach((video) => {
-        let embedUrl = video.url;
+        // Use path_media from database (backend sends this field)
+        let videoUrl = video.path_media || video.url || '';
+        let embedUrl = videoUrl;
+        
+        console.log("Processing video:", video.judul_panduan, videoUrl); // Debug
+        
         // Simple YouTube URL to Embed URL converter
-        if (video.url.includes('youtube.com') || video.url.includes('youtu.be')) {
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
             let videoId = '';
-            if (video.url.includes('youtube.com/watch?v=')) {
-                videoId = video.url.split('watch?v=')[1].split('&')[0];
-            } else if (video.url.includes('youtu.be/')) {
-                videoId = video.url.split('youtu.be/')[1].split('?')[0];
-            } else if (video.url.includes('youtube.com/embed/')) {
-                videoId = video.url.split('embed/')[1].split('?')[0];
+            if (videoUrl.includes('youtube.com/watch?v=')) {
+                videoId = videoUrl.split('watch?v=')[1].split('&')[0];
+            } else if (videoUrl.includes('youtu.be/')) {
+                videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+            } else if (videoUrl.includes('youtube.com/embed/')) {
+                videoId = videoUrl.split('embed/')[1].split('?')[0];
             }
             if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
         }
@@ -1009,9 +1022,10 @@ export function renderPengusulDashboardPage(path, userRole) {
       videoCard.className = "video-placeholder";
       // Override background to show iframe if available
       videoCard.style.background = "black";
+      videoCard.style.position = "relative";
       
       videoCard.innerHTML = `
-        <iframe src="${embedUrl}" title="${video.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full absolute top-0 left-0 rounded-xl"></iframe>
+        <iframe src="${embedUrl}" title="${video.judul_panduan || video.title || 'Video Panduan'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full absolute top-0 left-0 rounded-xl"></iframe>
       `;
       container.appendChild(videoCard);
     });

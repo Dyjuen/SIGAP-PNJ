@@ -237,6 +237,14 @@ export function DirekturDashboardPage(path, userRole) {
       </div>
       <div class="unit-grid" id="jurusanGrid"></div>
 
+      <div class="section-divider">
+        <div class="section-label">
+          <span style="color:var(--cyan-primary)">🎥</span> Video Panduan
+        </div>
+        <div class="section-line"></div>
+      </div>
+      <div id="videoGrid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem; margin-bottom: 2rem;"></div>
+
     </div>
 
     <div class="modal-backdrop" id="unitDetailModal">
@@ -354,6 +362,7 @@ export function DirekturDashboardPage(path, userRole) {
     renderJurusanChart();  // Chart 2
     renderDanaChart();     // Chart 3
     renderUnitGrid();      // NEW: Interactive Grid
+    renderVideos();        // Video Panduan
   }
 
   // =================================================================
@@ -849,6 +858,40 @@ export function DirekturDashboardPage(path, userRole) {
         openUnitModal(by_jurusan[index]);
       });
     });
+  }
+
+  function renderVideos() {
+    const container = document.getElementById('videoGrid');
+    if (!container) return;
+
+    const { videos } = state.data;
+
+    if (!videos || videos.length === 0) {
+      container.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#94a3b8; padding: 2rem;">Belum ada video panduan.</div>`;
+      return;
+    }
+
+    container.innerHTML = videos.map(video => {
+        let embedUrl = video.url;
+        // Simple YouTube URL to Embed URL converter
+        if (video.url.includes('youtube.com') || video.url.includes('youtu.be')) {
+            let videoId = '';
+            if (video.url.includes('youtube.com/watch?v=')) {
+                videoId = video.url.split('watch?v=')[1].split('&')[0];
+            } else if (video.url.includes('youtu.be/')) {
+                videoId = video.url.split('youtu.be/')[1].split('?')[0];
+            } else if (video.url.includes('youtube.com/embed/')) {
+                videoId = video.url.split('embed/')[1].split('?')[0];
+            }
+            if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        return `
+        <div class="holo-card card-glass" style="padding: 0; overflow: hidden; height: 200px;">
+           <iframe src="${embedUrl}" title="${video.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:100%;"></iframe>
+        </div>
+        `;
+    }).join('');
   }
 
   // --- MODAL LOGIC (The "Amaze" Feature) ---

@@ -44,6 +44,7 @@ class DashboardDirekturController
                 'by_jurusan' => $this->getByJurusan($startDate),
                 'trends' => $this->getTrends($startDate),
                 'recent_activities' => $this->getRecentActivities(10),
+                'videos' => $this->getVideos(),
                 'period' => $period,
                 'start_date' => $startDate,
                 'end_date' => date('Y-m-d')
@@ -53,6 +54,47 @@ class DashboardDirekturController
         } catch (\Exception $e) {
             Response::error('Gagal mengambil data dashboard: ' . $e->getMessage(), 500);
         }
+    }
+
+    /**
+     * Get tutorial videos
+     */
+    private function getVideos()
+    {
+        $panduanModel = new \App\Models\Panduan();
+        $role_id = $this->userData['role_id'] ?? null;
+        $userRoles = $this->userData['roles'] ?? [];
+
+        if (in_array('Admin', $userRoles)) {
+             $panduan = $panduanModel->findAll();
+        } else {
+             $panduan = $panduanModel->findByRole($role_id);
+        }
+
+        $videos = [];
+        foreach ($panduan as $item) {
+            $isVideo = false;
+            if (empty($item['tipe_media']) || is_null($item['tipe_media'])) {
+                if (!empty($item['path_media'])) {
+                    if (filter_var($item['path_media'], FILTER_VALIDATE_URL) || 
+                        strpos($item['path_media'], 'youtube.com') !== false || 
+                        strpos($item['path_media'], 'youtu.be') !== false) {
+                        $isVideo = true;
+                    }
+                }
+            } elseif ($item['tipe_media'] === 'video') {
+                $isVideo = true;
+            }
+
+            if ($isVideo) {
+                $videos[] = [
+                    'title' => $item['judul_panduan'],
+                    'url' => $item['path_media'],
+                    'thumbnail' => null
+                ];
+            }
+        }
+        return $videos;
     }
 
     /**
