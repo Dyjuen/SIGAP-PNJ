@@ -736,6 +736,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   }
 
   async function submitKegiatan(formData) {
+    const btnSelesaiAjukan = document.getElementById("btnSelesaiAjukan");
     ajukanModalInstance.hide();
 
     Swal.fire({
@@ -753,6 +754,10 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         body: formData,
       });
 
+      if (window.setButtonLoading && btnSelesaiAjukan) {
+        window.setButtonLoading(btnSelesaiAjukan, false);
+      }
+
       fetchApprovedTelaah(); // Refresh the list
 
       await Swal.fire({
@@ -764,6 +769,10 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       });
 
     } catch (error) {
+      if (window.setButtonLoading && btnSelesaiAjukan) {
+        window.setButtonLoading(btnSelesaiAjukan, false);
+      }
+      
       Swal.fire({
         icon: 'error',
         title: 'Gagal Mengajukan',
@@ -977,6 +986,10 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       if (suratPengantar.size > 5 * 1024 * 1024) {
         showModalError("Ukuran file Surat Pengantar maksimal 5MB!"); // Use modal-specific error
         return;
+      }
+
+      if (window.setButtonLoading) {
+        window.setButtonLoading(btnSelesaiAjukan, true, 'Memproses...');
       }
 
       const formData = new FormData();

@@ -2612,6 +2612,11 @@ export function renderInputLpjPage(path, userRole) {
   };
 
   window.saveRowComment = function () {
+    const saveBtn = document.querySelector('#rowCommentModal .btn-primary');
+    if (window.setButtonLoading && saveBtn) {
+      window.setButtonLoading(saveBtn, true, 'Menyimpan...');
+    }
+    
     const comment = document.getElementById("rowCommentInput").value.trim();
     const { pk } = currentCommentTarget;
     if (comment) {
@@ -2623,6 +2628,11 @@ export function renderInputLpjPage(path, userRole) {
       `.row-with-comment[data-pk-value="${pk}"] .row-comment-icon`,
       comment
     );
+    
+    if (window.setButtonLoading && saveBtn) {
+      window.setButtonLoading(saveBtn, false);
+    }
+    
     rowCommentModalInstance.hide();
   };
 

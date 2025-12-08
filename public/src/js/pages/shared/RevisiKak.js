@@ -3075,6 +3075,11 @@ export function renderRevisiKakPage(path, userRole) {
   };
 
     window.saveRowComment = function () {
+      const saveBtn = document.querySelector('#rowCommentModal .btn-primary');
+      if (window.setButtonLoading && saveBtn) {
+        window.setButtonLoading(saveBtn, true, 'Menyimpan...');
+      }
+      
       const comment = document.getElementById("rowCommentInput").value.trim();
       const { table, pk, field } = currentCommentTarget;
 
@@ -3135,6 +3140,10 @@ export function renderRevisiKakPage(path, userRole) {
       
       // Update menu button revision status
       updateMenuButtonRevisionStatus();
+      
+      if (window.setButtonLoading && saveBtn) {
+        window.setButtonLoading(saveBtn, false);
+      }
 
       rowCommentModalInstance.hide();
 

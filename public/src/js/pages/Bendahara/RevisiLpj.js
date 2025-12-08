@@ -1656,13 +1656,10 @@ export function renderRevisiLpjPage(path, userRole) {
       return;
     }
 
-    Swal.fire({
-      title: "Menyimpan Catatan...",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    const saveBtn = document.getElementById("saveLampiranCommentBtn");
+    if (window.setButtonLoading && saveBtn) {
+      window.setButtonLoading(saveBtn, true, 'Menyimpan...');
+    }
 
     try {
       const response = await apiRequest(`/lampiran/${lampiranId}/catatan`, {
@@ -1679,6 +1676,12 @@ export function renderRevisiLpjPage(path, userRole) {
 
       updateAllCommentIcons();
       updateCommentCount();
+      
+      const saveBtn = document.getElementById("saveLampiranCommentBtn");
+      if (window.setButtonLoading && saveBtn) {
+        window.setButtonLoading(saveBtn, false);
+      }
+      
       lampiranCommentModalInstance.hide();
 
       Swal.fire({
@@ -1689,6 +1692,11 @@ export function renderRevisiLpjPage(path, userRole) {
         showConfirmButton: false,
       });
     } catch (error) {
+      const saveBtn = document.getElementById("saveLampiranCommentBtn");
+      if (window.setButtonLoading && saveBtn) {
+        window.setButtonLoading(saveBtn, false);
+      }
+      
       Swal.fire({
         icon: "error",
         title: "Gagal Menyimpan",
