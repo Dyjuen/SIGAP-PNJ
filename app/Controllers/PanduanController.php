@@ -132,7 +132,7 @@ class PanduanController extends Controller
                     $theFile = reset($_FILES); // Get the first uploaded file regardless of its name
                     if (isset($theFile['error']) && $theFile['error'] === UPLOAD_ERR_OK) {
                         $allowed_types = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
-                        $uploader = new FileUpload('uploads/documents/panduan/', $allowed_types);
+                        $uploader = new FileUpload('/storage/uploads/documents/panduan/', $allowed_types);
                         $uploadResult = $uploader->upload($theFile);
 
                         if ($uploadResult['success']) {
@@ -198,7 +198,7 @@ class PanduanController extends Controller
                         }
 
                         $allowed_types = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
-                        $uploader = new FileUpload('uploads/documents/panduan/', $allowed_types);
+                        $uploader = new FileUpload('/storage/uploads/documents/panduan/', $allowed_types);
                         $uploadResult = $uploader->upload($theFile);
 
                         if ($uploadResult['success']) {

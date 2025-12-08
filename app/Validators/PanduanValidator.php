@@ -38,7 +38,11 @@ class PanduanValidator extends Validator
         }
 
         if ($file_with_error) {
-            $this->addError('file', 'File gagal diupload. Error code: ' . $error_code);
+            $msg = 'File gagal diupload.';
+            if ($error_code === UPLOAD_ERR_INI_SIZE || $error_code === UPLOAD_ERR_FORM_SIZE) {
+                $msg = 'Ukuran file terlalu besar (melebihi batas server).';
+            }
+            $this->addError('file', $msg . ' Error code: ' . $error_code);
         }
 
         // Return true if no errors, false otherwise

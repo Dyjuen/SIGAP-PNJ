@@ -826,9 +826,19 @@ export function renderGuideManagementPage(path, userRole) {
       return;
     }
 
-    if (!pdfFile && !videoUrl) {
-      Swal.fire('Error', 'Minimal harus mengisi File PDF atau Link Video', 'error');
-      return;
+    // Validate Media
+    if (tipeMedia === 'document') {
+      const docFile = document.getElementById('addPdfFile').files[0];
+      if (!docFile) {
+        Swal.fire('Error', 'File Dokumen wajib diunggah', 'error');
+        return;
+      }
+    } else if (tipeMedia === 'video') {
+      const videoUrl = document.getElementById('addVideoUrl').value.trim();
+      if (!videoUrl) {
+        Swal.fire('Error', 'Link Video wajib diisi', 'error');
+        return;
+      }
     }
 
     const formData = new FormData();
@@ -838,11 +848,7 @@ export function renderGuideManagementPage(path, userRole) {
 
     if (tipeMedia === 'document') {
       const docFile = document.getElementById('addPdfFile').files[0];
-      if (docFile) {
-        formData.append('path_media', docFile);
-      } else {
-        formData.append('path_media', ''); // Allow empty path
-      }
+      formData.append('path_media', docFile);
     } else if (tipeMedia === 'video') {
       const videoUrl = document.getElementById('addVideoUrl').value.trim();
       formData.append('path_media', videoUrl);
@@ -1022,19 +1028,13 @@ export function renderGuideManagementPage(path, userRole) {
 
   // Keyboard shortcuts for modals
   document.getElementById('addGuideModal').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      document.getElementById('btnSaveGuide').click();
-    } else if (e.key === 'Escape') {
+    if (e.key === 'Escape') {
       addModalInstance.hide();
     }
   });
 
   document.getElementById('editGuideModal').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      document.getElementById('btnUpdateGuide').click();
-    } else if (e.key === 'Escape') {
+    if (e.key === 'Escape') {
       editModalInstance.hide();
     }
   });
@@ -1056,54 +1056,72 @@ export function renderGuideManagementPage(path, userRole) {
     }
 
     const fileExtension = guide.path_media.split('.').pop().toLowerCase();
-    console.log('Previewing document:', guide.judul_panduan, 'Type:', fileExtension, 'Path:', guide.path_media);
+    
+    // Normalize path: ensure it doesn't start with a slash if we want relative to domain root,
+    // but in this context, starting with '/' is usually safer for absolute path from domain root.
+    // However, if the API returns 'uploads/...', we need '/uploads/...'.
+    let filePath = guide.path_media;
+    if (!filePath.startsWith('/')) {
+        filePath = '/' + filePath;
+    }
 
-    // Show loading
+    console.log('Fetching file from:', filePath);
+
     Swal.fire({
-      title: 'Membuka Pratinjau...',
-      text: 'Sedang memproses...',
+      title: 'Memproses Dokumen...',
+      text: 'Mohon tunggu sebentar...',
       allowOutsideClick: false,
-      didOpen: () => Swal.showLoading(),
+      didOpen: () => Swal.showLoading()
     });
 
     try {
-      // Fetch file as blob
-      const response = await fetch(`/${guide.path_media}`);
+      const token = localStorage.getItem('token');
+      // Use fetch to get the blob, ensuring we can handle errors (like 404s returning HTML)
+      const response = await fetch(filePath, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}` 
+        }
+      });
 
       if (!response.ok) {
-        console.error('Response error:', response.status, response.statusText);
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Gagal mengambil file.');
-        } else {
-          throw new Error(`HTTP Error: ${response.status}`);
-        }
+        throw new Error(`Gagal mengambil file (${response.status} ${response.statusText})`);
       }
 
-      // Create blob and open in new window
+      // Verify content type isn't HTML (which implies error page)
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('text/html')) {
+        throw new Error('File tidak ditemukan atau akses ditolak (Server returned HTML)');
+      }
+
+      // Explicitly set type for PDF to ensure browser handles it as previewable
+      const blobOptions = fileExtension === 'pdf' ? { type: 'application/pdf' } : {};
       const blob = await response.blob();
-      console.log('Blob created:', blob.type, blob.size);
-      
-      const fileUrl = URL.createObjectURL(blob);
-      console.log('Object URL created:', fileUrl);
+      const finalBlob = new Blob([blob], blobOptions);
+      const objectUrl = URL.createObjectURL(finalBlob);
       
       Swal.close();
-      window.open(fileUrl, '_blank');
+
+      if (fileExtension === 'pdf') {
+        // Open PDF in new tab - explicitly as a preview
+        // Note: Some browsers/settings might still force download if "Open PDFs in Chrome" is disabled
+        window.open(objectUrl, '_blank');
+      } else {
+        // Download for other types (DOCX, etc)
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = guide.path_media.split('/').pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
       
-      // Revoke URL after a delay to free memory
-      setTimeout(() => {
-        URL.revokeObjectURL(fileUrl);
-        console.log('Object URL revoked');
-      }, 10000);
+      // Clean up
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
 
     } catch (error) {
-      console.error('Preview error:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal Membuka File',
-        text: error.message || 'Terjadi kesalahan saat membuka file'
-      });
+      console.error(error);
+      Swal.fire('Error', error.message || 'Gagal memuat dokumen', 'error');
     }
   };
 
