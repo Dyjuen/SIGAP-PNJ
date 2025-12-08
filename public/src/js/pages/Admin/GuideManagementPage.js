@@ -19,11 +19,6 @@ export function renderGuideManagementPage(path, userRole) {
         to { opacity: 1; transform: translateY(0); }
       }
 
-      @keyframes modalSlideIn {
-        from { opacity: 0; transform: translateY(-50px) scale(0.95); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-      }
-
       /* Page Styles */
       .guide-management-page {
         animation: fadeInUp 0.5s ease-out;
@@ -66,10 +61,6 @@ export function renderGuideManagementPage(path, userRole) {
         background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(0, 151, 167, 0.1));
       }
 
-      .modal.show .modal-dialog {
-        animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
       .modal-content {
         border: none !important;
         border-radius: 24px !important;
@@ -95,13 +86,6 @@ export function renderGuideManagementPage(path, userRole) {
         border-radius: 50%;
         width: 32px;
         height: 32px;
-        transition: none;
-      }
-
-      .modal-header-gradient .btn-close:hover {
-        background: rgba(255, 255, 255, 0.9);
-        opacity: 1;
-        transform: none;
       }
 
       .modal-body-modern {
@@ -304,7 +288,7 @@ export function renderGuideManagementPage(path, userRole) {
           >
         </div>
         <button class="btn btn-modern-primary" data-bs-toggle="modal" data-bs-target="#addGuideModal">
-          <i class="ti ti-plus me-2"></i>Tambah Panduan
+          <i class="ti me-2">&#xeb0b;</i>Tambah Panduan
         </button>
       </div>
 
@@ -375,9 +359,7 @@ export function renderGuideManagementPage(path, userRole) {
                   <label class="form-label fw-semibold">File PDF</label>
                   <div class="file-upload-area" id="pdfUploadArea">
                     <input type="file" id="addPdfFile" accept=".pdf" style="display: none;">
-                    <svg class="mb-3" style="width: 48px; height: 48px; color: #00bcd4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                    </svg>
+                    <i class="ti" style="font-size: 2.5rem; color: #00bcd4; display: block; margin-bottom: 0.5rem;">&#xea76;</i>
                     <p class="mb-1 fw-semibold">Klik atau drag & drop file PDF</p>
                     <p class="text-muted small mb-0">Maksimal 10MB</p>
                   </div>
@@ -444,9 +426,7 @@ export function renderGuideManagementPage(path, userRole) {
                   <label class="form-label fw-semibold">File PDF (Kosongkan jika tidak diubah)</label>
                   <div class="file-upload-area" id="editPdfUploadArea">
                     <input type="file" id="editPdfFile" accept=".pdf" style="display: none;">
-                    <svg class="mb-3" style="width: 48px; height: 48px; color: #00bcd4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                    </svg>
+                    <i class="ti" style="font-size: 2.5rem; color: #00bcd4; display: block; margin-bottom: 0.5rem;">&#xea76;</i>
                     <p class="mb-1 fw-semibold">Klik atau drag & drop file PDF baru</p>
                     <p class="text-muted small mb-0">Maksimal 10MB</p>
                   </div>
@@ -581,23 +561,23 @@ export function renderGuideManagementPage(path, userRole) {
         <td>
           ${guide.file_pdf ? `
             <a href="/api/panduan/${guide.panduan_id}/file" target="_blank" class="btn btn-sm btn-outline-primary">
-              <i class="ti ti-file-text me-1"></i>Lihat PDF
+              <i class="ti me-1">&#xeae8;</i>Lihat PDF
             </a>
           ` : '<span class="text-muted">Tidak ada file</span>'}
         </td>
         <td>
           ${guide.video_url ? `
             <a href="${guide.video_url}" target="_blank" class="btn btn-sm btn-outline-success">
-              <i class="ti ti-video me-1"></i>Lihat Video
+              <i class="ti me-1">&#xf20c;</i>Lihat Video
             </a>
           ` : '<span class="text-muted">Tidak ada video</span>'}
         </td>
         <td>
           <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})">
-            <i class="ti ti-edit"></i>
+            <i class="ti">&#xeb04;</i>
           </button>
           <button class="btn btn-sm btn-danger" onclick="window.deleteGuide(${guide.panduan_id})">
-            <i class="ti ti-trash"></i>
+            <i class="ti">&#xeb55;</i>
           </button>
         </td>
       </tr>
