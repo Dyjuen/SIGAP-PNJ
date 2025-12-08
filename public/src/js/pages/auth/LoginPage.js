@@ -710,6 +710,9 @@ export function renderLoginPage() {
             case "Bendahara":
               redirectPath = `/${rolePath}/dashboard`;
               break;
+            case "Admin":
+              redirectPath = `/${rolePath}/user-management`;
+              break;
           }
           window.location.pathname = redirectPath;
         } else {
