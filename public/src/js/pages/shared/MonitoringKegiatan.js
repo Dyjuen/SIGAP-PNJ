@@ -5,10 +5,23 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderMonitoringKegiatanPage(path, userRole) {
   const pageContent = `
     <style>
+      /* Global overrides to fix double scrollbar and use main browser scrollbar */
+      html, body {
+        overflow-y: auto !important;
+      }
+      
+      .layout-wrapper, 
+      .layout-page, 
+      #main-layout-page,
+      .content-wrapper {
+        height: auto !important;
+        overflow-y: visible !important;
+      }
+
       /* Clean background with image */
       .monitoring-kegiatan-page {
-        min-height: 100vh;
-        height: auto !important; /* Force growth with content */
+        min-height: calc(100vh - 100px); /* Adjusted to prevent overflow */
+        height: auto;
         width: 100%;
         padding: 2rem;
         animation: fadeIn 0.4s ease-out;
@@ -17,7 +30,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         background-attachment: fixed;
         background-repeat: no-repeat;
         position: relative;
-        overflow: visible !important; /* Ensure content doesn't spill out unwrapped */
+        overflow: visible;
       }
 
       /* Info banner */
