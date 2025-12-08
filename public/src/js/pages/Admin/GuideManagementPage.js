@@ -19,7 +19,23 @@ export function renderGuideManagementPage(path, userRole) {
         to { opacity: 1; transform: translateY(0); }
       }
 
-      /* Page Styles */
+      @keyframes modalFadeInScale {
+        from { 
+          opacity: 0;
+          transform: scale(0.9) translateY(20px);
+        }
+        to { 
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      @keyframes backdropFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      /* Animations */
       .guide-management-page {
         animation: fadeInUp 0.5s ease-out;
       }
@@ -55,10 +71,45 @@ export function renderGuideManagementPage(path, userRole) {
       }
 
       /* Modal Styles */
+      .modal-backdrop {
+        background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(0, 151, 167, 0.1));
+      }
+
       .modal-backdrop.show {
         opacity: 0.7 !important;
         backdrop-filter: blur(8px);
-        background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(0, 151, 167, 0.1));
+        animation: backdropFadeIn 0.3s ease-out;
+      }
+
+      /* Modal Animations - Bootstrap Style */
+      .modal.fade .modal-dialog {
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+
+      .modal.show .modal-dialog {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      /* Modal Content Animation */
+      .modal.show .modal-content {
+        animation: modalContentBounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      @keyframes modalContentBounce {
+        0% {
+          transform: scale(0.7);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
       }
 
       .modal-content {
@@ -77,15 +128,31 @@ export function renderGuideManagementPage(path, userRole) {
       .modal-header-gradient .modal-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #1F2937;
+        color: #ffffffff;
       }
 
       .modal-header-gradient .btn-close {
         background: rgba(255, 255, 255, 0.9);
         opacity: 1;
         border-radius: 50%;
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        animation: none !important;
+        transform: none !important;
+      }
+
+      .modal-header-gradient .btn-close:hover {
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .modal-header-gradient .btn-close:active {
+        background: rgba(255, 255, 255, 0.8);
       }
 
       .modal-body-modern {
@@ -94,7 +161,7 @@ export function renderGuideManagementPage(path, userRole) {
       }
 
       .modal-footer-modern {
-        padding: 1.25rem 2rem;
+        padding: 1.5rem 2rem;
         border-top: 1px solid #e5e7eb;
         background: white;
       }
@@ -102,6 +169,15 @@ export function renderGuideManagementPage(path, userRole) {
       /* Form Styles */
       .glass-input-wrapper {
         position: relative;
+      }
+
+      .modal-body-modern label {
+        transition: color 0.2s ease;
+      }
+
+      .modal-body-modern .glass-input-wrapper:focus-within + label,
+      .modal-body-modern label:hover {
+        color: var(--primary-color);
       }
 
       .glass-input-wrapper input,
@@ -122,6 +198,19 @@ export function renderGuideManagementPage(path, userRole) {
         outline: none;
         border-color: var(--primary-color);
         box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+        transform: translateY(-2px);
+      }
+
+      /* Form input animations */
+      @keyframes inputFocus {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.01); }
+        100% { transform: scale(1); }
+      }
+
+      .glass-input-wrapper input:focus,
+      .glass-input-wrapper select:focus {
+        animation: inputFocus 0.3s ease;
       }
 
       .file-upload-area {
@@ -132,24 +221,32 @@ export function renderGuideManagementPage(path, userRole) {
         transition: all 0.3s ease;
         cursor: pointer;
         background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
 
       .file-upload-area:hover {
         border-color: var(--primary-color);
         background: rgba(0, 188, 212, 0.02);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
       }
 
       .file-upload-area.dragover {
         border-color: var(--primary-color);
         background: rgba(0, 188, 212, 0.05);
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 188, 212, 0.2);
       }
 
       /* Button Styles */
       .btn-modern-primary {
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-        color: white;
+        color: white !important;
         border: none;
-        padding: 0.75rem 1.5rem;
+        padding: 0.875rem 1.75rem;
         border-radius: 12px;
         font-weight: 600;
         transition: all 0.3s ease;
@@ -158,14 +255,19 @@ export function renderGuideManagementPage(path, userRole) {
       .btn-modern-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 20px rgba(0, 188, 212, 0.3);
-        color: white;
+        color: white !important;
+      }
+
+      .btn-modern-primary:focus,
+      .btn-modern-primary:active {
+        color: white !important;
       }
 
       .btn-modern-cancel {
         background: #f3f4f6;
         color: #6B7280;
         border: none;
-        padding: 0.75rem 1.5rem;
+        padding: 0.875rem 1.75rem;
         border-radius: 12px;
         font-weight: 600;
         transition: all 0.3s ease;
@@ -227,6 +329,10 @@ export function renderGuideManagementPage(path, userRole) {
         text-align: center;
         padding: 3rem;
         color: #9CA3AF;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
 
       .empty-state svg {
@@ -250,14 +356,14 @@ export function renderGuideManagementPage(path, userRole) {
       }
 
       .search-box input {
-        padding-left: 2.5rem;
+        padding-left: 2.75rem !important;
         padding-right: 1rem;
       }
 
       .search-box::before {
         content: '';
         position: absolute;
-        left: 1rem;
+        left: 0.875rem;
         top: 50%;
         transform: translateY(-50%);
         width: 16px;
@@ -266,6 +372,7 @@ export function renderGuideManagementPage(path, userRole) {
         background-size: contain;
         background-repeat: no-repeat;
         pointer-events: none;
+        z-index: 1;
       }
     </style>
 
@@ -302,7 +409,7 @@ export function renderGuideManagementPage(path, userRole) {
               <th style="width: 15%;">Role</th>
               <th style="width: 20%;">File PDF</th>
               <th style="width: 20%;">Video</th>
-              <th style="width: 15%;">Aksi</th>
+              <th style="width: 15%; text-align: center !important;">Aksi</th>
             </tr>
           </thead>
           <tbody id="guidesTableBody">
@@ -344,13 +451,11 @@ export function renderGuideManagementPage(path, userRole) {
                   <div class="glass-input-wrapper">
                     <select id="addRole" required>
                       <option value="">Pilih Role</option>
-                      <option value="1">Admin</option>
                       <option value="2">Pengusul</option>
                       <option value="3">Verifikator</option>
                       <option value="4">PPK</option>
                       <option value="5">Wadir II</option>
                       <option value="6">Bendahara</option>
-                      <option value="7">Direktur</option>
                     </select>
                   </div>
                 </div>
@@ -391,7 +496,7 @@ export function renderGuideManagementPage(path, userRole) {
           <div class="modal-header modal-header-gradient">
             <div>
               <h5 class="modal-title">Edit Panduan</h5>
-              <p class="modal-subtitle mb-0" style="font-size: 0.9rem; color: #3e536e; margin-top: 0.25rem;">Perbarui informasi panduan</p>
+              <p class="modal-subtitle mb-0" style="font-size: 0.9rem; color: #ffffffff; margin-top: 0.25rem;">Perbarui informasi panduan</p>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
@@ -411,13 +516,11 @@ export function renderGuideManagementPage(path, userRole) {
                   <div class="glass-input-wrapper">
                     <select id="editRole" required>
                       <option value="">Pilih Role</option>
-                      <option value="1">Admin</option>
                       <option value="2">Pengusul</option>
                       <option value="3">Verifikator</option>
                       <option value="4">PPK</option>
                       <option value="5">Wadir II</option>
                       <option value="6">Bendahara</option>
-                      <option value="7">Direktur</option>
                     </select>
                   </div>
                 </div>
@@ -478,6 +581,11 @@ export function renderGuideManagementPage(path, userRole) {
 
     const data = await response.json();
     if (!response.ok) {
+      // Handle validation errors (422)
+      if (response.status === 422 && data.errors) {
+        const errorMessages = Object.values(data.errors).flat().join(', ');
+        throw new Error(errorMessages || data.message || 'Validasi gagal');
+      }
       throw new Error(data.message || 'Terjadi kesalahan');
     }
     return data;
@@ -572,7 +680,7 @@ export function renderGuideManagementPage(path, userRole) {
             </a>
           ` : '<span class="text-muted">Tidak ada video</span>'}
         </td>
-        <td>
+        <td class="text-center">
           <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})">
             <i class="ti">&#xeb04;</i>
           </button>
@@ -621,10 +729,12 @@ export function renderGuideManagementPage(path, userRole) {
   function showFileName(file, displayElement) {
     if (file.size > 10 * 1024 * 1024) {
       Swal.fire('Error', 'File terlalu besar. Maksimal 10MB', 'error');
-      return;
+      displayElement.style.display = 'none';
+      return false;
     }
     displayElement.textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
     displayElement.style.display = 'block';
+    return true;
   }
 
   // Add guide
@@ -639,11 +749,29 @@ export function renderGuideManagementPage(path, userRole) {
       return;
     }
 
+    if (!pdfFile && !videoUrl) {
+      Swal.fire('Error', 'Minimal harus mengisi File PDF atau Link Video', 'error');
+      return;
+    }
+
     const formData = new FormData();
-    formData.append('judul', title);
+    formData.append('judul_panduan', title);
     formData.append('role_id', roleId);
-    if (pdfFile) formData.append('file_pdf', pdfFile);
-    if (videoUrl) formData.append('video_url', videoUrl);
+    
+    // Backend expects 'isi_panduan' - always required
+    if (pdfFile) {
+      formData.append('file_pdf', pdfFile);
+      formData.append('isi_panduan', 'File PDF terlampir');
+    } else if (videoUrl) {
+      formData.append('video_url', videoUrl);
+      formData.append('isi_panduan', videoUrl);
+    }
+
+    // Debug: Log all FormData entries
+    console.log('FormData entries:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+    }
 
     const btnSave = document.getElementById('btnSaveGuide');
     if (window.setButtonLoading) {
@@ -660,6 +788,9 @@ export function renderGuideManagementPage(path, userRole) {
         isFormData: true
       });
 
+      // Success - hide modal first
+      addModalInstance.hide();
+      
       if (window.setButtonLoading) {
         window.setButtonLoading(btnSave, false);
       } else {
@@ -667,20 +798,23 @@ export function renderGuideManagementPage(path, userRole) {
         btnSave.textContent = 'Simpan Panduan';
       }
 
-      addModalInstance.hide();
       document.getElementById('addGuideForm').reset();
       document.getElementById('pdfFileName').style.display = 'none';
 
       await Swal.fire('Berhasil!', 'Panduan berhasil ditambahkan', 'success');
       fetchGuides();
     } catch (error) {
+      // Error - hide modal first, then show error
+      addModalInstance.hide();
+      
       if (window.setButtonLoading) {
         window.setButtonLoading(btnSave, false);
       } else {
         btnSave.disabled = false;
         btnSave.textContent = 'Simpan Panduan';
       }
-      Swal.fire('Error', error.message, 'error');
+      
+      await Swal.fire('Error', error.message, 'error');
     }
   }
 
@@ -799,6 +933,34 @@ export function renderGuideManagementPage(path, userRole) {
   // Initialize modals
   addModalInstance = new bootstrap.Modal(document.getElementById('addGuideModal'));
   editModalInstance = new bootstrap.Modal(document.getElementById('editGuideModal'));
+
+  // Auto-focus first input when modals open
+  document.getElementById('addGuideModal').addEventListener('shown.bs.modal', function() {
+    document.getElementById('addTitle').focus();
+  });
+  
+  document.getElementById('editGuideModal').addEventListener('shown.bs.modal', function() {
+    document.getElementById('editTitle').focus();
+  });
+
+  // Keyboard shortcuts for modals
+  document.getElementById('addGuideModal').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      document.getElementById('btnSaveGuide').click();
+    } else if (e.key === 'Escape') {
+      addModalInstance.hide();
+    }
+  });
+
+  document.getElementById('editGuideModal').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      document.getElementById('btnUpdateGuide').click();
+    } else if (e.key === 'Escape') {
+      editModalInstance.hide();
+    }
+  });
 
   // Setup file uploads
   setupFileUpload('pdfUploadArea', 'addPdfFile', 'pdfFileName');
