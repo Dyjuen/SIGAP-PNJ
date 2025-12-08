@@ -8,6 +8,7 @@ use App\Models\Panduan;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\RoleMiddleware;
 use App\Validators\PanduanValidator;
+use App\Core\FileUpload;
 
 class PanduanController extends Controller
 {
@@ -26,12 +27,30 @@ class PanduanController extends Controller
             $role_id = $this->userData['role_id'] ?? null;
             $userRoles = $this->userData['roles'] ?? [];
 
-            // Jika user adalah admin, tampilkan semua panduan
             if (in_array('Admin', $userRoles)) {
                  $panduan = $this->panduanModel->findAll();
             } else {
                  $panduan = $this->panduanModel->findByRole($role_id);
             }
+            
+            // Auto-detect tipe_media if NULL
+            $panduan = array_map(function($item) {
+                if (empty($item['tipe_media']) || is_null($item['tipe_media'])) {
+                    // Detect based on path_media
+                    if (!empty($item['path_media'])) {
+                        if (filter_var($item['path_media'], FILTER_VALIDATE_URL) || 
+                            strpos($item['path_media'], 'youtube.com') !== false || 
+                            strpos($item['path_media'], 'youtu.be') !== false) {
+                            $item['tipe_media'] = 'video';
+                        } else {
+                            $item['tipe_media'] = 'document';
+                        }
+                    } else {
+                        $item['tipe_media'] = 'document'; // Default
+                    }
+                }
+                return $item;
+            }, $panduan);
             
             Response::success($panduan, 'Data panduan berhasil diambil.');
         } catch (\Exception $e) {
@@ -49,16 +68,29 @@ class PanduanController extends Controller
                 return;
             }
 
+            // Auto-detect tipe_media if NULL
+            if (empty($panduan['tipe_media']) || is_null($panduan['tipe_media'])) {
+                if (!empty($panduan['path_media'])) {
+                    if (filter_var($panduan['path_media'], FILTER_VALIDATE_URL) || 
+                        strpos($panduan['path_media'], 'youtube.com') !== false || 
+                        strpos($panduan['path_media'], 'youtu.be') !== false) {
+                        $panduan['tipe_media'] = 'video';
+                    } else {
+                        $panduan['tipe_media'] = 'document';
+                    }
+                } else {
+                    $panduan['tipe_media'] = 'document';
+                }
+            }
+
             $role_id = $this->userData['role_id'] ?? null;
             $userRoles = $this->userData['roles'] ?? [];
 
-            // Admin bisa melihat semua
             if (in_array('Admin', $userRoles)) {
                 Response::success($panduan, 'Detail panduan berhasil diambil.');
                 return;
             }
 
-            // Pengguna biasa hanya bisa melihat panduan untuk perannya
             if ($panduan['target_role_id'] == $role_id) {
                 Response::success($panduan, 'Detail panduan berhasil diambil.');
             } else {
@@ -74,20 +106,46 @@ class PanduanController extends Controller
     {
         (new RoleMiddleware(['Admin']))->handle();
         
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $_POST;
 
-        $errors = PanduanValidator::validate($data);
-        if (!empty($errors)) {
-            Response::validationError($errors, 'Validasi gagal.');
+        $validator = new PanduanValidator();
+        if (!$validator->validatePanduan($data)) {
+            Response::validationError($validator->getErrors(), 'Validasi gagal.');
             return;
         }
 
         try {
+            $tipeMedia = $data['tipe_media'] ?? 'document';
+            
             $createData = [
                 'judul_panduan' => $data['judul_panduan'],
-                'isi_panduan' => $data['isi_panduan'],
                 'target_role_id' => $data['target_role_id'] ?? null,
+                'tipe_media' => $tipeMedia,
             ];
+
+            if ($tipeMedia === 'video') {
+                // For video, store the URL directly
+                $createData['path_media'] = $data['path_media'] ?? null;
+            } else {
+                // For document, handle file upload
+                if (!empty($_FILES)) {
+                    $theFile = reset($_FILES); // Get the first uploaded file regardless of its name
+                    if (isset($theFile['error']) && $theFile['error'] === UPLOAD_ERR_OK) {
+                        $allowed_types = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
+                        $uploader = new FileUpload('uploads/documents/panduan/', $allowed_types);
+                        $uploadResult = $uploader->upload($theFile);
+
+                        if ($uploadResult['success']) {
+                            $createData['path_media'] = $uploadResult['file_path'];
+                        } else {
+                            Response::error('Gagal mengupload file: ' . $uploadResult['message'], 400);
+                            return;
+                        }
+                    }
+                } else {
+                    $createData['path_media'] = $data['path_media'] ?? null;
+                }
+            }
 
             $panduanId = $this->panduanModel->create($createData);
             $newPanduan = $this->panduanModel->find($panduanId);
@@ -102,25 +160,62 @@ class PanduanController extends Controller
     {
         (new RoleMiddleware(['Admin']))->handle();
 
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $_POST;
         
-        $errors = PanduanValidator::validate($data);
-        if (!empty($errors)) {
-            Response::validationError($errors, 'Validasi gagal.');
+        $validator = new PanduanValidator();
+        if (!$validator->validatePanduan($data)) {
+            Response::validationError($validator->getErrors(), 'Validasi gagal.');
             return;
         }
 
         try {
-            if (!$this->panduanModel->exists($id)) {
+            $panduan = $this->panduanModel->find($id);
+            if (!$panduan) {
                 Response::notFound('Panduan tidak ditemukan.');
                 return;
             }
 
+            $tipeMedia = $data['tipe_media'] ?? $panduan['tipe_media'] ?? 'document';
+
             $updateData = [
                 'judul_panduan' => $data['judul_panduan'],
-                'isi_panduan' => $data['isi_panduan'],
                 'target_role_id' => $data['target_role_id'] ?? null,
+                'tipe_media' => $tipeMedia,
             ];
+
+            if ($tipeMedia === 'video') {
+                // For video, store the URL directly
+                $updateData['path_media'] = $data['path_media'] ?? $panduan['path_media'];
+            } else {
+                // For document, handle file upload
+                if (!empty($_FILES)) {
+                    $theFile = reset($_FILES); // Get the first uploaded file regardless of its name
+                    if (isset($theFile['error']) && $theFile['error'] === UPLOAD_ERR_OK) {
+                        // Delete old file if it exists
+                        if (!empty($panduan['path_media']) && file_exists($panduan['path_media'])) {
+                            $deleter = new FileUpload();
+                            $deleter->delete($panduan['path_media']);
+                        }
+
+                        $allowed_types = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
+                        $uploader = new FileUpload('uploads/documents/panduan/', $allowed_types);
+                        $uploadResult = $uploader->upload($theFile);
+
+                        if ($uploadResult['success']) {
+                            $updateData['path_media'] = $uploadResult['file_path'];
+                        } else {
+                            Response::error('Gagal mengupload file: ' . $uploadResult['message'], 400);
+                            return;
+                        }
+                    } else {
+                        // Keep old file if no new file uploaded
+                        $updateData['path_media'] = $panduan['path_media'];
+                    }
+                } else {
+                    // Keep old file if no file field sent
+                    $updateData['path_media'] = $panduan['path_media'];
+                }
+            }
 
             $this->panduanModel->update($id, $updateData);
             $updatedPanduan = $this->panduanModel->find($id);
@@ -136,9 +231,15 @@ class PanduanController extends Controller
         (new RoleMiddleware(['Admin']))->handle();
 
         try {
-            if (!$this->panduanModel->exists($id)) {
+            $panduan = $this->panduanModel->find($id);
+            if (!$panduan) {
                 Response::notFound('Panduan tidak ditemukan.');
                 return;
+            }
+
+            if (!empty($panduan['path_media'])) {
+                $deleter = new FileUpload();
+                $deleter->delete($panduan['path_media']);
             }
 
             $this->panduanModel->delete($id);

@@ -94,7 +94,18 @@ class Response
      */
     public static function validationError(array $errors, string $message = 'Validasi gagal.'): void
     {
-        self::error($message, 422, $errors);
+        // Find the first error message to make the main message more descriptive
+        $firstError = 'Periksa kembali data yang Anda masukkan.'; // Default message
+        if (!empty($errors)) {
+            $firstFieldErrors = reset($errors); // Get the errors for the first field
+            if (!empty($firstFieldErrors) && is_array($firstFieldErrors)) {
+                $firstError = reset($firstFieldErrors); // Get the first error message
+            }
+        }
+
+        $fullMessage = rtrim($message, '.') . '. ' . $firstError;
+
+        self::error($fullMessage, 422, $errors);
     }
 
     /**

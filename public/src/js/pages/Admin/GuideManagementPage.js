@@ -267,6 +267,22 @@ export function renderGuideManagementPage(path, userRole) {
         background-repeat: no-repeat;
         pointer-events: none;
       }
+
+      /* Preview Modal Styles */
+      .swal-lg {
+        width: 90% !important;
+        max-width: 1000px !important;
+      }
+
+      .swal-lg .swal2-html-container {
+        max-height: 70vh !important;
+        overflow-y: auto !important;
+      }
+
+      .swal-lg embed,
+      .swal-lg iframe {
+        border-radius: 8px;
+      }
     </style>
 
     <div class="guide-management-page">
@@ -298,10 +314,9 @@ export function renderGuideManagementPage(path, userRole) {
           <thead>
             <tr>
               <th style="width: 5%;">#</th>
-              <th style="width: 25%;">Judul</th>
-              <th style="width: 15%;">Role</th>
-              <th style="width: 20%;">File PDF</th>
-              <th style="width: 20%;">Video</th>
+              <th style="width: 30%;">Judul</th>
+              <th style="width: 20%;">Role</th>
+              <th style="width: 30%;">Media</th>
               <th style="width: 15%;">Aksi</th>
             </tr>
           </thead>
@@ -356,22 +371,40 @@ export function renderGuideManagementPage(path, userRole) {
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label fw-semibold">File PDF</label>
+                  <label class="form-label fw-semibold">Tipe Media</label>
+                  <div class="d-flex gap-3">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="addTipeMedia" id="addTipeMediaDoc" value="document" checked>
+                      <label class="form-check-label" for="addTipeMediaDoc">
+                        Dokumen (PDF/DOCX)
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="addTipeMedia" id="addTipeMediaVideo" value="video">
+                      <label class="form-check-label" for="addTipeMediaVideo">
+                        Video (YouTube Link)
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12" id="addDocSection">
+                  <label class="form-label fw-semibold">File Dokumen</label>
                   <div class="file-upload-area" id="pdfUploadArea">
-                    <input type="file" id="addPdfFile" accept=".pdf" style="display: none;">
+                    <input type="file" id="addPdfFile" accept=".pdf,.docx" style="display: none;">
                     <i class="ti" style="font-size: 2.5rem; color: #00bcd4; display: block; margin-bottom: 0.5rem;">&#xea76;</i>
-                    <p class="mb-1 fw-semibold">Klik atau drag & drop file PDF</p>
-                    <p class="text-muted small mb-0">Maksimal 10MB</p>
+                    <p class="mb-1 fw-semibold">Klik atau drag & drop file</p>
+                    <p class="text-muted small mb-0">PDF, DOCX (Maks. 10MB)</p>
                   </div>
                   <div id="pdfFileName" class="mt-2 text-success small" style="display: none;"></div>
                 </div>
 
-                <div class="col-12">
-                  <label class="form-label fw-semibold">Link Video (Embed URL)</label>
+                <div class="col-12" id="addVideoSection" style="display: none;">
+                  <label class="form-label fw-semibold">Link Video (YouTube)</label>
                   <div class="glass-input-wrapper">
-                    <input type="url" id="addVideoUrl" placeholder="https://www.youtube.com/embed/...">
+                    <input type="url" id="addVideoUrl" placeholder="https://www.youtube.com/watch?v=...">
                   </div>
-                  <small class="text-muted">Gunakan URL embed YouTube/Vimeo, bukan URL normal</small>
+                  <small class="text-muted">Gunakan URL YouTube, bukan URL embed</small>
                 </div>
               </div>
             </form>
@@ -423,23 +456,41 @@ export function renderGuideManagementPage(path, userRole) {
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label fw-semibold">File PDF (Kosongkan jika tidak diubah)</label>
+                  <label class="form-label fw-semibold">Tipe Media</label>
+                  <div class="d-flex gap-3">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="editTipeMedia" id="editTipeMediaDoc" value="document" checked>
+                      <label class="form-check-label" for="editTipeMediaDoc">
+                        Dokumen (PDF/DOCX)
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="editTipeMedia" id="editTipeMediaVideo" value="video">
+                      <label class="form-check-label" for="editTipeMediaVideo">
+                        Video (YouTube Link)
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12" id="editDocSection">
+                  <label class="form-label fw-semibold">File Dokumen (Kosongkan jika tidak diubah)</label>
                   <div class="file-upload-area" id="editPdfUploadArea">
-                    <input type="file" id="editPdfFile" accept=".pdf" style="display: none;">
+                    <input type="file" id="editPdfFile" accept=".pdf,.docx" style="display: none;">
                     <i class="ti" style="font-size: 2.5rem; color: #00bcd4; display: block; margin-bottom: 0.5rem;">&#xea76;</i>
                     <p class="mb-1 fw-semibold">Klik atau drag & drop file PDF baru</p>
-                    <p class="text-muted small mb-0">Maksimal 10MB</p>
+                    <p class="text-muted small mb-0">PDF, DOCX (Maks. 10MB)</p>
                   </div>
                   <div id="editPdfFileName" class="mt-2 text-success small" style="display: none;"></div>
                   <div id="currentPdfInfo" class="mt-2 text-info small"></div>
                 </div>
 
-                <div class="col-12">
-                  <label class="form-label fw-semibold">Link Video (Embed URL)</label>
+                <div class="col-12" id="editVideoSection" style="display: none;">
+                  <label class="form-label fw-semibold">Link Video (YouTube)</label>
                   <div class="glass-input-wrapper">
-                    <input type="url" id="editVideoUrl" placeholder="https://www.youtube.com/embed/...">
+                    <input type="url" id="editVideoUrl" placeholder="https://www.youtube.com/watch?v=...">
                   </div>
-                  <small class="text-muted">Gunakan URL embed YouTube/Vimeo, bukan URL normal</small>
+                  <small class="text-muted">Gunakan URL YouTube, bukan URL embed</small>
                 </div>
               </div>
             </form>
@@ -526,7 +577,6 @@ export function renderGuideManagementPage(path, userRole) {
     }
   }
 
-  // Render table
   function renderGuidesTable(filteredGuides = null) {
     const tbody = document.getElementById('guidesTableBody');
     const guidesToRender = filteredGuides || guides;
@@ -534,7 +584,7 @@ export function renderGuideManagementPage(path, userRole) {
     if (guidesToRender.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="6">
+          <td colspan="5">
             <div class="empty-state">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -547,41 +597,59 @@ export function renderGuideManagementPage(path, userRole) {
       return;
     }
 
-    tbody.innerHTML = guidesToRender.map((guide, index) => `
-      <tr>
-        <td>${index + 1}</td>
-        <td>
-          <div class="fw-semibold">${guide.judul || '-'}</div>
-        </td>
-        <td>
-          <span class="role-badge ${roleBadgeClasses[guide.role_id] || 'badge-admin'}">
-            ${roleNames[guide.role_id] || 'Unknown'}
-          </span>
-        </td>
-        <td>
-          ${guide.file_pdf ? `
-            <a href="/api/panduan/${guide.panduan_id}/file" target="_blank" class="btn btn-sm btn-outline-primary">
-              <i class="ti me-1">&#xeae8;</i>Lihat PDF
-            </a>
-          ` : '<span class="text-muted">Tidak ada file</span>'}
-        </td>
-        <td>
-          ${guide.video_url ? `
-            <a href="${guide.video_url}" target="_blank" class="btn btn-sm btn-outline-success">
-              <i class="ti me-1">&#xf20c;</i>Lihat Video
-            </a>
-          ` : '<span class="text-muted">Tidak ada video</span>'}
-        </td>
-        <td>
-          <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})">
-            <i class="ti">&#xeb04;</i>
-          </button>
-          <button class="btn btn-sm btn-danger" onclick="window.deleteGuide(${guide.panduan_id})">
-            <i class="ti">&#xeb55;</i>
-          </button>
-        </td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = guidesToRender.map((guide, index) => {
+      let mediaCell = '<span class="text-muted">Tidak ada media</span>';
+      if (guide.path_media) {
+        if (guide.tipe_media === 'document') {
+          const fileName = guide.path_media.split('/').pop();
+          mediaCell = `
+            <div>
+              <small class="d-block mb-2">
+                <i class="ti me-1">&#xea76;</i>${fileName}
+              </small>
+              <button class="btn btn-sm btn-outline-primary" onclick="window.previewGuideDocument('${guide.panduan_id}')">
+                <i class="ti me-1">&#xebcc;</i>Preview
+              </button>
+            </div>
+          `;
+        } else if (guide.tipe_media === 'video') {
+          mediaCell = `
+            <button class="btn btn-sm btn-outline-danger" onclick="window.previewGuideVideo('${guide.path_media}')">
+              <i class="ti me-1">&#xeae4;</i>Tonton Video
+            </button>
+          `;
+        }
+      } else if (guide.tipe_media === 'document') {
+        // Document type but no file
+        mediaCell = `<span class="text-warning small"><i class="ti me-1">&#xeb90;</i>File tidak tersedia</span>`;
+      } else if (guide.tipe_media === 'video') {
+        // Video type but no URL
+        mediaCell = `<span class="text-warning small"><i class="ti me-1">&#xeb90;</i>URL tidak tersedia</span>`;
+      }
+
+      return `
+        <tr>
+          <td>${index + 1}</td>
+          <td>
+            <div class="fw-semibold">${guide.judul_panduan || '-'}</div>
+          </td>
+          <td>
+            <span class="role-badge ${roleBadgeClasses[guide.target_role_id] || 'badge-admin'}">
+              ${roleNames[guide.target_role_id] || 'Unknown'}
+            </span>
+          </td>
+          <td>${mediaCell}</td>
+          <td>
+            <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})">
+              <i class="ti">&#xeb04;</i>
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="window.deleteGuide(${guide.panduan_id})">
+              <i class="ti">&#xeb55;</i>
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
   }
 
   // File upload handling
@@ -589,6 +657,8 @@ export function renderGuideManagementPage(path, userRole) {
     const uploadArea = document.getElementById(uploadAreaId);
     const fileInput = document.getElementById(fileInputId);
     const fileNameDisplay = document.getElementById(fileNameDisplayId);
+
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
     uploadArea.addEventListener('click', () => fileInput.click());
 
@@ -598,32 +668,41 @@ export function renderGuideManagementPage(path, userRole) {
     });
 
     uploadArea.addEventListener('dragleave', () => {
-      uploadArea.classList.remove('dragover');
+      uploadArea.classList.remove('dragleave');
     });
 
     uploadArea.addEventListener('drop', (e) => {
       e.preventDefault();
       uploadArea.classList.remove('dragover');
       const files = e.dataTransfer.files;
-      if (files.length > 0 && files[0].type === 'application/pdf') {
-        fileInput.files = files;
-        showFileName(files[0], fileNameDisplay);
+      if (files.length > 0) {
+        if (allowedTypes.includes(files[0].type)) {
+          fileInput.files = files;
+          showFileName(files[0], fileNameDisplay);
+        } else {
+          Swal.fire('Error', 'Hanya file PDF dan DOCX yang diizinkan.', 'error');
+        }
       }
     });
 
     fileInput.addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
-        showFileName(e.target.files[0], fileNameDisplay);
+        if (allowedTypes.includes(e.target.files[0].type)) {
+          showFileName(e.target.files[0], fileNameDisplay);
+        } else {
+          Swal.fire('Error', 'Hanya file PDF dan DOCX yang diizinkan.', 'error');
+          e.target.value = ''; // Clear the input
+        }
       }
     });
   }
 
   function showFileName(file, displayElement) {
     if (file.size > 10 * 1024 * 1024) {
-      Swal.fire('Error', 'File terlalu besar. Maksimal 10MB', 'error');
+      Swal.fire('Error', 'File terlalu besar. Maksimal 10MB.', 'error');
       return;
     }
-    displayElement.textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+    displayElement.textContent = `✓ ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
     displayElement.style.display = 'block';
   }
 
@@ -631,8 +710,7 @@ export function renderGuideManagementPage(path, userRole) {
   async function addGuide() {
     const title = document.getElementById('addTitle').value.trim();
     const roleId = document.getElementById('addRole').value;
-    const pdfFile = document.getElementById('addPdfFile').files[0];
-    const videoUrl = document.getElementById('addVideoUrl').value.trim();
+    const tipeMedia = document.querySelector('input[name="addTipeMedia"]:checked').value;
 
     if (!title || !roleId) {
       Swal.fire('Error', 'Judul dan Role wajib diisi', 'error');
@@ -640,17 +718,25 @@ export function renderGuideManagementPage(path, userRole) {
     }
 
     const formData = new FormData();
-    formData.append('judul', title);
-    formData.append('role_id', roleId);
-    if (pdfFile) formData.append('file_pdf', pdfFile);
-    if (videoUrl) formData.append('video_url', videoUrl);
+    formData.append('judul_panduan', title);
+    formData.append('target_role_id', roleId);
+    formData.append('tipe_media', tipeMedia);
+
+    if (tipeMedia === 'document') {
+      const docFile = document.getElementById('addPdfFile').files[0];
+      if (docFile) {
+        formData.append('path_media', docFile);
+      } else {
+        formData.append('path_media', ''); // Allow empty path
+      }
+    } else if (tipeMedia === 'video') {
+      const videoUrl = document.getElementById('addVideoUrl').value.trim();
+      formData.append('path_media', videoUrl);
+    }
 
     const btnSave = document.getElementById('btnSaveGuide');
     if (window.setButtonLoading) {
       window.setButtonLoading(btnSave, true, 'Menyimpan...');
-    } else {
-      btnSave.disabled = true;
-      btnSave.textContent = 'Menyimpan...';
     }
 
     try {
@@ -662,23 +748,18 @@ export function renderGuideManagementPage(path, userRole) {
 
       if (window.setButtonLoading) {
         window.setButtonLoading(btnSave, false);
-      } else {
-        btnSave.disabled = false;
-        btnSave.textContent = 'Simpan Panduan';
       }
 
       addModalInstance.hide();
       document.getElementById('addGuideForm').reset();
       document.getElementById('pdfFileName').style.display = 'none';
+      toggleMediaInputs('add'); // Reset to default view
 
       await Swal.fire('Berhasil!', 'Panduan berhasil ditambahkan', 'success');
       fetchGuides();
     } catch (error) {
       if (window.setButtonLoading) {
         window.setButtonLoading(btnSave, false);
-      } else {
-        btnSave.disabled = false;
-        btnSave.textContent = 'Simpan Panduan';
       }
       Swal.fire('Error', error.message, 'error');
     }
@@ -690,18 +771,28 @@ export function renderGuideManagementPage(path, userRole) {
     if (!guide) return;
 
     document.getElementById('editGuideId').value = guide.panduan_id;
-    document.getElementById('editTitle').value = guide.judul || '';
-    document.getElementById('editRole').value = guide.role_id || '';
-    document.getElementById('editVideoUrl').value = guide.video_url || '';
+    document.getElementById('editTitle').value = guide.judul_panduan || '';
+    document.getElementById('editRole').value = guide.target_role_id || '';
+
+    if (guide.tipe_media === 'video') {
+      document.getElementById('editTipeMediaVideo').checked = true;
+      document.getElementById('editVideoUrl').value = guide.path_media || '';
+      document.getElementById('currentPdfInfo').textContent = '';
+    } else { // 'document' or other/null cases
+      document.getElementById('editTipeMediaDoc').checked = true;
+      document.getElementById('editVideoUrl').value = '';
+      if (guide.path_media) {
+        const fileName = guide.path_media.split('/').pop();
+        document.getElementById('currentPdfInfo').textContent = `✓ File saat ini: ${fileName}`;
+      } else {
+        document.getElementById('currentPdfInfo').textContent = 'Belum ada file';
+      }
+    }
+    
+    toggleMediaInputs('edit');
+
     document.getElementById('editPdfFileName').style.display = 'none';
     document.getElementById('editPdfFile').value = '';
-
-    const currentPdfInfo = document.getElementById('currentPdfInfo');
-    if (guide.file_pdf) {
-      currentPdfInfo.textContent = `✓ File saat ini: ${guide.file_pdf}`;
-    } else {
-      currentPdfInfo.textContent = 'Belum ada file PDF';
-    }
 
     editModalInstance.show();
   };
@@ -711,8 +802,7 @@ export function renderGuideManagementPage(path, userRole) {
     const id = document.getElementById('editGuideId').value;
     const title = document.getElementById('editTitle').value.trim();
     const roleId = document.getElementById('editRole').value;
-    const pdfFile = document.getElementById('editPdfFile').files[0];
-    const videoUrl = document.getElementById('editVideoUrl').value.trim();
+    const tipeMedia = document.querySelector('input[name="editTipeMedia"]:checked').value;
 
     if (!title || !roleId) {
       Swal.fire('Error', 'Judul dan Role wajib diisi', 'error');
@@ -720,31 +810,35 @@ export function renderGuideManagementPage(path, userRole) {
     }
 
     const formData = new FormData();
-    formData.append('judul', title);
-    formData.append('role_id', roleId);
-    if (pdfFile) formData.append('file_pdf', pdfFile);
-    if (videoUrl) formData.append('video_url', videoUrl);
+    formData.append('judul_panduan', title);
+    formData.append('target_role_id', roleId);
+    formData.append('tipe_media', tipeMedia);
+    formData.append('_method', 'PUT');
+
+    if (tipeMedia === 'document') {
+      const docFile = document.getElementById('editPdfFile').files[0];
+      if (docFile) {
+        formData.append('path_media', docFile);
+      }
+    } else if (tipeMedia === 'video') {
+      const videoUrl = document.getElementById('editVideoUrl').value.trim();
+      formData.append('path_media', videoUrl);
+    }
 
     const btnUpdate = document.getElementById('btnUpdateGuide');
     if (window.setButtonLoading) {
       window.setButtonLoading(btnUpdate, true, 'Menyimpan...');
-    } else {
-      btnUpdate.disabled = true;
-      btnUpdate.textContent = 'Menyimpan...';
     }
 
     try {
       await apiRequest(`/panduan/${id}`, {
-        method: 'PUT',
+        method: 'POST',
         body: formData,
         isFormData: true
       });
 
       if (window.setButtonLoading) {
         window.setButtonLoading(btnUpdate, false);
-      } else {
-        btnUpdate.disabled = false;
-        btnUpdate.textContent = 'Update Panduan';
       }
 
       editModalInstance.hide();
@@ -753,9 +847,6 @@ export function renderGuideManagementPage(path, userRole) {
     } catch (error) {
       if (window.setButtonLoading) {
         window.setButtonLoading(btnUpdate, false);
-      } else {
-        btnUpdate.disabled = false;
-        btnUpdate.textContent = 'Update Panduan';
       }
       Swal.fire('Error', error.message, 'error');
     }
@@ -790,8 +881,8 @@ export function renderGuideManagementPage(path, userRole) {
   searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase();
     const filtered = guides.filter(g => 
-      (g.judul || '').toLowerCase().includes(query) ||
-      (roleNames[g.role_id] || '').toLowerCase().includes(query)
+      (g.judul_panduan || '').toLowerCase().includes(query) ||
+      (roleNames[g.target_role_id] || '').toLowerCase().includes(query)
     );
     renderGuidesTable(filtered);
   });
@@ -807,6 +898,142 @@ export function renderGuideManagementPage(path, userRole) {
   // Event listeners
   document.getElementById('btnSaveGuide').addEventListener('click', addGuide);
   document.getElementById('btnUpdateGuide').addEventListener('click', updateGuide);
+
+  // Preview functions
+  window.previewGuideDocument = async function(panduan_id) {
+    const guide = guides.find(g => g.panduan_id == panduan_id);
+    if (!guide || !guide.path_media) {
+      Swal.fire('Error', 'File tidak ditemukan', 'error');
+      return;
+    }
+
+    const fileExtension = guide.path_media.split('.').pop().toLowerCase();
+    console.log('Previewing document:', guide.judul_panduan, 'Type:', fileExtension, 'Path:', guide.path_media);
+
+    // Show loading
+    Swal.fire({
+      title: 'Membuka Pratinjau...',
+      text: 'Sedang memproses...',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    try {
+      // Fetch file as blob
+      const response = await fetch(`/${guide.path_media}`);
+
+      if (!response.ok) {
+        console.error('Response error:', response.status, response.statusText);
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Gagal mengambil file.');
+        } else {
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+      }
+
+      // Create blob and open in new window
+      const blob = await response.blob();
+      console.log('Blob created:', blob.type, blob.size);
+      
+      const fileUrl = URL.createObjectURL(blob);
+      console.log('Object URL created:', fileUrl);
+      
+      Swal.close();
+      window.open(fileUrl, '_blank');
+      
+      // Revoke URL after a delay to free memory
+      setTimeout(() => {
+        URL.revokeObjectURL(fileUrl);
+        console.log('Object URL revoked');
+      }, 10000);
+
+    } catch (error) {
+      console.error('Preview error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Membuka File',
+        text: error.message || 'Terjadi kesalahan saat membuka file'
+      });
+    }
+  };
+
+  window.previewGuideVideo = function(videoUrl) {
+    // Convert YouTube URL to embed URL
+    let embedUrl = videoUrl;
+    
+    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+      // Extract video ID from various YouTube URL formats
+      let videoId = '';
+      
+      if (videoUrl.includes('youtube.com/watch?v=')) {
+        videoId = videoUrl.split('watch?v=')[1].split('&')[0];
+      } else if (videoUrl.includes('youtu.be/')) {
+        videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+      } else if (videoUrl.includes('youtube.com/embed/')) {
+        videoId = videoUrl.split('embed/')[1].split('?')[0];
+      }
+      
+      if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+
+    const previewContent = `
+      <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px;">
+        <iframe 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 8px;"
+          src="${embedUrl}" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+
+    Swal.fire({
+      title: 'Video Tutorial',
+      html: previewContent,
+      width: '90%',
+      didOpen: (modal) => {
+        modal.classList.add('swal-lg');
+      }
+    });
+  };
+
+  // --- Media Type Logic ---
+  function toggleMediaInputs(modalType) {
+    const docSection = document.getElementById(`${modalType}DocSection`);
+    const videoSection = document.getElementById(`${modalType}VideoSection`);
+    const selectedRadio = document.querySelector(`input[name="${modalType}TipeMedia"]:checked`);
+
+    if (selectedRadio && selectedRadio.value === 'document') {
+      docSection.style.display = 'block';
+      videoSection.style.display = 'none';
+      document.getElementById(`${modalType}VideoUrl`).value = '';
+    } else if (selectedRadio && selectedRadio.value === 'video') {
+      docSection.style.display = 'none';
+      videoSection.style.display = 'block';
+      const fileInput = document.getElementById(`${modalType}PdfFile`);
+      if (fileInput) {
+        fileInput.value = '';
+      }
+      const fileNameDisplay = document.getElementById(`${modalType}PdfFileName`);
+      if (fileNameDisplay) {
+          fileNameDisplay.style.display = 'none';
+      }
+    }
+  }
+
+  document.querySelectorAll('input[name="addTipeMedia"]').forEach(radio => {
+    radio.addEventListener('change', () => toggleMediaInputs('add'));
+  });
+
+  document.querySelectorAll('input[name="editTipeMedia"]').forEach(radio => {
+    radio.addEventListener('change', () => toggleMediaInputs('edit'));
+  });
+
+  // --- End Media Type Logic ---
 
   // Initial load
   fetchGuides();

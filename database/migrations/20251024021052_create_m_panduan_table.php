@@ -12,7 +12,6 @@ final class CreateMPanduanTable extends AbstractMigration
         
         $table->addColumn('panduan_id', 'integer', ['identity' => true])
               ->addColumn('judul_panduan', 'string', ['limit' => 200])
-              ->addColumn('isi_panduan', 'text')
               ->addColumn('target_role_id', 'integer', ['null' => true])
               ->addForeignKey('target_role_id', 'm_roles', 'role_id', [
                   'delete' => 'SET_NULL',

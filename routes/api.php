@@ -222,7 +222,7 @@ $router->get('/master/kategori-belanja', 'MasterController@getKategoriBelanja');
 $router->get('/panduan', 'PanduanController@index');
 $router->post('/panduan', 'PanduanController@store');
 $router->get('/panduan/{id}', 'PanduanController@show');
-$router->put('/panduan/{id}', 'PanduanController@update');
+$router->post('/panduan/{id}', 'PanduanController@update');
 $router->delete('/panduan/{id}', 'PanduanController@destroy');
 
 
