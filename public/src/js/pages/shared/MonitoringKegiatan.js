@@ -5,32 +5,15 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderMonitoringKegiatanPage(path, userRole) {
   const pageContent = `
     <style>
-      /* Global overrides to fix double scrollbar and use main browser scrollbar */
-      html, body {
-        overflow-y: auto !important;
-      }
-      
-      .layout-wrapper, 
-      .layout-page, 
-      #main-layout-page,
-      .content-wrapper {
-        height: auto !important;
-        overflow-y: visible !important;
-      }
-
       /* Clean background with image */
       .monitoring-kegiatan-page {
-        min-height: calc(100vh - 100px); /* Adjusted to prevent overflow */
-        height: auto;
-        width: 100%;
+        min-height: 100vh;
         padding: 2rem;
         animation: fadeIn 0.4s ease-out;
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
         background-repeat: no-repeat;
-        position: relative;
-        overflow: visible;
       }
 
       /* Info banner */
@@ -198,13 +181,11 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         border-radius: 18px;
         padding: 0;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        overflow: visible;
+        overflow: hidden;
         animation: scaleIn 0.5s ease-out;
         animation-delay: 0.1s;
         animation-fill-mode: backwards;
         transition: box-shadow 0.3s ease, transform 0.3s ease;
-        min-height: auto;
-        height: auto;
       }
 
       .card-datatable:hover {
@@ -214,7 +195,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       
       .card-datatable .table {
         border-radius: 18px;
-        overflow: visible;
+        overflow: hidden;
       }
 
       /* Table styling */
@@ -1165,7 +1146,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       </div>
 
       <!-- Main Table Card -->
-      <div class="card card-datatable p-0">
+      <div class="card card-datatable table-responsive p-0">
         <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
           <thead>
             <tr>
