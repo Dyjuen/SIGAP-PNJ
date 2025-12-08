@@ -79,6 +79,7 @@ const roleBasedRoutes = {
     "/riwayat/detail/": renderDetailKegiatanPage,
     "/pengaturan": renderNotFoundPage,
     "/revisi/": renderRevisiKakPage,
+    "/kegiatan/monitoring": renderMonitoringKegiatanPage,
     "/kegiatan/detail/": renderDetailKegiatanPage,
     "/kegiatan/lpj/detail/": renderInputLpjPage,
   },

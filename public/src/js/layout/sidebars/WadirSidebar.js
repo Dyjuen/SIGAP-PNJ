@@ -796,16 +796,6 @@ export const wadirSidebar = `
       </a>
     </li>
 
-    <!-- Verifikasi Kegiatan -->
-    <li class="menu-item">
-      <a href="/wadir/kegiatan/approve" class="menu-link" data-tooltip="Verifikasi Kegiatan">
-        <span class="menu-icon">
-          <i class="ti ti-circle-check">&#xea67;</i>
-        </span>
-        <span class="menu-text">Verifikasi Kegiatan</span>
-      </a>
-    </li>
-
     <!-- Monitoring Kegiatan -->
     <li class="menu-item">
       <a href="/wadir/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">

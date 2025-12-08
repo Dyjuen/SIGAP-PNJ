@@ -801,16 +801,6 @@ export const ppkSidebar = `
       </a>
     </li>
 
-    <!-- Setujui Kegiatan -->
-    <li class="menu-item">
-      <a href="/ppk/kegiatan/approve" class="menu-link" data-tooltip="Setujui Kegiatan">
-        <span class="menu-icon">
-          <i class="ti ti-circle-check">&#xea67;</i>
-        </span>
-        <span class="menu-text">Setujui Kegiatan</span>
-      </a>
-    </li>
-
     <!-- Monitoring Kegiatan -->
     <li class="menu-item">
       <a href="/ppk/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
