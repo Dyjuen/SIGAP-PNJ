@@ -1028,7 +1028,7 @@ export function renderRevisiLpjPage(path, userRole) {
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+            <button type="button" class="btn btn-label-secondary" tabindex="-1" data-bs-dismiss="modal">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
             ${
@@ -1055,12 +1055,16 @@ export function renderRevisiLpjPage(path, userRole) {
       document.getElementById("lampiranCommentModal")
     );
 
-    // Membersihkan state modal saat ditutup untuk mencegah data lama muncul kembali
-    document
-      .getElementById("lampiranCommentModal")
-      .addEventListener("hidden.bs.modal", function () {
+    const modalEl = document.getElementById("lampiranCommentModal");
+    modalEl.addEventListener("hidden.bs.modal", function () {
         document.getElementById("lampiranCommentInput").value = "";
-      });
+    });
+    modalEl.addEventListener("shown.bs.modal", function () {
+        const input = document.getElementById("lampiranCommentInput");
+        if(input && !input.disabled) {
+            input.focus();
+        }
+    });
 
     const commentInput = document.getElementById("lampiranCommentInput");
     if (commentInput) {

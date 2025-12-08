@@ -146,12 +146,12 @@ class LpjController extends Controller
             $this->kegiatanModel->update($kegiatanId, ['lpj_submitted_at' => date('Y-m-d H:i:s')]);
             
             $oldStatus = $kegiatan['status_id'];
-            $this->kegiatanModel->updateStatus($kegiatanId, 12); // 12 = Review LPJ
+            $this->kegiatanModel->updateStatus($kegiatanId, 11); // 11 = Review LPJ
 
             $this->logStatusModel->create([
                 'kegiatan_id' => $kegiatanId,
                 'status_id_lama' => $oldStatus,
-                'status_id_baru' => 12,
+                'status_id_baru' => 11,
                 'actor_user_id' => $this->user['user_id'],
                 'catatan' => 'LPJ disubmit untuk review.'
             ]);
@@ -281,12 +281,12 @@ class LpjController extends Controller
             ]);
 
             $oldStatus = $kegiatan['status_id'];
-            $this->kegiatanModel->updateStatus($kegiatanId, 13); // 13 = LPJ Direvisi
+            $this->kegiatanModel->updateStatus($kegiatanId, 12); // 12 = LPJ Direvisi
 
             $this->logStatusModel->create([
                 'kegiatan_id' => $kegiatanId,
                 'status_id_lama' => $oldStatus,
-                'status_id_baru' => 13,
+                'status_id_baru' => 12,
                 'actor_user_id' => $this->user['user_id'],
                 'catatan' => "Revisi LPJ: {$generalComment}"
             ]);
@@ -410,12 +410,12 @@ class LpjController extends Controller
             $this->kegiatanModel->update($kegiatanId, ['lpj_submitted_at' => date('Y-m-d H:i:s')]);
 
             $oldStatus = $kegiatan['status_id'];
-            $this->kegiatanModel->updateStatus($kegiatanId, 12); // 12 = Review LPJ
+            $this->kegiatanModel->updateStatus($kegiatanId, 11); // 11 = Review LPJ
 
             $this->logStatusModel->create([
                 'kegiatan_id' => $kegiatanId,
                 'status_id_lama' => $oldStatus,
-                'status_id_baru' => 12,
+                'status_id_baru' => 11,
                 'actor_user_id' => $this->user['user_id'],
                 'catatan' => 'LPJ disubmit ulang setelah revisi.'
             ]);
@@ -483,12 +483,12 @@ class LpjController extends Controller
             }
 
             $oldStatus = $kegiatan['status_id'];
-            $this->kegiatanModel->updateStatus($kegiatanId, 14); // 14 = Setor Fisik Dokumen
+            $this->kegiatanModel->updateStatus($kegiatanId, 13); // 13 = Setor Fisik Dokumen
 
             $this->logStatusModel->create([
                 'kegiatan_id' => $kegiatanId,
                 'status_id_lama' => $oldStatus,
-                'status_id_baru' => 14,
+                'status_id_baru' => 13,
                 'actor_user_id' => $this->user['user_id'],
                 'catatan' => 'LPJ digital disetujui. Menunggu setor fisik.'
             ]);
@@ -556,12 +556,12 @@ class LpjController extends Controller
             ]);
 
             $oldStatus = $kegiatan['status_id'];
-            $this->kegiatanModel->updateStatus($kegiatanId, 15); // 15 = Selesai
+            $this->kegiatanModel->updateStatus($kegiatanId, 14); // 14 = Selesai
 
             $this->logStatusModel->create([
                 'kegiatan_id' => $kegiatanId,
                 'status_id_lama' => $oldStatus,
-                'status_id_baru' => 15,
+                'status_id_baru' => 14,
                 'actor_user_id' => $this->user['user_id'],
                 'catatan' => 'LPJ fisik diterima. Kegiatan selesai.'
             ]);
