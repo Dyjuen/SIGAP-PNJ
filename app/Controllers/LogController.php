@@ -23,8 +23,8 @@ class LogController extends Controller
             $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
             $offset = ($page - 1) * $limit;
             
-            $search = isset($_GET['search']) ? $_GET['search'] : '';
             $role = isset($_GET['role']) ? $_GET['role'] : '';
+            $logType = isset($_GET['log_type']) ? $_GET['log_type'] : '';
             $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
             $startDate = isset($_GET['start_date']) ? $_GET['start_date'] : '';
             $endDate = isset($_GET['end_date']) ? $_GET['end_date'] : '';
@@ -109,38 +109,42 @@ class LogController extends Controller
             ";
 
             // Combine queries
-            $sql = "SELECT * FROM (
+            $baseSql = "SELECT * FROM (
                 ($query1) UNION ALL ($query2) UNION ALL ($query3) UNION ALL ($query4)
-            ) as combined_logs WHERE 1=1";
+            ) as combined_logs";
+
+            $whereSql = " WHERE 1=1";
 
             // Add filters
-            if (!empty($search)) {
-                $sql .= " AND (user_name LIKE :search OR description LIKE :search OR context_title LIKE :search)";
-                $params[':search'] = '%' . $search . '%';
-            }
+
 
             if (!empty($role)) {
-                $sql .= " AND user_role = :role";
+                $whereSql .= " AND user_role = :role";
                 $params[':role'] = $role;
+            }
+            
+            if (!empty($logType)) {
+                $whereSql .= " AND log_type = :log_type";
+                $params[':log_type'] = $logType;
             }
 
             if (!empty($userId)) {
-                $sql .= " AND user_id = :user_id";
+                $whereSql .= " AND user_id = :user_id";
                 $params[':user_id'] = $userId;
             }
 
             if (!empty($startDate)) {
-                $sql .= " AND DATE(created_at) >= :start_date";
+                $whereSql .= " AND DATE(created_at) >= :start_date";
                 $params[':start_date'] = $startDate;
             }
 
             if (!empty($endDate)) {
-                $sql .= " AND DATE(created_at) <= :end_date";
+                $whereSql .= " AND DATE(created_at) <= :end_date";
                 $params[':end_date'] = $endDate;
             }
 
             // Count total for pagination
-            $countSql = "SELECT COUNT(*) as total FROM ($sql) as count_table";
+            $countSql = "SELECT COUNT(*) as total FROM ($baseSql) as count_table" . $whereSql;
             
             $stmtCount = $this->db->getConnection()->prepare($countSql);
             foreach ($params as $key => $value) {
@@ -150,7 +154,7 @@ class LogController extends Controller
             $total = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
 
             // Final query with ordering and limits
-            $sql .= " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+            $sql = $baseSql . $whereSql . " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
             
             $stmt = $this->db->getConnection()->prepare($sql);
             foreach ($params as $key => $value) {
