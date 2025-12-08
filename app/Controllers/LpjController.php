@@ -261,8 +261,18 @@ class LpjController extends Controller
 
             $db->beginTransaction();
             
-            // Komentar untuk anggaran dan lampiran sekarang ditangani secara individual
-            // di LampiranController@saveCatatan. Blok ini tidak lagi diperlukan.
+            // Handle lampiran comments from payload (Bulk save/Backup)
+            if (!empty($payload['lampiran_comments']) && is_array($payload['lampiran_comments'])) {
+                foreach ($payload['lampiran_comments'] as $commentData) {
+                    if (!empty($commentData['id']) && !empty($commentData['catatan_reviewer'])) {
+                        $this->kegiatanLampiranModel->addReviewerNotes(
+                            $commentData['id'],
+                            $commentData['catatan_reviewer'],
+                            $this->user['user_id']
+                        );
+                    }
+                }
+            }
 
             // 3. Update the approval status to 'Revisi'
             $approvalModel = new \App\Models\KegiatanApproval();
