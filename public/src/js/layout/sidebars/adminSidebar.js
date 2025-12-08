@@ -820,6 +820,16 @@ export const adminSidebar = `
         <span class="menu-text">Manajemen Panduan</span>
       </a>
     </li>
+
+    <!-- Log History -->
+    <li class="menu-item">
+      <a href="/admin/log-history" class="menu-link" data-tooltip="Log History">
+        <span class="menu-icon">
+          <i class="ti ti-history">&#xeb82;</i>
+        </span>
+        <span class="menu-text">Log History</span>
+      </a>
+    </li>
   </ul>
 
   <!-- User Profile Section -->

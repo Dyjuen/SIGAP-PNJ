@@ -169,6 +169,20 @@ if ($method === 'DELETE' && preg_match('/^\/admin\/users\/(\d+)$/', $uri, $match
 }
 
 // =====================================================
+// 7.1. LOG ROUTES (Admin only)
+// =====================================================
+
+// GET /api/admin/logs
+if ($method === 'GET' && $uri === '/admin/logs') {
+    $roleMiddleware = new RoleMiddleware(['Admin']);
+    $roleMiddleware->handle();
+    
+    $controller = new App\Controllers\LogController();
+    $controller->getSystemLogs();
+    exit;
+}
+
+// =====================================================
 // 8. KAK (KERANGKA ACUAN KERJA) ROUTES
 // =====================================================
 

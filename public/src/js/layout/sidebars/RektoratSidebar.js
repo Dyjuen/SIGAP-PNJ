@@ -801,47 +801,6 @@ export const rektoratSidebar = `
       </a>
     </li>
 
-    <!-- Monitoring Kegiatan -->
-    <li class="menu-item">
-      <a href="/rektorat/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
-        <span class="menu-icon">
-          <i class="ti ti-eye">&#xea9a;</i>
-        </span>
-        <span class="menu-text">Monitoring Kegiatan</span>
-      </a>
-    </li>
-
-    <!-- Laporan -->
-    <li class="menu-item">
-      <a href="/rektorat/laporan" class="menu-link" data-tooltip="Laporan">
-        <span class="menu-icon">
-          <i class="ti ti-report">&#xef75;</i>
-        </span>
-        <span class="menu-text">Laporan</span>
-      </a>
-    </li>
-
-    <!-- Panduan -->
-    <li class="menu-item">
-      <a href="/rektorat/panduan" class="menu-link" data-tooltip="Panduan">
-        <span class="menu-icon">
-          <i class="ti ti-book">&#xea39;</i>
-        </span>
-        <span class="menu-text">Panduan</span>
-      </a>
-    </li>
-
-    <!-- Riwayat -->
-    <li class="menu-item">
-      <a href="/rektorat/riwayat" class="menu-link" data-tooltip="Riwayat">
-        <span class="menu-icon">
-          <i class="ti ti-history">&#xebea;</i>
-        </span>
-        <span class="menu-text">Riwayat</span>
-      </a>
-    </li>
-  </ul>
-
   <!-- User Profile Section -->
   <div class="user-profile-section">
     <div class="user-profile-card" id="user-profile-card" data-user-name="">
