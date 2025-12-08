@@ -7,12 +7,17 @@ export function renderMonitoringKegiatanPage(path, userRole) {
     <style>
       /* Clean background with image */
       .monitoring-kegiatan-page {
+        min-height: 100vh;
+        height: auto !important; /* Force growth with content */
+        width: 100%;
         padding: 2rem;
         animation: fadeIn 0.4s ease-out;
-        background-image: url('/assets/img/backgrounds/BG.png') !important;
         background-size: cover;
+        background-position: center;
         background-attachment: fixed;
-        min-height: 100%;
+        background-repeat: no-repeat;
+        position: relative;
+        overflow: visible !important; /* Ensure content doesn't spill out unwrapped */
       }
 
       /* Info banner */
