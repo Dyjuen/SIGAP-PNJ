@@ -32,7 +32,7 @@
 </IfModule>
 
 # Disable directory listing
-Options -Indexes
+Options -Indexes +FollowSymLinks
 
 # Deny access to sensitive files
 <FilesMatch "^\.">

@@ -116,8 +116,40 @@ class DashboardController
     public function getTemplates()
     {
         try {
-            $mediaModel = new \App\Models\MediaPanduan();
-            $templates = $mediaModel->getByType('template');
+            $panduanModel = new \App\Models\Panduan();
+            $role_id = $this->userData['role_id'] ?? null;
+            $userRoles = $this->userData['roles'] ?? [];
+
+            if (in_array('Admin', $userRoles)) {
+                 $panduan = $panduanModel->findAll();
+            } else {
+                 $panduan = $panduanModel->findByRole($role_id);
+            }
+
+            $templates = [];
+            foreach ($panduan as $item) {
+                $isVideo = false;
+                // Logic detect video from PanduanController
+                if (empty($item['tipe_media']) || is_null($item['tipe_media'])) {
+                    if (!empty($item['path_media'])) {
+                        if (filter_var($item['path_media'], FILTER_VALIDATE_URL) || 
+                            strpos($item['path_media'], 'youtube.com') !== false || 
+                            strpos($item['path_media'], 'youtu.be') !== false) {
+                            $isVideo = true;
+                        }
+                    }
+                } elseif ($item['tipe_media'] === 'video') {
+                    $isVideo = true;
+                }
+
+                if (!$isVideo) {
+                    $templates[] = [
+                        'name' => $item['judul_panduan'],
+                        'file_path' => $item['path_media']
+                    ];
+                }
+            }
+
             Response::success($templates, 'Data template berhasil diambil.');
         } catch (\Exception $e) {
             Response::error('Gagal mengambil data template: ' . $e->getMessage(), 500);
@@ -131,8 +163,41 @@ class DashboardController
     public function getVideos()
     {
         try {
-            $mediaModel = new \App\Models\MediaPanduan();
-            $videos = $mediaModel->getByType('video');
+            $panduanModel = new \App\Models\Panduan();
+            $role_id = $this->userData['role_id'] ?? null;
+            $userRoles = $this->userData['roles'] ?? [];
+
+            if (in_array('Admin', $userRoles)) {
+                 $panduan = $panduanModel->findAll();
+            } else {
+                 $panduan = $panduanModel->findByRole($role_id);
+            }
+
+            $videos = [];
+            foreach ($panduan as $item) {
+                $isVideo = false;
+                // Logic detect video from PanduanController
+                if (empty($item['tipe_media']) || is_null($item['tipe_media'])) {
+                    if (!empty($item['path_media'])) {
+                        if (filter_var($item['path_media'], FILTER_VALIDATE_URL) || 
+                            strpos($item['path_media'], 'youtube.com') !== false || 
+                            strpos($item['path_media'], 'youtu.be') !== false) {
+                            $isVideo = true;
+                        }
+                    }
+                } elseif ($item['tipe_media'] === 'video') {
+                    $isVideo = true;
+                }
+
+                if ($isVideo) {
+                    $videos[] = [
+                        'title' => $item['judul_panduan'],
+                        'url' => $item['path_media'],
+                        'thumbnail' => null // Optional, could be extracted from YouTube URL
+                    ];
+                }
+            }
+
             Response::success($videos, 'Data video panduan berhasil diambil.');
         } catch (\Exception $e) {
             Response::error('Gagal mengambil data video: ' . $e->getMessage(), 500);

@@ -718,6 +718,16 @@ export function renderPengusulDashboardPage(path, userRole) {
           renderTemplates(defaultTemplates);
         });
 
+      // 5. Fetch Videos
+      fetch('/api/dashboard/video', { headers })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data) {
+            renderVideos(data.data);
+          }
+        })
+        .catch(err => console.error("Error fetching videos:", err));
+
     } catch (error) {
       console.error("Dashboard fetch error:", error);
     }
@@ -879,6 +889,57 @@ export function renderPengusulDashboardPage(path, userRole) {
     });
   }
 
+  async function downloadFile(url, filename) {
+    if (url === '#') return;
+
+    // If external link, just open it
+    if (url.startsWith('http')) {
+        window.open(url, '_blank');
+        return;
+    }
+    
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+             throw new Error(`Gagal mengunduh file (${response.status})`);
+        }
+        
+        // Check if response is HTML (error page)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+             throw new Error('File tidak ditemukan');
+        }
+        
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        
+        // Determine filename with extension
+        let downloadName = filename;
+        const ext = url.split('.').pop().split(/[#?]/)[0];
+        // Only add extension if filename doesn't already have it
+        if (ext && ext.length <= 4 && !filename.endsWith('.' + ext)) { 
+             downloadName = `${filename}.${ext}`;
+        }
+
+        link.download = downloadName; 
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    } catch (error) {
+        console.error('Download error:', error);
+        if (window.Swal) {
+            window.Swal.fire('Error', 'Gagal mengunduh file. Pastikan file tersedia.', 'error');
+        } else {
+            alert('Gagal mengunduh file: ' + error.message);
+        }
+    }
+  }
+
   function renderTemplates(templates) {
     const container = document.getElementById("templateList");
     if (!container) return;
@@ -887,17 +948,19 @@ export function renderPengusulDashboardPage(path, userRole) {
     templates.forEach((template) => {
       const templateCard = document.createElement("div");
       templateCard.className = "template-card";
+      // Fix url path if it's from uploads
+      let fileUrl = template.file_path || template.path_media || template.url || '#';
+      if (fileUrl !== '#' && !fileUrl.startsWith('http') && !fileUrl.startsWith('/')) {
+          fileUrl = '/' + fileUrl;
+      }
+
+      const title = template.name || template.judul_panduan || template.judul || 'Dokumen';
+
       templateCard.innerHTML = `
         <div class="flex justify-between items-center py-1 px-4 rounded-xl">
-          <span class="text-cyan-400 font-medium text-md">${template.name || template.judul}</span>
+          <span class="text-cyan-400 font-medium text-md">${title}</span>
           <div class="flex">
-            <button class="btn-action-icon" title="Preview" onclick="window.open('${template.file_path || template.url || '#'}', '_blank')">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </button>
-            <button class="btn-action-icon" title="Download" onclick="window.open('${template.file_path || template.url || '#'}', '_blank')">
+            <button class="btn-action-icon btn-download-template" title="Download">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -907,7 +970,50 @@ export function renderPengusulDashboardPage(path, userRole) {
           </div>
         </div>
       `;
+      
+      const btnDownload = templateCard.querySelector('.btn-download-template');
+      if (btnDownload) {
+          btnDownload.addEventListener('click', () => downloadFile(fileUrl, title));
+      }
+
       container.appendChild(templateCard);
+    });
+  }
+
+  function renderVideos(videos) {
+    const container = document.getElementById("videoList");
+    if (!container) return;
+
+    container.innerHTML = "";
+    if (videos.length === 0) {
+        container.innerHTML = `<div class="col-span-3 text-center text-gray-400 py-8">Belum ada video panduan.</div>`;
+        return;
+    }
+
+    videos.forEach((video) => {
+        let embedUrl = video.url;
+        // Simple YouTube URL to Embed URL converter
+        if (video.url.includes('youtube.com') || video.url.includes('youtu.be')) {
+            let videoId = '';
+            if (video.url.includes('youtube.com/watch?v=')) {
+                videoId = video.url.split('watch?v=')[1].split('&')[0];
+            } else if (video.url.includes('youtu.be/')) {
+                videoId = video.url.split('youtu.be/')[1].split('?')[0];
+            } else if (video.url.includes('youtube.com/embed/')) {
+                videoId = video.url.split('embed/')[1].split('?')[0];
+            }
+            if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+      const videoCard = document.createElement("div");
+      videoCard.className = "video-placeholder";
+      // Override background to show iframe if available
+      videoCard.style.background = "black";
+      
+      videoCard.innerHTML = `
+        <iframe src="${embedUrl}" title="${video.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full absolute top-0 left-0 rounded-xl"></iframe>
+      `;
+      container.appendChild(videoCard);
     });
   }
 
