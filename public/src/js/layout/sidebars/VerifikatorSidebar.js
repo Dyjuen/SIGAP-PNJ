@@ -801,13 +801,13 @@ export const verifikatorSidebar = `
       </a>
     </li>
 
-    <!-- Monitoring Usulan -->
+    <!-- Monitoring Kegiatan -->
     <li class="menu-item">
-      <a href="/verifikator/usulan/monitoring" class="menu-link" data-tooltip="Monitoring Usulan">
+      <a href="/verifikator/kegiatan/monitoring" class="menu-link" data-tooltip="Monitoring Kegiatan">
         <span class="menu-icon">
-          <i class="ti ti-checklist">&#xf074;</i>
+          <i class="ti ti-eye">&#xea9a;</i>
         </span>
-        <span class="menu-text">Monitoring Usulan</span>
+        <span class="menu-text">Monitoring Kegiatan</span>
       </a>
     </li>
 

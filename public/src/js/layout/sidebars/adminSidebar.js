@@ -791,16 +791,6 @@ export const adminSidebar = `
   </div>
 
   <ul class="menu-inner">
-    <!-- Dashboard -->
-    <li class="menu-item">
-      <a href="/admin/dashboard" class="menu-link" data-tooltip="Dashboard">
-        <span class="menu-icon">
-          <i class="ti ti-home">&#xecde;</i>
-        </span>
-        <span class="menu-text">Dashboard</span>
-      </a>
-    </li>
-
     <!-- User Management -->
     <li class="menu-item">
       <a href="/admin/user-management" class="menu-link" data-tooltip="User Management">

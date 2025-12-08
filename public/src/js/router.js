@@ -44,7 +44,6 @@ const roleBasedRoutes = {
     "/forgot-password": renderForgotPasswordPage,
   },
   Admin: {
-    "/dashboard": renderUserManagementPage,
     "/user-management": renderUserManagementPage,
     "/kegiatan/view": renderMengajukanKegiatanPage,
     "/guide-management": renderGuideManagementPage,
@@ -79,6 +78,7 @@ const roleBasedRoutes = {
     "/riwayat/detail/": renderDetailKegiatanPage,
     "/pengaturan": renderNotFoundPage,
     "/revisi/": renderRevisiKakPage,
+    "/kegiatan/monitoring": renderMonitoringKegiatanPage,
     "/kegiatan/detail/": renderDetailKegiatanPage,
     "/kegiatan/lpj/detail/": renderInputLpjPage,
   },

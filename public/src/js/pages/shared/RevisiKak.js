@@ -3827,11 +3827,11 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
                   return {
                       kategori_belanja_id: catId,
                       uraian: inputs[0].value,
-                      volume1: parseInt(inputs[1].value) || 0,
+                      volume1: inputs[1].value !== "" ? parseFloat(inputs[1].value) : null,
                       satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
-                      volume2: parseInt(inputs[3].value) || 0,
+                      volume2: inputs[3].value !== "" ? parseFloat(inputs[3].value) : null,
                       satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
-                      volume3: parseInt(inputs[5].value) || 0,
+                      volume3: inputs[5].value !== "" ? parseFloat(inputs[5].value) : null,
                       satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
                       harga_satuan: harga
                   };

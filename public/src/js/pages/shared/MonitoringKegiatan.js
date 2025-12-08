@@ -10,6 +10,10 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         min-height: 100vh;
         padding: 2rem;
         animation: fadeIn 0.4s ease-out;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
       }
 
       /* Info banner */
@@ -177,13 +181,11 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         border-radius: 18px;
         padding: 0;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        overflow: visible;
+        overflow: hidden;
         animation: scaleIn 0.5s ease-out;
         animation-delay: 0.1s;
         animation-fill-mode: backwards;
         transition: box-shadow 0.3s ease, transform 0.3s ease;
-        min-height: auto;
-        height: auto;
       }
 
       .card-datatable:hover {
@@ -193,7 +195,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       
       .card-datatable .table {
         border-radius: 18px;
-        overflow: visible;
+        overflow: hidden;
       }
 
       /* Table styling */
@@ -1144,7 +1146,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       </div>
 
       <!-- Main Table Card -->
-      <div class="card card-datatable p-0">
+      <div class="card card-datatable table-responsive p-0">
         <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
           <thead>
             <tr>
@@ -1187,6 +1189,14 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
       if (userRole.toLowerCase() === 'pengusul' && user && user.user_id) {
         url += `&user_id=${user.user_id}`;
+      }
+
+      // Filter for Verifikator based on username (e.g. verifikator1 -> kategori_kegiatan=1)
+      if (userRole.toLowerCase() === 'verifikator' && user && user.username) {
+        const match = user.username.match(/verifikator(\d+)/i);
+        if (match) {
+          url += `&kategori_kegiatan=${match[1]}`;
+        }
       }
 
       const response = await fetch(url, {

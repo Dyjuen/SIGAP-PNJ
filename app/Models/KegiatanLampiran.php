@@ -41,13 +41,24 @@ class KegiatanLampiran extends Model
      */
     public function addReviewerNotes($lampiranId, $catatan, $reviewerId)
     {
-        return $this->update($lampiranId, [
-            'status_lampiran' => 'revision_requested',
+        $lampiran = $this->find($lampiranId);
+        if (!$lampiran) {
+            return false;
+        }
+
+        $updateData = [
             'catatan_reviewer' => $catatan,
             'reviewer_user_id' => $reviewerId,
             'catatan_tanggal' => date('Y-m-d H:i:s'),
             'revisi_ke' => $this->getRevisiKe($lampiranId) + 1
-        ]);
+        ];
+
+        // Only change status if it's NOT already archived
+        if (($lampiran['status_lampiran'] ?? '') !== 'archived') {
+            $updateData['status_lampiran'] = 'revision_requested';
+        }
+
+        return $this->update($lampiranId, $updateData);
     }
 
     /**
