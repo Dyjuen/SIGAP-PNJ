@@ -811,13 +811,13 @@ export const adminSidebar = `
       </a>
     </li>
 
-    <!-- Daftar Template -->
+    <!-- Guide Management -->
     <li class="menu-item">
-      <a href="/admin/template" class="menu-link" data-tooltip="Daftar Template">
+      <a href="/admin/guide-management" class="menu-link" data-tooltip="Panduan">
         <span class="menu-icon">
-          <i class="ti ti-file-text">&#xeac3;</i>
+          <i class="ti ti-book">&#xea39;</i>
         </span>
-        <span class="menu-text">Daftar Template</span>
+        <span class="menu-text">Manajemen Panduan</span>
       </a>
     </li>
   </ul>

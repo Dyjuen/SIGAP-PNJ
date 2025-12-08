@@ -23,6 +23,7 @@ import { renderRiwayatKAKPage } from "./pages/shared/RiwayatKAK.js";
 import { renderDetailKegiatanPage } from "./pages/shared/DetailKegiatan.js";
 import { renderDaftarLpjPage } from "./pages/shared/MonitorLpj.js";
 import { renderRevisiLpjPage } from "./pages/Bendahara/RevisiLpj.js";
+import { renderGuideManagementPage } from "./pages/Admin/GuideManagementPage.js";
 
 function getCurrentUserRole() {
   return localStorage.getItem("userRole") || "guest";
@@ -45,7 +46,7 @@ const roleBasedRoutes = {
     "/dashboard": renderUserManagementPage,
     "/user-management": renderUserManagementPage,
     "/kegiatan/view": renderMengajukanKegiatanPage,
-    "/template": renderNotFoundPage,
+    "/guide-management": renderGuideManagementPage,
     "/settings": renderNotFoundPage,
     "/riwayat/detail/": renderDetailKegiatanPage,
     "/kegiatan/detail/": renderDetailKegiatanPage,

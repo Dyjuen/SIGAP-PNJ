@@ -474,6 +474,99 @@ const pageContent = `
             cursor: not-allowed;
             color: #6B7280;
         }
+
+        /* ========== SEARCH INPUT DESIGN ========== */
+        .search-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 0.875rem 3rem 0.875rem 3rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1F2937;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            outline: none;
+        }
+
+        .search-input-wrapper input::placeholder {
+            color: #9CA3AF;
+            font-weight: 400;
+        }
+
+        .search-input-wrapper input:focus {
+            border-color: var(--primary-color);
+            background: #F0F8FF;
+            box-shadow: 
+                0 0 0 4px rgba(0, 188, 212, 0.1),
+                0 5px 15px rgba(0, 188, 212, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .search-input-wrapper.has-value input {
+            padding-right: 3.5rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+
+        .search-input-wrapper input:focus ~ .search-icon,
+        .search-input-wrapper.has-value .search-icon {
+            color: var(--primary-color);
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-input-wrapper.has-value .clear-search {
+            opacity: 0.6;
+            pointer-events: auto;
+        }
+
+        .clear-search:hover {
+            opacity: 1 !important;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .clear-search svg {
+            color: #6B7280;
+        }
+
+        .clear-search:hover svg {
+            color: #EF4444;
+        }
     </style>
 
     <div class="user-management-page">
@@ -888,7 +981,7 @@ const pageContent = `
     }
 
     state.filteredUsers = state.allUsers.filter((user) => {
-      const nama = (user.nama || "").toLowerCase();
+      const nama = (user.nama_lengkap || "").toLowerCase();
       const username = (user.username || "").toLowerCase();
       const email = (user.email || "").toLowerCase();
       const role = (user.role || "").toLowerCase();
@@ -1062,20 +1155,6 @@ const pageContent = `
     document.querySelectorAll('.btn-delete').forEach(btn => {
       btn.addEventListener('click', handleDelete);
     });
-
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const filteredUsers = state.users.filter(user => 
-          user.nama_lengkap.toLowerCase().includes(searchTerm) ||
-          user.username.toLowerCase().includes(searchTerm) ||
-          user.email.toLowerCase().includes(searchTerm) ||
-          user.role.toLowerCase().includes(searchTerm)
-        );
-        renderTableRows(filteredUsers);
-      });
-    }
   }
 
   function handleEditProfile(e) {
