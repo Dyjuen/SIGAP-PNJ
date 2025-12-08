@@ -1189,6 +1189,14 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         url += `&user_id=${user.user_id}`;
       }
 
+      // Filter for Verifikator based on username (e.g. verifikator1 -> kategori_kegiatan=1)
+      if (userRole.toLowerCase() === 'verifikator' && user && user.username) {
+        const match = user.username.match(/verifikator(\d+)/i);
+        if (match) {
+          url += `&kategori_kegiatan=${match[1]}`;
+        }
+      }
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
