@@ -95,6 +95,13 @@ export function renderGuideManagementPage(path, userRole) {
         border-radius: 50%;
         width: 32px;
         height: 32px;
+        transition: none;
+      }
+
+      .modal-header-gradient .btn-close:hover {
+        background: rgba(255, 255, 255, 0.9);
+        opacity: 1;
+        transform: none;
       }
 
       .modal-body-modern {
@@ -251,6 +258,30 @@ export function renderGuideManagementPage(path, userRole) {
         justify-content: center;
         align-items: center;
         min-height: 200px;
+      }
+
+      /* Search Input */
+      .search-box {
+        position: relative;
+      }
+
+      .search-box input {
+        padding-left: 2.5rem;
+        padding-right: 1rem;
+      }
+
+      .search-box::before {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+        pointer-events: none;
       }
     </style>
 

@@ -476,14 +476,8 @@ const pageContent = `
         }
 
         /* ========== SEARCH INPUT DESIGN ========== */
-        .search-section {
-            margin-bottom: 1.5rem;
-        }
-
         .search-input-wrapper {
             position: relative;
-            max-width: 600px;
-            margin: 0 auto;
         }
 
         .search-input-wrapper input {
@@ -606,29 +600,26 @@ const pageContent = `
             </div>
         </div>
 
-        <!-- Search Section -->
-        <div class="search-section">
-          <div class="search-input-wrapper">
-            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-            <input 
-              type="text" 
-              id="searchInput" 
-              placeholder="Cari nama, username, email, atau role..."
-              autocomplete="off"
-            />
-            <button class="clear-search" id="clearSearch" title="Clear search">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- Search Section -->
+            <div class="search-input-wrapper" style="width: 400px;">
+              <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
               </svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="d-flex justify-content-end mb-4">
+              <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Cari nama, username, email, atau role..."
+                autocomplete="off"
+              />
+              <button class="clear-search" id="clearSearch" title="Clear search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
             <button class="btn btn-primary btn-tambah-akun" id="btnTambahAkun">
                 <i class="ti me-1">&#xeb4b;</i> Tambah Akun
             </button>
