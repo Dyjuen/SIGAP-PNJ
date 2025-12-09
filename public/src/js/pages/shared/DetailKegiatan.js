@@ -758,7 +758,7 @@ export function renderDetailKegiatanPage(path, userRole) {
         </div>
       </div>
 
-<button id="downloadPdfBtn" class="download-fab" title="Download PDF"><i class="ti ti-download" style="font-size: 1.5rem;">&#xeb2d;</i></button>
+<button id="downloadPdfBtn" class="download-fab" title="Download PDF"><i class="ti ti-download" style="font-size: 1.5rem;">&#xea96;</i></button>
 
       <!-- Main Step 1: Kerangka Acuan Kerja -->
       <div class="main-step-content active" id="main-step-1">
@@ -965,7 +965,8 @@ export function renderDetailKegiatanPage(path, userRole) {
 
   // --- JavaScript Logic ---
   const pathSegments = path.split("/").filter(Boolean);
-  const kakId = pathSegments.length > 2 ? pathSegments[pathSegments.length - 1] : null;
+  const kakId =
+    pathSegments.length > 2 ? pathSegments[pathSegments.length - 1] : null;
 
   let kakDataState = null;
 
@@ -991,42 +992,49 @@ export function renderDetailKegiatanPage(path, userRole) {
   // API FUNCTIONS
   // ==============================================
   async function handlePdfAction(kakId, action) {
-    const actionTitle = action === 'preview' ? 'Membuka Pratinjau PDF...' : 'Mengunduh PDF...';
-    const errorMessage = action === 'preview' ? 'Gagal membuka pratinjau PDF' : 'Gagal mengunduh PDF';
-  
+    const actionTitle =
+      action === "preview" ? "Membuka Pratinjau PDF..." : "Mengunduh PDF...";
+    const errorMessage =
+      action === "preview"
+        ? "Gagal membuka pratinjau PDF"
+        : "Gagal mengunduh PDF";
+
     Swal.fire({
       title: actionTitle,
       text: "Membuat token sementara...",
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading(),
     });
-  
+
     try {
       // Step 1: Generate token
-      const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
-        method: 'POST',
-      });
-  
+      const tokenResponse = await apiRequest(
+        `/kak/${kakId}/generate-download-token`,
+        {
+          method: "POST",
+        }
+      );
+
       if (!tokenResponse.success) {
-        throw new Error(tokenResponse.message || 'Gagal membuat token');
+        throw new Error(tokenResponse.message || "Gagal membuat token");
       }
-  
+
       const tempToken = tokenResponse.data.download_token;
-  
+
       // Step 2: Build URL and open/download
-      const url = action === 'preview'
-        ? `/api/kak/${kakId}/preview?t=${tempToken}`
-        : `/api/kak/${kakId}?t=${tempToken}`;
-  
+      const url =
+        action === "preview"
+          ? `/api/kak/${kakId}/preview?t=${tempToken}`
+          : `/api/kak/${kakId}?t=${tempToken}`;
+
       Swal.close();
-      
+
       setTimeout(() => {
-        window.open(url, '_blank');
+        window.open(url, "_blank");
       }, 300);
-  
     } catch (error) {
       Swal.fire({
-        icon: 'error',
+        icon: "error",
         title: errorMessage,
         text: error.message,
       });
@@ -1034,7 +1042,9 @@ export function renderDetailKegiatanPage(path, userRole) {
   }
 
   async function apiRequest(endpoint, options = {}) {
-    const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+    const token =
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
     const headers = { ...options.headers, Authorization: `Bearer ${token}` };
     if (!(options.body instanceof FormData)) {
       headers["Content-Type"] = "application/json";
@@ -1084,16 +1094,22 @@ export function renderDetailKegiatanPage(path, userRole) {
       <div class="grid grid-cols-3 gap-4">
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.bulan_indikator || ""}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.bulan_indikator || ""
+          }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.deskripsi_target || ""}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.deskripsi_target || ""
+          }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
           <div class="flex gap-2 items-center">
-            <input type="text" readonly class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.persentase_target || ""}">
+            <input type="text" readonly class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+              item.persentase_target || ""
+            }">
             <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
           </div>
         </div>
@@ -1106,15 +1122,32 @@ export function renderDetailKegiatanPage(path, userRole) {
       <div class="grid grid-cols-3 gap-4">
         <div class="col-span-1">
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${getNameById(item.iku_id, masterState.iku, "iku_id", "nama_iku")}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${getNameById(
+            item.iku_id,
+            masterState.iku,
+            "iku_id",
+            "nama_iku"
+          )}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Target</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.target || "0"}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.target || "0"
+          }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.nama_satuan || (item.satuan_id ? getNameById(item.satuan_id, masterState.satuan, "satuan_id", "nama_satuan") : "-")}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.nama_satuan ||
+            (item.satuan_id
+              ? getNameById(
+                  item.satuan_id,
+                  masterState.satuan,
+                  "satuan_id",
+                  "nama_satuan"
+                )
+              : "-")
+          }">
         </div>
       </div>
     </div>
@@ -1125,35 +1158,68 @@ export function renderDetailKegiatanPage(path, userRole) {
       <div class="grid-rab">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.uraian || ""}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.uraian || ""
+          }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume1 || ""}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.volume1 || ""
+          }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${getNameById(item.satuan1_id, masterState.satuan, "satuan_id", "nama_satuan")}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${getNameById(
+            item.satuan1_id,
+            masterState.satuan,
+            "satuan_id",
+            "nama_satuan"
+          )}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume2 || ""}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.volume2 || ""
+          }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.satuan2_id ? getNameById(item.satuan2_id, masterState.satuan, "satuan_id", "nama_satuan") : ""}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.satuan2_id
+              ? getNameById(
+                  item.satuan2_id,
+                  masterState.satuan,
+                  "satuan_id",
+                  "nama_satuan"
+                )
+              : ""
+          }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.volume3 || ""}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.volume3 || ""
+          }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${item.satuan3_id ? getNameById(item.satuan3_id, masterState.satuan, "satuan_id", "nama_satuan") : ""}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
+            item.satuan3_id
+              ? getNameById(
+                  item.satuan3_id,
+                  masterState.satuan,
+                  "satuan_id",
+                  "nama_satuan"
+                )
+              : ""
+          }">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${formatCurrency(item.harga_satuan)}">
+          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${formatCurrency(
+            item.harga_satuan
+          )}">
         </div>
       </div>
     </div>
@@ -1178,7 +1244,13 @@ export function renderDetailKegiatanPage(path, userRole) {
     });
 
     try {
-      const [kakResponse, ikuResponse, satuanResponse, kategoriBelanjaResponse, tipeKegiatanResponse] = await Promise.all([
+      const [
+        kakResponse,
+        ikuResponse,
+        satuanResponse,
+        kategoriBelanjaResponse,
+        tipeKegiatanResponse,
+      ] = await Promise.all([
         apiRequest(`/kak/${kakId}/data`),
         apiRequest("/master/iku"),
         apiRequest("/master/satuan"),
@@ -1194,29 +1266,45 @@ export function renderDetailKegiatanPage(path, userRole) {
       kakDataState = kakData;
 
       // Populate form fields
-      document.querySelector('[data-field="namaKegiatan"]').value = kakData.nama_kegiatan || "";
-      document.querySelector('[data-field="tipeKegiatan"]').value = getNameById(kakData.tipe_kegiatan_id, masterState.tipeKegiatan, "tipe_kegiatan_id", "nama_tipe") || "";
-      document.querySelector('[data-field="gambaranUmum"]').value = kakData.deskripsi_kegiatan || "";
-      document.querySelector('[data-field="metodePelaksanaan"]').value = kakData.metode_pelaksanaan || "";
+      document.querySelector('[data-field="namaKegiatan"]').value =
+        kakData.nama_kegiatan || "";
+      document.querySelector('[data-field="tipeKegiatan"]').value =
+        getNameById(
+          kakData.tipe_kegiatan_id,
+          masterState.tipeKegiatan,
+          "tipe_kegiatan_id",
+          "nama_tipe"
+        ) || "";
+      document.querySelector('[data-field="gambaranUmum"]').value =
+        kakData.deskripsi_kegiatan || "";
+      document.querySelector('[data-field="metodePelaksanaan"]').value =
+        kakData.metode_pelaksanaan || "";
       const tanggalMulai = kakData.tanggal_mulai;
       const tanggalSelesai = kakData.tanggal_selesai;
       const kurunWaktuEl = document.getElementById("kurunWaktu");
       if (tanggalMulai && tanggalSelesai) {
         // Formatting the date to a more readable format, e.g., DD MMM YYYY
         const formatDate = (dateStr) => {
-          if (!dateStr) return '';
-          const [year, month, day] = dateStr.split('-');
+          if (!dateStr) return "";
+          const [year, month, day] = dateStr.split("-");
           const date = new Date(year, month - 1, day);
-          return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+          return date.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
         };
-        kurunWaktuEl.value = `${formatDate(tanggalMulai)} - ${formatDate(tanggalSelesai)}`;
+        kurunWaktuEl.value = `${formatDate(tanggalMulai)} - ${formatDate(
+          tanggalSelesai
+        )}`;
       } else {
         kurunWaktuEl.value = "Date range not set";
       }
 
       // Populate Sasaran & Manfaat
       if (kakData.sasaran_utama) {
-        document.querySelector('[data-field="sasaranUtama"]').value = kakData.sasaran_utama;
+        document.querySelector('[data-field="sasaranUtama"]').value =
+          kakData.sasaran_utama;
       }
 
       const manfaatContainer = document.getElementById("manfaatContainer");
@@ -1230,7 +1318,9 @@ export function renderDetailKegiatanPage(path, userRole) {
       }
 
       // Populate Tahapan
-      const tahapanContainer = document.getElementById("tahapanPelaksanaanContainer");
+      const tahapanContainer = document.getElementById(
+        "tahapanPelaksanaanContainer"
+      );
       tahapanContainer.innerHTML = "";
       if (kakData.tahapan && kakData.tahapan.length > 0) {
         kakData.tahapan.forEach((item) => {
@@ -1239,7 +1329,9 @@ export function renderDetailKegiatanPage(path, userRole) {
       }
 
       // Populate Indikator Kinerja
-      const indikatorContainer = document.getElementById("indikatorKinerjaContainer");
+      const indikatorContainer = document.getElementById(
+        "indikatorKinerjaContainer"
+      );
       indikatorContainer.innerHTML = "";
       if (kakData.target && kakData.target.length > 0) {
         kakData.target.forEach((item) => {
@@ -1257,11 +1349,17 @@ export function renderDetailKegiatanPage(path, userRole) {
       }
 
       // Populate RAB
-      const belanjaBarangContainer = document.getElementById("belanjaBarangContainer");
+      const belanjaBarangContainer = document.getElementById(
+        "belanjaBarangContainer"
+      );
       belanjaBarangContainer.innerHTML = "";
-      const belanjaJasaContainer = document.getElementById("belanjaJasaContainer");
+      const belanjaJasaContainer = document.getElementById(
+        "belanjaJasaContainer"
+      );
       belanjaJasaContainer.innerHTML = "";
-      const belanjaPerjalananContainer = document.getElementById("belanjaPerjalananContainer");
+      const belanjaPerjalananContainer = document.getElementById(
+        "belanjaPerjalananContainer"
+      );
       belanjaPerjalananContainer.innerHTML = "";
 
       let totalBarang = 0;
@@ -1269,9 +1367,15 @@ export function renderDetailKegiatanPage(path, userRole) {
       let totalPerjalanan = 0;
 
       if (kakData.anggaran && kakData.anggaran.length > 0) {
-        const kategoriBarangId = masterState.kategoriBelanja.find(k => k.nama?.toLowerCase() === 'belanja barang')?.kategori_belanja_id;
-        const kategoriJasaId = masterState.kategoriBelanja.find(k => k.nama?.toLowerCase() === 'belanja jasa')?.kategori_belanja_id;
-        const kategoriPerjalananId = masterState.kategoriBelanja.find(k => k.nama?.toLowerCase() === 'belanja perjalanan')?.kategori_belanja_id;
+        const kategoriBarangId = masterState.kategoriBelanja.find(
+          (k) => k.nama?.toLowerCase() === "belanja barang"
+        )?.kategori_belanja_id;
+        const kategoriJasaId = masterState.kategoriBelanja.find(
+          (k) => k.nama?.toLowerCase() === "belanja jasa"
+        )?.kategori_belanja_id;
+        const kategoriPerjalananId = masterState.kategoriBelanja.find(
+          (k) => k.nama?.toLowerCase() === "belanja perjalanan"
+        )?.kategori_belanja_id;
 
         kakData.anggaran.forEach((item) => {
           const vol1 = parseFloat(item.volume1) || 0;
@@ -1293,21 +1397,29 @@ export function renderDetailKegiatanPage(path, userRole) {
         });
       }
 
-      const formatMoney = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+      const formatMoney = (val) =>
+        new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          minimumFractionDigits: 0,
+        }).format(val);
 
-      if (document.getElementById('subtotal-barang')) {
-          document.getElementById('subtotal-barang').textContent = formatMoney(totalBarang);
+      if (document.getElementById("subtotal-barang")) {
+        document.getElementById("subtotal-barang").textContent =
+          formatMoney(totalBarang);
       }
-      if (document.getElementById('subtotal-jasa')) {
-          document.getElementById('subtotal-jasa').textContent = formatMoney(totalJasa);
+      if (document.getElementById("subtotal-jasa")) {
+        document.getElementById("subtotal-jasa").textContent =
+          formatMoney(totalJasa);
       }
-      if (document.getElementById('subtotal-perjalanan')) {
-          document.getElementById('subtotal-perjalanan').textContent = formatMoney(totalPerjalanan);
+      if (document.getElementById("subtotal-perjalanan")) {
+        document.getElementById("subtotal-perjalanan").textContent =
+          formatMoney(totalPerjalanan);
       }
 
       const grandTotal = totalBarang + totalJasa + totalPerjalanan;
-      const totalContainer = document.createElement('div');
-      totalContainer.className = 'spectacular-total-card';
+      const totalContainer = document.createElement("div");
+      totalContainer.className = "spectacular-total-card";
       totalContainer.innerHTML = `
         <div class="total-label">
             <i class="ti ti-wallet"></i>
@@ -1315,15 +1427,15 @@ export function renderDetailKegiatanPage(path, userRole) {
         </div>
         <div class="total-value">${formatMoney(grandTotal)}</div>
       `;
-      
+
       // Append to the parent of categories containers
-      const rabParent = belanjaBarangContainer.closest('.bg-white');
+      const rabParent = belanjaBarangContainer.closest(".bg-white");
       // Insert before the navigation buttons
-      const navButtons = rabParent.querySelector('.flex.justify-between.mt-8');
+      const navButtons = rabParent.querySelector(".flex.justify-between.mt-8");
       if (navButtons) {
-          rabParent.insertBefore(totalContainer, navButtons);
+        rabParent.insertBefore(totalContainer, navButtons);
       } else {
-          rabParent.appendChild(totalContainer);
+        rabParent.appendChild(totalContainer);
       }
 
       Swal.close();
@@ -1351,11 +1463,13 @@ export function renderDetailKegiatanPage(path, userRole) {
       const circle = step.querySelector(".progress-step-circle");
       const text = step.querySelector(".progress-step-text");
       const subtext = step.querySelector(".progress-step-subtext");
-      circle.className = "progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300";
+      circle.className =
+        "progress-step-circle w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300";
       if (stepNum < mainStep) {
         circle.style.background = "#10B981";
         circle.style.color = "#FFFFFF";
-        circle.innerHTML = '<i class="ti ti-check" style="font-size: 1.125rem;">&#xea5e;</i>';
+        circle.innerHTML =
+          '<i class="ti ti-check" style="font-size: 1.125rem;">&#xea5e;</i>';
         text.style.color = "#10B981";
         if (subtext) subtext.style.color = "#10B981";
       } else if (stepNum === mainStep) {
@@ -1372,9 +1486,11 @@ export function renderDetailKegiatanPage(path, userRole) {
         if (subtext) subtext.style.color = "#9CA3AF";
       }
     });
-    document.querySelectorAll(".main-step-content").forEach((content, index) => {
-      content.classList.toggle("active", index + 1 === mainStep);
-    });
+    document
+      .querySelectorAll(".main-step-content")
+      .forEach((content, index) => {
+        content.classList.toggle("active", index + 1 === mainStep);
+      });
   }
 
   function updateStepDisplay() {
@@ -1385,10 +1501,16 @@ export function renderDetailKegiatanPage(path, userRole) {
       btn.style.borderColor = isActive ? "#00BCD4" : "#E5E7EB";
       btn.style.background = isActive ? "rgba(0, 188, 212, 0.1)" : "";
     });
-    document.querySelectorAll("#main-step-1 .step-content").forEach((content) => {
-      content.classList.toggle("active", content.id === menuItems[currentStep - 1]);
-    });
-    document.getElementById("btnBack").style.visibility = currentStep === 1 ? "hidden" : "visible";
+    document
+      .querySelectorAll("#main-step-1 .step-content")
+      .forEach((content) => {
+        content.classList.toggle(
+          "active",
+          content.id === menuItems[currentStep - 1]
+        );
+      });
+    document.getElementById("btnBack").style.visibility =
+      currentStep === 1 ? "hidden" : "visible";
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -1453,7 +1575,7 @@ export function renderDetailKegiatanPage(path, userRole) {
     });
 
     document.getElementById("downloadPdfBtn").addEventListener("click", () => {
-        handlePdfAction(kakId, 'download');
+      handlePdfAction(kakId, "download");
     });
   }
 
