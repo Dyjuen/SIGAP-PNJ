@@ -1063,12 +1063,16 @@ const pageContent = `
           <button 
             class="btn btn-sm me-2 btn-edit-profile" 
             data-id="${user.user_id}"
+            data-bs-toggle="tooltip"
+            title="Edit Profil"
           >
             <i class="ti me-1">&#xeb04;</i> Edit Profil
           </button>
           <button 
             class="btn btn-sm btn-danger btn-delete" 
             data-id="${user.user_id}"
+            data-bs-toggle="tooltip"
+            title="Hapus"
           >
             <i class="ti">&#xeb55;</i>
           </button>
@@ -1088,6 +1092,10 @@ const pageContent = `
     document.querySelectorAll('.btn-delete').forEach(btn => {
       btn.addEventListener('click', handleDelete);
     });
+    
+    // Initialize tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
   }
 
   function handleEditProfile(e) {

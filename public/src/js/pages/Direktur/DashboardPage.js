@@ -872,23 +872,26 @@ export function DirekturDashboardPage(path, userRole) {
     }
 
     container.innerHTML = videos.map(video => {
-        let embedUrl = video.url;
+        // Use path_media from database
+        let videoUrl = video.path_media || video.url || '';
+        let embedUrl = videoUrl;
+        
         // Simple YouTube URL to Embed URL converter
-        if (video.url.includes('youtube.com') || video.url.includes('youtu.be')) {
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
             let videoId = '';
-            if (video.url.includes('youtube.com/watch?v=')) {
-                videoId = video.url.split('watch?v=')[1].split('&')[0];
-            } else if (video.url.includes('youtu.be/')) {
-                videoId = video.url.split('youtu.be/')[1].split('?')[0];
-            } else if (video.url.includes('youtube.com/embed/')) {
-                videoId = video.url.split('embed/')[1].split('?')[0];
+            if (videoUrl.includes('youtube.com/watch?v=')) {
+                videoId = videoUrl.split('watch?v=')[1].split('&')[0];
+            } else if (videoUrl.includes('youtu.be/')) {
+                videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+            } else if (videoUrl.includes('youtube.com/embed/')) {
+                videoId = videoUrl.split('embed/')[1].split('?')[0];
             }
             if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
         }
 
         return `
         <div class="holo-card card-glass" style="padding: 0; overflow: hidden; height: 200px;">
-           <iframe src="${embedUrl}" title="${video.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:100%;"></iframe>
+           <iframe src="${embedUrl}" title="${video.judul_panduan || video.title || 'Video Panduan'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:100%;"></iframe>
         </div>
         `;
     }).join('');

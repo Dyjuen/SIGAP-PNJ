@@ -748,16 +748,20 @@ export function renderGuideManagementPage(path, userRole) {
           </td>
           <td>${mediaCell}</td>
           <td>
-            <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})">
+            <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Edit Panduan">
               <i class="ti">&#xeb04;</i>
             </button>
-            <button class="btn btn-sm btn-danger" onclick="window.deleteGuide(${guide.panduan_id})">
+            <button class="btn btn-sm btn-danger" onclick="window.deleteGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Hapus">
               <i class="ti">&#xeb55;</i>
             </button>
           </td>
         </tr>
       `;
     }).join('');
+    
+    // Initialize tooltips for action buttons
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
   }
 
   // File upload handling
@@ -943,12 +947,16 @@ export function renderGuideManagementPage(path, userRole) {
 
     if (tipeMedia === 'document') {
       const docFile = document.getElementById('editPdfFile').files[0];
+      // Only append file if user selected a new one
       if (docFile) {
         formData.append('path_media', docFile);
       }
+      // If no new file, backend will keep existing file
     } else if (tipeMedia === 'video') {
       const videoUrl = document.getElementById('editVideoUrl').value.trim();
-      formData.append('path_media', videoUrl);
+      if (videoUrl) {
+        formData.append('path_media', videoUrl);
+      }
     }
 
     const btnUpdate = document.getElementById('btnUpdateGuide');
@@ -967,6 +975,7 @@ export function renderGuideManagementPage(path, userRole) {
         window.setButtonLoading(btnUpdate, false);
       }
 
+      // Hide modal before showing alert
       editModalInstance.hide();
       await Swal.fire('Berhasil!', 'Panduan berhasil diperbarui', 'success');
       fetchGuides();
@@ -974,15 +983,18 @@ export function renderGuideManagementPage(path, userRole) {
       if (window.setButtonLoading) {
         window.setButtonLoading(btnUpdate, false);
       }
-      Swal.fire('Error', error.message, 'error');
+      
+      // Hide modal before showing error alert
+      editModalInstance.hide();
+      await Swal.fire('Error', error.message, 'error');
     }
   }
 
   // Delete guide
   window.deleteGuide = async function(id) {
     const result = await Swal.fire({
-      title: 'Hapus Panduan?',
-      text: 'Tindakan ini tidak dapat dibatalkan',
+      title: 'Yakin ingin menghapus?',
+      text: 'Data panduan ini akan dihapus secara permanen.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -994,7 +1006,7 @@ export function renderGuideManagementPage(path, userRole) {
     if (result.isConfirmed) {
       try {
         await apiRequest(`/panduan/${id}`, { method: 'DELETE' });
-        await Swal.fire('Terhapus!', 'Panduan berhasil dihapus', 'success');
+        await Swal.fire('Berhasil!', 'Panduan berhasil dihapus!', 'success');
         fetchGuides();
       } catch (error) {
         Swal.fire('Error', error.message, 'error');
