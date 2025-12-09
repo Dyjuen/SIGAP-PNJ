@@ -1061,18 +1061,18 @@ export function renderRevisiLpjPage(path, userRole) {
 
     const modalEl = document.getElementById("lampiranCommentModal");
     modalEl.addEventListener("hidden.bs.modal", function () {
-        document.getElementById("lampiranCommentInput").value = "";
+      document.getElementById("lampiranCommentInput").value = "";
     });
     modalEl.addEventListener("shown.bs.modal", function () {
-        const input = document.getElementById("lampiranCommentInput");
-        if(input && !input.disabled) {
-            input.focus();
-        }
+      const input = document.getElementById("lampiranCommentInput");
+      if (input && !input.disabled) {
+        input.focus();
+      }
     });
 
     const commentInput = document.getElementById("lampiranCommentInput");
     if (commentInput) {
-      commentInput.addEventListener("keydown", function(e) {
+      commentInput.addEventListener("keydown", function (e) {
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
           document.getElementById("saveLampiranCommentBtn").click();
@@ -1348,7 +1348,9 @@ export function renderRevisiLpjPage(path, userRole) {
 
                 <div class="lampiran-item border-hover-draw ${
                   lampiranComments[file.lampiran_id] ? "has-comment" : ""
-                } ${file.status_lampiran === 'archived' ? 'archived-lampiran' : ''}" data-lampiran-id="${file.lampiran_id}">
+                } ${
+                file.status_lampiran === "archived" ? "archived-lampiran" : ""
+              }" data-lampiran-id="${file.lampiran_id}">
 
                    <div class="lampiran-content">
 
@@ -1365,7 +1367,7 @@ export function renderRevisiLpjPage(path, userRole) {
                    <div class="flex items-center gap-2">
 
                       ${
-                        isBendahara || isPengusul
+                        (isBendahara || isPengusul) && file.status_lampiran !== 'archived'
                           ? `<button type="button" class="lampiran-comment-btn ${
                               lampiranComments[file.lampiran_id]
                                 ? "has-comment"
@@ -1383,7 +1385,7 @@ export function renderRevisiLpjPage(path, userRole) {
                       }
 
                       ${
-                        isPengusul && file.status_lampiran !== 'archived'
+                        isPengusul && file.status_lampiran !== "archived"
                           ? `<button type="button" class="btn-delete-lampiran" data-lampiran-id="${file.lampiran_id}" title="Hapus file"><i class="ti ti-trash">&#xeb41;</i></button>`
                           : ""
                       }
@@ -1391,7 +1393,8 @@ export function renderRevisiLpjPage(path, userRole) {
                    </div>
 
                 </div>
-            `)
+            `
+            )
 
             .join("")
         : '<p class="text-xs text-gray-400 italic no-files">Tidak ada bukti terlampir untuk item ini.</p>';
@@ -1629,13 +1632,25 @@ export function renderRevisiLpjPage(path, userRole) {
 
     try {
       const response = await apiRequest(`/lampiran/${lampiranId}`);
-      const commentText = response.data.catatan_reviewer || "";
+      const lampiranData = response.data;
+      const commentText = lampiranData.catatan_reviewer || "";
+      const saveBtn = document.getElementById("saveLampiranCommentBtn");
 
       if (isBendahara) {
         commentInput.value = commentText;
-        commentInput.disabled = false;
+        if (lampiranData.status_lampiran === 'archived') {
+            commentInput.disabled = true;
+            commentInput.placeholder = "Lampiran ini telah diarsipkan dan tidak dapat dikomentari.";
+            if (saveBtn) saveBtn.style.display = 'none';
+        } else {
+            commentInput.disabled = false;
+            commentInput.placeholder = "Tuliskan catatan revisi untuk lampiran ini...";
+            if (saveBtn) saveBtn.style.display = 'inline-block';
+        }
       }
+      
       commentDisplay.textContent = commentText || "(Tidak ada catatan)";
+
     } catch (error) {
       const errorMsg = `Gagal memuat catatan: ${error.message}`;
       commentInput.value = errorMsg;
@@ -1662,7 +1677,7 @@ export function renderRevisiLpjPage(path, userRole) {
 
     const saveBtn = document.getElementById("saveLampiranCommentBtn");
     if (window.setButtonLoading && saveBtn) {
-      window.setButtonLoading(saveBtn, true, 'Menyimpan...');
+      window.setButtonLoading(saveBtn, true, "Menyimpan...");
     }
 
     try {
@@ -1680,12 +1695,12 @@ export function renderRevisiLpjPage(path, userRole) {
 
       updateAllCommentIcons();
       updateCommentCount();
-      
+
       const saveBtn = document.getElementById("saveLampiranCommentBtn");
       if (window.setButtonLoading && saveBtn) {
         window.setButtonLoading(saveBtn, false);
       }
-      
+
       lampiranCommentModalInstance.hide();
 
       Swal.fire({
@@ -1700,7 +1715,7 @@ export function renderRevisiLpjPage(path, userRole) {
       if (window.setButtonLoading && saveBtn) {
         window.setButtonLoading(saveBtn, false);
       }
-      
+
       Swal.fire({
         icon: "error",
         title: "Gagal Menyimpan",
@@ -1728,9 +1743,11 @@ export function renderRevisiLpjPage(path, userRole) {
   async function submitRevision() {
     // Kumpulkan semua catatan lampiran yang disimpan secara lokal untuk dikirim ke API.
     const lampiran_comments = [];
-    Object.entries(lampiranComments).forEach(([lampiranId, catatan_reviewer]) => {
-      lampiran_comments.push({ id: lampiranId, catatan_reviewer });
-    });
+    Object.entries(lampiranComments).forEach(
+      ([lampiranId, catatan_reviewer]) => {
+        lampiran_comments.push({ id: lampiranId, catatan_reviewer });
+      }
+    );
 
     if (Object.keys(lampiranComments).length === 0) {
       Swal.fire(
@@ -1928,8 +1945,19 @@ export function renderRevisiLpjPage(path, userRole) {
       const viewFileBtn = event.target.closest(".view-file-btn");
       if (viewFileBtn) {
         event.preventDefault();
-        const lampiranId = viewFileBtn.dataset.lampiranId;
-        openFileInNewTab(lampiranId);
+        const isPending = viewFileBtn.dataset.isPending === "true";
+
+        if (isPending) {
+          const tempId = viewFileBtn.dataset.tempId;
+          const anggaranId = viewFileBtn.dataset.anggaranId;
+          const fileData = fileStore[anggaranId]?.[tempId];
+          if (fileData && fileData.previewUrl) {
+            window.open(fileData.previewUrl, "_blank");
+          }
+        } else {
+          const lampiranId = viewFileBtn.dataset.lampiranId;
+          openFileInNewTab(lampiranId);
+        }
         return;
       }
 
@@ -1947,6 +1975,36 @@ export function renderRevisiLpjPage(path, userRole) {
         const deleteBtn = event.target.closest(".btn-delete-lampiran");
         if (deleteBtn) {
           handleDeleteFile(deleteBtn);
+          return;
+        }
+
+        const cancelBtn = event.target.closest(".btn-cancel-upload");
+        if (cancelBtn) {
+          const tempId = cancelBtn.dataset.tempId;
+          const anggaranId = cancelBtn.dataset.anggaranId;
+
+          const fileData = fileStore[anggaranId]?.[tempId];
+          if (fileData) {
+            URL.revokeObjectURL(fileData.previewUrl); // Free up memory
+            delete fileStore[anggaranId][tempId];
+            if (Object.keys(fileStore[anggaranId]).length === 0) {
+              delete fileStore[anggaranId];
+            }
+          }
+
+          const lampiranItem = cancelBtn.closest(".lampiran-item");
+          lampiranItem.remove();
+
+          const lampiranList = document.querySelector(
+            `.lampiran-list[data-anggaran-id="${anggaranId}"]`
+          );
+          if (lampiranList && lampiranList.children.length === 0) {
+            const noFilesText = document.createElement("p");
+            noFilesText.className = "text-xs text-gray-400 italic no-files";
+            noFilesText.textContent =
+              "Tidak ada bukti terlampir untuk item ini.";
+            lampiranList.appendChild(noFilesText);
+          }
           return;
         }
       }
@@ -1994,26 +2052,25 @@ export function renderRevisiLpjPage(path, userRole) {
   }
   // --- Resubmission Logic for Pengusul ---
   const filesToDelete = new Set();
-  const fileStore = {}; // Structure: { anggaran_id: [File, File, ...] }
+  const fileStore = {}; // Structure: { anggaran_id: { temp_id: { file: File, previewUrl: '...' } } }
 
   function handleDeleteFile(btn) {
     const lampiranId = btn.dataset.lampiranId;
     Swal.fire({
       title: "Anda yakin?",
-      text: "File ini akan dihapus secara permanen saat Anda submit ulang.",
+      text: "File ini akan ditandai untuk dihapus saat Anda submit ulang.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Ya, tandai untuk dihapus!",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6e7881",
+      confirmButtonText: "Ya, Hapus!",
       cancelButtonText: "Batal",
     }).then((result) => {
       if (result.isConfirmed) {
         filesToDelete.add(lampiranId);
         const lampiranItem = btn.closest(".lampiran-item");
-        lampiranItem.style.opacity = "0.5";
-        lampiranItem.style.textDecoration = "line-through";
-        btn.disabled = true;
+        lampiranItem.classList.add("archived-lampiran"); // Visually mark as archived
+        btn.remove(); // Remove the delete button
       }
     });
   }
@@ -2023,7 +2080,7 @@ export function renderRevisiLpjPage(path, userRole) {
     const files = Array.from(input.files);
 
     if (!fileStore[anggaranId]) {
-      fileStore[anggaranId] = [];
+      fileStore[anggaranId] = {};
     }
 
     const lampiranList = document.querySelector(
@@ -2039,9 +2096,9 @@ export function renderRevisiLpjPage(path, userRole) {
         Swal.fire({
           icon: "error",
           title: "Tipe File Tidak Didukung",
-          text: `File "${file.name}" tidak dapat diunggah. Hanya file JPG, PNG, atau PDF yang diizinkan.`,
+          text: `File "${file.name}" ditolak. Hanya file JPG, PNG, atau PDF yang diizinkan.`,
         });
-        return; // Skip this file
+        return;
       }
 
       // Validate file size
@@ -2051,60 +2108,44 @@ export function renderRevisiLpjPage(path, userRole) {
           title: "Ukuran File Terlalu Besar",
           text: `File "${file.name}" (${(file.size / (1024 * 1024)).toFixed(
             2
-          )} MB) melebihi batas maksimal 10 MB.`,
+          )} MB) melebihi batas 10 MB.`,
         });
-        return; // Skip this file
+        return;
       }
 
-      const fileIndex = fileStore[anggaranId].push(file) - 1;
+      const tempId = `temp_${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 9)}`;
+      const previewUrl = URL.createObjectURL(file);
+      fileStore[anggaranId][tempId] = { file, previewUrl };
 
       const pendingItem = document.createElement("div");
-      pendingItem.className = "lampiran-item pending-lampiran";
+      pendingItem.className =
+        "lampiran-item pending-lampiran border-hover-draw";
       pendingItem.dataset.anggaranId = anggaranId;
-      pendingItem.dataset.fileIndex = fileIndex;
+      pendingItem.dataset.tempId = tempId;
       pendingItem.innerHTML = `
-              <div class="lampiran-content">
-                  <i class="ti ti-clock text-blue-500"></i>
-                  <span class="text-blue-700">${file.name}</span>
-              </div>
-              <button type="button" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center transition-all bg-red-500 text-white" title="Batal upload" onclick="window.cancelNewFile(this, '${anggaranId}', ${fileIndex})">
-                  <i class="ti ti-x"></i>
-              </button>
-          `;
+          <div class="lampiran-content flex items-center gap-2">
+              <i class="ti ti-clock text-blue-500"></i>
+              <a href="javascript:void(0);" class="text-blue-600 hover:underline text-sm view-file-btn" data-is-pending="true" data-temp-id="${tempId}" data-anggaran-id="${anggaranId}">
+                ${file.name}
+              </a>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="btn-cancel-upload" data-temp-id="${tempId}" data-anggaran-id="${anggaranId}" title="Batal Upload">
+              <i class="ti ti-trash">&#xeb41;</i>
+            </button>
+          </div>
+      `;
       lampiranList.querySelector(".no-files")?.remove();
       lampiranList.appendChild(pendingItem);
     });
+
+    // Clear the input value to allow selecting the same file again
+    input.value = "";
   }
 
-  window.cancelNewFile = function (button, anggaranId, fileIndex) {
-    // Remove from UI
-    button.closest(".pending-lampiran").remove();
-
-    // Remove from fileStore by filtering
-    if (fileStore[anggaranId] && fileStore[anggaranId][fileIndex]) {
-      // Filter out the file at the specific index
-      // Using slice to create new array for immutability if preferred, or direct filter
-      fileStore[anggaranId] = fileStore[anggaranId].filter(
-        (_, idx) => idx !== fileIndex
-      );
-
-      // If after filtering, the array for this anggaranId is empty, delete the entry
-      if (fileStore[anggaranId].length === 0) {
-        delete fileStore[anggaranId];
-      }
-    }
-
-    // Check if there are no files remaining for this anggaran_id and potentially re-add the "no files" message
-    const lampiranList = document.querySelector(
-      `.lampiran-list[data-anggaran-id="${anggaranId}"]`
-    );
-    if (lampiranList && lampiranList.children.length === 0) {
-      const noFilesText = document.createElement("p");
-      noFilesText.className = "text-xs text-gray-400 italic no-files";
-      noFilesText.textContent = "Tidak ada bukti terlampir untuk item ini.";
-      lampiranList.appendChild(noFilesText);
-    }
-  };
+  // window.cancelNewFile is no longer needed and is removed.
 
   async function resubmitLpj() {
     Swal.fire({
@@ -2142,20 +2183,37 @@ export function renderRevisiLpjPage(path, userRole) {
       const anggaranId = grid.closest("[data-anggaran-id]").dataset.anggaranId;
       realisasiData[anggaranId] = {};
       grid.querySelectorAll(".realisasi-input").forEach((input) => {
-        const field = input.dataset.field;
-        realisasiData[anggaranId][field] = input.value;
+        const fieldName = input.dataset.field;
+        let value = input.value;
+        if (input.classList.contains("autonumeric-currency")) {
+          const autoNumericInstance = AutoNumeric.getAutoNumericElement(input);
+          if (autoNumericInstance) {
+            value = autoNumericInstance.getNumber();
+          }
+        }
+        realisasiData[anggaranId][fieldName] = value;
       });
     });
     formData.append("realisasi", JSON.stringify(realisasiData));
 
     // 3. Append new files
     for (const anggaranId in fileStore) {
-      fileStore[anggaranId].forEach((file, index) => {
-        if (file) {
-          // Check if file is not cancelled
-          formData.append(`bukti[${anggaranId}][]`, file, file.name);
+      if (Object.prototype.hasOwnProperty.call(fileStore, anggaranId)) {
+        for (const tempId in fileStore[anggaranId]) {
+          if (
+            Object.prototype.hasOwnProperty.call(fileStore[anggaranId], tempId)
+          ) {
+            const fileData = fileStore[anggaranId][tempId];
+            if (fileData && fileData.file) {
+              formData.append(
+                `bukti[${anggaranId}][]`,
+                fileData.file,
+                fileData.file.name
+              );
+            }
+          }
         }
-      });
+      }
     }
 
     try {
@@ -2163,6 +2221,13 @@ export function renderRevisiLpjPage(path, userRole) {
         method: "POST",
         body: formData,
       });
+
+      // Cleanup blob URLs on successful submission
+      for (const anggaranId in fileStore) {
+        for (const tempId in fileStore[anggaranId]) {
+          URL.revokeObjectURL(fileStore[anggaranId][tempId].previewUrl);
+        }
+      }
 
       await Swal.fire({
         icon: "success",
