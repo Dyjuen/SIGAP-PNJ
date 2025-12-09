@@ -565,40 +565,6 @@ const pageContent = `
 
     <div class="user-management-page">
         <h2 class="text-4xl font-bold text-gray-800 mb-4 header-animation">Manajemen User</h2>
-        <div class="row g-4 mb-4">
-            <div class="col-sm-6 col-xl-6">
-                <div class="card stat-card-active card-animation">
-                <div class="card-body">
-                    <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Akun</span>
-                        <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total User Aktif</h4>
-                        <div class="d-flex align-items-end mt-2">
-                        <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="activeUserCount" data-target="0">0</h1>
-                        <small style="font-size: 15px; font-weight: 500; opacity: 0.9;">Users</small>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-6">
-                <div class="card stat-card-inactive card-animation">
-                <div class="card-body">
-                    <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Akun</span>
-                        <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Total Non-Aktif</h4>
-                        <div class="d-flex align-items-end mt-2">
-                        <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="inactiveUserCount" data-target="0">0</h1>
-                        <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">Users</small>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <!-- Search Section -->
@@ -633,7 +599,6 @@ const pageContent = `
                     <th>Nama Pengusul</th>
                     <th>Username</th>
                     <th>Role</th>
-                    <th style="text-align: center;">Status</th>
                     <th style="text-align: center;">Aksi</th>
                 </tr>
                 </thead>
@@ -802,18 +767,6 @@ const pageContent = `
                   </div>
                 </div>
                 
-                <div class="col-md-6 form-group-animate">
-                  <label for="addStatus" class="form-label-modern">
-                    <i class="ti ti-toggle-right" style="display: none;"></i>Status<span class="required-star">*</span>
-                  </label>
-                  <div class="glass-input-wrapper">
-                    <select id="addStatus" required>
-                      <option value="Aktif" selected>Aktif</option>
-                      <option value="Non-Aktif">Non-Aktif</option>
-                    </select>
-                  </div>
-                </div>
-
                 <div class="col-12 form-group-animate">
                   <label for="addPassword" class="form-label-modern">
                     <i class="ti ti-lock" style="display: none;"></i>Password<span class="required-star">*</span>
@@ -1014,13 +967,10 @@ const pageContent = `
             ...user,
             // Assuming the API returns roles as an array of strings
             role: user.roles && user.roles.length > 0 ? user.roles[0] : 'Tidak ada role',
-            // Add a static status for now, as it's not in the API response
-            status: 'Aktif' 
         }));
         state.users.sort((a, b) => a.user_id - b.user_id);
         state.allUsers = [...state.users];
         renderTableRows(state.users);
-        updateStats();
     } catch (error) {
         const tbody = document.getElementById('userTableBody');
         if (tbody) {
@@ -1098,11 +1048,6 @@ const pageContent = `
     }
 
     data.forEach((user, index) => {
-      // TODO: The user status is not yet available from the API.
-      // Defaulting to 'Aktif'. This needs to be updated once the API provides this information.
-      const status = user.status || 'Aktif';
-      const statusClass = status === 'Aktif' ? 'bg-label-success' : 'bg-label-danger';
-      
       const row = document.createElement('tr');
       row.style.animationDelay = `${0.2 + index * 0.1}s`; // Staggered animation
       row.dataset.userId = user.user_id;
@@ -1114,9 +1059,6 @@ const pageContent = `
         <td><strong>${user.nama_lengkap}</strong><br><small>${user.email}</small></td>
         <td>${user.username}</td>
         <td>${user.role}</td>
-        <td style="text-align: center;">
-          <span class="badge ${statusClass}" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${status}</span>
-        </td>
         <td style="text-align: center;">
           <button 
             class="btn btn-sm me-2 btn-edit-profile" 
@@ -1262,7 +1204,6 @@ const pageContent = `
         state.users = state.users.filter(u => u.user_id != userId);
         setTimeout(() => {
           renderTableRows(state.users);
-          updateStats();
           showSuccess("User berhasil dihapus!");
         }, 300);
       } catch (error) {
@@ -1273,60 +1214,6 @@ const pageContent = `
     }
   }
 
-
-  function updateStats() {
-    // TODO: The user status is not yet available from the API.
-    // This function should be updated once the API provides status information.
-    const activeCount = state.users.filter(u => (u.status || 'Aktif') === 'Aktif').length;
-    const inactiveCount = state.users.filter(u => (u.status || 'Aktif') === 'Non-Aktif').length;
-    
-    const activeEl = document.getElementById('activeUserCount');
-    const inactiveEl = document.getElementById('inactiveUserCount');
-    
-    if (activeEl) {
-      activeEl.setAttribute('data-target', activeCount);
-    }
-    if (inactiveEl) {
-      inactiveEl.setAttribute('data-target', inactiveCount);
-    }
-  }
-
-  // ==============================================
-  // ANIMATION FUNCTIONS
-  // ==============================================
-  
-  // Counter Animation
-  function animateCounter(element) {
-    const target = parseInt(element.getAttribute('data-target'));
-    const duration = 2000; // 2 seconds
-    const increment = target / (duration / 16); // 60 FPS
-    let current = 0;
-
-    const updateCounter = () => {
-      current += increment;
-      if (current < target) {
-        element.textContent = Math.floor(current);
-        requestAnimationFrame(updateCounter);
-      } else {
-        element.textContent = target;
-      }
-    };
-
-    // Start after a delay to match card animation
-    setTimeout(() => {
-      updateCounter();
-    }, 500);
-  }
-
-  // Initialize all counters
-  function initCounters() {
-    const counters = document.querySelectorAll('.counter');
-    counters.forEach((counter, index) => {
-      setTimeout(() => {
-        animateCounter(counter);
-      }, index * 100);
-    });
-  }
 
   // ==============================================
   // TAMBAH AKUN WITH API INTEGRATION
@@ -1462,10 +1349,6 @@ const pageContent = `
   // INITIALIZATION
   // ==============================================
   fetchUsers();
-
-  setTimeout(() => {
-    initCounters();
-  }, 100);
 
   // Initialize Vuexy menu
   if (window.Helpers) {
