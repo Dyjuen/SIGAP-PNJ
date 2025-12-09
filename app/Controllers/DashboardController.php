@@ -61,6 +61,9 @@ class DashboardController
             $filters = [
                 'search' => $_GET['search'] ?? null,
                 'unit_pengusul' => $_GET['unit_pengusul'] ?? null,
+                'status' => $_GET['status'] ?? null,
+                'approval_level' => $_GET['approval_level'] ?? null,
+                'filter_type' => $_GET['filter_type'] ?? null,
                 'page' => isset($_GET['page']) ? (int)$_GET['page'] : 1,
                 'per_page' => isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10
             ];
@@ -91,6 +94,8 @@ class DashboardController
             $filters = [
                 'search' => $_GET['search'] ?? null,
                 'unit_pengusul' => $_GET['unit_pengusul'] ?? null,
+                'status' => $_GET['status'] ?? null, // Can be used for status_lpj
+                'filter_type' => $_GET['filter_type'] ?? null,
                 'page' => isset($_GET['page']) ? (int)$_GET['page'] : 1,
                 'per_page' => isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10
             ];

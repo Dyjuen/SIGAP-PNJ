@@ -43,6 +43,20 @@ class Kegiatan extends Model
             $whereSql .= " AND t.pengusul_user_id = ?";
             $params[] = $filters['unit_pengusul'];
         }
+        
+        // New filters for Bendahara Dashboard
+        if (!empty($filters['approval_level'])) {
+            $whereSql .= " AND active_approval.approval_level = ?";
+            $params[] = $filters['approval_level'];
+        }
+        
+        if (!empty($filters['filter_type'])) {
+            if ($filters['filter_type'] === 'pencairan_menunggu') {
+                $whereSql .= " AND active_approval.approval_level = 'Bendahara-Cair' AND active_approval.status = 'Aktif'";
+            } elseif ($filters['filter_type'] === 'pencairan_selesai') {
+                $whereSql .= " AND pencairan_sum.total_dicairkan > 0";
+            }
+        }
 
         // Count total records
         $countSql = "SELECT COUNT(DISTINCT k.kegiatan_id) " . $baseSql . $whereSql;
@@ -122,19 +136,41 @@ class Kegiatan extends Model
             $sql .= " AND t.pengusul_user_id = ?";
             $params[] = $filters['unit_pengusul'];
         }
+        
+        // Add HAVING clause for status_lpj filtering
+        $havingClause = "";
+        if (!empty($filters['status'])) {
+            if ($filters['status'] === 'Perlu Diverifikasi') {
+                 // Map 'Perlu Diverifikasi' to logical statuses
+                 $havingClause = " HAVING status_lpj IN ('Diajukan', 'Setor Fisik')";
+            } else {
+                 $havingClause = " HAVING status_lpj = ?";
+                 $params[] = $filters['status'];
+            }
+        }
+        
+        if (!empty($filters['filter_type']) && $filters['filter_type'] === 'perlu_verifikasi') {
+            $havingClause = " HAVING status_lpj IN ('Diajukan', 'Setor Fisik')";
+        }
 
-        $countSql = "SELECT COUNT(*) FROM ({$sql}) as count_table";
+        // Note: Counting records with HAVING is complex. 
+        // Simple count ignores HAVING. We need to wrap query or just count filtered results (less efficient but correct).
+        // For pagination with HAVING, it's better to use a subquery for count.
+        
+        $sqlWithHaving = $sql . $havingClause;
+        
+        $countSql = "SELECT COUNT(*) FROM ({$sqlWithHaving}) as count_table";
         $totalRecords = $this->query($countSql, $params)->fetchColumn();
 
         $page = $filters['page'] ?? 1;
         $perPage = $filters['per_page'] ?? 10;
         $offset = ($page - 1) * $perPage;
 
-        $sql .= " ORDER BY k.tgl_batas_lpj DESC LIMIT ? OFFSET ?";
+        $sqlWithHaving .= " ORDER BY k.tgl_batas_lpj DESC LIMIT ? OFFSET ?";
 
         $finalParams = array_merge($params, [$perPage, $offset]);
 
-        $data = $this->query($sql, $finalParams)->fetchAll(PDO::FETCH_ASSOC);
+        $data = $this->query($sqlWithHaving, $finalParams)->fetchAll(PDO::FETCH_ASSOC);
 
         return [
             'data' => $data,
