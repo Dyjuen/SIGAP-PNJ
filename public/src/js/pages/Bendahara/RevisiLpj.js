@@ -1,6 +1,10 @@
-// public/src/js/pages/bendahara/RevisiLpj.js
+// public/srcsrc/js/pages/bendahara/RevisiLpj.js
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
+
+// Module-level variables to hold references to the event handlers
+let currentBodyClickHandler = null;
+let currentBodyChangeHandler = null;
 
 export function renderRevisiLpjPage(path, userRole) {
   console.log("Rendering Revisi LPJ page for userRole:", userRole);
@@ -1903,14 +1907,22 @@ export function renderRevisiLpjPage(path, userRole) {
   }
 
   function attachEventListeners() {
-    // Event delegation untuk button comment
-    document.body.addEventListener("click", function (event) {
+    // Remove previous listeners to prevent duplicates from being attached on re-renders.
+    if (currentBodyClickHandler) {
+      document.body.removeEventListener("click", currentBodyClickHandler);
+    }
+    if (currentBodyChangeHandler) {
+      document.body.removeEventListener("change", currentBodyChangeHandler);
+    }
+
+    // Define a single, consolidated click handler for the body.
+    currentBodyClickHandler = function (event) {
       const commentBtn = event.target.closest(".lampiran-comment-btn");
       if (commentBtn) {
         event.preventDefault();
         event.stopPropagation();
-        console.log("Lampiran comment button clicked", commentBtn);
         openLampiranCommentModal(commentBtn);
+        return;
       }
 
       const viewFileBtn = event.target.closest(".view-file-btn");
@@ -1918,10 +1930,42 @@ export function renderRevisiLpjPage(path, userRole) {
         event.preventDefault();
         const lampiranId = viewFileBtn.dataset.lampiranId;
         openFileInNewTab(lampiranId);
+        return;
       }
-    });
 
-    // Bendahara specific listeners
+      if (isPengusul) {
+        const addBtn = event.target.closest(".btn-add-lampiran");
+        if (addBtn) {
+          const anggaranId = addBtn.dataset.anggaranId;
+          document
+            .querySelector(
+              `.input-add-lampiran[data-anggaran-id="${anggaranId}"]`
+            )
+            ?.click();
+          return;
+        }
+        const deleteBtn = event.target.closest(".btn-delete-lampiran");
+        if (deleteBtn) {
+          handleDeleteFile(deleteBtn);
+          return;
+        }
+      }
+    };
+
+    // Define a single, consolidated change handler for the body.
+    currentBodyChangeHandler = function (event) {
+      if (isPengusul) {
+        if (event.target.matches(".input-add-lampiran")) {
+          handleFileSelect(event.target);
+        }
+      }
+    };
+
+    // Attach the new listeners.
+    document.body.addEventListener("click", currentBodyClickHandler);
+    document.body.addEventListener("change", currentBodyChangeHandler);
+
+    // Listeners for specific elements (these are safe as elements are re-created)
     if (isBendahara) {
       const saveBtn = document.getElementById("saveLampiranCommentBtn");
       if (saveBtn) {
@@ -1941,30 +1985,7 @@ export function renderRevisiLpjPage(path, userRole) {
       }
     }
 
-    // Pengusul specific listeners
     if (isPengusul) {
-      // Handle clicks on dynamically added buttons
-      document.body.addEventListener("click", function (event) {
-        const addBtn = event.target.closest(".btn-add-lampiran");
-        if (addBtn) {
-          const anggaranId = addBtn.dataset.anggaranId;
-          document
-            .querySelector(
-              `.input-add-lampiran[data-anggaran-id="${anggaranId}"]`
-            )
-            ?.click();
-        }
-        if (event.target.closest(".btn-delete-lampiran")) {
-          handleDeleteFile(event.target.closest(".btn-delete-lampiran"));
-        }
-      });
-
-      document.body.addEventListener("change", function (event) {
-        if (event.target.matches(".input-add-lampiran")) {
-          handleFileSelect(event.target);
-        }
-      });
-
       const resubmitBtn = document.getElementById("btn-resubmit-lpj");
       if (resubmitBtn) {
         resubmitBtn.addEventListener("click", resubmitLpj);
