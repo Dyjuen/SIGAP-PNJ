@@ -491,11 +491,71 @@ export function renderBendaharaDashboardPage(path, userRole) {
         : response.data;
       state.allKegiatan = kegiatanData || [];
 
+      // Calculate stats from fetched data
+      calculateAndUpdateStats();
+      
       applyFilter();
-      updateStats(state.allKegiatan);
     } catch (error) {
       tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${error.message}</td></tr>`;
     }
+  }
+
+  function calculateAndUpdateStats() {
+    // Count based on approval status
+    let waitingCount = 0;
+    let disbursedCount = 0;
+    let lpjCount = 0;
+    let totalDisbursedAmount = 0;
+    let totalUndisbursedAmount = 0;
+
+    console.log("[BENDAHARA] All kegiatan data:", state.allKegiatan); // Debug - lihat struktur data
+
+    state.allKegiatan.forEach((k) => {
+      const totalAnggaran = parseFloat(k.total_anggaran_diusulkan || 0); // FIXED: Use correct field name
+      
+      console.log(`[BENDAHARA] Kegiatan: ${k.nama_kegiatan}, Anggaran: ${totalAnggaran}, Current Approval:`, k.current_approval, "Approvals:", k.approvals); // Debug
+      
+      // Menunggu Pencairan: Bendahara-Cair step is Active
+      const isWaitingDisbursement = k.current_approval?.approval_level === "Bendahara-Cair" && k.current_approval?.status === "Aktif";
+      
+      // Sudah Dicairkan: Bendahara-Cair step is Disetujui
+      const isDisbursed = k.approvals?.some(a => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui");
+      
+      if (isWaitingDisbursement) {
+        waitingCount++;
+        totalUndisbursedAmount += totalAnggaran;
+        console.log(`  → MENUNGGU: +${totalAnggaran}`); // Debug
+      }
+      
+      if (isDisbursed) {
+        disbursedCount++;
+        totalDisbursedAmount += totalAnggaran;
+        console.log(`  → DICAIRKAN: +${totalAnggaran}`); // Debug
+      }
+      
+      // LPJ Perlu Verifikasi: Bendahara-LPJ step is Active
+      if (k.current_approval?.approval_level === "Bendahara-LPJ" && k.current_approval?.status === "Aktif") {
+        lpjCount++;
+      }
+    });
+
+    console.log("[BENDAHARA STATS] Final:", { 
+      waitingCount, 
+      disbursedCount, 
+      lpjCount,
+      totalDisbursedAmount,
+      totalUndisbursedAmount
+    }); // Debug
+
+    const stats = {
+      total_pencairan_menunggu: waitingCount,
+      total_pencairan_dicairkan: disbursedCount,
+      total_lpj_verifikasi: lpjCount,
+      total_anggaran_dicairkan: totalDisbursedAmount,
+      total_anggaran_belum_dicairkan: totalUndisbursedAmount
+    };
+
+    updateStatsUI(stats);
   }
 
   function applyFilter() {
@@ -814,31 +874,12 @@ export function renderBendaharaDashboardPage(path, userRole) {
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
+    // Re-attach event listeners for dynamically created buttons in table rows
     document.querySelectorAll(".btn-view-detail").forEach((btn) => {
       btn.addEventListener("click", () =>
         viewDisbursementDetails(btn.dataset.id)
       );
     });
-
-    document.querySelectorAll(".stat-card-filter").forEach((card) => {
-      card.addEventListener("click", () => {
-        const filterValue = card.dataset.filter;
-        if (state.currentFilter === filterValue) {
-          state.currentFilter = "all";
-        } else {
-          state.currentFilter = filterValue;
-        }
-        applyFilter();
-      });
-    });
-
-    const filterSelect = document.getElementById("filterStatus");
-    if (filterSelect) {
-      filterSelect.addEventListener("change", (e) => {
-        state.currentFilter = e.target.value;
-        applyFilter();
-      });
-    }
 
     // --- PDF BUTTONS ---
     document.querySelectorAll(".btn-preview-pdf").forEach((btn) => {
@@ -852,6 +893,33 @@ export function renderBendaharaDashboardPage(path, userRole) {
         handlePdfAction(btn.dataset.kakId, 'download')
         );
     });
+  }
+
+  // Initialize stat card filters ONCE on page load
+  function initializeStatCardFilters() {
+    document.querySelectorAll(".stat-card-filter").forEach((card) => {
+      card.addEventListener("click", () => {
+        const filterValue = card.dataset.filter;
+        
+        console.log("[BENDAHARA] Card clicked, filter:", filterValue); // Debug
+        
+        // Simply set the filter to the clicked card's value
+        // Don't toggle - always apply the clicked filter
+        state.currentFilter = filterValue;
+        
+        applyFilter();
+        updateActiveFilterVisuals();
+      });
+    });
+
+    const filterSelect = document.getElementById("filterStatus");
+    if (filterSelect) {
+      filterSelect.addEventListener("change", (e) => {
+        state.currentFilter = e.target.value;
+        applyFilter();
+        updateActiveFilterVisuals();
+      });
+    }
   }
 
   function updateActiveFilterVisuals() {
@@ -873,82 +941,61 @@ export function renderBendaharaDashboardPage(path, userRole) {
     });
   }
 
-  function updateStats(allData) {
-    // Waiting for disbursement: Bendahara-Cair step is Active
-    const waitingCount = allData.filter((k) => {
-      return (
-        k.current_approval?.approval_level === "Bendahara-Cair" &&
-        k.current_approval?.status === "Aktif"
-      );
-    }).length;
-
-    // Already disbursed: Bendahara-Cair step is Disetujui
-    const disbursedData = allData.filter((k) => {
-      return k.approvals?.some(
-        (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
-      );
-    });
-
-    const disbursedCount = disbursedData.length;
-
-    let totalDisbursed = 0;
-    let totalUndisbursed = 0;
-
-    allData.forEach((k) => {
-      const budget = Number(k.total_anggaran_diusulkan) || 0;
-      const disbursed = Number(k.dana_dicairkan) || 0;
-
-      // Check if Done (Bendahara-Setor Disetujui)
-      const isDone = k.approvals?.some(
-        (a) => a.approval_level === "Bendahara-Setor" && a.status === "Disetujui"
-      );
-
-      if (isDone) {
-        // If done, count full budget as disbursed and 0 as undisbursed
-        totalDisbursed += budget;
-      } else {
-        // If not done, count actual disbursed and remaining
-        totalDisbursed += disbursed;
-        totalUndisbursed += Math.max(0, budget - disbursed);
+  async function fetchSummaryStats() {
+      try {
+          const response = await apiRequest("/dashboard/summary");
+          const stats = response.data;
+          updateStatsUI(stats);
+      } catch (error) {
+          console.error("Failed to fetch summary stats:", error);
       }
-    });
+  }
 
-    // LPJ submitted but not yet verified: Bendahara-LPJ step is Active AND lpj_submitted_at is NOT NULL
-    const lpjCount = allData.filter((k) => {
-      return (
-        k.current_approval?.approval_level === "Bendahara-LPJ" &&
-        k.current_approval?.status === "Aktif" &&
-        k.lpj_submitted_at !== null
-      );
-    }).length;
-
-    const waitingEl = document.getElementById("waitingCount");
-    const disbursedEl = document.getElementById("disbursedCount");
-    const totalDisbursedEl = document.getElementById("totalDisbursed");
-    const totalUndisbursedEl = document.getElementById("totalUndisbursed");
-    const lpjEl = document.getElementById("lpjCount");
-
-    if (waitingEl) {
-      waitingEl.setAttribute("data-target", waitingCount);
-      waitingEl.textContent = "0";
-    }
-    if (disbursedEl) {
-      disbursedEl.setAttribute("data-target", disbursedCount);
-      disbursedEl.textContent = "0";
-    }
-    if (totalDisbursedEl)
-      totalDisbursedEl.textContent = formatCurrency(totalDisbursed);
-    if (totalUndisbursedEl)
-      totalUndisbursedEl.textContent = formatCurrency(totalUndisbursed);
-    if (lpjEl) {
-      lpjEl.setAttribute("data-target", lpjCount);
-      lpjEl.textContent = "0";
-    }
-
-    // Trigger counter animations
-    setTimeout(() => {
-      initCounters();
-    }, 100);
+  function updateStatsUI(stats) {
+      const waitingEl = document.getElementById("waitingCount");
+      const disbursedEl = document.getElementById("disbursedCount");
+      const lpjEl = document.getElementById("lpjCount");
+      const totalDisbursedEl = document.getElementById("totalDisbursed");
+      const totalUndisbursedEl = document.getElementById("totalUndisbursed");
+      
+      if (waitingEl) {
+        waitingEl.setAttribute("data-target", stats.total_pencairan_menunggu || 0);
+        waitingEl.textContent = "0";
+      }
+      if (disbursedEl) {
+        disbursedEl.setAttribute("data-target", stats.total_pencairan_dicairkan || 0);
+        disbursedEl.textContent = "0";
+      }
+      if (lpjEl) {
+        lpjEl.setAttribute("data-target", stats.total_lpj_verifikasi || 0);
+        lpjEl.textContent = "0";
+      }
+      
+      // Format currency for total anggaran
+      if (totalDisbursedEl) {
+        const formatted = new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(stats.total_anggaran_dicairkan || 0);
+        totalDisbursedEl.textContent = formatted;
+      }
+      
+      if (totalUndisbursedEl) {
+        const formatted = new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(stats.total_anggaran_belum_dicairkan || 0);
+        totalUndisbursedEl.textContent = formatted;
+      }
+      
+      // Trigger counter animations
+      setTimeout(() => {
+        initCounters();
+      }, 100);
   }
 
   function showError(message) {
@@ -1017,8 +1064,11 @@ export function renderBendaharaDashboardPage(path, userRole) {
   // ==============================================
   // INITIALIZATION
   // ==============================================
-  fetchKegiatan();
+  fetchKegiatan(); // This will also calculate stats from data
   fetchVideos();
+  
+  // Initialize stat card filter event listeners ONCE
+  initializeStatCardFilters();
 
   setTimeout(() => {
     initCounters();
