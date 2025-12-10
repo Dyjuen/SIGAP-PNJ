@@ -1367,7 +1367,7 @@ export function renderRevisiLpjPage(path, userRole) {
                    <div class="flex items-center gap-2">
 
                       ${
-                        (isBendahara || isPengusul) && file.status_lampiran !== 'archived'
+                        isBendahara || isPengusul
                           ? `<button type="button" class="lampiran-comment-btn ${
                               lampiranComments[file.lampiran_id]
                                 ? "has-comment"
