@@ -572,3 +572,10 @@ body {
   animation: slideInRight 0.6s ease-out forwards;
 }
 
+/* Custom styles for disabled lampiranCommentInput */
+#lampiranCommentModal #lampiranCommentInput:disabled {
+  color: #333; /* Keep text dark/normal */
+  background-color: #e9ecef; /* Light gray to indicate disabled state */
+  opacity: 1; /* Ensure full opacity */
+  -webkit-text-fill-color: #333; /* For some browsers that gray out text */
+}
