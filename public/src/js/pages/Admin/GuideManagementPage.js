@@ -452,6 +452,7 @@ export function renderGuideManagementPage(path, userRole) {
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body modal-body-modern">
+            <div id="addGuideError" class="alert alert-danger" style="display: none; margin-bottom: 1.5rem;"></div>
             <form id="addGuideForm">
               <div class="row g-3">
                 <div class="col-12">
@@ -534,6 +535,7 @@ export function renderGuideManagementPage(path, userRole) {
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body modal-body-modern">
+            <div id="editGuideError" class="alert alert-danger" style="display: none; margin-bottom: 1.5rem;"></div>
             <form id="editGuideForm">
               <input type="hidden" id="editGuideId">
               <div class="row g-3">
@@ -826,7 +828,10 @@ export function renderGuideManagementPage(path, userRole) {
     const tipeMedia = document.querySelector('input[name="addTipeMedia"]:checked').value;
 
     if (!title || !roleId) {
-      Swal.fire('Error', 'Judul dan Role wajib diisi', 'error');
+      const errorAlert = document.getElementById('addGuideError');
+      errorAlert.textContent = 'Judul dan Role wajib diisi';
+      errorAlert.style.display = 'block';
+      document.querySelector('#addGuideModal .modal-body').scrollTop = 0;
       return;
     }
 
@@ -834,13 +839,19 @@ export function renderGuideManagementPage(path, userRole) {
     if (tipeMedia === 'document') {
       const docFile = document.getElementById('addPdfFile').files[0];
       if (!docFile) {
-        Swal.fire('Error', 'File Dokumen wajib diunggah', 'error');
+        const errorAlert = document.getElementById('addGuideError');
+        errorAlert.textContent = 'File Dokumen wajib diunggah';
+        errorAlert.style.display = 'block';
+        document.querySelector('#addGuideModal .modal-body').scrollTop = 0;
         return;
       }
     } else if (tipeMedia === 'video') {
       const videoUrl = document.getElementById('addVideoUrl').value.trim();
       if (!videoUrl) {
-        Swal.fire('Error', 'Link Video wajib diisi', 'error');
+        const errorAlert = document.getElementById('addGuideError');
+        errorAlert.textContent = 'Link Video wajib diisi';
+        errorAlert.style.display = 'block';
+        document.querySelector('#addGuideModal .modal-body').scrollTop = 0;
         return;
       }
     }
@@ -890,13 +901,18 @@ export function renderGuideManagementPage(path, userRole) {
       await Swal.fire('Berhasil!', 'Panduan berhasil ditambahkan', 'success');
       fetchGuides();
     } catch (error) {
-      // Error - keep modal open to show validation errors
+      // Error - keep modal open and show error in modal
       if (window.setButtonLoading) {
         window.setButtonLoading(btnSave, false);
       }
       
       console.error('Error adding guide:', error);
-      await Swal.fire('Error', error.message, 'error');
+      const errorAlert = document.getElementById('addGuideError');
+      errorAlert.textContent = error.message;
+      errorAlert.style.display = 'block';
+      
+      // Scroll to top of modal to show error
+      document.querySelector('#addGuideModal .modal-body').scrollTop = 0;
     }
   }
 
@@ -940,7 +956,10 @@ export function renderGuideManagementPage(path, userRole) {
     const tipeMedia = document.querySelector('input[name="editTipeMedia"]:checked').value;
 
     if (!title || !roleId) {
-      Swal.fire('Error', 'Judul dan Role wajib diisi', 'error');
+      const errorAlert = document.getElementById('editGuideError');
+      errorAlert.textContent = 'Judul dan Role wajib diisi';
+      errorAlert.style.display = 'block';
+      document.querySelector('#editGuideModal .modal-body').scrollTop = 0;
       return;
     }
 
@@ -989,9 +1008,14 @@ export function renderGuideManagementPage(path, userRole) {
         window.setButtonLoading(btnUpdate, false);
       }
       
-      // Hide modal before showing error alert
-      editModalInstance.hide();
-      await Swal.fire('Error', error.message, 'error');
+      // Show error in modal instead of hiding it
+      console.error('Error updating guide:', error);
+      const errorAlert = document.getElementById('editGuideError');
+      errorAlert.textContent = error.message;
+      errorAlert.style.display = 'block';
+      
+      // Scroll to top of modal to show error
+      document.querySelector('#editGuideModal .modal-body').scrollTop = 0;
     }
   }
 
@@ -1036,10 +1060,12 @@ export function renderGuideManagementPage(path, userRole) {
 
   // Auto-focus first input when modals open
   document.getElementById('addGuideModal').addEventListener('shown.bs.modal', function() {
+    document.getElementById('addGuideError').style.display = 'none';
     document.getElementById('addTitle').focus();
   });
   
   document.getElementById('editGuideModal').addEventListener('shown.bs.modal', function() {
+    document.getElementById('editGuideError').style.display = 'none';
     document.getElementById('editTitle').focus();
   });
 
