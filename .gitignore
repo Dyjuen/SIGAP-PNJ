@@ -14,6 +14,7 @@
 # Uploads
 /storage/uploads/*
 !/storage/uploads/.gitkeep
+uploads/**/.htaccess
 
 # Node
 node_modules/

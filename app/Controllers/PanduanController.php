@@ -249,4 +249,60 @@ class PanduanController extends Controller
             Response::error('Gagal menghapus panduan: ' . $e->getMessage(), 500);
         }
     }
+
+    public function download($id)
+    {
+        try {
+            $panduan = $this->panduanModel->find($id);
+            if (!$panduan) {
+                Response::notFound('Panduan tidak ditemukan.');
+                return;
+            }
+
+            // Check role access
+            $role_id = $this->userData['role_id'] ?? null;
+            $userRoles = $this->userData['roles'] ?? [];
+
+            if (!in_array('Admin', $userRoles) && $panduan['target_role_id'] != $role_id) {
+                Response::error('Anda tidak memiliki akses ke panduan ini.', 403);
+                return;
+            }
+
+            // For video, return the URL
+            if ($panduan['tipe_media'] === 'video') {
+                Response::success(['url' => $panduan['path_media']], 'URL video berhasil diambil.');
+                return;
+            }
+
+            // For documents, serve the file
+            $filePath = $panduan['path_media'];
+            
+            // If path doesn't start with absolute path, prepend project root
+            if (!file_exists($filePath)) {
+                // Try prepending the project root directory
+                $projectRoot = dirname(__DIR__, 2); // Go up 2 levels from Controllers folder
+                $filePath = $projectRoot . $filePath;
+            }
+            
+            if (!file_exists($filePath)) {
+                error_log("File not found: " . $filePath . " (original: " . $panduan['path_media'] . ")");
+                Response::error('File tidak ditemukan di server: ' . basename($panduan['path_media']), 404);
+                return;
+            }
+
+            $fileName = basename($filePath);
+            $mimeType = mime_content_type($filePath);
+
+            header('Content-Type: ' . $mimeType);
+            header('Content-Disposition: inline; filename="' . $fileName . '"');
+            header('Content-Length: ' . filesize($filePath));
+            header('Cache-Control: public, max-age=3600');
+            
+            readfile($filePath);
+            exit;
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil file: ' . $e->getMessage(), 500);
+        }
+    }
 }

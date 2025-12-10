@@ -13,7 +13,12 @@ class PanduanValidator extends Validator
             'judul_panduan' => 'required',
         ]);
 
-        // Defensively check for any file upload, regardless of the key
+        // For updates, skip file/media validation entirely - backend will handle keeping old files
+        if ($isUpdate) {
+            return !$this->hasErrors();
+        }
+
+        // For CREATE only: check if file or URL is provided
         $file_upload_present = false;
         $file_with_error = false;
         $error_code = UPLOAD_ERR_OK;
@@ -33,8 +38,8 @@ class PanduanValidator extends Validator
         
         $path_media_present = !empty($data['path_media']);
 
-        // Only require file/URL for new records, not for updates
-        if (!$isUpdate && !$path_media_present && !$file_upload_present) {
+        // Require file/URL only for new records
+        if (!$path_media_present && !$file_upload_present) {
             $this->addError('file', 'File atau URL tidak boleh kosong');
         }
 

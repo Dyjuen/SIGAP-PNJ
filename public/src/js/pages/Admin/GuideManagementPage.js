@@ -858,6 +858,12 @@ export function renderGuideManagementPage(path, userRole) {
       formData.append('path_media', videoUrl);
     }
 
+    // Debug: Log FormData contents
+    console.log('FormData being sent:');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, ':', value);
+    }
+
     const btnSave = document.getElementById('btnSaveGuide');
     if (window.setButtonLoading) {
       window.setButtonLoading(btnSave, true, 'Menyimpan...');
@@ -884,13 +890,12 @@ export function renderGuideManagementPage(path, userRole) {
       await Swal.fire('Berhasil!', 'Panduan berhasil ditambahkan', 'success');
       fetchGuides();
     } catch (error) {
-      // Error - hide modal first, then show error
-      addModalInstance.hide();
-      
+      // Error - keep modal open to show validation errors
       if (window.setButtonLoading) {
         window.setButtonLoading(btnSave, false);
       }
       
+      console.error('Error adding guide:', error);
       await Swal.fire('Error', error.message, 'error');
     }
   }
@@ -1067,18 +1072,6 @@ export function renderGuideManagementPage(path, userRole) {
       return;
     }
 
-    const fileExtension = guide.path_media.split('.').pop().toLowerCase();
-    
-    // Normalize path: ensure it doesn't start with a slash if we want relative to domain root,
-    // but in this context, starting with '/' is usually safer for absolute path from domain root.
-    // However, if the API returns 'uploads/...', we need '/uploads/...'.
-    let filePath = guide.path_media;
-    if (!filePath.startsWith('/')) {
-        filePath = '/' + filePath;
-    }
-
-    console.log('Fetching file from:', filePath);
-
     Swal.fire({
       title: 'Memproses Dokumen...',
       text: 'Mohon tunggu sebentar...',
@@ -1088,8 +1081,7 @@ export function renderGuideManagementPage(path, userRole) {
 
     try {
       const token = localStorage.getItem('token');
-      // Use fetch to get the blob, ensuring we can handle errors (like 404s returning HTML)
-      const response = await fetch(filePath, {
+      const response = await fetch(`/api/panduan/${panduan_id}/download`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}` 
@@ -1097,39 +1089,40 @@ export function renderGuideManagementPage(path, userRole) {
       });
 
       if (!response.ok) {
-        throw new Error(`Gagal mengambil file (${response.status} ${response.statusText})`);
+        throw new Error(`Gagal mengambil file (${response.status})`);
       }
 
-      // Verify content type isn't HTML (which implies error page)
       const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('text/html')) {
-        throw new Error('File tidak ditemukan atau akses ditolak (Server returned HTML)');
-      }
-
-      // Explicitly set type for PDF to ensure browser handles it as previewable
-      const blobOptions = fileExtension === 'pdf' ? { type: 'application/pdf' } : {};
-      const blob = await response.blob();
-      const finalBlob = new Blob([blob], blobOptions);
-      const objectUrl = URL.createObjectURL(finalBlob);
       
-      Swal.close();
-
-      if (fileExtension === 'pdf') {
-        // Open PDF in new tab - explicitly as a preview
-        // Note: Some browsers/settings might still force download if "Open PDFs in Chrome" is disabled
+      // Check if it's a PDF
+      if (contentType && contentType.includes('application/pdf')) {
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        
+        Swal.close();
+        
+        // Open PDF in new tab
         window.open(objectUrl, '_blank');
+        
+        // Clean up after a delay
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
       } else {
-        // Download for other types (DOCX, etc)
+        // For other file types, trigger download
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const fileName = guide.path_media.split('/').pop();
+        
+        Swal.close();
+        
         const link = document.createElement('a');
         link.href = objectUrl;
-        link.download = guide.path_media.split('/').pop();
+        link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
       }
-      
-      // Clean up
-      setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
 
     } catch (error) {
       console.error(error);
