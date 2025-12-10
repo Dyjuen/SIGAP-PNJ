@@ -102,6 +102,7 @@ class Kegiatan extends Model
                     k.kegiatan_id,
                     t.nama_kegiatan,
                     u.nama_lengkap as pengusul_nama,
+                    k.pelaksana_manual,
                     k.tgl_batas_lpj,
                     CASE
                         WHEN k.lpj_submitted_at IS NULL THEN 'Menunggu Penyerahan'
