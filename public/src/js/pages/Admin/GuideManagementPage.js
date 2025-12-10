@@ -466,8 +466,8 @@ export function renderGuideManagementPage(path, userRole) {
                   <div class="glass-input-wrapper">
                     <select id="addRole" required>
                       <option value="">Pilih Role</option>
-                      <option value="2">Pengusul</option>
-                      <option value="3">Verifikator</option>
+                      <option value="3">Pengusul</option>
+                      <option value="2">Verifikator</option>
                       <option value="4">PPK</option>
                       <option value="5">Wadir II</option>
                       <option value="6">Bendahara</option>
@@ -549,8 +549,8 @@ export function renderGuideManagementPage(path, userRole) {
                   <div class="glass-input-wrapper">
                     <select id="editRole" required>
                       <option value="">Pilih Role</option>
-                      <option value="2">Pengusul</option>
-                      <option value="3">Verifikator</option>
+                      <option value="3">Pengusul</option>
+                      <option value="2">Verifikator</option>
                       <option value="4">PPK</option>
                       <option value="5">Wadir II</option>
                       <option value="6">Bendahara</option>
@@ -645,8 +645,8 @@ export function renderGuideManagementPage(path, userRole) {
   // Role mapping
   const roleNames = {
     1: 'Admin',
-    2: 'Pengusul',
-    3: 'Verifikator',
+    2: 'Verifikator',
+    3: 'Pengusul',
     4: 'PPK',
     5: 'Wadir II',
     6: 'Bendahara',
@@ -655,8 +655,8 @@ export function renderGuideManagementPage(path, userRole) {
 
   const roleBadgeClasses = {
     1: 'badge-admin',
-    2: 'badge-pengusul',
-    3: 'badge-verifikator',
+    2: 'badge-verifikator',
+    3: 'badge-pengusul',
     4: 'badge-ppk',
     5: 'badge-wadir',
     6: 'badge-bendahara',
