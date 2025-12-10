@@ -4,6 +4,7 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 
 export function renderDaftarLpjPage(path, userRole) {
   const isBendahara = userRole.toLowerCase() === "bendahara";
+  const isPengusul = userRole.toLowerCase() === "pengusul";
 
   const bendaharaStatCards = `
     <h3 class="text-2xl font-bold mb-4">Monitoring LPJ</h3>
@@ -162,8 +163,14 @@ export function renderDaftarLpjPage(path, userRole) {
               <tr>
                 <th style="width: 4%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">No.</th>
                 <th style="width: 24%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Nama Kegiatan</th>
-                ${isBendahara ? '<th style="width: 18%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>' : ""}
-                <th>Batas Waktu LPJ</th>
+                ${
+                  isBendahara
+                    ? '<th style="width: 18%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>'
+                    : ""
+                }
+                <th style="${
+                  isPengusul ? "text-align: center;" : ""
+                }background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Batas Waktu LPJ</th>
                 <th class="text-center">Hitung Mundur</th>
                 <th class="text-center">Status</th>
                 <th class="text-center" style="width: 220px;">Aksi</th>
@@ -226,10 +233,12 @@ function initializeDaftarLpj(userRole) {
   }
 
   async function fetchData() {
-    tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(7, 'Memuat data LPJ...') : `<tr><td colspan="7" class="text-center">Loading...</td></tr>`;
+    tbody.innerHTML = window.createTableLoadingRow
+      ? window.createTableLoadingRow(7, "Memuat data LPJ...")
+      : `<tr><td colspan="7" class="text-center">Loading...</td></tr>`;
     try {
       const user = JSON.parse(localStorage.getItem("auth_user"));
-      const userIdParam = user ? `?user_id=${user.user_id}` : '';
+      const userIdParam = user ? `?user_id=${user.user_id}` : "";
       const response = await apiRequest(`/dashboard/lpj${userIdParam}`);
       state.kegiatan = response.data.data || [];
       state.allKegiatan = [...state.kegiatan];
@@ -314,12 +323,13 @@ function initializeDaftarLpj(userRole) {
       );
 
       if (diffDays > 0) {
-        return { text: `${diffDays} hari`, colorClass: "countdown-normal" };
+        return {
+          text: `${diffDays} hari ${diffHours} jam`,
+          colorClass: "countdown-normal",
+        };
       } else {
         return {
-          text: `${String(diffHours).padStart(2, "0")}j ${String(
-            diffMinutes
-          ).padStart(2, "0")}m`,
+          text: `${diffHours} jam ${diffMinutes} menit`,
           colorClass: "countdown-normal",
         };
       }
@@ -353,11 +363,17 @@ function initializeDaftarLpj(userRole) {
       const actionButtons = getActionButtons(item);
       const countdown = calculateCountdown(item.tgl_batas_lpj);
 
-      const pengusulCellContent = isBendahara ? `
+      const pengusulCellContent = isBendahara
+        ? `
         <td>
-          <div style="color: #1e293b; font-weight: 600;">${item.pelaksana_manual || "-"}</div>
-          <div class="text-muted" style="font-size: 0.8125rem; margin-top: 2px;">${item.pengusul_nama || ""}</div>
-        </td>` : "";
+          <div style="color: #1e293b; font-weight: 600;">${
+            item.pelaksana_manual || "-"
+          }</div>
+          <div class="text-muted" style="font-size: 0.8125rem; margin-top: 2px;">${
+            item.pengusul_nama || ""
+          }</div>
+        </td>`
+        : "";
 
       row.innerHTML = `
         <td>${index + 1}</td>
@@ -365,11 +381,11 @@ function initializeDaftarLpj(userRole) {
             <strong style="color: #1e293b;">${item.nama_kegiatan}</strong>
         </td>
         ${pengusulCellContent}
-        <td>${
-          item.tgl_batas_lpj
-            ? new Date(item.tgl_batas_lpj).toLocaleDateString("id-ID")
-            : "-"
-        }</td>
+        <td class="${isPengusul ? "text-center" : ""}">${
+        item.tgl_batas_lpj
+          ? new Date(item.tgl_batas_lpj).toLocaleDateString("id-ID")
+          : "-"
+      }</td>
         <td class="text-center">
             <span id="countdown-${item.kegiatan_id}" class="${
         countdown.colorClass
@@ -411,7 +427,7 @@ function initializeDaftarLpj(userRole) {
 
   function performSearch() {
     const query = state.searchQuery.toLowerCase().trim();
-    
+
     if (!query) {
       state.kegiatan = [...state.allKegiatan];
       filterAndRender();
@@ -421,7 +437,7 @@ function initializeDaftarLpj(userRole) {
     state.kegiatan = state.allKegiatan.filter((item) => {
       const namaKegiatan = (item.nama_kegiatan || "").toLowerCase();
       const pengusulNama = (item.pengusul_nama || "").toLowerCase();
-      
+
       return namaKegiatan.includes(query) || pengusulNama.includes(query);
     });
 
@@ -512,7 +528,11 @@ function initializeDaftarLpj(userRole) {
       if (result.isConfirmed) {
         try {
           await apiRequest(`/kegiatan/${id}/lpj/complete`, { method: "POST" });
-          Swal.fire("Berhasil!", "LPJ telah disetujui dan diselesaikan.", "success");
+          Swal.fire(
+            "Berhasil!",
+            "LPJ telah disetujui dan diselesaikan.",
+            "success"
+          );
           fetchData();
         } catch (error) {
           Swal.fire(
