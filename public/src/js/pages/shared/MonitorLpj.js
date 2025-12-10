@@ -160,9 +160,9 @@ export function renderDaftarLpjPage(path, userRole) {
           <table class="table" id="lpjTable">
             <thead>
               <tr>
-                <th style="width: 80px;">No.</th>
-                <th>Nama Kegiatan</th>
-                ${isBendahara ? "<th>Pengusul</th>" : ""}
+                <th style="width: 4%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">No.</th>
+                <th style="width: 24%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Nama Kegiatan</th>
+                ${isBendahara ? '<th style="width: 18%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>' : ""}
                 <th>Batas Waktu LPJ</th>
                 <th class="text-center">Hitung Mundur</th>
                 <th class="text-center">Status</th>
@@ -353,18 +353,18 @@ function initializeDaftarLpj(userRole) {
       const actionButtons = getActionButtons(item);
       const countdown = calculateCountdown(item.tgl_batas_lpj);
 
-      const pengusulCell = isBendahara ? `<td>${item.pengusul_nama}</td>` : "";
-      const pengusulSubtext = isBendahara
-        ? `<small class="text-muted">${item.pengusul_nama}</small>`
-        : "";
+      const pengusulCellContent = isBendahara ? `
+        <td>
+          <div style="color: #1e293b; font-weight: 600;">${item.pelaksana_manual || "-"}</div>
+          <div class="text-muted" style="font-size: 0.8125rem; margin-top: 2px;">${item.pengusul_nama || ""}</div>
+        </td>` : "";
 
       row.innerHTML = `
         <td>${index + 1}</td>
         <td>
-            <div>${item.nama_kegiatan}</div>
-            ${pengusulSubtext}
+            <strong style="color: #1e293b;">${item.nama_kegiatan}</strong>
         </td>
-        ${pengusulCell}
+        ${pengusulCellContent}
         <td>${
           item.tgl_batas_lpj
             ? new Date(item.tgl_batas_lpj).toLocaleDateString("id-ID")
