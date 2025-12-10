@@ -309,14 +309,14 @@ export function renderBendaharaDashboardPage(path, userRole) {
       <!-- Stats Cards -->
       <div class="row g-4 mb-3">
         <div class="col-sm-6 col-xl">
-          <div class="card stat-card-active stat-card-filter" data-filter="waiting" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%) !important; color: white !important; border: none !important;">
+          <div class="card stat-card-inactive stat-card-filter" data-filter="waiting">
             <div class="card-body">
               <div class="d-flex align-items-start justify-content-between">
                 <div class="content-left">
-                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; color: white !important;">Pencairan</span>
-                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600; color: white !important;">Menunggu</h4>
+                  <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Pencairan</span>
+                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Menunggu</h4>
                   <div class="d-flex align-items-end mt-2">
-                    <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px; color: white !important;" id="waitingCount" data-target="0">0</h1>
+                    <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="waitingCount" data-target="0">0</h1>
                     <small style="font-size: 15px; font-weight: 500; color: white !important;">Kegiatan</small>
                   </div>
                 </div>
@@ -533,8 +533,8 @@ export function renderBendaharaDashboardPage(path, userRole) {
         console.log(`  → DICAIRKAN: +${totalAnggaran}`); // Debug
       }
       
-      // LPJ Perlu Verifikasi: Bendahara-LPJ step is Active
-      if (k.current_approval?.approval_level === "Bendahara-LPJ" && k.current_approval?.status === "Aktif") {
+      // LPJ Perlu Verifikasi: Bendahara-LPJ step is Active AND LPJ has been submitted
+      if (k.current_approval?.approval_level === "Bendahara-LPJ" && k.current_approval?.status === "Aktif" && k.lpj_submitted_at) {
         lpjCount++;
       }
     });
@@ -591,7 +591,8 @@ export function renderBendaharaDashboardPage(path, userRole) {
       state.displayKegiatan = state.allKegiatan.filter((k) => {
         return (
           k.current_approval?.approval_level === "Bendahara-LPJ" &&
-          k.current_approval?.status === "Aktif"
+          k.current_approval?.status === "Aktif" &&
+          k.lpj_submitted_at // Only show if LPJ has been submitted
         );
       });
     }
@@ -905,7 +906,12 @@ export function renderBendaharaDashboardPage(path, userRole) {
         
         // Simply set the filter to the clicked card's value
         // Don't toggle - always apply the clicked filter
-        state.currentFilter = filterValue;
+        // New logic to toggle filter off if active card is clicked again
+        if (filterValue === state.currentFilter) {
+          state.currentFilter = "all"; // Deactivate filter
+        } else {
+          state.currentFilter = filterValue; // Activate new filter
+        }
         
         applyFilter();
         updateActiveFilterVisuals();

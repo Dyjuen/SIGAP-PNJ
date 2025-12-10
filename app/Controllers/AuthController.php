@@ -253,7 +253,7 @@ class AuthController
                     if (!isset($_SESSION['code'])) {
                         Response::error('Captcha sudah expired. Silakan refresh captcha.', 400);
                     }
-                    if (strcasecmp($_SESSION['code'], $captchaInput) !== 0) {
+                    if (strcmp($_SESSION['code'], $captchaInput) !== 0) {
                         unset($_SESSION['code']);
                         Response::error('Kode captcha yang Anda masukkan salah.', 400);
                     }
