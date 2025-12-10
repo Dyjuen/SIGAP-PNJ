@@ -963,6 +963,18 @@ export function renderGuideManagementPage(path, userRole) {
       return;
     }
 
+    // Validate video URL if tipe_media is video
+    if (tipeMedia === 'video') {
+      const videoUrl = document.getElementById('editVideoUrl').value.trim();
+      if (!videoUrl) {
+        const errorAlert = document.getElementById('editGuideError');
+        errorAlert.textContent = 'Link Video wajib diisi';
+        errorAlert.style.display = 'block';
+        document.querySelector('#editGuideModal .modal-body').scrollTop = 0;
+        return;
+      }
+    }
+
     const formData = new FormData();
     formData.append('judul_panduan', title);
     formData.append('target_role_id', roleId);
@@ -978,9 +990,7 @@ export function renderGuideManagementPage(path, userRole) {
       // If no new file, backend will keep existing file
     } else if (tipeMedia === 'video') {
       const videoUrl = document.getElementById('editVideoUrl').value.trim();
-      if (videoUrl) {
-        formData.append('path_media', videoUrl);
-      }
+      formData.append('path_media', videoUrl);
     }
 
     const btnUpdate = document.getElementById('btnUpdateGuide');
