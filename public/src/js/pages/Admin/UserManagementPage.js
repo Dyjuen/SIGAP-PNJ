@@ -1061,12 +1061,12 @@ const pageContent = `
         <td>${user.role}</td>
         <td style="text-align: center;">
           <button 
-            class="btn btn-sm me-2 btn-edit-profile" 
+            class="btn btn-sm btn-primary me-1 btn-edit-profile" 
             data-id="${user.user_id}"
             data-bs-toggle="tooltip"
             title="Edit Profil"
           >
-            <i class="ti me-1">&#xeb04;</i> Edit Profil
+            <i class="ti">&#xeb04;</i>
           </button>
           <button 
             class="btn btn-sm btn-danger btn-delete" 
@@ -1196,28 +1196,25 @@ const pageContent = `
     const btn = e.currentTarget;
     const userId = btn.dataset.id;
 
-    const confirmed = await confirmAction(
-      "Yakin ingin menghapus?",
-      "Data user ini akan dihapus secara permanen."
-    );
+    const result = await Swal.fire({
+      title: 'Yakin ingin menghapus?',
+      text: 'Data user ini akan dihapus secara permanen.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, Hapus',
+      cancelButtonText: 'Batal'
+    });
 
-    if (confirmed) {
-      const row = btn.closest("tr");
-      row.style.transition = "all 0.3s";
-      row.style.opacity = "0";
-      row.style.transform = "translateX(-20px)";
-
+    if (result.isConfirmed) {
       try {
         await deleteUserAPI(userId);
         state.users = state.users.filter(u => u.user_id != userId);
-        setTimeout(() => {
-          renderTableRows(state.users);
-          showSuccess("User berhasil dihapus!");
-        }, 300);
+        await Swal.fire('Berhasil!', 'User berhasil dihapus!', 'success');
+        renderTableRows(state.users);
       } catch (error) {
-        showError(error.message || "Gagal menghapus user.");
-        row.style.opacity = "1";
-        row.style.transform = "translateX(0)";
+        Swal.fire('Error', error.message || 'Gagal menghapus user.', 'error');
       }
     }
   }

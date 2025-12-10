@@ -476,11 +476,6 @@ export const adminSidebar = `
     align-items: center;
   }
   
-  .user-profile-card:hover {
-    background: #b2ebf2;
-    transform: translateX(2px);
-  }
-  
   .user-profile-card:active {
     transform: translateX(0);
   }
@@ -508,10 +503,6 @@ export const adminSidebar = `
     flex-shrink: 0;
   }
   
-  .user-profile-card:hover .user-avatar {
-    background: #0097a7;
-  }
-  
   .user-info {
     flex: 1;
     overflow: hidden;
@@ -528,11 +519,7 @@ export const adminSidebar = `
     text-overflow: ellipsis;
     transition: color 0.3s ease;
   }
-  
-  .user-profile-card:hover .user-name {
-    color: #00bcd4;
-  }
-  
+
   .user-role {
     font-size: 0.75rem;
     color: #64748b;
@@ -797,7 +784,7 @@ export const adminSidebar = `
         <span class="menu-icon">
           <i class="ti ti-users">&#xebf2;</i>
         </span>
-        <span class="menu-text">User Management</span>
+        <span class="menu-text">Manajemen User</span>
       </a>
     </li>
 

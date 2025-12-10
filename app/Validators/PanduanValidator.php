@@ -6,7 +6,7 @@ use App\Core\Validator;
 
 class PanduanValidator extends Validator
 {
-    public function validatePanduan(array $data): bool
+    public function validatePanduan(array $data, bool $isUpdate = false): bool
     {
         // Use parent validator for basic rules
         parent::validate($data, [
@@ -33,7 +33,8 @@ class PanduanValidator extends Validator
         
         $path_media_present = !empty($data['path_media']);
 
-        if (!$path_media_present && !$file_upload_present) {
+        // Only require file/URL for new records, not for updates
+        if (!$isUpdate && !$path_media_present && !$file_upload_present) {
             $this->addError('file', 'File atau URL tidak boleh kosong');
         }
 

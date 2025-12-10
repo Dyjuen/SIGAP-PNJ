@@ -163,7 +163,7 @@ class PanduanController extends Controller
         $data = $_POST;
         
         $validator = new PanduanValidator();
-        if (!$validator->validatePanduan($data)) {
+        if (!$validator->validatePanduan($data, true)) { // true = isUpdate
             Response::validationError($validator->getErrors(), 'Validasi gagal.');
             return;
         }

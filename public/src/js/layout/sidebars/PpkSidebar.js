@@ -475,12 +475,7 @@ export const ppkSidebar = `
     display: flex;
     align-items: center;
   }
-  
-  .user-profile-card:hover {
-    background: #b2ebf2;
-    transform: translateX(2px);
-  }
-  
+
   .user-profile-card:active {
     transform: translateX(0);
   }
@@ -508,10 +503,6 @@ export const ppkSidebar = `
     flex-shrink: 0;
   }
   
-  .user-profile-card:hover .user-avatar {
-    background: #0097a7;
-  }
-  
   .user-info {
     flex: 1;
     overflow: hidden;
@@ -527,10 +518,6 @@ export const ppkSidebar = `
     overflow: hidden;
     text-overflow: ellipsis;
     transition: color 0.3s ease;
-  }
-  
-  .user-profile-card:hover .user-name {
-    color: #00bcd4;
   }
   
   .user-role {
@@ -746,12 +733,6 @@ export const ppkSidebar = `
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       pointer-events: none;
       z-index: 1000;
-    }
-    
-    #layout-menu:not(.sidebar-expanded-js) .user-profile-card:hover::after {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(-50%) scale(1);
     }
   }
   
