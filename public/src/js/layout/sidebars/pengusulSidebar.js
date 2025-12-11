@@ -1106,12 +1106,7 @@ export const pengusulSidebar = `
     // Logout handler
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
-      const newLogout = logoutBtn.cloneNode(true);
-      if (logoutBtn.parentNode) {
-        logoutBtn.parentNode.replaceChild(newLogout, logoutBtn);
-      }
-      
-      newLogout.addEventListener('click', function(e) {
+      logoutBtn.addEventListener('click', function(e) {
         e.preventDefault();
         // Clear localStorage
         localStorage.removeItem('userData');
