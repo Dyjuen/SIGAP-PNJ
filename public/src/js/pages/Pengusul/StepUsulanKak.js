@@ -773,7 +773,7 @@ export function renderUsulanKakPage(path, userRole) {
               <span>←</span> Back
             </button>
             <button class="px-8 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 inline-block hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4';" id="btnSubmitRab">
-              Submit
+              Simpan
             </button>
           </div>
         </div>
@@ -2544,10 +2544,10 @@ export function renderUsulanKakPage(path, userRole) {
       }
 
       if (window.setButtonLoading) {
-        window.setButtonLoading(btnSubmitRab, true, 'Submitting...');
+        window.setButtonLoading(btnSubmitRab, true, 'Menyimpan...');
       } else {
         btnSubmitRab.disabled = true;
-        btnSubmitRab.innerHTML = 'Submitting...';
+        btnSubmitRab.innerHTML = 'Menyimpan...';
       }
 
       try {
@@ -2604,7 +2604,7 @@ export function renderUsulanKakPage(path, userRole) {
           window.setButtonLoading(btnSubmitRab, false);
         } else {
           btnSubmitRab.disabled = false;
-          btnSubmitRab.innerHTML = "Submit";
+          btnSubmitRab.innerHTML = "Simpan";
         }
       }
     });
