@@ -2695,18 +2695,6 @@ export function renderRevisiKakPage(path, userRole) {
                 `;
                 section.appendChild(subtotalDiv);
 
-
-                // Append subtotal display after the table
-                const subtotalDisplay = document.createElement("div");
-                subtotalDisplay.className = "flex justify-end items-center mt-4";
-                subtotalDisplay.innerHTML = `
-                    <div class="text-right">
-                        <span class="text-sm text-gray-500">Subtotal:</span>
-                        <span id="subtotal-${cat.kategori_belanja_id}" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
-                    </div>
-                `;
-                section.appendChild(subtotalDisplay);
-
                 if (isPengusul) {
                     const addButton = document.createElement("button");
                     addButton.type = "button";

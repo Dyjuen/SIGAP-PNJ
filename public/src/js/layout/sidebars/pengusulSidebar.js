@@ -1113,13 +1113,11 @@ export const pengusulSidebar = `
       
       newLogout.addEventListener('click', function(e) {
         e.preventDefault();
-        if (confirm('Apakah Anda yakin ingin logout?')) {
-          // Clear localStorage
-          localStorage.removeItem('userData');
-          localStorage.removeItem('token');
-          // Redirect to logout
-          window.location.href = '/logout';
-        }
+        // Clear localStorage
+        localStorage.removeItem('userData');
+        localStorage.removeItem('token');
+        // Redirect to logout
+        window.location.href = '/logout';
       });
     }
     
