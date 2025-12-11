@@ -301,11 +301,6 @@ export function renderBendaharaDashboardPage(path, userRole) {
     </style>
 
     <div class="bendahara-dashboard-page">
-      <!-- Header -->
-      <div class="dashboard-header d-flex justify-content-between align-items-center">
-        <h2 class="mb-0" style="font-size: 2rem; font-weight: 700; color: #1f2937;">Dashboard Bendahara</h2>
-      </div>
-
       <!-- Stats Cards -->
       <div class="row g-4 mb-3">
         <div class="col-sm-6 col-xl">
