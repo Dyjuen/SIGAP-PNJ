@@ -789,17 +789,6 @@ export function renderRevisiKakPage(path, userRole) {
         display: block;
         animation: fadeIn 0.5s ease-out;
       }
-
-      /* Card animations */
-      .bg-white.rounded-xl.shadow-lg {
-        animation: slideInUp 0.6s ease-out;
-        transition: all 0.7s ease;
-      }
-
-      .bg-white.rounded-xl.shadow-lg:hover {
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
-        transform: translateY(-5px);
-      }
       
       /* Row item animations */
       .row-item {
@@ -2684,10 +2673,6 @@ export function renderRevisiKakPage(path, userRole) {
                 section.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
                         <h5 class="font-bold text-lg" style="color: #374151;">${cat.nama}</h5>
-                        <div class="text-right">
-                            <span class="text-sm text-gray-500">Subtotal:</span>
-                            <span id="subtotal-${cat.kategori_belanja_id}" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
-                        </div>
                     </div>
                 `;
                 
@@ -2699,6 +2684,16 @@ export function renderRevisiKakPage(path, userRole) {
                 });
                 
                 section.appendChild(itemsContainer);
+
+                const subtotalDiv = document.createElement("div");
+                subtotalDiv.className = "flex justify-end items-center mt-4";
+                subtotalDiv.innerHTML = `
+                    <div class="text-right">
+                        <span class="text-sm text-gray-500">Subtotal:</span>
+                        <span id="subtotal-${cat.kategori_belanja_id}" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
+                    </div>
+                `;
+                section.appendChild(subtotalDiv);
 
                 if (isPengusul) {
                     const addButton = document.createElement("button");

@@ -642,7 +642,6 @@ export function renderDetailKegiatanPage(path, userRole) {
         border-radius: 20px;
         padding: 2rem 2.5rem;
         margin-top: 3rem;
-        box-shadow: 0 20px 40px -10px rgba(0, 188, 212, 0.15);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -822,9 +821,7 @@ export function renderDetailKegiatanPage(path, userRole) {
 
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Output Kegiatan</label>
-                    <div id="manfaatContainer">
-                      <!-- Dynamic content will be injected here -->
-                    </div>
+                    <textarea readonly id="manfaatTextarea" class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[150px] resize-y" style="border-color: #E5E7EB; background: #F9FAFB;" placeholder="Tidak ada output kegiatan"></textarea>
                   </div>
                 </div>
 
@@ -839,9 +836,7 @@ export function renderDetailKegiatanPage(path, userRole) {
 
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Tahapan Pelaksanaan</label>
-                    <div id="tahapanPelaksanaanContainer">
-                      <!-- Dynamic content will be injected here -->
-                    </div>
+                    <textarea readonly id="tahapanTextarea" class="w-full px-4 py-3 border-2 rounded-lg text-sm min-h-[200px] resize-y" style="border-color: #E5E7EB; background: #F9FAFB;" placeholder="Tidak ada tahapan pelaksanaan"></textarea>
                   </div>
                 </div>
 
@@ -851,8 +846,19 @@ export function renderDetailKegiatanPage(path, userRole) {
                   
                   <div class="mb-8">
                     <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja</label>
-                    <div id="indikatorKinerjaContainer">
-                      <!-- Dynamic content will be injected here -->
+                    <div class="overflow-x-auto rounded-lg border border-gray-200">
+                      <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                          <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bulan</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Indikator Keberhasilan</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Target (%)</th>
+                          </tr>
+                        </thead>
+                        <tbody id="indikatorKinerjaContainer" class="bg-white divide-y divide-gray-200">
+                          <!-- Dynamic content will be injected here -->
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -888,8 +894,19 @@ export function renderDetailKegiatanPage(path, userRole) {
         <div class="bg-white rounded-xl shadow-lg p-8">
           <h4 class="mb-8 font-bold text-xl" style="color: #00BCD4;">Indikator Kinerja Utama & Renstra</h4>
           
-          <div class="mb-8" id="ikuRenstraContainer">
-            <!-- Dynamic content will be injected here -->
+          <div class="mb-8 overflow-x-auto rounded-lg border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Indikator Kinerja Utama</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Target</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
+                </tr>
+              </thead>
+              <tbody id="ikuRenstraContainer" class="bg-white divide-y divide-gray-200">
+                <!-- Dynamic content will be injected here -->
+              </tbody>
+            </table>
           </div>
 
           <!-- Navigation Buttons -->
@@ -913,13 +930,32 @@ export function renderDetailKegiatanPage(path, userRole) {
           <div class="mb-10 spectacular-divider">
             <div class="flex justify-between items-center mb-6">
               <h5 class="font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
+            </div>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uraian</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Vol 1</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sat 1</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Vol 2</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sat 2</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Vol 3</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sat 3</th>
+                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
+                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                  </tr>
+                </thead>
+                <tbody id="belanjaBarangContainer" class="bg-white divide-y divide-gray-200">
+                  <!-- Dynamic content will be injected here -->
+                </tbody>
+              </table>
+            </div>
+            <div class="flex justify-end items-center mt-4">
               <div class="text-right">
                 <span class="text-sm text-gray-500">Subtotal:</span>
                 <span id="subtotal-barang" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
               </div>
-            </div>
-            <div id="belanjaBarangContainer">
-              <!-- Dynamic content will be injected here -->
             </div>
           </div>
 
@@ -927,13 +963,32 @@ export function renderDetailKegiatanPage(path, userRole) {
           <div class="mb-10 spectacular-divider">
             <div class="flex justify-between items-center mb-6">
               <h5 class="font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
+            </div>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uraian</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Vol 1</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sat 1</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Vol 2</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sat 2</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Vol 3</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sat 3</th>
+                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
+                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                  </tr>
+                </thead>
+                <tbody id="belanjaJasaContainer" class="bg-white divide-y divide-gray-200">
+                  <!-- Dynamic content will be injected here -->
+                </tbody>
+              </table>
+            </div>
+            <div class="flex justify-end items-center mt-4">
               <div class="text-right">
                 <span class="text-sm text-gray-500">Subtotal:</span>
                 <span id="subtotal-jasa" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
               </div>
-            </div>
-            <div id="belanjaJasaContainer">
-              <!-- Dynamic content will be injected here -->
             </div>
           </div>
 
@@ -941,13 +996,32 @@ export function renderDetailKegiatanPage(path, userRole) {
           <div class="mb-10">
             <div class="flex justify-between items-center mb-6">
               <h5 class="font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
+            </div>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uraian</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Vol 1</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sat 1</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Vol 2</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sat 2</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Vol 3</th>
+                    <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sat 3</th>
+                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
+                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                  </tr>
+                </thead>
+                <tbody id="belanjaPerjalananContainer" class="bg-white divide-y divide-gray-200">
+                  <!-- Dynamic content will be injected here -->
+                </tbody>
+              </table>
+            </div>
+            <div class="flex justify-end items-center mt-4">
               <div class="text-right">
                 <span class="text-sm text-gray-500">Subtotal:</span>
                 <span id="subtotal-perjalanan" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
               </div>
-            </div>
-            <div id="belanjaPerjalananContainer">
-              <!-- Dynamic content will be injected here -->
             </div>
           </div>
 
@@ -1090,140 +1164,100 @@ export function renderDetailKegiatanPage(path, userRole) {
   `;
 
   const createIndikatorKinerjaRow = (item) => `
-    <div class="row-item">
-      <div class="grid grid-cols-3 gap-4">
-        <div>
-          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.bulan_indikator || ""
-          }">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.deskripsi_target || ""
-          }">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-          <div class="flex gap-2 items-center">
-            <input type="text" readonly class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-              item.persentase_target || ""
-            }">
-            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <tr class="bg-white border-b hover:bg-gray-50">
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+        item.bulan_indikator || ""
+      }</td>
+      <td class="px-6 py-4 text-sm text-gray-900">${
+        item.deskripsi_target || ""
+      }</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">${
+        item.persentase_target || ""
+      }%</td>
+    </tr>
   `;
 
   const createIkuRow = (item) => `
-    <div class="row-item">
-      <div class="grid grid-cols-3 gap-4">
-        <div class="col-span-1">
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${getNameById(
-            item.iku_id,
-            masterState.iku,
-            "iku_id",
-            "nama_iku"
-          )}">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Target</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.target || "0"
-          }">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.nama_satuan ||
-            (item.satuan_id
-              ? getNameById(
-                  item.satuan_id,
-                  masterState.satuan,
-                  "satuan_id",
-                  "nama_satuan"
-                )
-              : "-")
-          }">
-        </div>
-      </div>
-    </div>
+    <tr class="bg-white border-b hover:bg-gray-50">
+      <td class="px-6 py-4 text-sm text-gray-900">${getNameById(
+        item.iku_id,
+        masterState.iku,
+        "iku_id",
+        "nama_iku"
+      )}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center font-semibold">${
+        item.target || "0"
+      }</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${
+        item.nama_satuan ||
+        (item.satuan_id
+          ? getNameById(
+              item.satuan_id,
+              masterState.satuan,
+              "satuan_id",
+              "nama_satuan"
+            )
+          : "-")
+      }</td>
+    </tr>
   `;
 
-  const createRabRow = (item) => `
-    <div class="row-item">
-      <div class="grid-rab">
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.uraian || ""
-          }">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.volume1 || ""
-          }">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${getNameById(
-            item.satuan1_id,
-            masterState.satuan,
-            "satuan_id",
-            "nama_satuan"
-          )}">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 2</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.volume2 || ""
-          }">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.satuan2_id
-              ? getNameById(
-                  item.satuan2_id,
-                  masterState.satuan,
-                  "satuan_id",
-                  "nama_satuan"
-                )
-              : ""
-          }">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 3</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.volume3 || ""
-          }">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${
-            item.satuan3_id
-              ? getNameById(
-                  item.satuan3_id,
-                  masterState.satuan,
-                  "satuan_id",
-                  "nama_satuan"
-                )
-              : ""
-          }">
-        </div>
-        <div>
-          <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Harga Satuan</label>
-          <input type="text" readonly class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="border-color: #E5E7EB; background: #F9FAFB;" value="${formatCurrency(
-            item.harga_satuan
-          )}">
-        </div>
-      </div>
-    </div>
+  const createRabRow = (item) => {
+    const vol1 = parseFloat(item.volume1) || 0;
+    const vol2 = parseFloat(item.volume2) || 1;
+    const vol3 = parseFloat(item.volume3) || 1;
+    const harga = parseFloat(item.harga_satuan) || 0;
+    const total = vol1 * vol2 * vol3 * harga;
+
+    return `
+    <tr class="bg-white border-b hover:bg-gray-50">
+      <td class="px-4 py-4 text-sm text-gray-900 font-medium">${
+        item.uraian || ""
+      }</td>
+      <td class="px-2 py-4 text-center text-sm text-gray-600">${
+        item.volume1 || ""
+      }</td>
+      <td class="px-2 py-4 text-center text-sm text-gray-500 text-xs">${getNameById(
+        item.satuan1_id,
+        masterState.satuan,
+        "satuan_id",
+        "nama_satuan"
+      )}</td>
+      <td class="px-2 py-4 text-center text-sm text-gray-600">${
+        item.volume2 || ""
+      }</td>
+      <td class="px-2 py-4 text-center text-sm text-gray-500 text-xs">${
+        item.satuan2_id
+          ? getNameById(
+              item.satuan2_id,
+              masterState.satuan,
+              "satuan_id",
+              "nama_satuan"
+            )
+          : "-"
+      }</td>
+      <td class="px-2 py-4 text-center text-sm text-gray-600">${
+        item.volume3 || ""
+      }</td>
+      <td class="px-2 py-4 text-center text-sm text-gray-500 text-xs">${
+        item.satuan3_id
+          ? getNameById(
+              item.satuan3_id,
+              masterState.satuan,
+              "satuan_id",
+              "nama_satuan"
+            )
+          : "-"
+      }</td>
+      <td class="px-4 py-4 text-right text-sm text-gray-900 whitespace-nowrap">${formatCurrency(
+        item.harga_satuan
+      )}</td>
+      <td class="px-4 py-4 text-right text-sm font-semibold text-gray-900 whitespace-nowrap">${formatCurrency(
+        total
+      )}</td>
+    </tr>
   `;
+  };
 
   // ==============================================
   // DATA FETCH AND POPULATE
@@ -1307,25 +1341,25 @@ export function renderDetailKegiatanPage(path, userRole) {
           kakData.sasaran_utama;
       }
 
-      const manfaatContainer = document.getElementById("manfaatContainer");
-      manfaatContainer.innerHTML = "";
+      const manfaatContainer = document.getElementById("manfaatTextarea");
       if (kakData.manfaat && kakData.manfaat.length > 0) {
-        kakData.manfaat.forEach((item) => {
-          if (item.manfaat) {
-            manfaatContainer.innerHTML += createReadOnlyRow(item.manfaat);
-          }
-        });
+        const text = kakData.manfaat
+          .map((item, index) => `${index + 1}. ${item.manfaat}`)
+          .join("\n");
+        manfaatContainer.value = text;
+      } else {
+        manfaatContainer.value = "-";
       }
 
       // Populate Tahapan
-      const tahapanContainer = document.getElementById(
-        "tahapanPelaksanaanContainer"
-      );
-      tahapanContainer.innerHTML = "";
+      const tahapanContainer = document.getElementById("tahapanTextarea");
       if (kakData.tahapan && kakData.tahapan.length > 0) {
-        kakData.tahapan.forEach((item) => {
-          tahapanContainer.innerHTML += createReadOnlyRow(item.nama_tahapan);
-        });
+        const text = kakData.tahapan
+          .map((item, index) => `${index + 1}. ${item.nama_tahapan}`)
+          .join("\n");
+        tahapanContainer.value = text;
+      } else {
+        tahapanContainer.value = "-";
       }
 
       // Populate Indikator Kinerja
@@ -1418,6 +1452,11 @@ export function renderDetailKegiatanPage(path, userRole) {
       }
 
       const grandTotal = totalBarang + totalJasa + totalPerjalanan;
+
+      // Remove existing total card if any to avoid duplicates
+      const existingTotal = document.querySelector(".spectacular-total-card");
+      if (existingTotal) existingTotal.remove();
+
       const totalContainer = document.createElement("div");
       totalContainer.className = "spectacular-total-card";
       totalContainer.innerHTML = `
@@ -1428,14 +1467,15 @@ export function renderDetailKegiatanPage(path, userRole) {
         <div class="total-value">${formatMoney(grandTotal)}</div>
       `;
 
-      // Append to the parent of categories containers
-      const rabParent = belanjaBarangContainer.closest(".bg-white");
-      // Insert before the navigation buttons
-      const navButtons = rabParent.querySelector(".flex.justify-between.mt-8");
+      // Append to the main card of Step 3
+      const step3Card = document.querySelector("#main-step-3 > .bg-white");
+      // Insert before the navigation buttons (which is the last element usually)
+      const navButtons = step3Card.querySelector(".flex.justify-between.mt-8");
+      
       if (navButtons) {
-        rabParent.insertBefore(totalContainer, navButtons);
+        step3Card.insertBefore(totalContainer, navButtons);
       } else {
-        rabParent.appendChild(totalContainer);
+        step3Card.appendChild(totalContainer);
       }
 
       Swal.close();
