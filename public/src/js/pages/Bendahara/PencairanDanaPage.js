@@ -374,6 +374,14 @@ export function renderPencairanDanaPage(path, userRole) {
 
     <div class="pencairan-dana-page">
 
+          <!-- Header Section -->
+      <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
+        <div>
+          <h2 class="text-4xl font-bold text-gray-800">Pencairan Dana</h2>
+          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau progress pencairan kegiatan yang sedang berjalan</p>
+        </div>
+      </div>
+
       <!-- Search Section -->
       <div class="search-section">
         <div class="search-container">

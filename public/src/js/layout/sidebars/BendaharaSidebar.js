@@ -808,7 +808,7 @@ export const bendaharaSidebar = `
         <span class="menu-icon">
           <i class="ti ti-file-invoice">&#xeb67;</i>
         </span>
-        <span class="menu-text">Daftar LPJ</span>
+        <span class="menu-text">Monitoring LPJ</span>
       </a>
     </li>
 
@@ -818,7 +818,7 @@ export const bendaharaSidebar = `
         <span class="menu-icon">
           <i class="ti ti-history">&#xebea;</i>
         </span>
-        <span class="menu-text">Riwayat</span>
+        <span class="menu-text">Riwayat Kegiatan</span>
       </a>
     </li>
   </ul>

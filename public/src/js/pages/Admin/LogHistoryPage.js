@@ -18,7 +18,6 @@ export function renderLogHistoryPage(path, userRole) {
       
       .log-history-page {
         padding: 1.5rem;
-        background-color: #f4f6f9;
         min-height: 100vh;
       }
 
@@ -163,8 +162,12 @@ export function renderLogHistoryPage(path, userRole) {
     </style>
 
     <div class="log-history-page p-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-2xl font-bold text-gray-800 m-0">Log History System</h2>
+      <!-- Header Section -->
+      <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
+        <div>
+          <h2 class="text-4xl font-bold text-gray-800">Log History</h2>
+          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau seluruh kegiatan yang tercatat dalam sistem</p>
+        </div>
       </div>
 
       <!-- Filter Section -->

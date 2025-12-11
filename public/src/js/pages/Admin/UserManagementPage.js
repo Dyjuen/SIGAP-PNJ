@@ -564,7 +564,13 @@ const pageContent = `
     </style>
 
     <div class="user-management-page">
-        <h2 class="text-4xl font-bold text-gray-800 mb-4 header-animation">Manajemen User</h2>
+      <!-- Header Section -->
+      <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
+        <div>
+          <h2 class="text-4xl font-bold text-gray-800">Manajemen User</h2>
+          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau seluruh user yang aktif di sistem ini</p>
+        </div>
+      </div>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <!-- Search Section -->

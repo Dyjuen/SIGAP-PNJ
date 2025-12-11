@@ -492,6 +492,14 @@ export function renderRiwayatKAKPage(path, userRole) {
       }
     </style>
 
+      <!-- Header Section -->
+      <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
+        <div>
+          <h2 class="text-4xl font-bold text-gray-800">Riwayat Kegiatan</h2>
+          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau progress dan status kegiatan yang sudah berjalan</p>
+        </div>
+      </div>
+
       <!-- Search Section -->
       <div class="search-section">
         <div class="search-container">
@@ -499,7 +507,7 @@ export function renderRiwayatKAKPage(path, userRole) {
             type="text" 
             id="searchInput" 
             class="search-input" 
-            placeholder="Cari nama KAK..."
+            placeholder="Cari nama Kegiatan..."
           />
           <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
@@ -520,7 +528,7 @@ export function renderRiwayatKAKPage(path, userRole) {
           <thead>
             <tr>
               <th style="width: 60px;">No.</th>
-              <th style="min-width: 250px;">Nama KAK</th>
+              <th style="min-width: 250px;">Nama Kegiatan</th>
               <th style="min-width: 130px;">Tanggal Dibuat</th>
               <th style="min-width: 150px;">Tanggal Disetujui</th>
               <th style="text-align: center; min-width: 150px;">Status</th>

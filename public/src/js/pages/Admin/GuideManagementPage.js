@@ -394,9 +394,12 @@ export function renderGuideManagementPage(path, userRole) {
 
     <div class="guide-management-page">
       <!-- Page Header -->
-      <div class="page-header">
-        <h1 class="page-title">Manajemen Panduan</h1>
-        <p class="page-subtitle">Kelola panduan dan video tutorial untuk setiap role pengguna</p>
+      <!-- Header Section -->
+      <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
+        <div>
+          <h2 class="text-4xl font-bold text-gray-800">Manajemen Panduan</h2>
+          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Kelola panduan dan video tutorial untuk setiap role pengguna</p>
+        </div>
       </div>
 
       <!-- Action Bar -->
