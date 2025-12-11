@@ -187,7 +187,7 @@ export function renderDetailKegiatanPage(path, userRole) {
       }
 
       .bg-white.rounded-xl.shadow-lg:hover {
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
         transform: translateY(-5px);
       }
       
@@ -930,10 +930,6 @@ export function renderDetailKegiatanPage(path, userRole) {
           <div class="mb-10 spectacular-divider">
             <div class="flex justify-between items-center mb-6">
               <h5 class="font-bold text-lg" style="color: #374151;">Belanja Barang</h5>
-              <div class="text-right">
-                <span class="text-sm text-gray-500">Subtotal:</span>
-                <span id="subtotal-barang" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
-              </div>
             </div>
             <div class="overflow-x-auto rounded-lg border border-gray-200">
               <table class="min-w-full divide-y divide-gray-200">
@@ -955,16 +951,18 @@ export function renderDetailKegiatanPage(path, userRole) {
                 </tbody>
               </table>
             </div>
+            <div class="flex justify-end items-center mt-4">
+              <div class="text-right">
+                <span class="text-sm text-gray-500">Subtotal:</span>
+                <span id="subtotal-barang" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
+              </div>
+            </div>
           </div>
 
           <!-- Belanja Jasa -->
           <div class="mb-10 spectacular-divider">
             <div class="flex justify-between items-center mb-6">
               <h5 class="font-bold text-lg" style="color: #374151;">Belanja Jasa</h5>
-              <div class="text-right">
-                <span class="text-sm text-gray-500">Subtotal:</span>
-                <span id="subtotal-jasa" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
-              </div>
             </div>
             <div class="overflow-x-auto rounded-lg border border-gray-200">
               <table class="min-w-full divide-y divide-gray-200">
@@ -986,16 +984,18 @@ export function renderDetailKegiatanPage(path, userRole) {
                 </tbody>
               </table>
             </div>
+            <div class="flex justify-end items-center mt-4">
+              <div class="text-right">
+                <span class="text-sm text-gray-500">Subtotal:</span>
+                <span id="subtotal-jasa" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
+              </div>
+            </div>
           </div>
 
           <!-- Belanja Perjalanan -->
           <div class="mb-10">
             <div class="flex justify-between items-center mb-6">
               <h5 class="font-bold text-lg" style="color: #374151;">Belanja Perjalanan</h5>
-              <div class="text-right">
-                <span class="text-sm text-gray-500">Subtotal:</span>
-                <span id="subtotal-perjalanan" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
-              </div>
             </div>
             <div class="overflow-x-auto rounded-lg border border-gray-200">
               <table class="min-w-full divide-y divide-gray-200">
@@ -1016,6 +1016,12 @@ export function renderDetailKegiatanPage(path, userRole) {
                   <!-- Dynamic content will be injected here -->
                 </tbody>
               </table>
+            </div>
+            <div class="flex justify-end items-center mt-4">
+              <div class="text-right">
+                <span class="text-sm text-gray-500">Subtotal:</span>
+                <span id="subtotal-perjalanan" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
+              </div>
             </div>
           </div>
 
