@@ -1049,9 +1049,9 @@ export const pengusulSidebar = `
   
   // ============== DOM EVENT LISTENERS ==============
   
-  // Sidebar toggle functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('[SIDEBAR] 🎬 DOMContentLoaded fired');
+  // Main initialization function
+  function initSidebar() {
+    console.log('[SIDEBAR] 🎬 Initializing sidebar...');
     
     const sidebar = document.getElementById('layout-menu');
     const toggleBtn = document.getElementById('sidebar-toggle');
@@ -1065,12 +1065,18 @@ export const pengusulSidebar = `
     
     // User Profile Card Toggle
     if (userProfileCard) {
-      userProfileCard.addEventListener('click', function(e) {
+      // Remove old listeners to avoid duplicates (optional but good practice)
+      const newCard = userProfileCard.cloneNode(true);
+      if (userProfileCard.parentNode) {
+        userProfileCard.parentNode.replaceChild(newCard, userProfileCard);
+      }
+      
+      newCard.addEventListener('click', function(e) {
         e.preventDefault();
         
         // Only allow expansion when sidebar is expanded on desktop
         const isDesktop = window.innerWidth >= 1200;
-        const isSidebarExpanded = sidebar.classList.contains('sidebar-expanded-js');
+        const isSidebarExpanded = sidebar && sidebar.classList.contains('sidebar-expanded-js');
         
         if (!isDesktop || isSidebarExpanded) {
           this.classList.toggle('expanded');
@@ -1092,14 +1098,20 @@ export const pengusulSidebar = `
       const href = link.getAttribute('href');
       if (href && href !== '#' && currentPath.includes(href)) {
         link.classList.add('active');
-        link.closest('.menu-item').classList.add('active');
+        const menuItem = link.closest('.menu-item');
+        if (menuItem) menuItem.classList.add('active');
       }
     });
     
     // Logout handler
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', function(e) {
+      const newLogout = logoutBtn.cloneNode(true);
+      if (logoutBtn.parentNode) {
+        logoutBtn.parentNode.replaceChild(newLogout, logoutBtn);
+      }
+      
+      newLogout.addEventListener('click', function(e) {
         e.preventDefault();
         if (confirm('Apakah Anda yakin ingin logout?')) {
           // Clear localStorage
@@ -1113,11 +1125,19 @@ export const pengusulSidebar = `
     
     // Close user profile when clicking outside (mobile)
     document.addEventListener('click', function(e) {
-      if (userProfileCard && !userProfileCard.contains(e.target)) {
-        userProfileCard.classList.remove('expanded');
+      const card = document.getElementById('user-profile-card');
+      if (card && !card.contains(e.target)) {
+        card.classList.remove('expanded');
       }
     });
-  });
+  }
+
+  // Execute initialization immediately if DOM is ready, otherwise wait
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSidebar);
+  } else {
+    initSidebar();
+  }
   
   // Backup: Also try on window load
   window.addEventListener('load', function() {

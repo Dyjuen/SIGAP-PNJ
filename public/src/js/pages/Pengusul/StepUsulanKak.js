@@ -1721,13 +1721,15 @@ export function renderUsulanKakPage(path, userRole) {
         section.innerHTML = `
                   <div class="flex justify-between items-center mb-6">
                     <h5 class="font-bold text-lg" style="color: #374151;">${kategori.nama}</h5>
+                  </div>
+                  <div id="rab-items-container-${kategori.kategori_belanja_id}">
+                      <!-- New RAB items will be inserted here -->
+                  </div>
+                  <div class="flex justify-end items-center mb-6">
                     <div class="text-right">
                         <span class="text-sm text-gray-500">Subtotal:</span>
                         <span id="subtotal-${kategori.kategori_belanja_id}" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
                     </div>
-                  </div>
-                  <div id="rab-items-container-${kategori.kategori_belanja_id}">
-                      <!-- New RAB items will be inserted here -->
                   </div>
                   <button type="button" class="ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-cyan-300" style="background: #00BCD4; color: #FFFFFF;" onmouseover="this.style.background='#0097A7';" onmouseout="this.style.background='#00BCD4'," onclick="addRabItem(${kategori.kategori_belanja_id})">
                       Tambah Item
