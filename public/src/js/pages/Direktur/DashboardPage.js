@@ -8,6 +8,7 @@ export function DirekturDashboardPage(path, userRole) {
   const icons = {
     trend: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`,
     money: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+    rupiah: `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-weight="bold" stroke="none" fill="currentColor">Rp</text></svg>`,
     pie: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>`,
     check: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
     clock: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
@@ -556,7 +557,7 @@ export function DirekturDashboardPage(path, userRole) {
     const cards = [
       { label: 'Total Pengajuan', val: overview.total_kak, icon: icons.doc, type: 'card-cyan-filled', delay: '0s' },
       { label: 'Kegiatan Selesai', val: overview.kegiatan_selesai, icon: icons.check, type: 'card-glass', delay: '0.1s' },
-      { label: 'Total Anggaran', val: formatMoney(overview.dana_diminta), icon: icons.money, type: 'card-cyan-filled', delay: '0.2s' },
+      { label: 'Total Anggaran', val: formatMoney(overview.dana_diminta), icon: icons.rupiah, type: 'card-cyan-filled', delay: '0.2s' },
       { label: 'Realisasi Dana', val: formatMoney(overview.dana_terserap), icon: icons.pie, type: 'card-glass', delay: '0.3s' }
     ];
 
@@ -815,7 +816,13 @@ export function DirekturDashboardPage(path, userRole) {
       return;
     }
 
-    container.innerHTML = by_jurusan.map((j, index) => `
+    const sortedUnits = [...by_jurusan].sort((a, b) => {
+      if (a.nama_jurusan === 'Unit Lain') return 1;
+      if (b.nama_jurusan === 'Unit Lain') return -1;
+      return a.nama_jurusan.localeCompare(b.nama_jurusan);
+    });
+
+    container.innerHTML = sortedUnits.map((j, index) => `
       <div class="holo-card card-glass unit-card" data-index="${index}">
         <div class="unit-head">
           <div class="unit-name">${j.nama_jurusan}</div>
@@ -853,7 +860,7 @@ export function DirekturDashboardPage(path, userRole) {
     cards.forEach(card => {
       card.addEventListener('click', () => {
         const index = card.getAttribute('data-index');
-        openUnitModal(by_jurusan[index]);
+        openUnitModal(sortedUnits[index]);
       });
     });
   }

@@ -29,7 +29,7 @@ html, body {
   min-width: 0; /* Mencegah flex item meluap */
   /* Transisi untuk margin-left agar pergeseran konten halus */
   transition: margin-left 0.28s ease-in-out;
-  margin-top: -67px;
+  /* margin-top: -67px;  REMOVED to fix unclickable button area */
 }
 
 /* State default / role lain (non-Pengusul) - sidebar collapsed 70px */

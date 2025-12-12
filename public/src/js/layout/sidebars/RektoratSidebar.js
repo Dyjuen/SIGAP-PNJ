@@ -794,7 +794,7 @@ export const rektoratSidebar = `
         </div>
         <div class="user-info">
           <p class="user-name" id="user-name"></p>
-          <p class="user-role" id="user-role"></p>
+          <p class="user-role">Direktur</p>
         </div>
       </div>
       <div class="user-profile-details">

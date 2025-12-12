@@ -166,6 +166,7 @@ export function renderPengusulDashboardPage(path, userRole) {
       /* Button Animations */
       .btn {
         position: relative;
+        z-index: 1;
         overflow: hidden;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -395,6 +396,8 @@ export function renderPengusulDashboardPage(path, userRole) {
         opacity: 0;
         animation: slideInRight 0.6s ease-out forwards;
         margin-bottom: 1.5rem !important;
+        position: relative;
+        z-index: 1050;
       }
 
 
@@ -465,14 +468,14 @@ export function renderPengusulDashboardPage(path, userRole) {
         <h2 class="text-4xl font-bold text-gray-800">Dashboard</h2>
         <div class="flex gap-3">
           <button id="btn-tambah-usulan" class="btn btn-tambah-akun inline-flex items-center gap-2 px-4 py-2 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             Tambah Usulan
           </button>
           <button id="btn-ajukan-kegiatan" class="btn btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
@@ -532,9 +535,6 @@ export function renderPengusulDashboardPage(path, userRole) {
           <div class="rounded-xl">
             <div class="w-full flex justify-between items-center">
               <h3 class="text-xl font-bold text-gray-800 mb-4">Daftar Template</h3>
-              <p class="text-sm text-gray-400 underline pr-4 mb-2 cursor-pointer" onclick="window.location.href='/pengusul/panduan'">
-                Lihat Semua
-              </p>
             </div>
             <div class="space-y-3" id="templateList">
               <div class="skeleton h-12 w-full rounded-xl"></div>
