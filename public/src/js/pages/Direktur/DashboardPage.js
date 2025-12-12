@@ -586,10 +586,8 @@ export function DirekturDashboardPage(path, userRole) {
     // 2. Cari yang gap (sisa) anggarannya paling besar
     const worst = [...by_jurusan].sort((a, b) => (b.dana_diminta - b.dana_terserap) - (a.dana_diminta - a.dana_terserap))[0] || { nama_jurusan: '-', dana_diminta: 0, dana_terserap: 0 };
 
-    // 3. Hitung Growth dari bulan lalu
-    const last = trends[trends.length - 1]?.dana_diminta || 0;
-    const prev = trends[trends.length - 2]?.dana_diminta || 0;
-    const growth = prev ? (((last - prev) / prev) * 100).toFixed(1) : 0;
+    // 3. Hitung Growth (Budget Growth from API)
+    const growth = state.data.overview.budget_growth || 0;
 
     box.innerHTML = `
     <div style="

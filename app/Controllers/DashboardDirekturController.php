@@ -163,8 +163,8 @@ class DashboardDirekturController
             ? round(($danaTerserap / $danaDiminta) * 100, 2)
             : 0;
 
-        // Growth comparison (vs previous period)
-        $growth = $this->calculateGrowth($startDate);
+        // Growth comparison (vs previous period) - Now Budget Based
+        $budgetGrowth = $this->calculateBudgetGrowth($startDate);
 
         return [
             'total_kak' => (int) $totalKak,
@@ -174,7 +174,7 @@ class DashboardDirekturController
             'dana_diminta' => (float) $danaDiminta,
             'dana_terserap' => (float) $danaTerserap,
             'persentase_serapan' => (float) $persentaseSerapan,
-            'growth_vs_previous' => $growth
+            'budget_growth' => $budgetGrowth // Renamed for clarity
         ];
     }
 
@@ -410,31 +410,51 @@ class DashboardDirekturController
     }
 
     /**
-     * Helper: Get total dana terserap across all kegiatan
+     * Helper: Get total dana terserap across all kegiatan (Optimized)
      */
     private function getTotalDanaTerserap($startDate)
     {
-        // Get all kegiatan IDs in period
+        // Query 1: Completed Projects (Use Realisasi Anggaran)
         $this->db->query("
-            SELECT k.kegiatan_id, k.kak_id
+            SELECT COALESCE(SUM(
+                COALESCE(tka.realisasi_volume1, 1) * 
+                COALESCE(tka.realisasi_volume2, 1) * 
+                COALESCE(tka.realisasi_volume3, 1) * 
+                COALESCE(tka.realisasi_harga_satuan, 0)
+            ), 0) as total
             FROM t_kegiatan k
             JOIN t_kak t ON k.kak_id = t.kak_id
+            JOIN t_kak_anggaran tka ON t.kak_id = tka.kak_id
+            JOIN t_kegiatan_approval ka ON k.kegiatan_id = ka.kegiatan_id
             WHERE t.created_at >= :start_date
+            AND ka.approval_level = 'Bendahara-Setor'
+            AND ka.status = 'Disetujui'
         ");
         $this->db->bind(':start_date', $startDate);
-        $kegiatanList = $this->db->resultSet();
+        $totalCompleted = $this->db->single()['total'];
 
-        $totalTerserap = 0;
+        // Query 2: In Progress Projects (Use Pencairan)
+        $this->db->query("
+            SELECT COALESCE(SUM(pd.jumlah_dicairkan), 0) as total
+            FROM t_kegiatan k
+            JOIN t_kak t ON k.kak_id = t.kak_id
+            JOIN t_pencairan_dana pd ON k.kegiatan_id = pd.kegiatan_id
+            WHERE t.created_at >= :start_date
+            AND NOT EXISTS (
+                SELECT 1 FROM t_kegiatan_approval ka 
+                WHERE ka.kegiatan_id = k.kegiatan_id 
+                AND ka.approval_level = 'Bendahara-Setor' 
+                AND ka.status = 'Disetujui'
+            )
+        ");
+        $this->db->bind(':start_date', $startDate);
+        $totalInProgress = $this->db->single()['total'];
 
-        foreach ($kegiatanList as $kegiatan) {
-            $totalTerserap += $this->getDanaTerserap($kegiatan['kegiatan_id'], $kegiatan['kak_id']);
-        }
-
-        return $totalTerserap;
+        return $totalCompleted + $totalInProgress;
     }
 
     /**
-     * Helper: Get dana terserap by user IDs (for per-jurusan calculation)
+     * Helper: Get dana terserap by user IDs (Optimized)
      */
     private function getDanaTereserapByUserIds($userIds, $startDate)
     {
@@ -442,71 +462,51 @@ class DashboardDirekturController
 
         $userIdsString = implode(',', $userIds);
 
+        // Query 1: Completed
         $this->db->query("
-            SELECT k.kegiatan_id, k.kak_id
+            SELECT COALESCE(SUM(
+                COALESCE(tka.realisasi_volume1, 1) * 
+                COALESCE(tka.realisasi_volume2, 1) * 
+                COALESCE(tka.realisasi_volume3, 1) * 
+                COALESCE(tka.realisasi_harga_satuan, 0)
+            ), 0) as total
             FROM t_kegiatan k
             JOIN t_kak t ON k.kak_id = t.kak_id
+            JOIN t_kak_anggaran tka ON t.kak_id = tka.kak_id
+            JOIN t_kegiatan_approval ka ON k.kegiatan_id = ka.kegiatan_id
             WHERE t.pengusul_user_id IN ({$userIdsString})
             AND t.created_at >= :start_date
+            AND ka.approval_level = 'Bendahara-Setor'
+            AND ka.status = 'Disetujui'
         ");
         $this->db->bind(':start_date', $startDate);
-        $kegiatanList = $this->db->resultSet();
+        $totalCompleted = $this->db->single()['total'];
 
-        $totalTerserap = 0;
-
-        foreach ($kegiatanList as $kegiatan) {
-            $totalTerserap += $this->getDanaTerserap($kegiatan['kegiatan_id'], $kegiatan['kak_id']);
-        }
-
-        return $totalTerserap;
-    }
-
-    /**
-     * Helper: Get dana terserap for single kegiatan
-     */
-    private function getDanaTerserap($kegiatanId, $kakId)
-    {
-        // Check if LPJ Done (Bendahara-Setor Disetujui)
+        // Query 2: In Progress
         $this->db->query("
-            SELECT 1 as done
-            FROM t_kegiatan_approval
-            WHERE kegiatan_id = :kegiatan_id
-            AND approval_level = 'Bendahara-Setor'
-            AND status = 'Disetujui'
+            SELECT COALESCE(SUM(pd.jumlah_dicairkan), 0) as total
+            FROM t_kegiatan k
+            JOIN t_kak t ON k.kak_id = t.kak_id
+            JOIN t_pencairan_dana pd ON k.kegiatan_id = pd.kegiatan_id
+            WHERE t.pengusul_user_id IN ({$userIdsString})
+            AND t.created_at >= :start_date
+            AND NOT EXISTS (
+                SELECT 1 FROM t_kegiatan_approval ka 
+                WHERE ka.kegiatan_id = k.kegiatan_id 
+                AND ka.approval_level = 'Bendahara-Setor' 
+                AND ka.status = 'Disetujui'
+            )
         ");
-        $this->db->bind(':kegiatan_id', $kegiatanId);
-        $lpjDone = $this->db->single();
+        $this->db->bind(':start_date', $startDate);
+        $totalInProgress = $this->db->single()['total'];
 
-        if ($lpjDone) {
-            // Sum dari realisasi (manual calculation)
-            $this->db->query("
-                SELECT COALESCE(SUM(
-                    COALESCE(realisasi_volume1, 1) *
-                    COALESCE(realisasi_volume2, 1) *
-                    COALESCE(realisasi_volume3, 1) *
-                    COALESCE(realisasi_harga_satuan, 0)
-                ), 0) as total
-                FROM t_kak_anggaran
-                WHERE kak_id = :kak_id
-            ");
-            $this->db->bind(':kak_id', $kakId);
-            return $this->db->single()['total'];
-        } else {
-            // Sum dari pencairan dana
-            $this->db->query("
-                SELECT COALESCE(SUM(jumlah_dicairkan), 0) as total
-                FROM t_pencairan_dana
-                WHERE kegiatan_id = :kegiatan_id
-            ");
-            $this->db->bind(':kegiatan_id', $kegiatanId);
-            return $this->db->single()['total'];
-        }
+        return $totalCompleted + $totalInProgress;
     }
 
     /**
-     * Helper: Calculate growth percentage vs previous period
+     * Helper: Calculate Budget Growth percentage vs previous period
      */
-    private function calculateGrowth($startDate)
+    private function calculateBudgetGrowth($startDate)
     {
         $currentStart = new \DateTime($startDate);
         $currentEnd = new \DateTime();
@@ -519,32 +519,34 @@ class DashboardDirekturController
         $previousEnd = clone $currentStart;
         $previousEnd->modify("-1 day");
 
-        // Current period count
+        // Current period Budget
         $this->db->query("
-            SELECT COUNT(*) as total
-            FROM t_kegiatan k
-            JOIN t_kak t ON k.kak_id = t.kak_id
+            SELECT COALESCE(SUM(tka.jumlah_diusulkan), 0) as total
+            FROM t_kak_anggaran tka
+            JOIN t_kak t ON tka.kak_id = t.kak_id
             WHERE t.created_at >= :start_date
+            AND t.status_id != 4
         ");
         $this->db->bind(':start_date', $startDate);
-        $currentCount = $this->db->single()['total'];
+        $currentBudget = $this->db->single()['total'];
 
-        // Previous period count
+        // Previous period Budget
         $this->db->query("
-            SELECT COUNT(*) as total
-            FROM t_kegiatan k
-            JOIN t_kak t ON k.kak_id = t.kak_id
+            SELECT COALESCE(SUM(tka.jumlah_diusulkan), 0) as total
+            FROM t_kak_anggaran tka
+            JOIN t_kak t ON tka.kak_id = t.kak_id
             WHERE t.created_at BETWEEN :start AND :end
+            AND t.status_id != 4
         ");
         $this->db->bind(':start', $previousStart->format('Y-m-d'));
         $this->db->bind(':end', $previousEnd->format('Y-m-d'));
-        $previousCount = $this->db->single()['total'];
+        $previousBudget = $this->db->single()['total'];
 
-        if ($previousCount == 0) {
-            return $currentCount > 0 ? 100 : 0;
+        if ($previousBudget == 0) {
+            return $currentBudget > 0 ? 100 : 0;
         }
 
-        $growth = (($currentCount - $previousCount) / $previousCount) * 100;
+        $growth = (($currentBudget - $previousBudget) / $previousBudget) * 100;
         return round($growth, 2);
     }
 
