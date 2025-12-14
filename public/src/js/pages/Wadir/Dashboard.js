@@ -61,7 +61,7 @@ export function renderWadirDashboardPage(path, userRole) {
               <th>Tanggal Diajukan</th>
               <th>Catatan PPK</th>
               <th style="text-align: center;">Status</th>
-              <th style="text-align: center;">Aksi</th>
+              <th style="width: 140px; text-align: center;">Aksi</th>
             </tr>
           </thead>
           <tbody id="monitoringTableBody">
@@ -368,25 +368,49 @@ export function renderWadirDashboardPage(path, userRole) {
           <span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>
         </td>
         <td style="text-align: center;">
-          <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
-            <button class="btn btn-sm btn-view-detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-id="${kegiatan.kak_id}" title="Lihat">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>          
+          <div class="dropdown">
+            <button type="button" class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" data-bs-boundary="window" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" style="border: 2px solid #e5e7eb; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dark"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle><circle cx="12" cy="5" r="1"></circle></svg>
             </button>
-            <button class="btn btn-sm btn-preview-pdf" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-kak-id="${kegiatan.kak_id}" title="Lihat PDF">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-search"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
-            </button>
-            ${kegiatan.surat_pengantar_path ? `
-            <button class="btn btn-sm btn-preview-surat" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-id="${kegiatan.kegiatan_id}" title="Preview Surat Pengantar">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-text"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg>
-            </button>` : ''}
-            <button class="btn btn-sm btn-approve" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-id="${
-              kegiatan.kegiatan_id
-            }" title="Setujui">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
-            </button>
-            <button class="btn btn-sm btn-download-pdf" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-kak-id="${kegiatan.kak_id}" title="Download PDF">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-            </button>
+            <div class="dropdown-menu dropdown-menu-end m-0">
+              <a class="dropdown-item btn-view-detail" href="javascript:void(0);" data-id="${kegiatan.kak_id}">
+                <div class="d-flex align-items-center text-info">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> 
+                  Detail
+                </div>
+              </a>
+              <a class="dropdown-item btn-preview-pdf" href="javascript:void(0);" data-kak-id="${kegiatan.kak_id}">
+                <div class="d-flex align-items-center text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
+                  KAK PDF
+                </div>
+              </a>
+              ${kegiatan.surat_pengantar_path ? `
+              <a class="dropdown-item btn-preview-surat" href="javascript:void(0);" data-id="${kegiatan.kegiatan_id}">
+                <div class="d-flex align-items-center text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
+                  Surat PDF
+                </div>
+              </a>` : ''}
+              <a class="dropdown-item btn-approve" href="javascript:void(0);" data-id="${kegiatan.kegiatan_id}">
+                <div class="d-flex align-items-center text-success">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><polyline points="20 6 9 17 4 12"></polyline></svg> 
+                  Setujui
+                </div>
+              </a>
+              <a class="dropdown-item btn-revise" href="javascript:void(0);" data-id="${kegiatan.kegiatan_id}">
+                <div class="d-flex align-items-center text-warning">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> 
+                  Revisi
+                </div>
+              </a>
+              <a class="dropdown-item btn-download-pdf" href="javascript:void(0);" data-kak-id="${kegiatan.kak_id}">
+                <div class="d-flex align-items-center text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
+                  Unduh
+                </div>
+              </a>
+            </div>
           </div>
         </td>
       `;

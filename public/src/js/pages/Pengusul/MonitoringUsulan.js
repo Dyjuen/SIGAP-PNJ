@@ -849,7 +849,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
     if (!confirmed) return;
 
     Swal.fire({
-      title: 'Mengajukan Usulan...',
+      title: 'Mengajukan Usulan...', 
       text: 'Harap tunggu, sistem sedang memproses permintaan Anda.',
       allowOutsideClick: false,
       didOpen: () => {
@@ -894,39 +894,87 @@ export function renderMonitoringUsulanPage(path, userRole) {
   }
 
   function getActionButtons(statusId, id, activityName) {
+    let buttons = '';
+    
     switch (statusId) {
       case 1: // Draft
       case 5: // Revisi
-        return `
-          <button class="btn btn-sm btn-primary me-1 btn-ajukan" data-id="${id}" title="Ajukan untuk Verifikasi">
-            ${statusId === 1 ? "Ajukan" : "Ajukan Ulang"}
-          </button>
-          <button class="btn btn-sm btn-edit-profile me-1" data-id="${id}" data-status="${statusId}" title="Edit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
-            <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
-          </button>
-          <button class="btn btn-sm btn-delete" data-id="${id}" data-name="${activityName}" title="Hapus" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
-            <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-          </button>
+        buttons = `
+          <li>
+            <a class="dropdown-item btn-ajukan" href="javascript:void(0);" data-id="${id}">
+              <div class="d-flex align-items-center text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> 
+                ${statusId === 1 ? "Ajukan" : "Ajukan Ulang"}
+              </div>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item btn-edit-profile" href="javascript:void(0);" data-id="${id}" data-status="${statusId}">
+              <div class="d-flex align-items-center text-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> 
+                Edit
+              </div>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item btn-delete" href="javascript:void(0);" data-id="${id}" data-name="${activityName}">
+              <div class="d-flex align-items-center text-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> 
+                Hapus
+              </div>
+            </a>
+          </li>
         `;
+        break;
       case 2: // Sedang Diverifikasi
       case 3: // Disetujui
-        return `
-          <button class="btn btn-sm btn-detail" data-id="${id}" title="Lihat Detail" style="background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%); color: white; border: none;">
-            <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-          </button>
+        buttons = `
+          <li>
+            <a class="dropdown-item btn-detail" href="javascript:void(0);" data-id="${id}">
+              <div class="d-flex align-items-center text-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> 
+                Lihat Detail
+              </div>
+            </a>
+          </li>
         `;
+        break;
       case 4: // Ditolak
-        return `
-          <button class="btn btn-sm btn-edit-profile me-1" data-id="${id}" data-status="${statusId}" title="Edit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
-            <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
-          </button>
-          <button class="btn btn-sm btn-delete" data-id="${id}" data-name="${activityName}" title="Hapus" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
-            <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-          </button>
+        buttons = `
+          <li>
+            <a class="dropdown-item btn-edit-profile" href="javascript:void(0);" data-id="${id}" data-status="${statusId}">
+              <div class="d-flex align-items-center text-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> 
+                Edit
+              </div>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item btn-delete" href="javascript:void(0);" data-id="${id}" data-name="${activityName}">
+              <div class="d-flex align-items-center text-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> 
+                Hapus
+              </div>
+            </a>
+          </li>
         `;
+        break;
       default:
         return `<span class="text-muted">-</span>`;
     }
+
+    return `
+      <div class="dropdown">
+        <button type="button" class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" data-bs-boundary="window" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" style="border: 2px solid #e5e7eb; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dark"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle><circle cx="12" cy="5" r="1"></circle></svg>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end m-0">
+          ${buttons}
+        </div>
+      </div>
+    `;
   }
 
   // Function untuk render tombol Dokumen (Preview & Download)
@@ -1292,9 +1340,9 @@ export function renderMonitoringUsulanPage(path, userRole) {
     const selectAll = document.getElementById("selectAll");
 
     if (selectAll) {
-      selectAll.checked =
+      selectAll.checked = 
         checkedCount > 0 && checkedCount === allCheckboxes.length;
-      selectAll.indeterminate =
+      selectAll.indeterminate = 
         checkedCount > 0 && checkedCount < allCheckboxes.length;
     }
   }
@@ -1410,12 +1458,12 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
     // Next buttons
     paginationContainer.innerHTML += `
-      <li class="page-item ${
+      <li class="page-item ${ 
         state.currentPage === state.totalPages ? "disabled" : ""
       }">
         <a class="page-link" href="#" id="btnNextPage">›</a>
       </li>
-      <li class="page-item ${
+      <li class="page-item ${ 
         state.currentPage === state.totalPages ? "disabled" : ""
       }">
         <a class="page-link" href="#" id="btnLastPage">»</a>

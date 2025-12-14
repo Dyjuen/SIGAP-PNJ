@@ -133,14 +133,32 @@ export function renderDashboardVerifikator(path, userRole) {
       
       /* 6. Aksi Buttons */
       .btn-revisi {
-        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important; 
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
         color: white !important;
         box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
       }
       .btn-delete {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; 
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
         box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
         color: white !important;
+      }
+
+      /* 7. Responsive Layout Switching */
+      .desktop-layout {
+        display: flex;
+      }
+      .mobile-layout {
+        display: none;
+      }
+
+      /* Mobile breakpoint - switches to dropdown */
+      @media (max-width: 768px) {
+        .desktop-layout {
+          display: none;
+        }
+        .mobile-layout {
+          display: block;
+        }
       }
       
       /* 7. Icon Styling */
@@ -321,7 +339,7 @@ export function renderDashboardVerifikator(path, userRole) {
                     <th>Pengusul</th>
                     <th>Tanggal Diajukan</th>
                     <th style="text-align: center;">Status</th>
-                    <th style="text-align: center;">Aksi</th>
+                    <th style="width: 120px; text-align: center;">Aksi</th>
                 </tr>
                 </thead>
                 <tbody id="usulanTableBody">
@@ -608,28 +626,68 @@ export function renderDashboardVerifikator(path, userRole) {
   }
 
   function getActionButtons(statusId, kakId) {
+    let buttons = '';
+    
     switch (statusId) {
       case 2: // Menunggu Verifikasi
-        return `
-          <button class="btn btn-sm me-2 btn-approve" data-id="${kakId}" title="Setujui" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; border: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
-          </button>
-          <button class="btn btn-sm me-2 btn-revise" data-id="${kakId}" title="Revisi" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
-          </button>
-          <button class="btn btn-sm me-2 btn-reject" data-id="${kakId}" title="Tolak" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-          </button>
-          <button class="btn btn-sm me-2 btn-preview-pdf" data-kak-id="${kakId}" title="Lihat PDF" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-search"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
-          </button>
-          <button class="btn btn-sm btn-download-pdf" data-kak-id="${kakId}" title="Download PDF" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; border: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-          </button>
+        buttons = `
+          <li>
+            <a class="dropdown-item btn-approve" href="javascript:void(0);" data-id="${kakId}">
+              <div class="d-flex align-items-center text-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><polyline points="20 6 9 17 4 12"></polyline></svg> 
+                Setujui
+              </div>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item btn-revise" href="javascript:void(0);" data-id="${kakId}">
+              <div class="d-flex align-items-center text-warning">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> 
+                Revisi
+              </div>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item btn-reject" href="javascript:void(0);" data-id="${kakId}">
+              <div class="d-flex align-items-center text-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> 
+                Tolak
+              </div>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item btn-preview-pdf" href="javascript:void(0);" data-kak-id="${kakId}">
+              <div class="d-flex align-items-center text-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
+                Lihat PDF
+              </div>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item btn-download-pdf" href="javascript:void(0);" data-kak-id="${kakId}">
+              <div class="d-flex align-items-center text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
+                Download
+              </div>
+            </a>
+          </li>
         `;
+        break;
       default:
-        return `<span class="text-muted">Tidak ada aksi</span>`;
+        return `<span class="text-muted">-</span>`;
     }
+
+    return `
+      <div class="dropdown">
+        <button type="button" class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" data-bs-boundary="window" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" style="border: 2px solid #e5e7eb; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dark"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle><circle cx="12" cy="5" r="1"></circle></svg>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end m-0">
+          ${buttons}
+        </div>
+      </div>
+    `;
   }
 
   // ==============================================
@@ -660,19 +718,19 @@ export function renderDashboardVerifikator(path, userRole) {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>
-          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${
-            startIndex + index + 1
+          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${ 
+            startIndex + index + 1 
           }</span>
         </td>
         <td><strong>${usulan.nama_kegiatan || "Tanpa Judul"}</strong></td>
         <td><strong>${usulan.pengusul_nama || "Tanpa Pengusul"}</strong></td>
         <td>${formatDate(usulan.created_at)}</td>
         <td style="text-align: center;">
-          <span class="badge ${
-            statusBadge.class
-          }" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${
-        statusBadge.text
-      }</span>
+          <span class="badge ${ 
+            statusBadge.class 
+          }" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${ 
+            statusBadge.text 
+          }</span>
         </td>
         <td style="text-align: center;">${actionButtons}</td>
       `;
@@ -708,8 +766,8 @@ export function renderDashboardVerifikator(path, userRole) {
 
     const pageLink = (page, text, disabled = false) => {
       const li = document.createElement("li");
-      li.className = `page-item ${state.currentPage === page ? "active" : ""} ${
-        disabled ? "disabled" : ""
+      li.className = `page-item ${state.currentPage === page ? "active" : ""} ${ 
+        disabled ? "disabled" : "" 
       }`;
       li.innerHTML = `<a class="page-link" href="#" data-page="${page}">${text}</a>`;
       return li;

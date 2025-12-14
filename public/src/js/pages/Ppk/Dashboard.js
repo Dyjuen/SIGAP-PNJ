@@ -63,7 +63,7 @@ export function renderPpkDashboardPage(path, userRole) {
               <th>Pengusul</th>
               <th>Tanggal Diajukan</th>
               <th style="text-align: center;">Status</th>
-              <th style="text-align: center;">Aksi</th>
+              <th style="width: 140px; text-align: center;">Aksi</th>
             </tr>
           </thead>
           <tbody id="monitoringTableBody">
@@ -328,53 +328,139 @@ export function renderPpkDashboardPage(path, userRole) {
         return;
     }
 
-    data.forEach((kegiatan, index) => {
-      const row = document.createElement("tr");
+        data.forEach((kegiatan, index) => {
 
-      row.innerHTML = `
-        <td style="text-align: center;">
-          <!-- Checkbox removed -->
-        </td>
-        <td>
-          <span class="number-badge">${index + 1}</span>
-        </td>
-        <td>
-          <strong>${kegiatan.nama_kegiatan}</strong>
-        </td>
-        <td>
-          <strong>${kegiatan.pengusul_nama}</strong>
-          <div class="text-muted">${kegiatan.pengusul_role || ''}</div>
-        </td>
-        <td>
-          <div class="date-text">${formatDate(kegiatan.created_at)}</div>
-        </td>
-        <td style="text-align: center;">
-          <span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>
-        </td>
-        <td style="text-align: center;">
-          <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
-            <button class="btn btn-sm btn-view-detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-id="${kegiatan.kak_id}" title="Lihat">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>          
-            </button>
-            <button class="btn btn-sm btn-preview-pdf" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-kak-id="${kegiatan.kak_id}" title="Lihat PDF">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-search"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
-            </button>
-            ${kegiatan.surat_pengantar_path ? `
-            <button class="btn btn-sm btn-preview-surat" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-id="${kegiatan.kegiatan_id}" title="Preview Surat Pengantar">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-text"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg>
-            </button>` : ''}
-            <button class="btn btn-sm btn-approve" style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-id="${kegiatan.kegiatan_id}" title="Setujui">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
-            </button>
-            <button class="btn btn-sm btn-download-pdf" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" data-kak-id="${kegiatan.kak_id}" title="Download PDF">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-            </button>
-          </div>
-        </td>
-      `;
+          const row = document.createElement("tr");
 
-      tbody.appendChild(row);
-    });
+    
+
+          row.innerHTML = `
+
+            <td style="text-align: center;">
+
+              <!-- Checkbox removed -->
+
+            </td>
+
+            <td>
+
+              <span class="number-badge">${index + 1}</span>
+
+            </td>
+
+            <td>
+
+              <strong>${kegiatan.nama_kegiatan}</strong>
+
+            </td>
+
+            <td>
+
+              <strong>${kegiatan.pengusul_nama}</strong>
+
+              <div class="text-muted">${kegiatan.pengusul_role || ''}</div>
+
+            </td>
+
+            <td>
+
+              <div class="date-text">${formatDate(kegiatan.created_at)}</div>
+
+            </td>
+
+            <td style="text-align: center;">
+
+              <span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>
+
+            </td>
+
+                                        <td style="text-align: center;">
+
+                                          <div class="dropdown">
+
+                                            <button type="button" class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false">
+
+                                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-body-secondary"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle><circle cx="12" cy="5" r="1"></circle></svg>
+
+                                            </button>
+
+                                            <div class="dropdown-menu dropdown-menu-end m-0">
+
+                          <a class="dropdown-item btn-view-detail" href="javascript:void(0);" data-id="${kegiatan.kak_id}">
+
+                            <div class="d-flex align-items-center text-info">
+
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> 
+
+                              Detail
+
+                            </div>
+
+                          </a>
+
+                          <a class="dropdown-item btn-preview-pdf" href="javascript:void(0);" data-kak-id="${kegiatan.kak_id}">
+
+                            <div class="d-flex align-items-center text-primary">
+
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
+
+                              KAK PDF
+
+                            </div>
+
+                          </a>
+
+                          ${kegiatan.surat_pengantar_path ? `
+
+                          <a class="dropdown-item btn-preview-surat" href="javascript:void(0);" data-id="${kegiatan.kegiatan_id}">
+
+                            <div class="d-flex align-items-center text-primary">
+
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
+
+                              Surat PDF
+
+                            </div>
+
+                          </a>` : ''}
+
+                          <a class="dropdown-item btn-approve" href="javascript:void(0);" data-id="${kegiatan.kegiatan_id}">
+
+                            <div class="d-flex align-items-center text-success">
+
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><polyline points="20 6 9 17 4 12"></polyline></svg> 
+
+                              Setujui
+
+                            </div>
+
+                          </a>
+
+                          <a class="dropdown-item btn-download-pdf" href="javascript:void(0);" data-kak-id="${kegiatan.kak_id}">
+
+                            <div class="d-flex align-items-center text-primary">
+
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
+
+                              Unduh
+
+                            </div>
+
+                          </a>
+
+                        </div>
+
+                      </div>
+
+                    </td>
+
+          `;
+
+    
+
+          tbody.appendChild(row);
+
+        });
 
     attachEventListeners();
   }
@@ -384,40 +470,43 @@ export function renderPpkDashboardPage(path, userRole) {
   // ==============================================
   function attachEventListeners() {
 
-  // --- APPROVE BUTTON ---
-  document.querySelectorAll(".btn-approve").forEach((btn) => {
-    btn.addEventListener("click", () =>
-      handleApproveAction(btn.dataset.id)
-    );
-  });
-
-  // --- PREVIEW SURAT BUTTON ---
-  document.querySelectorAll(".btn-preview-surat").forEach((btn) => {
+  // --- APPROVE BUTTON (both desktop and mobile) ---
+  document.querySelectorAll(".btn-approve, .dropdown-item.btn-approve").forEach((btn) => {
     btn.addEventListener("click", function() {
-      const kegiatanId = this.dataset.id;
-      previewSuratPengantar(kegiatanId);
+      const id = this.dataset.id || this.closest('tr')?.querySelector('.btn-approve')?.dataset.id;
+      if (id) handleApproveAction(id);
     });
   });
 
-  // --- VIEW DETAIL BUTTON ---
-      document.querySelectorAll(".btn-view-detail").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const kakId = this.dataset.id;
-        window.location.href = `/${userRole.toLowerCase()}/kegiatan/detail/${kakId}`;
-      });  
+  // --- PREVIEW SURAT BUTTON (both desktop and mobile) ---
+  document.querySelectorAll(".btn-preview-surat, .dropdown-item.btn-preview-surat").forEach((btn) => {
+    btn.addEventListener("click", function() {
+      const kegiatanId = this.dataset.id || this.closest('tr')?.querySelector('.btn-preview-surat')?.dataset.id;
+      if (kegiatanId) previewSuratPengantar(kegiatanId);
     });
-    
-      // --- PDF BUTTONS ---
-  document.querySelectorAll(".btn-preview-pdf").forEach((btn) => {
-    btn.addEventListener("click", () =>
-      handlePdfAction(btn.dataset.kakId, 'preview')
-    );
   });
 
-  document.querySelectorAll(".btn-download-pdf").forEach((btn) => {
-    btn.addEventListener("click", () =>
-      handlePdfAction(btn.dataset.kakId, 'download')
-    );
+  // --- VIEW DETAIL BUTTON (both desktop and mobile) ---
+  document.querySelectorAll(".btn-view-detail, .dropdown-item.btn-view-detail").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const kakId = this.dataset.id || this.closest('tr')?.querySelector('.btn-view-detail')?.dataset.id;
+      if (kakId) window.location.href = `/${userRole.toLowerCase()}/kegiatan/detail/${kakId}`;
+    });
+  });
+
+  // --- PDF BUTTONS (both desktop and mobile) ---
+  document.querySelectorAll(".btn-preview-pdf, .dropdown-item.btn-preview-pdf").forEach((btn) => {
+    btn.addEventListener("click", function() {
+      const kakId = this.dataset.kakId || this.closest('tr')?.querySelector('.btn-preview-pdf')?.dataset.kakId;
+      if (kakId) handlePdfAction(kakId, 'preview');
+    });
+  });
+
+  document.querySelectorAll(".btn-download-pdf, .dropdown-item.btn-download-pdf").forEach((btn) => {
+    btn.addEventListener("click", function() {
+      const kakId = this.dataset.kakId || this.closest('tr')?.querySelector('.btn-download-pdf')?.dataset.kakId;
+      if (kakId) handlePdfAction(kakId, 'download');
+    });
   });
 }
 
