@@ -159,7 +159,7 @@ export function renderLoginPage() {
             .glass-input::placeholder {
                 color: rgba(107, 114, 128, 0.7);
             }
-            
+
             /* ========== CUSTOM CHECKBOX ========== */
             .custom-checkbox {
                 appearance: none;
@@ -173,12 +173,12 @@ export function renderLoginPage() {
                 transition: all 0.2s;
                 flex-shrink: 0;
             }
-            
+
             .custom-checkbox:checked {
                 background-color: #33C8DA;
                 border-color: #33C8DA;
             }
-            
+
             .custom-checkbox:checked::after {
                 content: '';
                 position: absolute;
@@ -190,11 +190,11 @@ export function renderLoginPage() {
                 border-width: 0 2px 2px 0;
                 transform: rotate(45deg);
             }
-            
+
             .custom-checkbox:hover {
                 border-color: #33C8DA;
             }
-            
+
             .custom-checkbox:focus {
                 outline: none;
                 box-shadow: 0 0 0 3px rgba(51, 200, 218, 0.2);
@@ -333,7 +333,7 @@ export function renderLoginPage() {
                 border-color: rgba(51, 200, 218, 0.6);
                 box-shadow: 0 4px 12px rgba(51, 200, 218, 0.2);
             }
-            
+
             .captcha-container .reload-captcha-btn svg {
                 display: inline-block;
                 transition: transform 0.4s ease, color 0.3s ease !important;
@@ -393,7 +393,7 @@ export function renderLoginPage() {
                 display: none;
             }
         </style>
-        
+
         <div style="background-image: url('/assets/img/backgrounds/Auth.png'); background-size: cover; background-position: center; min-height: 100vh; position: relative; overflow: hidden;" class="flex items-center justify-center">
             <!-- Floating Circles -->
             <div class="floating-circles" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
@@ -404,7 +404,7 @@ export function renderLoginPage() {
                 <div class="float-circle circle-5"></div>
                 <div class="float-circle circle-6"></div>
             </div>
-            
+
             <style>
                 @keyframes floatCircle {
                     0%, 100% {
@@ -417,7 +417,7 @@ export function renderLoginPage() {
                         transform: translate(-15px, 15px);
                     }
                 }
-                
+
                 @keyframes floatCircle2 {
                     0%, 100% {
                         transform: translate(0, 0);
@@ -429,13 +429,13 @@ export function renderLoginPage() {
                         transform: translate(15px, -25px);
                     }
                 }
-                
+
                 .float-circle {
                     position: absolute;
                     border-radius: 50%;
                     border: 4px solid rgba(84, 210, 232, 0.3);
                 }
-                
+
                 .circle-1 {
                     width: 80px;
                     height: 80px;
@@ -443,7 +443,7 @@ export function renderLoginPage() {
                     left: 10%;
                     animation: floatCircle 18s ease-in-out infinite;
                 }
-                
+
                 .circle-2 {
                     width: 60px;
                     height: 60px;
@@ -452,7 +452,7 @@ export function renderLoginPage() {
                     animation: floatCircle2 15s ease-in-out infinite;
                     animation-delay: 2s;
                 }
-                
+
                 .circle-3 {
                     width: 100px;
                     height: 100px;
@@ -461,7 +461,7 @@ export function renderLoginPage() {
                     animation: floatCircle 20s ease-in-out infinite;
                     animation-delay: 4s;
                 }
-                
+
                 .circle-4 {
                     width: 70px;
                     height: 70px;
@@ -470,7 +470,7 @@ export function renderLoginPage() {
                     animation: floatCircle2 16s ease-in-out infinite;
                     animation-delay: 6s;
                 }
-                
+
                 .circle-5 {
                     width: 90px;
                     height: 90px;
@@ -479,7 +479,7 @@ export function renderLoginPage() {
                     animation: floatCircle 22s ease-in-out infinite;
                     animation-delay: 3s;
                 }
-                
+
                 .circle-6 {
                     width: 65px;
                     height: 65px;
@@ -498,55 +498,55 @@ export function renderLoginPage() {
                             <img src="/assets/img/logo/logoauth.svg" alt="SIGAP PNJ Logo" class="w-10 h-10">
                         </div>
                     </div>
-                    
+
                     <!-- Welcome Text -->
                     <h2 class="text-center text-3xl font-bold text-gray-800 mb-2 animate-element animate-delay-300" style="letter-spacing: -0.02em;">
-                        Welcome to SIGAP PNJ! 
+                        Selamat Datang di SIGAP PNJ!
                     </h2>
                     <p class="text-center text-gray-600 text-sm mb-6 animate-element animate-delay-400">
-                        Silahkan input username dan password kamu
+                        Silahkan masukkan nama dan pengguna dan kata sandi anda
                     </p>
 
                     <!-- Error Alert -->
                     <div id="error-alert" class="error-alert"></div>
-                    
+
                     <!-- Form -->
                     <form id="login-form">
                         <!-- Username Field -->
                         <div class="mb-4 animate-element animate-delay-500">
                             <label class="block text-gray-700 text-sm font-semibold mb-2" for="username">
-                                Username
+                                Nama Pengguna
                             </label>
                             <div class="glass-input-wrapper">
-                                <input 
-                                    class="glass-input" 
-                                    id="username" 
-                                    type="text" 
-                                    placeholder="Masukkan username Anda"
+                                <input
+                                    class="glass-input"
+                                    id="username"
+                                    type="text"
+                                    placeholder="Masukkan nama pengguna Anda"
                                     value=""
                                     required
                                 >
                             </div>
                         </div>
-                        
+
                         <!-- Password Field -->
                         <div class="mb-4 animate-element animate-delay-600">
                             <label class="block text-gray-700 text-sm font-semibold mb-2" for="password">
-                                Password
+                                Kata Sandi
                             </label>
                             <div class="glass-input-wrapper">
                                 <div class="relative">
-                                    <input 
-                                        class="glass-input" 
+                                    <input
+                                        class="glass-input"
                                         style="padding-right: 3rem;"
-                                        id="password" 
-                                        type="password" 
-                                        placeholder="Masukkan password Anda"
+                                        id="password"
+                                        type="password"
+                                        placeholder="Masukkan kata sandi Anda"
                                         value=""
                                         required
                                     >
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                                         id="togglePassword"
                                         tabindex="-1"
@@ -577,16 +577,16 @@ export function renderLoginPage() {
                                 </button>
                             </div>
                             <div class="glass-input-wrapper">
-                                <input 
-                                    class="glass-input" 
-                                    id="captcha" 
-                                    type="text" 
+                                <input
+                                    class="glass-input"
+                                    id="captcha"
+                                    type="text"
                                     placeholder="Masukkan kode captcha"
                                     required
                                 >
                             </div>
                         </div>
-                        
+
                         <!-- Remember Me & Forgot Password -->
                         <div class="flex items-center justify-between mb-6 animate-element animate-delay-800">
                             <label class="flex items-center cursor-pointer gap-2">
@@ -594,17 +594,17 @@ export function renderLoginPage() {
                                 <span class="text-sm text-gray-700">Ingat Saya</span>
                             </label>
                             <a href="/forgot-password" class="text-sm link-text">
-                                Lupa Password?
+                                Lupa Kata Sandi?
                             </a>
                         </div>
-                        
+
                         <!-- Login Button -->
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             id="login-button"
                             class="modern-button animate-element animate-delay-900"
                         >
-                            Login
+                            Masuk
                         </button>
                     </form>
 
@@ -641,13 +641,13 @@ export function renderLoginPage() {
   function setLoading(isLoading) {
     if (isLoading) {
       loginButton.disabled = true;
-      loginButton.innerHTML = window.createButtonSpinner ? window.createButtonSpinner('#ffffff') + 'Masuk...' : '<span class="spinner"></span>Loading...';
+      loginButton.innerHTML = window.createButtonSpinner ? window.createButtonSpinner('#ffffff') + 'Masuk...' : '<span class="spinner"></span>Masuk...';
       usernameInput.disabled = true;
       passwordInput.disabled = true;
       captchaInput.disabled = true;
     } else {
       loginButton.disabled = false;
-      loginButton.innerHTML = "Login";
+      loginButton.innerHTML = "Masuk";
       usernameInput.disabled = false;
       passwordInput.disabled = false;
       captchaInput.disabled = false;
@@ -753,12 +753,12 @@ export function renderLoginPage() {
   const togglePasswordButton = document.getElementById("togglePassword");
   if (passwordInput && togglePasswordButton) {
     const slashLine = togglePasswordButton.querySelector('.eye-slash-line');
-    
+
     // Set initial state based on password field type
     if (passwordInput.getAttribute("type") === "password") {
       slashLine.style.opacity = '1';
     }
-    
+
     togglePasswordButton.addEventListener("click", () => {
       const type =
         passwordInput.getAttribute("type") === "password" ? "text" : "password";

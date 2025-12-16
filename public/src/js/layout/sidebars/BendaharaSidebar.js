@@ -856,7 +856,7 @@ export const bendaharaSidebar = `
       <span class="menu-icon">
         <i class="ti ti-logout">&#xeba8;</i>
       </span>
-      <span class="menu-text">Logout</span>
+      <span class="menu-text">Keluar</span>
     </a>
   </div>
 </aside>

@@ -398,7 +398,7 @@ export function renderGuideManagementPage(path, userRole) {
       <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
         <div>
           <h2 class="text-4xl font-bold text-gray-800">Manajemen Panduan</h2>
-          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Kelola panduan dan video tutorial untuk setiap role pengguna</p>
+          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Kelola panduan dan video tutorial untuk setiap peran pengguna</p>
         </div>
       </div>
 
@@ -423,9 +423,9 @@ export function renderGuideManagementPage(path, userRole) {
         <table class="table table-modern mb-0">
           <thead>
             <tr>
-              <th style="width: 5%;">#</th>
+              <th style="width: 5%;">No</th>
               <th style="width: 30%;">Judul</th>
-              <th style="width: 20%;">Role</th>
+              <th style="width: 20%;">Peran</th>
               <th style="width: 30%;">Media</th>
               <th style="width: 15%;">Aksi</th>
             </tr>
@@ -466,10 +466,10 @@ export function renderGuideManagementPage(path, userRole) {
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label fw-semibold">Role Pengguna</label>
+                  <label class="form-label fw-semibold">Peran Pengguna</label>
                   <div class="glass-input-wrapper">
                     <select id="addRole" required>
-                      <option value="">Pilih Role</option>
+                      <option value="">Pilih Peran</option>
                       <option value="3">Pengusul</option>
                       <option value="2">Verifikator</option>
                       <option value="4">PPK</option>

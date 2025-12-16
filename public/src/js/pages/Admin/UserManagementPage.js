@@ -567,8 +567,8 @@ const pageContent = `
       <!-- Header Section -->
       <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
         <div>
-          <h2 class="text-4xl font-bold text-gray-800">Manajemen User</h2>
-          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau seluruh user yang aktif di sistem ini</p>
+          <h2 class="text-4xl font-bold text-gray-800">Manajemen Akun</h2>
+          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau seluruh akun yang aktif di sistem ini</p>
         </div>
       </div>
 
@@ -579,10 +579,10 @@ const pageContent = `
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="m21 21-4.35-4.35"></path>
               </svg>
-              <input 
-                type="text" 
-                id="searchInput" 
-                placeholder="Cari nama, username, email, atau role..."
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Cari nama, email, atau peran..."
                 autocomplete="off"
               />
               <button class="clear-search" id="clearSearch" title="Clear search">
@@ -603,8 +603,8 @@ const pageContent = `
                 <tr>
                     <th style="width: 80px;">No.</th>
                     <th>Nama Pengusul</th>
-                    <th>Username</th>
-                    <th>Role</th>
+                    <th>Nama Pengguna</th>
+                    <th>Peran</th>
                     <th style="text-align: center;">Aksi</th>
                 </tr>
                 </thead>
@@ -651,33 +651,35 @@ const pageContent = `
                 
                 <div class="col-md-6 form-group-animate">
                   <label for="editUsername" class="form-label-modern">
-                    <i class="ti ti-at" style="display: none;"></i>Username
+                    <i class="ti ti-at" style="display: none;"></i>Nama Pengguna
                   </label>
                   <div class="glass-input-wrapper">
-                    <input type="text" id="editUsername" placeholder="Masukkan username" required readonly>
+                    <input type="text" id="editUsername" placeholder="Masukkan nama pengguna" required readonly>
                   </div>
                 </div>
                 
                 <div class="col-12 form-group-animate">
                   <label for="editEmail" class="form-label-modern">
-                    <i class="ti ti-mail" style="display: none;"></i>Email Address
+                    <i class="ti ti-mail" style="display: none;"></i>Alamat Email<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="email" id="editEmail" placeholder="contoh@email.com" required>
                   </div>
                 </div>
-              <div class="row">
-                <div class="col mb-3">
-                    <label for="editRole" class="form-label">Role</label>
-                    <select id="editRole" class="form-select" required>
-                        <option value="1">Admin</option>
-                        <option value="2">Verifikator</option>
-                        <option value="3">Pengusul</option>
-                        <option value="4">PPK</option>
-                        <option value="5">Wadir</option>
-                        <option value="6">Bendahara</option>
-                        <option value="7">Rektorat</option>
-                    </select>
+              <div class="col-md-6 form-group-animate">
+                <label for="editRole" class="form-label-modern">
+                  <i class="ti ti-shield" style="display: none;"></i>Peran<span class="required-star">*</span>
+                </label>
+                <div class="glass-input-wrapper">
+                  <select id="editRole" required>
+                      <option value="1">Admin</option>
+                      <option value="2">Verifikator</option>
+                      <option value="3">Pengusul</option>
+                      <option value="4">PPK</option>
+                      <option value="5">Wadir</option>
+                      <option value="6">Bendahara</option>
+                      <option value="7">Rektorat</option>
+                  </select>
                 </div>
               </div>
                 
@@ -739,29 +741,29 @@ const pageContent = `
                 
                 <div class="col-md-6 form-group-animate">
                   <label for="addUsername" class="form-label-modern">
-                    <i class="ti ti-at" style="display: none;"></i>Username<span class="required-star">*</span>
+                    <i class="ti ti-at" style="display: none;"></i>Nama Pengguna<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
-                    <input type="text" id="addUsername" placeholder="Masukkan username" required>
+                    <input type="text" id="addUsername" placeholder="Masukkan nama pengguna" required>
                   </div>
                 </div>
-                
+
                 <div class="col-12 form-group-animate">
                   <label for="addEmail" class="form-label-modern">
-                    <i class="ti ti-mail" style="display: none;"></i>Email Address<span class="required-star">*</span>
+                    <i class="ti ti-mail" style="display: none;"></i>Alamat Email<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="email" id="addEmail" placeholder="contoh@email.com" required>
                   </div>
                 </div>
-                
+
                 <div class="col-md-6 form-group-animate">
                   <label for="addRole" class="form-label-modern">
-                    <i class="ti ti-shield" style="display: none;"></i>Role<span class="required-star">*</span>
+                    <i class="ti ti-shield" style="display: none;"></i>Peran<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
                     <select id="addRole" required>
-                      <option value="">Pilih Role</option>
+                      <option value="">Pilih Peran</option>
                       <option value="1">Admin</option>
                       <option value="2">Verifikator</option>
                       <option value="3">Pengusul</option>
@@ -775,7 +777,7 @@ const pageContent = `
                 
                 <div class="col-12 form-group-animate">
                   <label for="addPassword" class="form-label-modern">
-                    <i class="ti ti-lock" style="display: none;"></i>Password<span class="required-star">*</span>
+                    <i class="ti ti-lock" style="display: none;"></i>Kata Sandi<span class="required-star">*</span>
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="password" id="addPassword" placeholder="Minimal 6 karakter" required>
@@ -972,7 +974,7 @@ const pageContent = `
         state.users = response.data.map(user => ({
             ...user,
             // Assuming the API returns roles as an array of strings
-            role: user.roles && user.roles.length > 0 ? user.roles[0] : 'Tidak ada role',
+            role: user.roles && user.roles.length > 0 ? user.roles[0] : 'Tidak ada peran',
         }));
         state.users.sort((a, b) => a.user_id - b.user_id);
         state.allUsers = [...state.users];
@@ -1148,7 +1150,7 @@ const pageContent = `
       const newRoleId = document.getElementById('editRole').value;
 
       if (!newNama || !newUsername || !newEmail || !newRoleId) {
-        showModalError('Nama, username, email, dan role tidak boleh kosong!', 'editProfileModal');
+        showModalError('Nama, nama pengguna, email, dan peran tidak boleh kosong!', 'editProfileModal');
         return;
       }
       
@@ -1258,7 +1260,7 @@ const pageContent = `
 
       // Validasi form
       if (!nama || !username || !email || !password || !roleId) {
-        showModalError('Semua field harus diisi!', 'tambahAkunModal');
+        showModalError('Nama, nama pengguna, email, password, dan peran harus diisi!', 'tambahAkunModal');
         return;
       }
 
