@@ -13,6 +13,55 @@ export function renderPpkDashboardPage(path, userRole) {
           overflow: hidden;
           box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
+        
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1.5rem 0 1.5rem;
+        }
+        .pagination-info {
+            color: #6B7280;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .pagination {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+            margin: 0;
+            padding: 0;
+        }
+        .pagination .page-item {
+            display: inline-block;
+        }
+        .pagination .page-link {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+            min-width: 40px;
+            text-align: center;
+            display: inline-block;
+        }
+        .pagination .page-link:hover {
+            background: #F3F4F6;
+            border-color: #00BCD4;
+        }
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%);
+            color: white;
+            border-color: #00BCD4;
+        }
+        .pagination .page-item.disabled .page-link {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
       </style>
       <!-- Stats Cards -->
       <div class="row g-4 mb-4">
@@ -51,7 +100,7 @@ export function renderPpkDashboardPage(path, userRole) {
       </div>
 
       <!-- Main Table Card -->
-      <div class="card card-datatable table-responsive p-0">
+      <div class="card card-datatable table-responsive p-0 pb-3">
         <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
           <thead>
             <tr>
@@ -70,6 +119,16 @@ export function renderPpkDashboardPage(path, userRole) {
             <!-- Data will be populated by JavaScript -->
           </tbody>
         </table>
+        
+        <!-- Pagination -->
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Menampilkan <span id="startEntry">0</span> sampai <span id="endEntry">0</span> dari <span id="totalEntries">0</span> entri
+          </div>
+          <ul class="pagination" id="paginationList">
+            <!-- populated by js -->
+          </ul>
+        </div>
       </div>
       
       <!-- Video Panduan Section -->
@@ -96,6 +155,10 @@ export function renderPpkDashboardPage(path, userRole) {
   let state = {
       allKegiatan: [],
       displayKegiatan: [],
+      currentPage: 1,
+      itemsPerPage: 10,
+      totalEntries: 0,
+      totalPages: 1,
   };
 
   // ==============================================
@@ -134,7 +197,13 @@ export function renderPpkDashboardPage(path, userRole) {
           );
           state.displayKegiatan.sort((a, b) => a.kegiatan_id - b.kegiatan_id);
 
+          // Init pagination
+          state.totalEntries = state.displayKegiatan.length;
+          state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
+          state.currentPage = 1;
+
           renderTableRows(state.displayKegiatan);
+          updatePagination();
           updateStats(state.allKegiatan);
       } catch (error) {
           tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
@@ -328,11 +397,15 @@ export function renderPpkDashboardPage(path, userRole) {
         return;
     }
 
-        data.forEach((kegiatan, index) => {
+    const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+    const paginatedData = data.slice(
+      startIndex,
+      startIndex + state.itemsPerPage
+    );
 
+        paginatedData.forEach((kegiatan, index) => {
+          const globalIndex = startIndex + index + 1;
           const row = document.createElement("tr");
-
-    
 
           row.innerHTML = `
 
@@ -344,7 +417,7 @@ export function renderPpkDashboardPage(path, userRole) {
 
             <td>
 
-              <span class="number-badge">${index + 1}</span>
+              <span class="number-badge">${globalIndex}</span>
 
             </td>
 
@@ -463,6 +536,140 @@ export function renderPpkDashboardPage(path, userRole) {
         });
 
     attachEventListeners();
+  }
+
+  // ==============================================
+  // PAGINATION FUNCTIONS
+  // ==============================================
+  function setupPagination() {
+    const paginationContainer = document.getElementById("paginationList");
+    if (!paginationContainer) return;
+
+    paginationContainer.innerHTML = "";
+
+    // Previous buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnFirstPage">«</a>
+      </li>
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnPrevPage">‹</a>
+      </li>
+    `;
+
+    // Page number buttons
+    const maxVisiblePages = 5;
+    let startPage = Math.max(
+      1,
+      state.currentPage - Math.floor(maxVisiblePages / 2)
+    );
+    let endPage = Math.min(state.totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      paginationContainer.innerHTML += `
+        <li class="page-item ${i === state.currentPage ? "active" : ""}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>
+      `;
+    }
+
+    // Next buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnNextPage">›</a>
+      </li>
+      <li class="page-item ${
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnLastPage">»</a>
+      </li>
+    `;
+
+    // Attach events
+    document.querySelectorAll(".pagination .page-link").forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const page = this.getAttribute("data-page");
+        if (page) {
+          changePage(parseInt(page));
+        }
+      });
+    });
+
+    const btnFirstPage = document.getElementById("btnFirstPage");
+    const btnPrevPage = document.getElementById("btnPrevPage");
+    const btnNextPage = document.getElementById("btnNextPage");
+    const btnLastPage = document.getElementById("btnLastPage");
+
+    if (btnFirstPage)
+      btnFirstPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(1);
+      });
+    if (btnPrevPage)
+      btnPrevPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(state.currentPage - 1);
+      });
+    if (btnNextPage)
+      btnNextPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages)
+          changePage(state.currentPage + 1);
+      });
+    if (btnLastPage)
+      btnLastPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages) changePage(state.totalPages);
+      });
+  }
+
+  function changePage(page) {
+    if (page < 1 || page > state.totalPages) return;
+    state.currentPage = page;
+
+    // Smooth scroll to top of table
+    document.querySelector(".card-datatable")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    renderTableRows(state.displayKegiatan);
+    updatePagination();
+  }
+
+  function updatePagination() {
+    const totalEntries = state.displayKegiatan.length;
+    state.totalEntries = totalEntries;
+    state.totalPages = Math.ceil(totalEntries / state.itemsPerPage);
+    
+    // Recalculate if filtered data changed
+    if (state.currentPage > state.totalPages && state.totalPages > 0) {
+        state.currentPage = state.totalPages;
+    }
+    if (state.totalPages === 0) state.currentPage = 1;
+
+    const startEntry = totalEntries > 0 ? (state.currentPage - 1) * state.itemsPerPage + 1 : 0;
+    const endEntry = Math.min(
+      state.currentPage * state.itemsPerPage,
+      totalEntries
+    );
+
+    const startEl = document.getElementById("startEntry");
+    const endEl = document.getElementById("endEntry");
+    const totalEl = document.getElementById("totalEntries");
+
+    if (startEl) startEl.textContent = startEntry;
+    if (endEl) endEl.textContent = endEntry;
+    if (totalEl) totalEl.textContent = totalEntries;
+
+    setupPagination();
   }
 
   // ==============================================

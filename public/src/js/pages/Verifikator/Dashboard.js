@@ -199,23 +199,52 @@ export function renderDashboardVerifikator(path, userRole) {
       }
 
       /* 9. Pagination Styling */
+      .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+      }
+      .pagination-info {
+        color: #6B7280;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .pagination {
+        display: flex;
+        list-style: none;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0;
+      }
+      .pagination .page-item {
+        display: inline-block;
+      }
+      .pagination .page-link {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #E5E7EB;
+        border-radius: 6px;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.3s;
+        font-weight: 500;
+        min-width: 40px;
+        text-align: center;
+        display: inline-block;
+      }
+      .pagination .page-link:hover {
+        background: #E0F7FA !important;
+        color: #00BCD4 !important;
+        border-color: #00BCD4 !important;
+      }
       .pagination .page-item.active .page-link {
         background: #00BCD4 !important;
         border-color: #00BCD4 !important;
         color: white !important;
       }
-      .pagination .page-link {
-        color: #6B7280 !important;
-        border: 1px solid #E5E7EB !important;
-        border-radius: 6px !important;
-        margin: 0 4px !important;
-        padding: 8px 14px !important;
-      }
-      .pagination .page-link:hover {
-        background: #E0F7FA !important;
-        color: #00BCD4 !important;
-      }
       .pagination .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
         background: #F9FAFB !important;
         color: #D1D5DB !important;
       }
@@ -318,19 +347,7 @@ export function renderDashboardVerifikator(path, userRole) {
             </div>
         </div>
 
-        <div class="card card-datatable table-responsive p-0">
-            <div class="px-4 pt-4 pb-2 d-flex justify-content-between align-items-center">
-               <div class="d-flex align-items-center gap-2">
-                 <label class="text-muted small">Show</label>
-                 <select id="itemsPerPageSelect" class="form-select form-select-sm" style="width: 70px;">
-                   <option value="5">5</option>
-                   <option value="10" selected>10</option>
-                   <option value="25">25</option>
-                   <option value="50">50</option>
-                 </select>
-                 <label class="text-muted small">entries</label>
-               </div>
-            </div>
+        <div class="card card-datatable table-responsive p-0 pb-3">
             <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
                 <thead>
                 <tr>
@@ -345,12 +362,16 @@ export function renderDashboardVerifikator(path, userRole) {
                 <tbody id="usulanTableBody">
                 </tbody>
             </table>
-            <div class="d-flex justify-content-between align-items-center px-4 pb-4">
-                <div class="text-muted small" id="paginationInfo">Showing 1 to 10 of 50 entries</div>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination mb-0" id="pagination">
+            
+            <div class="px-4 pb-4">
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Menampilkan <span id="startEntry">0</span> sampai <span id="endEntry">0</span> dari <span id="totalEntries">0</span> entri
+                    </div>
+                    <ul class="pagination" id="paginationList">
+                        <!-- populated by js -->
                     </ul>
-                </nav>
+                </div>
             </div>
         </div>
         
@@ -398,7 +419,7 @@ export function renderDashboardVerifikator(path, userRole) {
     displayUsulan: [], // Holds data to be displayed in the table (e.g., filtered by status)
     currentPage: 1,
     itemsPerPage: 10,
-    totalItems: 0,
+    totalEntries: 0,
     totalPages: 1,
   };
 
@@ -466,11 +487,7 @@ export function renderDashboardVerifikator(path, userRole) {
       }
 
       state.allUsulan = allUsulan;
-      console.log(
-        "All proposals from API (Filtered):",
-        JSON.stringify(state.allUsulan, null, 2)
-      );
-
+      
       updateStats();
 
       // Set default view to 'Menunggu Verifikasi'
@@ -488,12 +505,14 @@ export function renderDashboardVerifikator(path, userRole) {
       (u) => u.status_id == statusId
     );
     state.displayUsulan.sort((a, b) => a.kak_id - b.kak_id);
-    state.totalItems = state.displayUsulan.length;
-    state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage);
-    state.currentPage = 1; // Reset to first page
+    
+    // Init pagination
+    state.totalEntries = state.displayUsulan.length;
+    state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
+    state.currentPage = 1;
 
     renderTableRows();
-    renderPagination();
+    updatePagination();
   }
 
   // ==============================================
@@ -714,12 +733,13 @@ export function renderDashboardVerifikator(path, userRole) {
     paginatedData.forEach((usulan, index) => {
       const statusBadge = getStatusBadge(usulan.status_id);
       const actionButtons = getActionButtons(usulan.status_id, usulan.kak_id);
+      const globalIndex = startIndex + index + 1;
 
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>
           <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${ 
-            startIndex + index + 1 
+            globalIndex
           }</span>
         </td>
         <td><strong>${usulan.nama_kegiatan || "Tanpa Judul"}</strong></td>
@@ -740,86 +760,144 @@ export function renderDashboardVerifikator(path, userRole) {
     attachEventListeners();
   }
 
-  function renderPagination() {
-    const totalPages = state.totalPages;
-    const paginationEl = document.getElementById("pagination");
-    const paginationInfoEl = document.getElementById("paginationInfo");
+  // ==============================================
+  // PAGINATION FUNCTIONS
+  // ==============================================
+  function setupPagination() {
+    const paginationContainer = document.getElementById("paginationList");
+    if (!paginationContainer) return;
 
-    if (!paginationEl || !paginationInfoEl) return;
+    paginationContainer.innerHTML = "";
 
-    if (state.totalItems === 0) {
-      paginationInfoEl.textContent = "No entries found";
-      paginationEl.innerHTML = "";
-      return;
+    // Previous buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnFirstPage">«</a>
+      </li>
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnPrevPage">‹</a>
+      </li>
+    `;
+
+    // Page number buttons
+    const maxVisiblePages = 5;
+    let startPage = Math.max(
+      1,
+      state.currentPage - Math.floor(maxVisiblePages / 2)
+    );
+    let endPage = Math.min(state.totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
 
-    paginationEl.innerHTML = "";
-
-    const startItem = (state.currentPage - 1) * state.itemsPerPage + 1;
-    const endItem = Math.min(
-      state.currentPage * state.itemsPerPage,
-      state.totalItems
-    );
-    paginationInfoEl.textContent = `Showing ${startItem} to ${endItem} of ${state.totalItems} entries`;
-
-    if (totalPages <= 1) return;
-
-    const pageLink = (page, text, disabled = false) => {
-      const li = document.createElement("li");
-      li.className = `page-item ${state.currentPage === page ? "active" : ""} ${ 
-        disabled ? "disabled" : "" 
-      }`;
-      li.innerHTML = `<a class="page-link" href="#" data-page="${page}">${text}</a>`;
-      return li;
-    };
-
-    paginationEl.appendChild(
-      pageLink(state.currentPage - 1, "‹", state.currentPage === 1)
-    );
-
-    for (let i = 1; i <= totalPages; i++) {
-      paginationEl.appendChild(pageLink(i, i));
+    for (let i = startPage; i <= endPage; i++) {
+      paginationContainer.innerHTML += `
+        <li class="page-item ${i === state.currentPage ? "active" : ""}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>
+      `;
     }
 
-    paginationEl.appendChild(
-      pageLink(state.currentPage + 1, "›", state.currentPage === totalPages)
-    );
+    // Next buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnNextPage">›</a>
+      </li>
+      <li class="page-item ${
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnLastPage">»</a>
+      </li>
+    `;
 
-    paginationEl.querySelectorAll(".page-link").forEach((link) => {
-      link.addEventListener("click", (e) => {
+    // Attach events
+    document.querySelectorAll(".pagination .page-link").forEach((link) => {
+      link.addEventListener("click", function (e) {
         e.preventDefault();
-        const page = parseInt(e.target.getAttribute("data-page"));
-        if (
-          page &&
-          page !== state.currentPage &&
-          page > 0 &&
-          page <= totalPages
-        ) {
-          state.currentPage = page;
-          renderTableRows();
-          renderPagination();
+        const page = this.getAttribute("data-page");
+        if (page) {
+          changePage(parseInt(page));
         }
       });
     });
+
+    const btnFirstPage = document.getElementById("btnFirstPage");
+    const btnPrevPage = document.getElementById("btnPrevPage");
+    const btnNextPage = document.getElementById("btnNextPage");
+    const btnLastPage = document.getElementById("btnLastPage");
+
+    if (btnFirstPage)
+      btnFirstPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(1);
+      });
+    if (btnPrevPage)
+      btnPrevPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(state.currentPage - 1);
+      });
+    if (btnNextPage)
+      btnNextPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages)
+          changePage(state.currentPage + 1);
+      });
+    if (btnLastPage)
+      btnLastPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages) changePage(state.totalPages);
+      });
+  }
+
+  function changePage(page) {
+    if (page < 1 || page > state.totalPages) return;
+    state.currentPage = page;
+
+    // Smooth scroll to top of table
+    document.querySelector(".card-datatable")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    renderTableRows();
+    updatePagination();
+  }
+
+  function updatePagination() {
+    const totalEntries = state.displayUsulan.length;
+    state.totalEntries = totalEntries;
+    state.totalPages = Math.ceil(totalEntries / state.itemsPerPage);
+    
+    // Recalculate if filtered data changed
+    if (state.currentPage > state.totalPages && state.totalPages > 0) {
+        state.currentPage = state.totalPages;
+    }
+    if (state.totalPages === 0) state.currentPage = 1;
+
+    const startEntry = totalEntries > 0 ? (state.currentPage - 1) * state.itemsPerPage + 1 : 0;
+    const endEntry = Math.min(
+      state.currentPage * state.itemsPerPage,
+      totalEntries
+    );
+
+    const startEl = document.getElementById("startEntry");
+    const endEl = document.getElementById("endEntry");
+    const totalEl = document.getElementById("totalEntries");
+
+    if (startEl) startEl.textContent = startEntry;
+    if (endEl) endEl.textContent = endEntry;
+    if (totalEl) totalEl.textContent = totalEntries;
+
+    setupPagination();
   }
 
   // ==============================================
   // EVENT LISTENERS
   // ==============================================
   function attachEventListeners() {
-    // Pagination Limit Selector
-    const limitSelect = document.getElementById('itemsPerPageSelect');
-    if (limitSelect && !limitSelect.hasAttribute('data-listener')) {
-        limitSelect.setAttribute('data-listener', 'true');
-        limitSelect.addEventListener('change', (e) => {
-            state.itemsPerPage = parseInt(e.target.value);
-            state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage);
-            state.currentPage = 1;
-            renderTableRows();
-            renderPagination();
-        });
-    }
-
     document.querySelectorAll(".btn-approve").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const kakId = btn.dataset.id;
