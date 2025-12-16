@@ -507,7 +507,7 @@ export function renderLoginPage() {
                         SIGAP PNJ!
                     </h2>
                     <p class="text-center text-gray-600 text-sm mb-6 animate-element animate-delay-400">
-                        Silahkan masukkan nama pengguna dan kata sandi anda
+                        Silahkan masukkan nama pengguna dan kata sandi Anda
                     </p>
 
                     <!-- Error Alert -->
