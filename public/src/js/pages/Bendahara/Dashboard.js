@@ -119,7 +119,8 @@ export function renderBendaharaDashboardPage(path, userRole) {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
       }
 
-      .table tbody tr td {
+      .table thead th,
+      .table tbody td {
         padding: 1rem !important;
         vertical-align: middle !important;
         border: none !important;
@@ -198,6 +199,25 @@ export function renderBendaharaDashboardPage(path, userRole) {
         box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
       }
 
+      /* Specific styles for btn-icon within table action cells */
+      .table tbody td .btn.btn-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0; /* Override default button padding */
+        flex-shrink: 0; /* Prevent buttons from shrinking below their content size */
+      }
+      .table tbody td .btn.btn-icon svg {
+        width: 16px;
+        height: 16px;
+      }
+      /* Adjust gap for action buttons */
+      .table tbody td .d-flex.gap-2 {
+        gap: 0.25rem !important; /* Reduced gap for more compact buttons */
+      }
+
       .form-select {
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
@@ -224,6 +244,14 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
       .badge {
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      /* Ensure badges in table status column are centered */
+      .table tbody td .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center; /* Ensures text inside is centered if it wraps */
       }
 
       .badge:hover {
@@ -261,6 +289,69 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
       .pagination-container:hover {
         background: #f8fafb !important;
+      }
+
+      .pagination {
+        display: flex;
+        list-style: none;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0;
+      }
+
+      .pagination .page-item {
+        display: inline-block;
+      }
+
+      .pagination .page-link {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #E5E7EB;
+        border-radius: 6px;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 500;
+        min-width: 40px;
+        text-align: center;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .pagination .page-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .pagination .page-link:hover {
+        background: #F3F4F6;
+        border-color: #00BCD4;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
+      }
+
+      .pagination .page-link:hover::before {
+        left: 100%;
+      }
+
+      .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%);
+        color: white;
+        border-color: #00BCD4;
+        box-shadow: 0 4px 12px rgba(5, 156, 216, 0.4);
+        transform: scale(1.1);
+      }
+
+      .pagination .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
       }
       
       .table {
@@ -419,13 +510,13 @@ export function renderBendaharaDashboardPage(path, userRole) {
           <thead>
             <tr>
               <th style="width: 4%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">No</th>
-              <th style="width: 24%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Nama Kegiatan</th>
-              <th style="width: 18%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>
-              <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Diminta</th>
-              <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Dicairkan</th>
-              <th style="width: 14%; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Belum Dicairkan</th>
+              <th style="width: 20%; text-align: left; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Nama Kegiatan</th>
+              <th style="width: 15%; text-align: left; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>
+              <th style="width: 11%; text-align: right; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Diminta</th>
+              <th style="width: 11%; text-align: right; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Dicairkan</th>
+              <th style="width: 11%; text-align: right; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Belum Dicairkan</th>
               <th style="width: 10%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Status</th>
-              <th style="width: 120px; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Aksi</th>
+              <th style="width: 18%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Aksi</th>
             </tr>
           </thead>
           <tbody id="disbursementTableBody">
@@ -437,8 +528,11 @@ export function renderBendaharaDashboardPage(path, userRole) {
         <!-- Pagination Container -->
         <div class="pagination-container" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-top: 1px solid #f1f5f9; background: white;">
           <div class="pagination-info" style="color: #6B7280; font-size: 14px;">
-            Showing <span id="startEntry">0</span> to <span id="endEntry">0</span> of <span id="totalEntries">0</span> entries
+            Menampilkan <span id="startEntry">0</span> sampai <span id="endEntry">0</span> dari <span id="totalEntries">0</span> entri
           </div>
+          <ul class="pagination" id="paginationList">
+            <!-- Will be populated by JavaScript -->
+          </ul>
         </div>
       </div>
 
@@ -467,6 +561,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
     allKegiatan: [],
     displayKegiatan: [],
     currentFilter: "all",
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalPages: 1,
   };
 
   // ==============================================
@@ -610,6 +707,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
       });
     }
 
+    state.currentPage = 1;
     renderTableRows(state.displayKegiatan);
     updateActiveFilterVisuals();
   }
@@ -771,11 +869,23 @@ export function renderBendaharaDashboardPage(path, userRole) {
       return;
     }
 
-    // Update pagination info
-    updatePaginationInfo(1, data.length, data.length);
+    // Pagination Logic
+    state.totalPages = Math.ceil(data.length / state.itemsPerPage);
+    const startEntry = (state.currentPage - 1) * state.itemsPerPage + 1;
+    const endEntry = Math.min(state.currentPage * state.itemsPerPage, data.length);
+    
+    updatePaginationInfo(startEntry, endEntry, data.length);
+    setupPagination();
 
-    data.forEach((kegiatan, index) => {
+    const paginatedData = data.slice(
+      (state.currentPage - 1) * state.itemsPerPage,
+      state.currentPage * state.itemsPerPage
+    );
+
+    paginatedData.forEach((kegiatan, index) => {
       const row = document.createElement("tr");
+      // Calculate global index
+      const globalIndex = (state.currentPage - 1) * state.itemsPerPage + index + 1;
 
       let statusBadge = "";
       let actionButtons = "";
@@ -796,18 +906,10 @@ export function renderBendaharaDashboardPage(path, userRole) {
           statusBadge =
             '<span class="badge bg-label-info" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Verifikasi LPJ</span>';
           actionButtons = `
-            <div class="dropdown">
-              <button type="button" class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" data-bs-boundary="window" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" style="border: 2px solid #e5e7eb; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dark"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle><circle cx="12" cy="5" r="1"></circle></svg>
-              </button>
-              <div class="dropdown-menu dropdown-menu-end m-0">
-                <a class="dropdown-item" href="/bendahara/kegiatan/lpj/revisi/${kegiatan.kegiatan_id}">
-                  <div class="d-flex align-items-center text-info">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M14 3v4a1 1 0 0 0 1 1h4"></path><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path><path d="M9 15l2 2l4 -4"></path></svg> 
-                    Verifikasi LPJ
-                  </div>
-                </a>
-              </div>
+            <div class="d-flex justify-content-center gap-2">
+              <a href="/bendahara/kegiatan/lpj/revisi/${kegiatan.kegiatan_id}" class="btn btn-sm btn-icon" style="background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%); color: white; box-shadow: 0 2px 8px rgba(5, 156, 216, 0.3);" title="Verifikasi LPJ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"></path><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path><path d="M9 15l2 2l4 -4"></path></svg>
+              </a>
             </div>
           `;
         }
@@ -815,78 +917,47 @@ export function renderBendaharaDashboardPage(path, userRole) {
         statusBadge =
           '<span class="badge bg-label-success" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Dicairkan</span>';
           actionButtons = `
-            <div class="dropdown">
-              <button type="button" class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" data-bs-boundary="window" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" style="border: 2px solid #e5e7eb; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dark"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle><circle cx="12" cy="5" r="1"></circle></svg>
+            <div class="d-flex justify-content-center gap-2">
+              <button class="btn btn-sm btn-icon btn-view-detail" data-id="${kegiatan.kak_id}" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" title="Detail">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
               </button>
-              <div class="dropdown-menu dropdown-menu-end m-0">
-                <a class="dropdown-item btn-view-detail" href="javascript:void(0);" data-id="${kegiatan.kak_id}">
-                  <div class="d-flex align-items-center text-info">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> 
-                    Detail
-                  </div>
-                </a>
-                <a class="dropdown-item btn-preview-pdf" href="javascript:void(0);" data-kak-id="${kegiatan.kak_id}">
-                  <div class="d-flex align-items-center text-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
-                    KAK PDF
-                  </div>
-                </a>
-                <a class="dropdown-item btn-download-pdf" href="javascript:void(0);" data-kak-id="${kegiatan.kak_id}">
-                  <div class="d-flex align-items-center text-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
-                    Unduh
-                  </div>
-                </a>
-              </div>
+              <button class="btn btn-sm btn-icon btn-preview-pdf" data-kak-id="${kegiatan.kak_id}" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);" title="KAK PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              </button>
+              <button class="btn btn-sm btn-icon btn-download-pdf" data-kak-id="${kegiatan.kak_id}" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);" title="Unduh">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </button>
             </div>
           `;
       } else {
         statusBadge =
           '<span class="badge bg-label-warning" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Menunggu</span>';
         actionButtons = `
-            <div class="dropdown">
-              <button type="button" class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" data-bs-boundary="window" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" style="border: 2px solid #e5e7eb; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dark"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle><circle cx="12" cy="5" r="1"></circle></svg>
+            <div class="d-flex justify-content-center gap-2">
+              <button class="btn btn-sm btn-icon btn-view-detail" data-id="${kegiatan.kak_id}" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" title="Detail">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
               </button>
-              <div class="dropdown-menu dropdown-menu-end m-0">
-                <a class="dropdown-item btn-view-detail" href="javascript:void(0);" data-id="${kegiatan.kak_id}">
-                  <div class="d-flex align-items-center text-info">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> 
-                    Detail
-                  </div>
-                </a>
-                <a class="dropdown-item btn-preview-pdf" href="javascript:void(0);" data-kak-id="${kegiatan.kak_id}">
-                  <div class="d-flex align-items-center text-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
-                    KAK PDF
-                  </div>
-                </a>
-                <a class="dropdown-item" href="/bendahara/kegiatan/pencairan">
-                  <div class="d-flex align-items-center text-success">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> 
-                    Cairkan Dana
-                  </div>
-                </a>
-                <a class="dropdown-item btn-download-pdf" href="javascript:void(0);" data-kak-id="${kegiatan.kak_id}">
-                  <div class="d-flex align-items-center text-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
-                    Unduh
-                  </div>
-                </a>
-              </div>
+              <button class="btn btn-sm btn-icon btn-preview-pdf" data-kak-id="${kegiatan.kak_id}" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);" title="KAK PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              </button>
+              <a href="/bendahara/kegiatan/pencairan" class="btn btn-sm btn-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);" title="Cairkan Dana">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              </a>
+              <button class="btn btn-sm btn-icon btn-download-pdf" data-kak-id="${kegiatan.kak_id}" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);" title="Unduh">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </button>
             </div>
           `;
       }
 
       row.innerHTML = `
         <td style="width: 4%; text-align: center;">
-          <span style="font-weight: 600; color: #64748b; font-size: 0.875rem;">${index + 1}</span>
+          <span style="font-weight: 600; color: #64748b; font-size: 0.875rem;">${globalIndex}</span>
         </td>
-        <td style="width: 24%;">
+        <td style="width: 20%; text-align: left;">
           <strong style="color: #1e293b;">${kegiatan.nama_kegiatan}</strong>
         </td>
-        <td style="width: 18%;">
+        <td style="width: 15%; text-align: left;">
           <div style="color: #1e293b; font-weight: 600;">${
             kegiatan.pelaksana_manual || "-"
           }</div>
@@ -894,17 +965,17 @@ export function renderBendaharaDashboardPage(path, userRole) {
             kegiatan.pengusul_nama || ""
           }</div>
         </td>
-        <td style="width: 14%;">
+        <td style="width: 11%; text-align: right;">
           <strong style="color: #00BCD4;">${formatCurrency(
             kegiatan.total_anggaran_diusulkan || 0
           )}</strong>
         </td>
-        <td style="width: 14%;">
+        <td style="width: 11%; text-align: right;">
           <strong style="color: #059669;">${formatCurrency(
             kegiatan.dana_dicairkan || 0
           )}</strong>
         </td>
-        <td style="width: 14%;">
+        <td style="width: 11%; text-align: right;">
           <strong style="color: #ef4444;">${formatCurrency(
             (kegiatan.total_anggaran_diusulkan || 0) - (kegiatan.dana_dicairkan || 0)
           )}</strong>
@@ -912,7 +983,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
         <td style="width: 10%; text-align: center;">
           ${statusBadge}
         </td>
-        <td style="text-align: center;">
+        <td style="width: 18%; text-align: center;">
           ${actionButtons}
         </td>
       `;
@@ -1080,9 +1151,104 @@ export function renderBendaharaDashboardPage(path, userRole) {
     const endEl = document.getElementById("endEntry");
     const totalEl = document.getElementById("totalEntries");
 
-    if (startEl) startEl.textContent = start;
+    if (startEl) startEl.textContent = total > 0 ? start : 0;
     if (endEl) endEl.textContent = end;
     if (totalEl) totalEl.textContent = total;
+  }
+
+  function setupPagination() {
+    const paginationContainer = document.getElementById("paginationList");
+    if (!paginationContainer) return;
+
+    paginationContainer.innerHTML = "";
+
+    // Previous buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnFirstPage">«</a>
+      </li>
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnPrevPage">‹</a>
+      </li>
+    `;
+
+    // Page number buttons
+    const maxVisiblePages = 5;
+    let startPage = Math.max(
+      1,
+      state.currentPage - Math.floor(maxVisiblePages / 2)
+    );
+    let endPage = Math.min(state.totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      paginationContainer.innerHTML += `
+        <li class="page-item ${i === state.currentPage ? "active" : ""}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>
+      `;
+    }
+
+    // Next buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${ 
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnNextPage">›</a>
+      </li>
+      <li class="page-item ${ 
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnLastPage">»</a>
+      </li>
+    `;
+
+    // Attach events
+    document.querySelectorAll(".pagination .page-link").forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const page = this.getAttribute("data-page");
+        if (page) {
+          changePage(parseInt(page));
+        }
+      });
+    });
+
+    const btnFirstPage = document.getElementById("btnFirstPage");
+    const btnPrevPage = document.getElementById("btnPrevPage");
+    const btnNextPage = document.getElementById("btnNextPage");
+    const btnLastPage = document.getElementById("btnLastPage");
+
+    if (btnFirstPage)
+      btnFirstPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(1);
+      });
+    if (btnPrevPage)
+      btnPrevPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(state.currentPage - 1);
+      });
+    if (btnNextPage)
+      btnNextPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages)
+          changePage(state.currentPage + 1);
+      });
+    if (btnLastPage)
+      btnLastPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages) changePage(state.totalPages);
+      });
+  }
+
+  function changePage(page) {
+    if (page < 1 || page > state.totalPages) return;
+    state.currentPage = page;
+    renderTableRows(state.displayKegiatan);
   }
 
   // ==============================================

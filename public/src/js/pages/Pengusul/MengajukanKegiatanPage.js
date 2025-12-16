@@ -341,33 +341,8 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         background: #e5e7eb;
       }
 
-      /* Pagination styling */
-      .pagination {
-        gap: 0.5rem;
-      }
-
-      .page-link {
-        border: none;
-        border-radius: 6px;
-        padding: 0.5rem 0.875rem;
-        color: #6b7280;
-        background: #ffffff;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      }
-
-      .page-link:hover {
-        background: #f3f4f6;
-        color: #374151;
-      }
-
-      .page-item.active .page-link {
-        background: #00BCD4;
-        color: white;
-        box-shadow: 0 2px 6px rgba(0, 188, 212, 0.3);
-      }
-      
       /* ========================================== */
-      /* PAGINATION STYLES */
+      /* PAGINATION */
       /* ========================================== */
       .pagination-container {
         display: flex;
@@ -376,7 +351,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         padding: 1.5rem;
         opacity: 0;
         animation: fadeInUp 0.6s ease-out forwards;
-        animation-delay: 0.5s;
+        animation-delay: 1.3s;
       }
 
       .pagination-info {
@@ -412,11 +387,26 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         overflow: hidden;
       }
 
+      .pagination .page-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.2), transparent);
+        transition: left 0.5s;
+      }
+
       .pagination .page-link:hover {
         background: #F3F4F6;
         border-color: #00BCD4;
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
+      }
+
+      .pagination .page-link:hover::before {
+        left: 100%;
       }
 
       .pagination .page-item.active .page-link {
@@ -431,6 +421,95 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         opacity: 0.5;
         cursor: not-allowed;
         pointer-events: none;
+      }
+
+      /* ========================================== */
+      /* LOADING STATE */
+      /* ========================================== */
+      @keyframes skeletonLoading {
+        0% { background-position: -200px 0; }
+        100% { background-position: calc(200px + 100%) 0; }
+      }
+
+      .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200px 100%;
+        animation: skeletonLoading 1.5s ease-in-out infinite;
+        border-radius: 4px;
+      }
+
+      /* ========================================== */
+      /* ACTION BUTTONS IN TABLE */
+      /* ========================================== */
+      .table tbody td .btn {
+        margin-right: 0.5rem;
+      }
+
+      .table tbody td .btn:last-child {
+        margin-right: 0;
+      }
+
+      .table tbody td .btn svg {
+        transition: transform 0.3s ease;
+      }
+
+      .table tbody td .btn:hover svg {
+        transform: scale(1.2);
+      }
+
+      /* ========================================== */
+      /* RESPONSIVE */
+      /* ========================================== */
+      @media (max-width: 768px) {
+        .page-header-section {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .search-and-action-section {
+          flex-direction: column;
+          align-items: flex-start;
+          width: 100%; /* Ensure it takes full width */
+        }
+
+        .search-and-action-section .search-container {
+          width: 100%;
+        }
+
+        .pagination-container {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .table {
+          font-size: 13px;
+        }
+      }
+
+      /* ========================================== */
+      /* UTILITY ANIMATIONS */
+      /* ========================================== */
+      .text-muted {
+        color: #6B7280;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .text-danger {
+        color: #EF4444;
+      }
+
+      strong {
+        font-weight: 600;
+        color: #1F2937;
+      }
+
+      .small {
+        font-size: 13px;
+        color: #9CA3AF;
       }
 
       /* ========================================== */
@@ -787,17 +866,18 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   // ==============================================
   // STATE & SETUP
   // ==============================================
-  let approvedTelaah = [];
-  let allApprovedTelaah = [];
-  let filteredTelaah = [];
-  let searchQuery = '';
-  let searchTimeout = null;
-  
-  // Pagination State
-  let currentPage = 1;
-  const itemsPerPage = 10;
-  let totalEntries = 0;
-  let totalPages = 1;
+  let state = {
+    approvedTelaah: [], // The currently displayed data (after search/filter)
+    allApprovedTelaah: [], // All data fetched from API
+    filteredTelaah: [], // Data filtered by search query
+    searchQuery: '',
+    searchTimeout: null,
+    // Pagination State
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalEntries: 0,
+    totalPages: 1,
+  };
 
   let ajukanModalInstance = null;
   if (typeof bootstrap !== "undefined") {
@@ -841,17 +921,16 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       const user = JSON.parse(localStorage.getItem("auth_user"));
       const userIdParam = user ? `&pengusul_user_id=${user.user_id}` : '';
       const response = await apiRequest(`/kak?status=3${userIdParam}`);
-      approvedTelaah = response.data;
-      approvedTelaah.sort((a, b) => a.kak_id - b.kak_id);
-      allApprovedTelaah = response.data;
-      filteredTelaah = response.data;
+      state.allApprovedTelaah = response.data;
+      state.allApprovedTelaah.sort((a, b) => a.kak_id - b.kak_id);
+      state.filteredTelaah = state.allApprovedTelaah;
       
       // Init pagination
-      totalEntries = filteredTelaah.length;
-      totalPages = Math.ceil(totalEntries / itemsPerPage);
-      currentPage = 1;
+      state.totalEntries = state.filteredTelaah.length;
+      state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
+      state.currentPage = 1;
       
-      renderTableRows(filteredTelaah);
+      renderTableRows(state.filteredTelaah);
       updatePagination();
     } catch (error) {
       tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
@@ -978,9 +1057,8 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     }
 
     // Apply pagination slicing
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedData = data.slice(startIndex, endIndex);
+    const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+    const paginatedData = data.slice(startIndex, startIndex + state.itemsPerPage);
 
     paginatedData.forEach((item, index) => {
       // Calculate global index
@@ -1025,35 +1103,35 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   // SEARCH FUNCTIONS
   // ==============================================
   function performSearch(query) {
-    searchQuery = query.toLowerCase().trim();
+    state.searchQuery = query.toLowerCase().trim();
     
-    if (!searchQuery) {
-      filteredTelaah = allApprovedTelaah;
+    if (!state.searchQuery) {
+      state.filteredTelaah = state.allApprovedTelaah;
     } else {
-      filteredTelaah = allApprovedTelaah.filter(item => {
+      state.filteredTelaah = state.allApprovedTelaah.filter(item => {
         const namaKegiatan = (item.nama_kegiatan || '').toLowerCase();
         const pengusul = (item.pengusul_nama || '').toLowerCase();
-        return namaKegiatan.includes(searchQuery) || pengusul.includes(searchQuery);
+        return namaKegiatan.includes(state.searchQuery) || pengusul.includes(state.searchQuery);
       });
     }
     
-    approvedTelaah = filteredTelaah;
+    state.approvedTelaah = state.filteredTelaah;
     
     // Reset pagination on search
-    totalEntries = filteredTelaah.length;
-    totalPages = Math.ceil(totalEntries / itemsPerPage);
-    currentPage = 1;
+    state.totalEntries = state.filteredTelaah.length;
+    state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
+    state.currentPage = 1;
     
-    renderTableRows(approvedTelaah);
+    renderTableRows(state.approvedTelaah);
     updatePagination();
   }
 
   function debounceSearch(query) {
-    if (searchTimeout) {
-      clearTimeout(searchTimeout);
+    if (state.searchTimeout) {
+      clearTimeout(state.searchTimeout);
     }
     
-    searchTimeout = setTimeout(() => {
+    state.searchTimeout = setTimeout(() => {
       performSearch(query);
     }, 300);
   }
@@ -1225,231 +1303,128 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       
   
       fetchApprovedTelaah();
-  
-    
-  
-      // ==============================================
-  
-      // PAGINATION FUNCTIONS
-  
-      // ==============================================
-  
-      function setupPagination() {
-  
-        const paginationContainer = document.getElementById("paginationList");
-  
-        if (!paginationContainer) return;
-  
-  
-  
-        paginationContainer.innerHTML = "";
-  
-  
-  
-        // Previous buttons
-  
-        paginationContainer.innerHTML += `
-  
-          <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-  
-            <a class="page-link" href="#" id="btnFirstPage">«</a>
-  
-          </li>
-  
-          <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-  
-            <a class="page-link" href="#" id="btnPrevPage">‹</a>
-  
-          </li>
-  
-        `;
-  
-  
-  
-        // Page number buttons
-  
-        const maxVisiblePages = 5;
-  
-        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-  
-        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-  
-  
-  
-        if (endPage - startPage + 1 < maxVisiblePages) {
-  
-          startPage = Math.max(1, endPage - maxVisiblePages + 1);
-  
+
+  // ==============================================
+  // PAGINATION FUNCTIONS
+  // ==============================================
+  function setupPagination() {
+    const paginationContainer = document.getElementById("paginationList");
+    if (!paginationContainer) return;
+
+    paginationContainer.innerHTML = "";
+
+    // Previous buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnFirstPage">«</a>
+      </li>
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnPrevPage">‹</a>
+      </li>
+    `;
+
+    // Page number buttons
+    const maxVisiblePages = 5;
+    let startPage = Math.max(
+      1,
+      state.currentPage - Math.floor(maxVisiblePages / 2)
+    );
+    let endPage = Math.min(state.totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      paginationContainer.innerHTML += `
+        <li class="page-item ${i === state.currentPage ? "active" : ""}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>
+      `;
+    }
+
+    // Next buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnNextPage">›</a>
+      </li>
+      <li class="page-item ${
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnLastPage">»</a>
+      </li>
+    `;
+
+    // Attach events
+    document.querySelectorAll(".pagination .page-link").forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const page = this.getAttribute("data-page");
+        if (page) {
+          changePage(parseInt(page));
         }
-  
-  
-  
-        for (let i = startPage; i <= endPage; i++) {
-  
-          paginationContainer.innerHTML += `
-  
-            <li class="page-item ${i === currentPage ? "active" : ""}">
-  
-              <a class="page-link" href="#" data-page="${i}">${i}</a>
-  
-            </li>
-  
-          `;
-  
-        }
-  
-  
-  
-        // Next buttons
-  
-        paginationContainer.innerHTML += `
-  
-          <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-  
-            <a class="page-link" href="#" id="btnNextPage">›</a>
-  
-          </li>
-  
-          <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-  
-            <a class="page-link" href="#" id="btnLastPage">»</a>
-  
-          </li>
-  
-        `;
-  
-  
-  
-        // Attach events
-  
-        document.querySelectorAll(".pagination .page-link").forEach((link) => {
-  
-          link.addEventListener("click", function (e) {
-  
-            e.preventDefault();
-  
-            const page = this.getAttribute("data-page");
-  
-            if (page) {
-  
-              changePage(parseInt(page));
-  
-            }
-  
-          });
-  
-        });
-  
-  
-  
-        const btnFirstPage = document.getElementById("btnFirstPage");
-  
-        const btnPrevPage = document.getElementById("btnPrevPage");
-  
-        const btnNextPage = document.getElementById("btnNextPage");
-  
-        const btnLastPage = document.getElementById("btnLastPage");
-  
-  
-  
-        if (btnFirstPage)
-  
-          btnFirstPage.addEventListener("click", (e) => {
-  
-            e.preventDefault();
-  
-            if (currentPage > 1) changePage(1);
-  
-          });
-  
-        if (btnPrevPage)
-  
-          btnPrevPage.addEventListener("click", (e) => {
-  
-            e.preventDefault();
-  
-            if (currentPage > 1) changePage(currentPage - 1);
-  
-          });
-  
-        if (btnNextPage)
-  
-          btnNextPage.addEventListener("click", (e) => {
-  
-            e.preventDefault();
-  
-            if (currentPage < totalPages) changePage(currentPage + 1);
-  
-          });
-  
-        if (btnLastPage)
-  
-          btnLastPage.addEventListener("click", (e) => {
-  
-            e.preventDefault();
-  
-            if (currentPage < totalPages) changePage(totalPages);
-  
-          });
-  
-      }
-  
-  
-  
-      function changePage(page) {
-  
-        if (page < 1 || page > totalPages) return;
-  
-        currentPage = page;
-  
-  
-  
-        // Smooth scroll to top of table
-  
-        document.querySelector(".card-datatable")?.scrollIntoView({
-  
-          behavior: "smooth",
-  
-          block: "start",
-  
-        });
-  
-  
-  
-        renderTableRows(filteredTelaah);
-  
-        updatePagination();
-  
-      }
-  
-  
-  
-      function updatePagination() {
-  
-        const startEntry = (currentPage - 1) * itemsPerPage + 1;
-  
-        const endEntry = Math.min(currentPage * itemsPerPage, totalEntries);
-  
-  
-  
-        const startEl = document.getElementById("startEntry");
-  
-        const endEl = document.getElementById("endEntry");
-  
-        const totalEl = document.getElementById("totalEntries");
-  
-  
-  
-        if (startEl) startEl.textContent = totalEntries > 0 ? startEntry : 0;
-  
-        if (endEl) endEl.textContent = endEntry;
-  
-        if (totalEl) totalEl.textContent = totalEntries;
-  
-  
-  
-        setupPagination();
-  
-      }
-  
+      });
+    });
+
+    const btnFirstPage = document.getElementById("btnFirstPage");
+    const btnPrevPage = document.getElementById("btnPrevPage");
+    const btnNextPage = document.getElementById("btnNextPage");
+    const btnLastPage = document.getElementById("btnLastPage");
+
+    if (btnFirstPage)
+      btnFirstPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(1);
+      });
+    if (btnPrevPage)
+      btnPrevPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(state.currentPage - 1);
+      });
+    if (btnNextPage)
+      btnNextPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages)
+          changePage(state.currentPage + 1);
+      });
+    if (btnLastPage)
+      btnLastPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages) changePage(state.totalPages);
+      });
   }
+
+  function changePage(page) {
+    if (page < 1 || page > state.totalPages) return;
+    state.currentPage = page;
+
+    // Smooth scroll to top of table
+    document.querySelector(".card-datatable")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    renderTableRows(state.filteredTelaah);
+    updatePagination();
+  }
+
+  function updatePagination() {
+    const startEntry = (state.currentPage - 1) * state.itemsPerPage + 1;
+    const endEntry = Math.min(
+      state.currentPage * state.itemsPerPage,
+      state.totalEntries
+    );
+
+    const startEl = document.getElementById("startEntry");
+    const endEl = document.getElementById("endEntry");
+    const totalEl = document.getElementById("totalEntries");
+
+    if (startEl) startEl.textContent = state.totalEntries > 0 ? startEntry : 0;
+    if (endEl) endEl.textContent = endEntry;
+    if (totalEl) totalEl.textContent = state.totalEntries;
+
+    setupPagination();
+  }
+}

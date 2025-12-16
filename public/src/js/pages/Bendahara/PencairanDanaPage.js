@@ -230,29 +230,82 @@ export function renderPencairanDanaPage(path, userRole) {
       }
       
       /* 10. Pagination */
-      .pagination {
-        margin-top: 1.5rem;
-        gap: 0.5rem;
+      .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        background: white;
       }
-      .page-link {
-        border: none;
-        background: rgba(255, 255, 255, 0.8);
+
+      .pagination-info {
         color: #6B7280;
-        font-weight: 600;
-        border-radius: 8px;
-        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .pagination {
+        display: flex;
+        list-style: none;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0;
+      }
+
+      .pagination .page-item {
+        display: inline-block;
+      }
+
+      .pagination .page-link {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #E5E7EB;
+        border-radius: 6px;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 500;
         min-width: 40px;
         text-align: center;
-        transition: all 0.3s ease;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
       }
-      .page-link:hover {
-        background: rgba(0, 188, 212, 0.1);
-        color: #00BCD4;
+
+      .pagination .page-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.2), transparent);
+        transition: left 0.5s;
       }
-      .page-item.active .page-link {
-        background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
+
+      .pagination .page-link:hover {
+        background: #F3F4F6;
+        border-color: #00BCD4;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
+      }
+
+      .pagination .page-link:hover::before {
+        left: 100%;
+      }
+
+      .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%);
         color: white;
-        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        border-color: #00BCD4;
+        box-shadow: 0 4px 12px rgba(5, 156, 216, 0.4);
+        transform: scale(1.1);
+      }
+
+      .pagination .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
       }
       
       /* 11. Custom Checkbox */
@@ -426,13 +479,13 @@ export function renderPencairanDanaPage(path, userRole) {
         </table>
         
         <!-- Pagination -->
-        <div class="d-flex justify-content-between align-items-center mt-4">
-          <div class="entries-info">
-            Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalEntries">50</span> entries
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Menampilkan <span id="startEntry">1</span> sampai <span id="endEntry">10</span> dari <span id="totalEntries">50</span> entri
           </div>
-          <nav aria-label="Page navigation">
-            <ul class="pagination mb-0" id="paginationContainer"></ul>
-          </nav>
+          <ul class="pagination" id="paginationList">
+            <!-- Will be populated by JavaScript -->
+          </ul>
         </div>
       </div>
     </div>
@@ -503,7 +556,7 @@ export function renderPencairanDanaPage(path, userRole) {
       state.currentPage = 1; // Reset to first page when new data is fetched
 
       renderTableRows();
-      renderPagination();
+      updatePagination();
     } catch (error) {
       tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${error.message}</td></tr>`;
     }
@@ -746,83 +799,125 @@ export function renderPencairanDanaPage(path, userRole) {
     attachEventListeners();
   }
 
-  function renderPagination() {
-    const paginationEl = document.getElementById("paginationContainer");
-    const showingStartEl = document.getElementById("showingStart");
-    const showingEndEl = document.getElementById("showingEnd");
-    const totalEntriesEl = document.getElementById("totalEntries");
+  function setupPagination() {
+    const paginationContainer = document.getElementById("paginationList");
+    if (!paginationContainer) return;
 
-    if (!paginationEl || !showingStartEl || !showingEndEl || !totalEntriesEl)
-      return;
+    paginationContainer.innerHTML = "";
 
-    if (state.totalItems === 0) {
-      showingStartEl.textContent = 0;
-      showingEndEl.textContent = 0;
-      totalEntriesEl.textContent = 0;
-      paginationEl.innerHTML = "";
-      return;
+    // Previous buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnFirstPage">«</a>
+      </li>
+      <li class="page-item ${state.currentPage === 1 ? "disabled" : ""}">
+        <a class="page-link" href="#" id="btnPrevPage">‹</a>
+      </li>
+    `;
+
+    // Page number buttons
+    const maxVisiblePages = 5;
+    let startPage = Math.max(
+      1,
+      state.currentPage - Math.floor(maxVisiblePages / 2)
+    );
+    let endPage = Math.min(state.totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
 
-    paginationEl.innerHTML = "";
+    for (let i = startPage; i <= endPage; i++) {
+      paginationContainer.innerHTML += `
+        <li class="page-item ${i === state.currentPage ? "active" : ""}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>
+      `;
+    }
 
+    // Next buttons
+    paginationContainer.innerHTML += `
+      <li class="page-item ${ 
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnNextPage">›</a>
+      </li>
+      <li class="page-item ${ 
+        state.currentPage === state.totalPages ? "disabled" : ""
+      }">
+        <a class="page-link" href="#" id="btnLastPage">»</a>
+      </li>
+    `;
+
+    // Attach events
+    document.querySelectorAll(".pagination .page-link").forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const page = this.getAttribute("data-page");
+        if (page) {
+          changePage(parseInt(page));
+        }
+      });
+    });
+
+    const btnFirstPage = document.getElementById("btnFirstPage");
+    const btnPrevPage = document.getElementById("btnPrevPage");
+    const btnNextPage = document.getElementById("btnNextPage");
+    const btnLastPage = document.getElementById("btnLastPage");
+
+    if (btnFirstPage)
+      btnFirstPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(1);
+      });
+    if (btnPrevPage)
+      btnPrevPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage > 1) changePage(state.currentPage - 1);
+      });
+    if (btnNextPage)
+      btnNextPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages)
+          changePage(state.currentPage + 1);
+      });
+    if (btnLastPage)
+      btnLastPage.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (state.currentPage < state.totalPages) changePage(state.totalPages);
+      });
+  }
+
+  function changePage(page) {
+    if (page < 1 || page > state.totalPages) return;
+    state.currentPage = page;
+
+    // Smooth scroll to top of table
+    document.querySelector(".card-datatable")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    renderTableRows();
+    updatePagination();
+  }
+
+  function updatePagination() {
     const startEntry = (state.currentPage - 1) * state.itemsPerPage + 1;
     const endEntry = Math.min(
       state.currentPage * state.itemsPerPage,
       state.totalItems
     );
 
-    showingStartEl.textContent = startEntry;
-    showingEndEl.textContent = endEntry;
-    totalEntriesEl.textContent = state.totalItems;
+    const startEntryEl = document.getElementById("startEntry");
+    const endEntryEl = document.getElementById("endEntry");
+    const totalEntriesEl = document.getElementById("totalEntries");
 
-    if (state.totalPages <= 1) return;
+    if (startEntryEl) startEntryEl.textContent = state.totalItems > 0 ? startEntry : 0;
+    if (endEntryEl) endEntryEl.textContent = endEntry;
+    if (totalEntriesEl) totalEntriesEl.textContent = state.totalItems;
 
-    // Previous button
-    const prevLi = document.createElement("li");
-    prevLi.className = `page-item ${
-      state.currentPage === 1 ? "disabled" : ""
-    }`;
-    prevLi.innerHTML = `<a class="page-link" href="#" aria-label="Previous" data-page="prev"><i class="ti">&#xea65;</i></a>`;
-    paginationEl.appendChild(prevLi);
-
-    // Page numbers
-    for (let i = 1; i <= state.totalPages; i++) {
-      const li = document.createElement("li");
-      li.className = `page-item ${i === state.currentPage ? "active" : ""}`;
-      li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
-      paginationEl.appendChild(li);
-    }
-
-    // Next button
-    const nextLi = document.createElement("li");
-    nextLi.className = `page-item ${
-      state.currentPage === state.totalPages ? "disabled" : ""
-    }`;
-    nextLi.innerHTML = `<a class="page-link" href="#" aria-label="Next" data-page="next"><i class="ti">&#xea5e;</i></a>`;
-    paginationEl.appendChild(nextLi);
-
-    // Event listeners for pagination links
-    paginationEl.querySelectorAll(".page-link").forEach((link) => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        const page = e.target.closest(".page-link").dataset.page;
-        let newPage = state.currentPage;
-
-        if (page === "prev") newPage--;
-        else if (page === "next") newPage++;
-        else newPage = parseInt(page);
-
-        if (
-          newPage !== state.currentPage &&
-          newPage >= 1 &&
-          newPage <= state.totalPages
-        ) {
-          state.currentPage = newPage;
-          renderTableRows();
-          renderPagination();
-        }
-      });
-    });
+    setupPagination();
   }
 
   // ==============================================
@@ -849,7 +944,7 @@ export function renderPencairanDanaPage(path, userRole) {
     state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage);
     
     renderTableRows();
-    renderPagination();
+    updatePagination();
   }
 
   function debounceSearch(query) {
