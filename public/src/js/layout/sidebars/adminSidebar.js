@@ -784,7 +784,7 @@ export const adminSidebar = `
         <span class="menu-icon">
           <i class="ti ti-users">&#xebf2;</i>
         </span>
-        <span class="menu-text">Manajemen User</span>
+        <span class="menu-text">Manajemen Akun</span>
       </a>
     </li>
 
@@ -804,7 +804,7 @@ export const adminSidebar = `
         <span class="menu-icon">
           <i class="ti ti-history">&#xeb82;</i>
         </span>
-        <span class="menu-text">Log History</span>
+        <span class="menu-text">Riwayat Aktivitas</span>
       </a>
     </li>
   </ul>

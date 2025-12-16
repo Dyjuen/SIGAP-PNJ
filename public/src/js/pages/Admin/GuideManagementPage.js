@@ -721,7 +721,7 @@ export function renderGuideManagementPage(path, userRole) {
                 <i class="ti me-1">&#xea76;</i>${fileName}
               </small>
               <button class="btn btn-sm btn-outline-primary" onclick="window.previewGuideDocument('${guide.panduan_id}')">
-                <i class="ti me-1">&#xebcc;</i>Preview
+                <i class="ti me-1">&#xebcc;</i>Pratinjau
               </button>
             </div>
           `;

@@ -568,7 +568,7 @@ const pageContent = `
       <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
         <div>
           <h2 class="text-4xl font-bold text-gray-800">Manajemen Akun</h2>
-          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau seluruh akun yang aktif di sistem ini</p>
+          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau semua akun di sistem ini</p>
         </div>
       </div>
 
@@ -579,10 +579,10 @@ const pageContent = `
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="m21 21-4.35-4.35"></path>
               </svg>
-              <input
-                type="text"
-                id="searchInput"
-                placeholder="Cari nama, email, atau peran..."
+              <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Cari akun..."
                 autocomplete="off"
               />
               <button class="clear-search" id="clearSearch" title="Clear search">
@@ -602,7 +602,7 @@ const pageContent = `
                 <thead>
                 <tr>
                     <th style="width: 80px;">No.</th>
-                    <th>Nama Pengusul</th>
+                    <th>Nama Lengkap</th>
                     <th>Nama Pengguna</th>
                     <th>Peran</th>
                     <th style="text-align: center;">Aksi</th>
@@ -660,7 +660,7 @@ const pageContent = `
                 
                 <div class="col-12 form-group-animate">
                   <label for="editEmail" class="form-label-modern">
-                    <i class="ti ti-mail" style="display: none;"></i>Alamat Email<span class="required-star">*</span>
+                    <i class="ti ti-mail" style="display: none;"></i>Alamat Email
                   </label>
                   <div class="glass-input-wrapper">
                     <input type="email" id="editEmail" placeholder="contoh@email.com" required>
@@ -715,7 +715,7 @@ const pageContent = `
               <h5 class="modal-title">
                 <i class="ti ti-user-plus" style="display: none;"></i> Tambah Akun Baru
               </h5>
-              <p class="modal-subtitle mb-0">Buat akun user baru untuk sistem</p>
+              <p class="modal-subtitle mb-0">Buat akun untuk pengguna baru pada sistem</p>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -1150,7 +1150,7 @@ const pageContent = `
       const newRoleId = document.getElementById('editRole').value;
 
       if (!newNama || !newUsername || !newEmail || !newRoleId) {
-        showModalError('Nama, nama pengguna, email, dan peran tidak boleh kosong!', 'editProfileModal');
+        showModalError('Semua kolom harus diisi!', 'editProfileModal');
         return;
       }
       
@@ -1190,7 +1190,7 @@ const pageContent = `
 
         renderTableRows(state.users);
         editProfileModalInstance.hide();
-        showSuccess("Profil berhasil diupdate!");
+        showSuccess("Profil berhasil diubah!");
 
       } catch (error) {
         showModalError(error.message || "Gagal mengupdate profil.", 'editProfileModal');
@@ -1206,7 +1206,7 @@ const pageContent = `
 
     const result = await Swal.fire({
       title: 'Yakin ingin menghapus?',
-      text: 'Data user ini akan dihapus secara permanen.',
+      text: 'Data pengguna ini akan dihapus secara permanen.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -1219,7 +1219,7 @@ const pageContent = `
       try {
         await deleteUserAPI(userId);
         state.users = state.users.filter(u => u.user_id != userId);
-        await Swal.fire('Berhasil!', 'User berhasil dihapus!', 'success');
+        await Swal.fire('Berhasil!', 'Akun berhasil dihapus!', 'success');
         renderTableRows(state.users);
       } catch (error) {
         Swal.fire('Error', error.message || 'Gagal menghapus user.', 'error');
@@ -1260,7 +1260,7 @@ const pageContent = `
 
       // Validasi form
       if (!nama || !username || !email || !password || !roleId) {
-        showModalError('Nama, nama pengguna, email, password, dan peran harus diisi!', 'tambahAkunModal');
+        showModalError('Semua kolom harus diisi!', 'tambahAkunModal');
         return;
       }
 
