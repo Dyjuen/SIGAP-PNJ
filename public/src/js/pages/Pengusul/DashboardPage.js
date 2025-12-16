@@ -465,7 +465,7 @@ export function renderPengusulDashboardPage(path, userRole) {
     <div class="pengusul-dashboard-page">
       <!-- Header - FIX MARGIN -->
       <div class="dashboard-header flex justify-between items-center">
-        <h2 class="text-4xl font-bold text-gray-800">Dashboard</h2>
+        <h2 class="text-4xl font-bold text-gray-800">Dasbor</h2>
         <div class="flex gap-3">
           <button id="btn-tambah-usulan" class="btn btn-tambah-akun inline-flex items-center gap-2 px-4 py-2 rounded-lg">
             <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -1133,7 +1133,7 @@ export function renderRiwayatKAKPage(path, userRole) {
             let tanggalDisetujuiRaw = null;
 
             // Logic to determine tanggal_disetujui based on role
-            if (userRole === 'Pengusul') {
+            if (userRole === 'Pengusul' || userRole === 'Verifikator') {
                 tanggalDisetujuiRaw = item.tanggal_disetujui_verifikator;
             } else if (item.approval_history && Array.isArray(item.approval_history)) {
                 let targetLevel = '';

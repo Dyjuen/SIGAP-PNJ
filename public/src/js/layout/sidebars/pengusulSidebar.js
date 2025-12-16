@@ -773,7 +773,7 @@ export const pengusulSidebar = `
         <span class="menu-icon">
           <i class="ti ti-home">&#xecde;</i>
         </span>
-        <span class="menu-text">Dashboard</span>
+        <span class="menu-text">Dasbor</span>
       </a>
     </li>
 

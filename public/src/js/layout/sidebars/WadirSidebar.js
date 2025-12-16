@@ -773,7 +773,7 @@ export const wadirSidebar = `
         <span class="menu-icon">
           <i class="ti ti-home">&#xecde;</i>
         </span>
-        <span class="menu-text">Dashboard</span>
+        <span class="menu-text">Dasbor</span>
       </a>
     </li>
 
@@ -783,7 +783,7 @@ export const wadirSidebar = `
         <span class="menu-icon">
           <i class="ti ti-eye">&#xea9a;</i>
         </span>
-        <span class="menu-text">Monitoring Kegiatan</span>
+        <span class="menu-text">Pemantauan Kegiatan</span>
       </a>
     </li>
 
