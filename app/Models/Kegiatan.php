@@ -401,7 +401,8 @@ class Kegiatan extends Model
                         CASE 
                             WHEN k.kegiatan_id IS NOT NULL THEN 'Sudah Diajukan Kegiatan'
                             ELSE 'Belum Diajukan Kegiatan'
-                        END as status_pengajuan_kegiatan";
+                        END as status_pengajuan_kegiatan,
+                        MAX(tka.updated_at) as tanggal_disetujui_verifikator";
     
             // Pagination
             $page = $filters['page'] ?? 1;
