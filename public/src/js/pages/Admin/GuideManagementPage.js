@@ -131,6 +131,13 @@ export function renderGuideManagementPage(path, userRole) {
         color: #ffffffff;
       }
 
+      .modal-header-gradient .modal-subtitle {
+        font-size: 0.9rem;
+        font-weight: 400;
+        color: #ffffff; /* Set to white */
+        margin-top: 0.25rem;
+      }
+
       .modal-header-gradient .btn-close {
         background: rgba(255, 255, 255, 0.9);
         opacity: 1;
@@ -450,7 +457,7 @@ export function renderGuideManagementPage(path, userRole) {
           <div class="modal-header modal-header-gradient">
             <div>
               <h5 class="modal-title">Tambah Panduan Baru</h5>
-              <p class="modal-subtitle mb-0" style="font-size: 0.9rem; color: #3e536e; margin-top: 0.25rem;">Unggah PDF dan link video tutorial</p>
+              <p class="modal-subtitle mb-0">Unggah PDF dan link video tutorial</p>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>

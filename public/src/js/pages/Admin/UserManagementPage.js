@@ -88,14 +88,14 @@ const pageContent = `
         .modal-header-gradient .modal-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #1F2937;
+            color: #ffffff; /* Changed to white */
             line-height: 1.2;
         }
 
         .modal-header-gradient .modal-subtitle {
             font-size: 0.9rem;
             font-weight: 400;
-            color: #3e536e;
+            color: #ffffff; /* Changed to white */
             margin-top: 0.25rem;
         }
 
@@ -218,6 +218,8 @@ const pageContent = `
             background-repeat: no-repeat;
             background-position: right 1rem center;
             padding-right: 3rem;
+            width: 100%; /* Ensure consistent width */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
         }
 
         /* ========== MODERN LABEL ========== */
