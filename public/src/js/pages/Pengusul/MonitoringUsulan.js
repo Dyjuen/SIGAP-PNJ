@@ -142,6 +142,25 @@ export function renderMonitoringUsulanPage(path, userRole) {
       }
 
       /* ========================================== */
+      /* SEARCH AND ACTION SECTION STYLES */
+      /* ========================================== */
+      .search-and-action-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        gap: 1rem; /* Adjust gap as needed */
+        opacity: 0;
+        animation: slideInLeft 0.6s ease-out forwards;
+        animation-delay: 0.1s;
+      }
+
+      .search-and-action-section .search-section {
+        flex-grow: 1;
+        margin-bottom: 0; /* Reset margin as it's handled by parent gap */
+      }
+
+      /* ========================================== */
       /* SEARCH BAR STYLES */
       /* ========================================== */
       .search-section {
@@ -633,6 +652,16 @@ export function renderMonitoringUsulanPage(path, userRole) {
           gap: 1rem;
         }
 
+        .search-and-action-section {
+          flex-direction: column;
+          align-items: flex-start;
+          width: 100%; /* Ensure it takes full width */
+        }
+
+        .search-and-action-section .search-container {
+          width: 100%;
+        }
+
         .pagination-container {
           flex-direction: column;
           gap: 1rem;
@@ -673,8 +702,33 @@ export function renderMonitoringUsulanPage(path, userRole) {
       <!-- Header Section -->
       <div class="page-header-section">
         <div>
-          <h2 class="text-4xl font-bold text-gray-800">Monitoring Usulan</h2>
+          <h2 class="text-4xl font-bold text-gray-800">Pemantauan Usulan</h2>
           <p class="text-lg text-gray-600">Kelola dan pantau status usulan kegiatan Anda</p>
+        </div>
+      </div>
+
+      <!-- Search and Action Section -->
+      <div class="search-and-action-section">
+        <div class="search-section">
+          <div class="search-container">
+            <input 
+              type="text" 
+              id="searchInput" 
+              class="search-input" 
+              placeholder="Cari nama kegiatan atau pengusul..."
+            />
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <button class="clear-search" id="clearSearch" title="Clear search">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+            </button>
+          </div>
         </div>
         <button class="btn-ajukan-usulan" id="btnAjukanUsulan">
           <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -682,29 +736,6 @@ export function renderMonitoringUsulanPage(path, userRole) {
           </svg>
           Ajukan Usulan
         </button>
-      </div>
-
-      <!-- Search Section -->
-      <div class="search-section">
-        <div class="search-container">
-          <input 
-            type="text" 
-            id="searchInput" 
-            class="search-input" 
-            placeholder="Cari nama kegiatan atau pengusul..."
-          />
-          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
-          <button class="clear-search" id="clearSearch" title="Clear search">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="15" y1="9" x2="9" y2="15"></line>
-              <line x1="9" y1="9" x2="15" y2="15"></line>
-            </svg>
-          </button>
-        </div>
       </div>
       
       <!-- Main Table Card -->

@@ -1117,7 +1117,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       <!-- Header Section -->
       <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
         <div>
-          <h2 class="text-4xl font-bold text-gray-800">Monitoring Kegiatan</h2>
+          <h2 class="text-4xl font-bold text-gray-800">Pemantauan Kegiatan</h2>
           <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau progress dan status kegiatan yang sedang berjalan</p>
         </div>
       </div>
@@ -1298,8 +1298,8 @@ export function renderMonitoringKegiatanPage(path, userRole) {
   }
   function renderStepper(item) {
     const steps = [
-      { number: "01", label: "Acc PPK", date: item.dates.accPPK },
-      { number: "02", label: "Acc WD2", date: item.dates.accWD2 },
+      { number: "01", label: "Disetujui PPK", date: item.dates.accPPK },
+      { number: "02", label: "Disetujui WD2", date: item.dates.accWD2 },
       { number: "03", label: "Uang Muka", date: item.dates.uangMuka },
       { number: "04", label: "LPJ", date: item.dates.lpj },
       { number: "05", label: "Setor Fisik LPJ", date: item.dates.setorFisik }

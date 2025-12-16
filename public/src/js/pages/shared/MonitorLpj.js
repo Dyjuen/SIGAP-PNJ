@@ -7,7 +7,7 @@ export function renderDaftarLpjPage(path, userRole) {
   const isPengusul = userRole.toLowerCase() === "pengusul";
 
   const bendaharaStatCards = `
-    <h3 class="text-2xl font-bold mb-4">Monitoring LPJ</h3>
+    <h3 class="text-2xl font-bold mb-4">Pemantauan LPJ</h3>
     <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
       <div class="stat-card stat-card-active rounded-xl shadow-lg p-6 cursor-pointer" data-status="all">
         <h4 class="text-lg font-bold mb-1">Semua LPJ</h4>

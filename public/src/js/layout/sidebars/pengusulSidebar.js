@@ -784,7 +784,7 @@ export const pengusulSidebar = `
         <span class="menu-icon">
           <i class="ti ti-file-plus">&#xeaa0;</i>
         </span>
-        <span class="menu-text">Monitoring Usulan</span>
+        <span class="menu-text">Pemantauan Usulan</span>
       </a>
     </li>
 
@@ -804,7 +804,7 @@ export const pengusulSidebar = `
         <span class="menu-icon">
           <i class="ti ti-file-invoice">&#xeb67;</i>
         </span>
-        <span class="menu-text">Monitoring LPJ</span>
+        <span class="menu-text">Pemantauan LPJ</span>
       </a>
     </li>
 
@@ -814,7 +814,7 @@ export const pengusulSidebar = `
         <span class="menu-icon">
           <i class="ti ti-eye">&#xea9a;</i>
         </span>
-        <span class="menu-text">Monitoring Kegiatan</span>
+        <span class="menu-text">Pemantauan Kegiatan</span>
       </a>
     </li>
 

@@ -1129,18 +1129,42 @@ export function renderRiwayatKAKPage(path, userRole) {
         // Response::success($result, ...) where $result has 'data' and 'pagination' keys.
         // So result.data from fetch will be { data: [], pagination: {} }
         
-        const mappedData = result.data.data.map(item => ({
-            id: item.kak_id, // Use kak_id as the primary ID for links/view
-            kegiatan_id: item.kegiatan_id,
-            surat_pengantar_path: item.surat_pengantar_path,
-            nama_kegiatan: item.nama_kegiatan, // Keep original field name
-            nama_kak: item.nama_kegiatan, // Map nama_kegiatan to nama_kak
-            pengusul: item.pengusul_nama, // Map pengusul_nama to pengusul
-            tanggal_dibuat: new Date(item.tanggal_dibuat).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-            // Handle tanggal_disetujui if needed, currently null
-            tanggal_disetujui: null, 
-            status: item.nama_status // Map nama_status to status
-        }));
+        const mappedData = result.data.data.map(item => {
+            let tanggalDisetujuiRaw = null;
+
+            // Logic to determine tanggal_disetujui based on role
+            if (userRole === 'Pengusul') {
+                tanggalDisetujuiRaw = item.tanggal_disetujui_verifikator;
+            } else if (item.approval_history && Array.isArray(item.approval_history)) {
+                let targetLevel = '';
+                if (userRole === 'PPK') targetLevel = 'PPK';
+                else if (userRole === 'Wadir') targetLevel = 'Wadir2';
+                else if (userRole === 'Bendahara') targetLevel = 'Bendahara-Setor';
+
+                if (targetLevel) {
+                    const approval = item.approval_history.find(a => a.approval_level === targetLevel && a.status === 'Disetujui');
+                    if (approval) {
+                        tanggalDisetujuiRaw = approval.tanggal_approval;
+                    }
+                }
+            }
+
+            const tanggal_disetujui = tanggalDisetujuiRaw 
+                ? new Date(tanggalDisetujuiRaw).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                : null;
+
+            return {
+                id: item.kak_id, // Use kak_id as the primary ID for links/view
+                kegiatan_id: item.kegiatan_id,
+                surat_pengantar_path: item.surat_pengantar_path,
+                nama_kegiatan: item.nama_kegiatan, // Keep original field name
+                nama_kak: item.nama_kegiatan, // Map nama_kegiatan to nama_kak
+                pengusul: item.pengusul_nama, // Map pengusul_nama to pengusul
+                tanggal_dibuat: new Date(item.tanggal_dibuat).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+                tanggal_disetujui: tanggal_disetujui, 
+                status: item.nama_status // Map nama_status to status
+            };
+        });
 
         mappedData.sort((a, b) => a.id - b.id);
 
