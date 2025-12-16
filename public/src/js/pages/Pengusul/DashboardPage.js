@@ -534,7 +534,7 @@ export function renderPengusulDashboardPage(path, userRole) {
         <div class="">
           <div class="rounded-xl">
             <div class="w-full flex justify-between items-center">
-              <h3 class="text-xl font-bold text-gray-800 mb-4">Daftar Template</h3>
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Daftar Templat</h3>
             </div>
             <div class="space-y-3" id="templateList">
               <div class="skeleton h-12 w-full rounded-xl"></div>

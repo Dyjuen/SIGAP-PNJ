@@ -44,7 +44,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         backdrop-filter: blur(10px);
         border-radius: 0.875rem !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
-        padding: 1.5rem;
+        overflow: hidden;
       }
       .table {
         border-collapse: separate !important;
@@ -122,22 +122,54 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       
       /* 6. Buttons */
       .btn-ajukan {
-        background: #00BCD4 !important;
+        background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%) !important;
         color: white !important;
-        box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3) !important;
+        padding: 0.5rem 1.5rem; /* Keeping original padding for btn-sm */
         border: none !important;
-        padding: 0.5rem 1.5rem;
-        border-radius: 6px;
-        font-weight: 500;
+        border-radius: 8px; /* Changed from 6px to 8px */
+        font-weight: 600; /* Changed from 500 to 600 */
+        font-size: 14px; /* Added font-size */
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(5, 156, 216, 0.3) !important; /* Updated box-shadow */
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+      }
+      .btn-ajukan::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
       }
       .btn-ajukan:hover {
-        background: #0097A7 !important;
+        background: #0097A7 !important; /* Kept original hover background */
         color: white !important;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4) !important;
+        box-shadow: 0 6px 20px rgba(5, 156, 216, 0.4) !important; /* Updated box-shadow */
+      }
+      .btn-ajukan:hover::before {
+        width: 300px;
+        height: 300px;
+      }
+      .btn-ajukan:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(5, 156, 216, 0.3) !important;
+      }
+      .btn-ajukan svg {
+        transition: transform 0.3s ease;
+      }
+      .btn-ajukan:hover svg {
+        transform: translateX(3px);
       }
       .btn-ajukan:disabled {
         background: #B0BEC5 !important;
@@ -332,6 +364,73 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         background: #00BCD4;
         color: white;
         box-shadow: 0 2px 6px rgba(0, 188, 212, 0.3);
+      }
+      
+      /* ========================================== */
+      /* PAGINATION STYLES */
+      /* ========================================== */
+      .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        opacity: 0;
+        animation: fadeInUp 0.6s ease-out forwards;
+        animation-delay: 0.5s;
+      }
+
+      .pagination-info {
+        color: #6B7280;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .pagination {
+        display: flex;
+        list-style: none;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0;
+      }
+
+      .pagination .page-item {
+        display: inline-block;
+      }
+
+      .pagination .page-link {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #E5E7EB;
+        border-radius: 6px;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 500;
+        min-width: 40px;
+        text-align: center;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .pagination .page-link:hover {
+        background: #F3F4F6;
+        border-color: #00BCD4;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
+      }
+
+      .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%);
+        color: white;
+        border-color: #00BCD4;
+        box-shadow: 0 4px 12px rgba(5, 156, 216, 0.4);
+        transform: scale(1.1);
+      }
+
+      .pagination .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
       }
 
       /* ========================================== */
@@ -614,25 +713,35 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       </div>
 
       <!-- Main Table Card -->
-      <div class="card card-datatable table-responsive p-0">
-        <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>Nama Usulan Kegiatan</th>
-              <th>Tanggal Diajukan</th>
-              <th>Tanggal Disetujui</th>
-              <th style="text-align: center;">Status</th>
-              <th style="text-align: center;">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="kegiatanTableBody">
-            <!-- Data will be populated by JavaScript -->
-          </tbody>
-        </table>
+      <div class="card card-datatable p-0">
+        <div class="table-responsive text-nowrap" style="padding: 0 1.5rem;">
+          <table class="table" style="border-collapse: separate; border-spacing: 0 1rem;">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Nama Usulan Kegiatan</th>
+                <th>Tanggal Diajukan</th>
+                <th>Tanggal Disetujui</th>
+                <th style="text-align: center;">Status</th>
+                <th style="text-align: center;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="kegiatanTableBody">
+              <!-- Data will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Menampilkan <span id="startEntry">0</span> sampai <span id="endEntry">0</span> dari <span id="totalEntries">0</span> entri
+          </div>
+          <ul class="pagination" id="paginationList">
+            <!-- Will be populated by JavaScript -->
+          </ul>
+        </div>
       </div>
-
-      <!-- Pagination could be added here if needed -->
     </div>
 
     <!-- Modal Ajukan Kegiatan -->
@@ -683,6 +792,13 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   let filteredTelaah = [];
   let searchQuery = '';
   let searchTimeout = null;
+  
+  // Pagination State
+  let currentPage = 1;
+  const itemsPerPage = 10;
+  let totalEntries = 0;
+  let totalPages = 1;
+
   let ajukanModalInstance = null;
   if (typeof bootstrap !== "undefined") {
     ajukanModalInstance = new bootstrap.Modal(
@@ -729,7 +845,14 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       approvedTelaah.sort((a, b) => a.kak_id - b.kak_id);
       allApprovedTelaah = response.data;
       filteredTelaah = response.data;
-      renderTableRows(approvedTelaah);
+      
+      // Init pagination
+      totalEntries = filteredTelaah.length;
+      totalPages = Math.ceil(totalEntries / itemsPerPage);
+      currentPage = 1;
+      
+      renderTableRows(filteredTelaah);
+      updatePagination();
     } catch (error) {
       tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${error.message}</td></tr>`;
     }
@@ -854,12 +977,20 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       return;
     }
 
-    data.forEach((item, index) => {
+    // Apply pagination slicing
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedData = data.slice(startIndex, endIndex);
+
+    paginatedData.forEach((item, index) => {
+      // Calculate global index
+      const globalIndex = startIndex + index + 1;
+      
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>
           <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${
-            index + 1
+            globalIndex
           }</span>
         </td>
         <td>
@@ -907,7 +1038,14 @@ export function renderMengajukanKegiatanPage(path, userRole) {
     }
     
     approvedTelaah = filteredTelaah;
+    
+    // Reset pagination on search
+    totalEntries = filteredTelaah.length;
+    totalPages = Math.ceil(totalEntries / itemsPerPage);
+    currentPage = 1;
+    
     renderTableRows(approvedTelaah);
+    updatePagination();
   }
 
   function debounceSearch(query) {
@@ -1010,42 +1148,308 @@ export function renderMengajukanKegiatanPage(path, userRole) {
   const searchInput = document.getElementById('searchInput');
   const clearSearch = document.getElementById('clearSearch');
   
-  if (searchInput) {
-    searchInput.addEventListener('input', function(e) {
-      const query = e.target.value;
       
-      if (clearSearch) {
-        if (query.length > 0) {
-          clearSearch.classList.add('visible');
-        } else {
-          clearSearch.classList.remove('visible');
-        }
-      }
-      
-      debounceSearch(query);
-    });
-    
-    searchInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        this.value = '';
-        if (clearSearch) {
-          clearSearch.classList.remove('visible');
-        }
-        performSearch('');
-      }
-    });
-  }
   
-  if (clearSearch) {
-    clearSearch.addEventListener('click', function() {
       if (searchInput) {
-        searchInput.value = '';
-        searchInput.focus();
-      }
-      this.classList.remove('visible');
-      performSearch('');
-    });
-  }
   
-  fetchApprovedTelaah();
-}
+        searchInput.addEventListener('input', function(e) {
+  
+          const query = e.target.value;
+  
+          
+  
+          if (clearSearch) {
+  
+            if (query.length > 0) {
+  
+              clearSearch.classList.add('visible');
+  
+            } else {
+  
+              clearSearch.classList.remove('visible');
+  
+            }
+  
+          }
+  
+          
+  
+          debounceSearch(query);
+  
+        });
+  
+        
+  
+        searchInput.addEventListener('keydown', function(e) {
+  
+          if (e.key === 'Escape') {
+  
+            this.value = '';
+  
+            if (clearSearch) {
+  
+              clearSearch.classList.remove('visible');
+  
+            }
+  
+            performSearch('');
+  
+          }
+  
+        });
+  
+      }
+  
+      
+  
+      if (clearSearch) {
+  
+        clearSearch.addEventListener('click', function() {
+  
+          if (searchInput) {
+  
+            searchInput.value = '';
+  
+            searchInput.focus();
+  
+          }
+  
+          this.classList.remove('visible');
+  
+          performSearch('');
+  
+        });
+  
+      }
+  
+      
+  
+      fetchApprovedTelaah();
+  
+    
+  
+      // ==============================================
+  
+      // PAGINATION FUNCTIONS
+  
+      // ==============================================
+  
+      function setupPagination() {
+  
+        const paginationContainer = document.getElementById("paginationList");
+  
+        if (!paginationContainer) return;
+  
+  
+  
+        paginationContainer.innerHTML = "";
+  
+  
+  
+        // Previous buttons
+  
+        paginationContainer.innerHTML += `
+  
+          <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+  
+            <a class="page-link" href="#" id="btnFirstPage">«</a>
+  
+          </li>
+  
+          <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+  
+            <a class="page-link" href="#" id="btnPrevPage">‹</a>
+  
+          </li>
+  
+        `;
+  
+  
+  
+        // Page number buttons
+  
+        const maxVisiblePages = 5;
+  
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  
+  
+  
+        if (endPage - startPage + 1 < maxVisiblePages) {
+  
+          startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  
+        }
+  
+  
+  
+        for (let i = startPage; i <= endPage; i++) {
+  
+          paginationContainer.innerHTML += `
+  
+            <li class="page-item ${i === currentPage ? "active" : ""}">
+  
+              <a class="page-link" href="#" data-page="${i}">${i}</a>
+  
+            </li>
+  
+          `;
+  
+        }
+  
+  
+  
+        // Next buttons
+  
+        paginationContainer.innerHTML += `
+  
+          <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+  
+            <a class="page-link" href="#" id="btnNextPage">›</a>
+  
+          </li>
+  
+          <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+  
+            <a class="page-link" href="#" id="btnLastPage">»</a>
+  
+          </li>
+  
+        `;
+  
+  
+  
+        // Attach events
+  
+        document.querySelectorAll(".pagination .page-link").forEach((link) => {
+  
+          link.addEventListener("click", function (e) {
+  
+            e.preventDefault();
+  
+            const page = this.getAttribute("data-page");
+  
+            if (page) {
+  
+              changePage(parseInt(page));
+  
+            }
+  
+          });
+  
+        });
+  
+  
+  
+        const btnFirstPage = document.getElementById("btnFirstPage");
+  
+        const btnPrevPage = document.getElementById("btnPrevPage");
+  
+        const btnNextPage = document.getElementById("btnNextPage");
+  
+        const btnLastPage = document.getElementById("btnLastPage");
+  
+  
+  
+        if (btnFirstPage)
+  
+          btnFirstPage.addEventListener("click", (e) => {
+  
+            e.preventDefault();
+  
+            if (currentPage > 1) changePage(1);
+  
+          });
+  
+        if (btnPrevPage)
+  
+          btnPrevPage.addEventListener("click", (e) => {
+  
+            e.preventDefault();
+  
+            if (currentPage > 1) changePage(currentPage - 1);
+  
+          });
+  
+        if (btnNextPage)
+  
+          btnNextPage.addEventListener("click", (e) => {
+  
+            e.preventDefault();
+  
+            if (currentPage < totalPages) changePage(currentPage + 1);
+  
+          });
+  
+        if (btnLastPage)
+  
+          btnLastPage.addEventListener("click", (e) => {
+  
+            e.preventDefault();
+  
+            if (currentPage < totalPages) changePage(totalPages);
+  
+          });
+  
+      }
+  
+  
+  
+      function changePage(page) {
+  
+        if (page < 1 || page > totalPages) return;
+  
+        currentPage = page;
+  
+  
+  
+        // Smooth scroll to top of table
+  
+        document.querySelector(".card-datatable")?.scrollIntoView({
+  
+          behavior: "smooth",
+  
+          block: "start",
+  
+        });
+  
+  
+  
+        renderTableRows(filteredTelaah);
+  
+        updatePagination();
+  
+      }
+  
+  
+  
+      function updatePagination() {
+  
+        const startEntry = (currentPage - 1) * itemsPerPage + 1;
+  
+        const endEntry = Math.min(currentPage * itemsPerPage, totalEntries);
+  
+  
+  
+        const startEl = document.getElementById("startEntry");
+  
+        const endEl = document.getElementById("endEntry");
+  
+        const totalEl = document.getElementById("totalEntries");
+  
+  
+  
+        if (startEl) startEl.textContent = totalEntries > 0 ? startEntry : 0;
+  
+        if (endEl) endEl.textContent = endEntry;
+  
+        if (totalEl) totalEl.textContent = totalEntries;
+  
+  
+  
+        setupPagination();
+  
+      }
+  
+  }

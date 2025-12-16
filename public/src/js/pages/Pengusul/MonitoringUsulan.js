@@ -467,8 +467,8 @@ export function renderMonitoringUsulanPage(path, userRole) {
       /* ========================================== */
       .number-badge {
         display: inline-block;
-        background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%);
-        color: white;
+        background: transparent;
+        color: #374151;
         padding: 4px 12px;
         border-radius: 6px;
         font-weight: 600;
@@ -759,7 +759,7 @@ export function renderMonitoringUsulanPage(path, userRole) {
         <!-- Pagination -->
         <div class="pagination-container">
           <div class="pagination-info">
-            Showing <span id="startEntry">1</span> to <span id="endEntry">10</span> of <span id="totalEntries">0</span> entries
+            Menampilkan <span id="startEntry">1</span> sampai <span id="endEntry">10</span> dari <span id="totalEntries">0</span> entri
           </div>
           <ul class="pagination" id="paginationList">
             <!-- Will be populated by JavaScript -->
@@ -1012,10 +1012,10 @@ export function renderMonitoringUsulanPage(path, userRole) {
   function getDocumentButtons(id) {
     return `
       <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-        <button class="btn btn-sm btn-preview" data-id="${id}" title="Preview PDF" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 6px 10px;">
+        <button class="btn btn-sm btn-preview" data-id="${id}" title="Pratinjau PDF" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3); color: white; border: none; padding: 6px 10px;">
           <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
         </button>
-        <button class="btn btn-sm btn-download" data-id="${id}" title="Download PDF" style="background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%); color: white; border: none; padding: 6px 10px;">
+        <button class="btn btn-sm btn-download" data-id="${id}" title="Unduh PDF" style="background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%); color: white; border: none; padding: 6px 10px;">
           <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
         </button>
       </div>
