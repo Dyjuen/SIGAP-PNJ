@@ -12,11 +12,11 @@ export function createNavbar() {
 
           <!-- Desktop Navigation -->
           <nav class="hidden lg:flex items-center space-x-2 text-[15px] font-medium">
-            <a href="#landingHero" class="nav-item">Home</a>
-            <a href="#landingFeatures" class="nav-item">Features</a>
-            <a href="#landingRoles" class="nav-item">Roles</a>
+            <a href="#landingHero" class="nav-item">Beranda</a>
+            <a href="#landingFeatures" class="nav-item">Fitur Utama</a>
+            <a href="#landingRoles" class="nav-item">Peran</a>
             <a href="#landingFAQ" class="nav-item">FAQ</a>
-            <a href="#landingContact" class="nav-item">Contact us</a>
+            <a href="#landingContact" class="nav-item">Kontak Kami</a>
           </nav>
 
           <!-- CTA Button -->

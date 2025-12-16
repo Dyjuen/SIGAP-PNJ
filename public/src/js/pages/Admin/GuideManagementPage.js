@@ -278,51 +278,6 @@ export function renderGuideManagementPage(path, userRole) {
         color: #374151;
       }
 
-      /* Table Styles */
-      .table-modern {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      .table-modern thead {
-        background: linear-gradient(135deg, #f0fdff 0%, #e0f7fa 100%);
-      }
-
-      .table-modern th {
-        font-weight: 600;
-        color: #1F2937;
-        padding: 1rem;
-        border: none;
-      }
-
-      .table-modern td {
-        padding: 1rem;
-        vertical-align: middle;
-        border-top: 1px solid #f3f4f6;
-      }
-
-      .table-modern tbody tr:hover {
-        background: rgba(0, 188, 212, 0.02);
-      }
-
-      /* Badge Styles */
-      .role-badge {
-        display: inline-block;
-        padding: 0.35rem 0.75rem;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        font-weight: 600;
-      }
-
-      .badge-admin { background: #fef3c7; color: #92400e; }
-      .badge-pengusul { background: #dbeafe; color: #1e40af; }
-      .badge-verifikator { background: #fce7f3; color: #9f1239; }
-      .badge-ppk { background: #f3e8ff; color: #6b21a8; }
-      .badge-wadir { background: #ede9fe; color: #5b21b6; }
-      .badge-bendahara { background: #dcfce7; color: #166534; }
-      .badge-direktur { background: #e0e7ff; color: #3730a3; }
 
       /* Empty State */
       .empty-state {
@@ -390,6 +345,67 @@ export function renderGuideManagementPage(path, userRole) {
       .swal-lg iframe {
         border-radius: 8px;
       }
+
+      /* Pagination */
+      .pagination-container { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0; border-top: 1px solid white; margin-top: 1.5rem; }
+      .pagination { list-style: none; display: flex; gap: 0.25rem; margin: 0; padding: 0; }
+      .pagination .page-link {
+        padding: 0.4rem 0.65rem; /* Slightly smaller padding */
+        border: 1px solid white; /* White border */
+        border-radius: 6px; /* Slightly less rounded */
+        color: #4b5563;
+        text-decoration: none;
+        font-weight: 500;
+        min-width: 34px; /* Slightly smaller min-width */
+        text-align: center;
+        display: inline-block;
+        transition: all 0.2s ease;
+        font-size: 0.875rem; /* Smaller font size */
+      }
+      .pagination .page-link:hover { background: white; border-color: var(--primary-color); color: var(--primary-color); }
+      .pagination .page-item.active .page-link { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+      .pagination .page-item.disabled .page-link { opacity: 0.5; cursor: not-allowed; }
+
+      /* Loading/Empty State */
+      .state-placeholder { text-align: center; padding: 3rem 1rem; color: #9ca3af; background: white; border-radius: 12px; border: 1px solid #e5e7eb; }
+      .spinner {
+        width: 1.5rem; height: 1.5rem; border: 2px solid #e5e7eb;
+        border-top-color: var(--primary-color); border-radius: 50%;
+        animation: spin 0.8s linear infinite; margin: 0 auto 0.5rem;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* Animation */
+      .fade-transition {
+        transition: opacity 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes slideUpFadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Number Badge */
+      .number-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        background: white;
+        color: #4b5563;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-align: center;
+        padding: 0.25rem 0.5rem;
+      }
     </style>
 
     <div class="guide-management-page">
@@ -419,20 +435,20 @@ export function renderGuideManagementPage(path, userRole) {
       </div>
 
       <!-- Guides Table -->
-      <div class="table-modern">
-        <table class="table table-modern mb-0">
+      <div class="card card-datatable table-responsive p-0">
+        <table class="table" style="border-collapse: separate; border-spacing: 0 1rem; padding: 0 1.5rem;">
           <thead>
             <tr>
-              <th style="width: 5%;">No</th>
-              <th style="width: 30%;">Judul</th>
-              <th style="width: 20%;">Peran</th>
-              <th style="width: 30%;">Media</th>
-              <th style="width: 15%;">Aksi</th>
+              <th style="width: 80px;">No.</th>
+              <th>Judul</th>
+              <th>Peran</th>
+              <th>Media</th>
+              <th style="text-align: center;">Aksi</th>
             </tr>
           </thead>
           <tbody id="guidesTableBody">
             <tr>
-              <td colspan="6">
+              <td colspan="5">
                 <div class="spinner-container">
                   ${window.createLoadingState ? window.createLoadingState('Memuat panduan...') : '<div class="text-center">Memuat...</div>'}
                 </div>
@@ -441,6 +457,14 @@ export function renderGuideManagementPage(path, userRole) {
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container">
+          <div class="pagination-info text-sm text-gray-500">
+            Menampilkan <span id="showingStartGuide">1</span> dari <span id="showingEndGuide">10</span> dengan total <span id="totalRecordsGuide">0</span> entri
+          </div>
+          <ul class="pagination" id="paginationListGuide"></ul>
+        </div>
     </div>
 
     <!-- Add Guide Modal -->
@@ -616,8 +640,15 @@ export function renderGuideManagementPage(path, userRole) {
 
   // State
   let guides = [];
+  let filteredGuides = [];
   let addModalInstance = null;
   let editModalInstance = null;
+  const state = {
+    page: 1,
+    limit: 10, // Jumlah item per halaman
+    total: 0,
+    totalPages: 1,
+  };
 
   // API Helper
   async function apiRequest(endpoint, options = {}) {
@@ -659,26 +690,47 @@ export function renderGuideManagementPage(path, userRole) {
   };
 
   const roleBadgeClasses = {
-    1: 'badge-admin',
-    2: 'badge-verifikator',
-    3: 'badge-pengusul',
-    4: 'badge-ppk',
-    5: 'badge-wadir',
-    6: 'badge-bendahara',
-    7: 'badge-direktur'
+    1: 'badge bg-light text-dark',  // Admin
+    2: 'badge bg-info',             // Verifikator
+    3: 'badge bg-primary',          // Pengusul
+    4: 'badge bg-success',          // PPK
+    5: 'badge bg-warning',          // Wadir
+    6: 'badge bg-danger',           // Bendahara
+    7: 'badge bg-secondary'         // Rektorat/Direktur
   };
 
   // Fetch guides
   async function fetchGuides() {
     const tbody = document.getElementById('guidesTableBody');
-    tbody.innerHTML = window.createTableLoadingRow 
+    tbody.innerHTML = window.createTableLoadingRow
       ? window.createTableLoadingRow(6, 'Memuat panduan...')
       : '<tr><td colspan="6" class="text-center">Memuat...</td></tr>';
+
+    // Show pagination container during loading
+    const paginationContainer = document.querySelector('.pagination-container');
+    if (paginationContainer) {
+      paginationContainer.style.display = 'flex';
+    }
 
     try {
       const response = await apiRequest('/panduan');
       guides = response.data || [];
+
+      // Update state with pagination data
+      state.total = guides.length;
+      state.totalPages = Math.ceil(state.total / state.limit);
+
+      // If current page is greater than total pages, go to last page
+      if (state.page > state.totalPages && state.totalPages > 0) {
+        state.page = state.totalPages;
+      } else if (state.totalPages === 0) {
+        state.page = 1; // Reset to first page if no data
+      }
+
+      // Filter guides if needed
+      filteredGuides = guides;
       renderGuidesTable();
+      updatePagination();
     } catch (error) {
       tbody.innerHTML = `
         <tr>
@@ -687,12 +739,27 @@ export function renderGuideManagementPage(path, userRole) {
           </td>
         </tr>
       `;
+      // Hide pagination on error
+      if (paginationContainer) {
+        paginationContainer.style.display = 'none';
+      }
     }
   }
 
   function renderGuidesTable(filteredGuides = null) {
     const tbody = document.getElementById('guidesTableBody');
-    const guidesToRender = filteredGuides || guides;
+    let guidesToRender = filteredGuides || guides;
+
+    // Update state if we have filtered guides
+    if (filteredGuides !== null) {
+      state.total = filteredGuides.length;
+      state.totalPages = Math.ceil(state.total / state.limit);
+    }
+
+    // Apply pagination to guidesToRender
+    const startIndex = (state.page - 1) * state.limit;
+    const endIndex = startIndex + state.limit;
+    guidesToRender = guidesToRender.slice(startIndex, endIndex);
 
     if (guidesToRender.length === 0) {
       tbody.innerHTML = `
@@ -710,7 +777,10 @@ export function renderGuideManagementPage(path, userRole) {
       return;
     }
 
+    // Update content immediately with animation instead of fade out/in
     tbody.innerHTML = guidesToRender.map((guide, index) => {
+      const actualIndex = (state.page - 1) * state.limit + index + 1; // Actual index across all pages
+
       let mediaCell = '<span class="text-muted">Tidak ada media</span>';
       if (guide.path_media) {
         if (guide.tipe_media === 'document') {
@@ -741,29 +811,31 @@ export function renderGuideManagementPage(path, userRole) {
       }
 
       return `
-        <tr>
-          <td>${index + 1}</td>
+        <tr style="animation: slideUpFadeIn 0.3s ease-out ${0.05 * index}s both;">
+          <td>
+            <span class="number-badge">${actualIndex}</span>
+          </td>
           <td>
             <div class="fw-semibold">${guide.judul_panduan || '-'}</div>
           </td>
           <td>
-            <span class="role-badge ${roleBadgeClasses[guide.target_role_id] || 'badge-admin'}">
+            <span class="badge ${roleBadgeClasses[guide.target_role_id] || 'badge-secondary'}">
               ${roleNames[guide.target_role_id] || 'Unknown'}
             </span>
           </td>
           <td>${mediaCell}</td>
-          <td>
-            <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Edit Panduan">
-              <i class="ti">&#xeb04;</i>
+          <td style="text-align: center;">
+            <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Edit Panduan" style="display: inline-flex; align-items: center; justify-content: center;">
+              <i class="ti" style="display: flex; align-items: center; justify-content: center;">&#xeb04;</i>
             </button>
-            <button class="btn btn-sm btn-danger" onclick="window.deleteGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Hapus">
-              <i class="ti">&#xeb55;</i>
+            <button class="btn btn-sm btn-danger" onclick="window.deleteGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Hapus" style="display: inline-flex; align-items: center; justify-content: center;">
+              <i class="ti" style="display: flex; align-items: center; justify-content: center;">&#xeb55;</i>
             </button>
           </td>
         </tr>
       `;
     }).join('');
-    
+
     // Initialize tooltips for action buttons
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
@@ -901,8 +973,9 @@ export function renderGuideManagementPage(path, userRole) {
       document.getElementById('pdfFileName').style.display = 'none';
       toggleMediaInputs('add'); // Reset to default view
 
+      state.page = 1; // Reset ke halaman pertama setelah penambahan
       await Swal.fire('Berhasil!', 'Panduan berhasil ditambahkan', 'success');
-      fetchGuides();
+      fetchGuides(); // Muat ulang data dengan halaman pertama
     } catch (error) {
       // Error - keep modal open and show error in modal
       if (window.setButtonLoading) {
@@ -1015,7 +1088,7 @@ export function renderGuideManagementPage(path, userRole) {
       // Hide modal before showing alert
       editModalInstance.hide();
       await Swal.fire('Berhasil!', 'Panduan berhasil diperbarui', 'success');
-      fetchGuides();
+      fetchGuides(); // Muat ulang data
     } catch (error) {
       if (window.setButtonLoading) {
         window.setButtonLoading(btnUpdate, false);
@@ -1049,6 +1122,18 @@ export function renderGuideManagementPage(path, userRole) {
       try {
         await apiRequest(`/panduan/${id}`, { method: 'DELETE' });
         await Swal.fire('Berhasil!', 'Panduan berhasil dihapus!', 'success');
+        // Load data again, staying on current page or going to previous page if needed
+        // Decrement total count and check if we need to go to previous page
+        state.total = Math.max(0, state.total - 1);
+        state.totalPages = Math.ceil(state.total / state.limit);
+
+        // If current page is greater than total pages after deletion, go to previous page
+        if (state.page > state.totalPages && state.totalPages > 0) {
+          state.page = state.totalPages;
+        } else if (state.totalPages === 0) {
+          state.page = 1; // Reset to first page if no data left
+        }
+
         fetchGuides();
       } catch (error) {
         Swal.fire('Error', error.message, 'error');
@@ -1056,15 +1141,76 @@ export function renderGuideManagementPage(path, userRole) {
     }
   };
 
+  // Pagination functions
+  function setupGuidePagination() {
+    const container = document.getElementById("paginationListGuide");
+    if (!container || state.totalPages <= 1) {
+      document.querySelector('.pagination-container').style.display = 'none';
+      return;
+    }
+    document.querySelector('.pagination-container').style.display = 'flex';
+    container.innerHTML = "";
+
+    const maxPages = 5;
+    let start = Math.max(1, state.page - Math.floor(maxPages / 2));
+    let end = Math.min(state.totalPages, start + maxPages - 1);
+    if (end - start + 1 < maxPages) start = Math.max(1, end - maxPages + 1);
+
+    const addPageLink = (text, page, disabled = false, active = false) => {
+      container.innerHTML += `<li class="page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}"><a class="page-link" href="#" data-page="${page}">${text}</a></li>`;
+    };
+
+    addPageLink('«', 1, state.page === 1);
+    addPageLink('‹', state.page - 1, state.page === 1);
+    for (let i = start; i <= end; i++) addPageLink(i, i, false, i === state.page);
+    addPageLink('›', state.page + 1, state.page === state.totalPages);
+    addPageLink('»', state.totalPages, state.page === state.totalPages);
+
+    container.querySelectorAll(".page-link").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const page = parseInt(e.target.dataset.page);
+        if (!isNaN(page) && !link.parentElement.classList.contains('disabled')) changeGuidePage(page);
+      });
+    });
+  }
+
+  function changeGuidePage(page) {
+    if (page < 1 || page > state.totalPages || page === state.page) return;
+    state.page = page;
+    fetchGuides(); // Reload the guides with the new page
+  }
+
+  function updatePagination() {
+    const start = state.total === 0 ? 0 : (state.page - 1) * state.limit + 1;
+    const end = Math.min(state.page * state.limit, state.total);
+    const showingStart = document.getElementById('showingStartGuide');
+    const showingEnd = document.getElementById('showingEndGuide');
+    const totalRecords = document.getElementById('totalRecordsGuide');
+
+    if (showingStart) showingStart.textContent = start;
+    if (showingEnd) showingEnd.textContent = end;
+    if (totalRecords) totalRecords.textContent = state.total;
+    setupGuidePagination();
+  }
+
   // Search
   const searchInput = document.getElementById('searchInput');
   searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase();
-    const filtered = guides.filter(g => 
+    const filtered = guides.filter(g =>
       (g.judul_panduan || '').toLowerCase().includes(query) ||
       (roleNames[g.target_role_id] || '').toLowerCase().includes(query)
     );
+
+    // Update filtered guides and reset to page 1
+    filteredGuides = filtered;
+    state.page = 1;
+    state.total = filtered.length;
+    state.totalPages = Math.ceil(state.total / state.limit);
+
     renderGuidesTable(filtered);
+    updatePagination();
   });
 
   // Initialize modals

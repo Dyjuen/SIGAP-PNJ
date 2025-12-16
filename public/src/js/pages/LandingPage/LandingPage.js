@@ -645,9 +645,9 @@ export function renderLandingPage(userRole) {
         <div class="icon-wrapper w-20 h-20 mx-auto flex items-center justify-center mb-6 bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-2xl group-hover:scale-105 transition-transform duration-300">
           <img src="assets/svg/features/pelacakan-real-time.svg" alt="Pelacakan Real-Time Icon" class="w-12 h-12">
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#33C8DA] transition-colors duration-300">Pelacakan Real-Time</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#33C8DA] transition-colors duration-300">Pelacakan Secara LangsungBUKAN</h3>
         <p class="text-gray-600 leading-relaxed text-sm">
-          Lihat status usulan kapan saja: dari validasi hingga persetujuan akhir.
+          Lihat status usulan kapan saja, dari validasi hingga persetujuan akhir.
         </p>
       </div>
     </div>
@@ -688,12 +688,12 @@ export function renderLandingPage(userRole) {
   <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-[6] pointer-events-none"></div>
   <div class="container mx-auto">
     <div class="text-center mb-16">
-      <span class="section-badge inline-block px-4 py-2 bg-cyan-100 text-[#33C8DA] rounded-full text-sm font-semibold mb-4" data-aos="fade-down" data-aos-duration="800">ROLES</span>
+      <span class="section-badge inline-block px-4 py-2 bg-cyan-100 text-[#33C8DA] rounded-full text-sm font-semibold mb-4" data-aos="fade-down" data-aos-duration="800">PERAN</span>
       <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
         Siapa yang Menggunakan <span class="gradient-text">SIGAP?</span>
       </h2>
       <p class="text-lg text-gray-600 max-w-3xl mx-auto" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
-        Siap digunakan dengan peran berbeda untuk stakeholder yang terlibat dalam proses pengajuan dan persetujuan.
+        Siap digunakan dengan peran berbeda untuk pemangku kepentingan yang terlibat dalam proses pengajuan dan persetujuan.
       </p>
     </div>
 
@@ -838,7 +838,7 @@ export function renderLandingPage(userRole) {
             <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
               <div class="px-6 py-5 bg-cyan-50/30 border-t border-cyan-100">
                 <p class="text-gray-700 leading-relaxed text-[14px] lg:text-[15px] mb-3">
-                  SIGAP menyediakan: Pengajuan Digital KAK & LPJ, Sistem Revisi Terstruktur, Pelacakan Real-Time, Dokumen Otomatis, Notifikasi Instan, dan Dashboard Monitoring.
+                  SIGAP menyediakan: Pengajuan Digital KAK & LPJ, Sistem Revisi Terstruktur, Pelacakan Secara Langsung, Dokumen Otomatis, Notifikasi Instan, dan Dashboard Monitoring.
                 </p>
               </div>
             </div>
@@ -873,7 +873,7 @@ export function renderLandingPage(userRole) {
   
   <div class="container mx-auto relative z-10">
     <div class="text-center mb-16">
-      <span class="section-badge inline-block px-4 py-2 bg-cyan-100 text-[#33C8DA] rounded-full text-sm font-semibold mb-4" data-aos="fade-down" data-aos-duration="800">CONTACT</span>
+      <span class="section-badge inline-block px-4 py-2 bg-cyan-100 text-[#33C8DA] rounded-full text-sm font-semibold mb-4" data-aos="fade-down" data-aos-duration="800">KONTAK</span>
       <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
         Hubungi <span class="gradient-text">Tim SIGAP</span>
       </h2>
@@ -897,7 +897,7 @@ export function renderLandingPage(userRole) {
                 </svg>
               </div>
               <div>
-                <p class="text-xs text-gray-500 mb-1">Email</p>
+                <p class="text-xs text-gray-500 mb-1">Alamat Email</p>
                 <a href="mailto:Sigap@pnj.ac.id" class="text-sm font-semibold text-gray-900 hover:text-[#33C8DA] transition-colors">Sigap@pnj.ac.id</a>
               </div>
             </div>
@@ -909,7 +909,7 @@ export function renderLandingPage(userRole) {
                 </svg>
               </div>
               <div>
-                <p class="text-xs text-gray-500 mb-1">Phone</p>
+                <p class="text-xs text-gray-500 mb-1">Nomor Telepon</p>
                 <a href="tel:+6234088963" class="text-sm font-semibold text-gray-900 hover:text-[#33C8DA] transition-colors">+6234 088 963</a>
               </div>
             </div>
@@ -926,11 +926,11 @@ export function renderLandingPage(userRole) {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
-              <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent outline-none transition-all hover:border-cyan-300" placeholder="John Doe" required>
+              <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent outline-none transition-all hover:border-cyan-300" placeholder="Budi Hartono" required>
             </div>
             <div>
-              <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-              <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent outline-none transition-all hover:border-cyan-300" placeholder="john@example.com" required>
+              <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Alamat Email</label>
+              <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#33C8DA] focus:border-transparent outline-none transition-all hover:border-cyan-300" placeholder="budihartono@gmail.com" required>
             </div>
           </div>
           <div>

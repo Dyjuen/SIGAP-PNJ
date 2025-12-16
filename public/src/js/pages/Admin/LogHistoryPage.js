@@ -159,13 +159,19 @@ export function renderLogHistoryPage(path, userRole) {
         animation: spin 0.8s linear infinite; margin: 0 auto 0.5rem;
       }
       @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* Animation */
+      @keyframes slideUpFadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
     </style>
 
     <div class="log-history-page p-4">
       <!-- Header Section -->
       <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
         <div>
-          <h2 class="text-4xl font-bold text-gray-800">Log History</h2>
+          <h2 class="text-4xl font-bold text-gray-800">Riwayat Pengguna</h2>
           <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau seluruh kegiatan yang tercatat dalam sistem</p>
         </div>
       </div>
@@ -174,9 +180,9 @@ export function renderLogHistoryPage(path, userRole) {
       <div class="filter-section">
         <div class="row g-2 align-items-end">
           <div class="col-md-3">
-            <label class="form-label">Role</label>
+            <label class="form-label">Peran</label>
             <select id="roleFilter" class="form-select">
-              <option value="">Semua Role</option>
+              <option value="">Semua Peran</option>
               <option value="Admin">Admin</option>
               <option value="Verifikator">Verifikator</option>
               <option value="Pengusul">Pengusul</option>
@@ -187,7 +193,7 @@ export function renderLogHistoryPage(path, userRole) {
             </select>
           </div>
           <div class="col-md-3">
-            <label class="form-label">Tipe Log</label>
+            <label class="form-label">Tipe Riwayat</label>
             <select id="logTypeFilter" class="form-select">
               <option value="">Semua Tipe</option>
               <option value="KAK_STATUS">Perubahan Status KAK</option>
@@ -215,7 +221,7 @@ export function renderLogHistoryPage(path, userRole) {
       <!-- Pagination -->
        <div class="pagination-container">
           <div class="pagination-info text-sm text-gray-500">
-            Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalRecords">0</span> entries
+            Menampilkan <span id="showingStart">1</span> dari <span id="showingEnd">10</span> dengan total <span id="totalRecords">0</span> entri
           </div>
           <ul class="pagination" id="paginationList"></ul>
         </div>
@@ -310,10 +316,10 @@ export function renderLogHistoryPage(path, userRole) {
       return;
     }
 
-    container.innerHTML = state.logs.map(log => {
+    container.innerHTML = state.logs.map((log, index) => {
       const logTypeClass = log.log_type.toLowerCase().replace('_', '-');
       return `
-      <div class="log-card">
+      <div class="log-card" style="animation: slideUpFadeIn 0.3s ease-out ${0.05 * index}s both;">
         <div class="log-icon">${getLogIcon(log.log_type)}</div>
         <div class="log-details">
           <div class="log-description">${log.description}</div>

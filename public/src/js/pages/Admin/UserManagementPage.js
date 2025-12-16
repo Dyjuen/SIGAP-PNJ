@@ -526,6 +526,49 @@ const pageContent = `
             color: var(--primary-color);
         }
 
+        /* Animation */
+        .fade-transition {
+          transition: opacity 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUpFadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== PAGINATION ========== */
+        .pagination-container { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2.5rem; border-top: 1px solid white; margin-top: 1.5rem; }
+        .pagination { list-style: none; display: flex; gap: 0.25rem; margin: 0; padding: 0; }
+        .pagination .page-link {
+            padding: 0.4rem 0.65rem;
+            border: 1px solid white; /* White border */
+            border-radius: 6px;
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+            min-width: 34px;
+            text-align: center;
+            display: inline-block;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+        .pagination .page-link:hover { background: white; border-color: var(--primary-color); color: var(--primary-color); }
+        .pagination .page-item.active .page-link { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .pagination .page-item.disabled .page-link { opacity: 0.5; cursor: not-allowed; }
+
+        /* Loading/Empty State */
+        .state-placeholder { text-align: center; padding: 3rem 1rem; color: #9ca3af; background: white; border-radius: 12px; border: 1px solid #e5e7eb; }
+        .spinner {
+            width: 1.5rem; height: 1.5rem; border: 2px solid #e5e7eb;
+            border-top-color: var(--primary-color); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 0.5rem;
+        }
+
         .clear-search {
             position: absolute;
             right: 1rem;
@@ -611,6 +654,14 @@ const pageContent = `
                 <tbody id="userTableBody" class="table-animation">
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info text-sm text-gray-500">
+                  Menampilkan <span id="showingStartUser">1</span> dari <span id="showingEndUser">10</span> dengan total <span id="totalRecordsUser">0</span> entri
+                </div>
+                <ul class="pagination" id="paginationListUser"></ul>
+            </div>
         </div>
     </div>
 
@@ -832,6 +883,11 @@ const pageContent = `
     currentUser: null,
     searchQuery: "",
     searchTimeout: null,
+    // Pagination
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
   };
 
   let editProfileModalInstance = null;
@@ -925,10 +981,12 @@ const pageContent = `
   
   function performSearch() {
     const query = state.searchQuery.toLowerCase().trim();
-    
+
     if (!query) {
-      state.users = [...state.allUsers];
-      renderTableRows(state.users);
+      state.filteredUsers = [...state.allUsers];
+      state.page = 1; // Reset to first page when clearing search
+      renderTableRowsWithPagination();
+      updatePagination();
       return;
     }
 
@@ -937,12 +995,13 @@ const pageContent = `
       const username = (user.username || "").toLowerCase();
       const email = (user.email || "").toLowerCase();
       const role = (user.role || "").toLowerCase();
-      
+
       return nama.includes(query) || username.includes(query) || email.includes(query) || role.includes(query);
     });
 
-    state.users = [...state.filteredUsers];
-    renderTableRows(state.users);
+    state.page = 1; // Reset to first page when performing new search
+    renderTableRowsWithPagination();
+    updatePagination();
   }
 
   function debounceSearch() {
@@ -971,14 +1030,20 @@ const pageContent = `
     showTableLoading();
     try {
         const response = await getUsersAPI();
-        state.users = response.data.map(user => ({
+        state.allUsers = response.data.map(user => ({
             ...user,
             // Assuming the API returns roles as an array of strings
             role: user.roles && user.roles.length > 0 ? user.roles[0] : 'Tidak ada peran',
         }));
-        state.users.sort((a, b) => a.user_id - b.user_id);
-        state.allUsers = [...state.users];
-        renderTableRows(state.users);
+        state.allUsers.sort((a, b) => a.user_id - b.user_id);
+
+        // Set up pagination
+        state.total = state.allUsers.length;
+        state.totalPages = Math.ceil(state.total / state.limit);
+        state.page = 1; // Reset to first page
+
+        renderTableRowsWithPagination();
+        updatePagination();
     } catch (error) {
         const tbody = document.getElementById('userTableBody');
         if (tbody) {
@@ -990,6 +1055,11 @@ const pageContent = `
                     </td>
                 </tr>
             `;
+            // Hide pagination on error
+            const paginationContainer = document.querySelector('.pagination-container');
+            if (paginationContainer) {
+              paginationContainer.style.display = 'none';
+            }
         }
         console.error("Fetch users error:", error);
     }
@@ -1041,7 +1111,7 @@ const pageContent = `
   function renderTableRows(data) {
     const tbody = document.getElementById('userTableBody');
     if (!tbody) return;
-    
+
     tbody.innerHTML = '';
 
     if (data.length === 0) {
@@ -1056,28 +1126,29 @@ const pageContent = `
     }
 
     data.forEach((user, index) => {
+      const actualIndex = (state.page - 1) * state.limit + index + 1; // Actual index across all pages
       const row = document.createElement('tr');
-      row.style.animationDelay = `${0.2 + index * 0.1}s`; // Staggered animation
+      row.style.animation = `slideUpFadeIn 0.3s ease-out ${0.05 * index}s both`;
       row.dataset.userId = user.user_id;
 
       row.innerHTML = `
         <td>
-          <span class="number-badge">${index + 1}</span>
+          <span class="number-badge">${actualIndex}</span>
         </td>
         <td><strong>${user.nama_lengkap}</strong><br><small>${user.email}</small></td>
         <td>${user.username}</td>
         <td>${user.role}</td>
         <td style="text-align: center;">
-          <button 
-            class="btn btn-sm btn-primary me-1 btn-edit-profile" 
+          <button
+            class="btn btn-sm btn-primary me-1 btn-edit-profile"
             data-id="${user.user_id}"
             data-bs-toggle="tooltip"
             title="Edit Profil"
           >
             <i class="ti">&#xeb04;</i>
           </button>
-          <button 
-            class="btn btn-sm btn-danger btn-delete" 
+          <button
+            class="btn btn-sm btn-danger btn-delete"
             data-id="${user.user_id}"
             data-bs-toggle="tooltip"
             title="Hapus"
@@ -1089,7 +1160,9 @@ const pageContent = `
       tbody.appendChild(row);
     });
 
-    attachEventListeners();
+    // Initialize tooltips for action buttons
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
   }
 
   function attachEventListeners() {
@@ -1188,7 +1261,8 @@ const pageContent = `
           };
         }
 
-        renderTableRows(state.users);
+        // Reload data to maintain pagination state
+        fetchUsers();
         editProfileModalInstance.hide();
         showSuccess("Profil berhasil diubah!");
 
@@ -1218,9 +1292,9 @@ const pageContent = `
     if (result.isConfirmed) {
       try {
         await deleteUserAPI(userId);
-        state.users = state.users.filter(u => u.user_id != userId);
         await Swal.fire('Berhasil!', 'Akun berhasil dihapus!', 'success');
-        renderTableRows(state.users);
+        // Reload data to maintain pagination state and re-fetch from server
+        fetchUsers();
       } catch (error) {
         Swal.fire('Error', error.message || 'Gagal menghapus user.', 'error');
       }
@@ -1318,6 +1392,80 @@ const pageContent = `
         setButtonLoading('btnSaveAkunBaru', false);
       }
     });
+  }
+
+  // ==============================================
+  // PAGINATION FUNCTIONS
+  // ==============================================
+  function setupUserPagination() {
+    const container = document.getElementById("paginationListUser");
+    if (!container || state.totalPages <= 1) {
+      document.querySelector('.pagination-container').style.display = state.total === 0 ? 'none' : 'flex';
+      if (state.total === 0) document.querySelector('.pagination-container').style.display = 'none';
+      return;
+    }
+    document.querySelector('.pagination-container').style.display = 'flex';
+    container.innerHTML = "";
+
+    const maxPages = 5;
+    let start = Math.max(1, state.page - Math.floor(maxPages / 2));
+    let end = Math.min(state.totalPages, start + maxPages - 1);
+    if (end - start + 1 < maxPages) start = Math.max(1, end - maxPages + 1);
+
+    const addPageLink = (text, page, disabled = false, active = false) => {
+      container.innerHTML += `<li class="page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}"><a class="page-link" href="#" data-page="${page}">${text}</a></li>`;
+    };
+
+    addPageLink('«', 1, state.page === 1);
+    addPageLink('‹', state.page - 1, state.page === 1);
+    for (let i = start; i <= end; i++) addPageLink(i, i, false, i === state.page);
+    addPageLink('›', state.page + 1, state.page === state.totalPages);
+    addPageLink('»', state.totalPages, state.page === state.totalPages);
+
+    container.querySelectorAll(".page-link").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const page = parseInt(e.target.dataset.page);
+        if (!isNaN(page) && !link.parentElement.classList.contains('disabled')) changeUserPage(page);
+      });
+    });
+  }
+
+  function changeUserPage(page) {
+    if (page < 1 || page > state.totalPages || page === state.page) return;
+    state.page = page;
+    renderTableRowsWithPagination();
+    updatePagination();
+  }
+
+  function updatePagination() {
+    const start = state.total === 0 ? 0 : (state.page - 1) * state.limit + 1;
+    const end = Math.min(state.page * state.limit, state.total);
+    const showingStart = document.getElementById('showingStartUser');
+    const showingEnd = document.getElementById('showingEndUser');
+    const totalRecords = document.getElementById('totalRecordsUser');
+
+    if (showingStart) showingStart.textContent = start;
+    if (showingEnd) showingEnd.textContent = end;
+    if (totalRecords) totalRecords.textContent = state.total;
+    setupUserPagination();
+  }
+
+  function renderTableRowsWithPagination() {
+    // Get the filtered or all users depending on search
+    let usersToRender = state.searchQuery ? state.filteredUsers : state.allUsers;
+
+    // Update state with total count
+    state.total = usersToRender.length;
+    state.totalPages = Math.ceil(state.total / state.limit);
+
+    // Apply pagination
+    const startIndex = (state.page - 1) * state.limit;
+    const endIndex = startIndex + state.limit;
+    usersToRender = usersToRender.slice(startIndex, endIndex);
+
+    // Render the paginated results
+    renderTableRows(usersToRender);
   }
 
   // ==============================================
