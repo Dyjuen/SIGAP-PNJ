@@ -825,11 +825,11 @@ export function renderGuideManagementPage(path, userRole) {
           </td>
           <td>${mediaCell}</td>
           <td style="text-align: center;">
-            <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Edit Panduan" style="display: inline-flex; align-items: center; justify-content: center;">
-              <i class="ti" style="display: flex; align-items: center; justify-content: center;">&#xeb04;</i>
+            <button class="btn btn-sm btn-primary me-1" onclick="window.editGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Edit Panduan">
+              <i class="ti">&#xeb04;</i>
             </button>
-            <button class="btn btn-sm btn-danger" onclick="window.deleteGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Hapus" style="display: inline-flex; align-items: center; justify-content: center;">
-              <i class="ti" style="display: flex; align-items: center; justify-content: center;">&#xeb55;</i>
+            <button class="btn btn-sm btn-danger" onclick="window.deleteGuide(${guide.panduan_id})" data-bs-toggle="tooltip" title="Hapus">
+              <i class="ti">&#xeb55;</i>
             </button>
           </td>
         </tr>

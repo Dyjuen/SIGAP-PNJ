@@ -501,10 +501,13 @@ export function renderLoginPage() {
 
                     <!-- Welcome Text -->
                     <h2 class="text-center text-3xl font-bold text-gray-800 mb-2 animate-element animate-delay-300" style="letter-spacing: -0.02em;">
-                        Selamat Datang di SIGAP PNJ!
+                        Selamat Datang di
+                    </h2>
+                    <h2 class="text-center text-3xl font-bold text-gray-800 mb-2 animate-element animate-delay-300" style="letter-spacing: -0.02em;">
+                        SIGAP PNJ!
                     </h2>
                     <p class="text-center text-gray-600 text-sm mb-6 animate-element animate-delay-400">
-                        Silahkan masukkan nama dan pengguna dan kata sandi anda
+                        Silahkan masukkan nama pengguna dan kata sandi anda
                     </p>
 
                     <!-- Error Alert -->
