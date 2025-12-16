@@ -1111,8 +1111,8 @@ export const pengusulSidebar = `
         // Clear localStorage
         localStorage.removeItem('userData');
         localStorage.removeItem('token');
-        // Redirect to logout
-        window.location.href = '/logout';
+        // Redirect to login
+        window.location.href = '/login';
       });
     }
     

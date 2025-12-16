@@ -35,6 +35,11 @@ const publicRoutes = {
   "/": renderLandingPage,
   "/login": renderLoginPage,
   "/forgot-password": renderForgotPasswordPage,
+  "/logout": () => {
+    localStorage.removeItem("userData");
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  },
 };
 
 const roleBasedRoutes = {
