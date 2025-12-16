@@ -139,38 +139,85 @@ export function renderGuideManagementPage(path, userRole) {
       }
 
       .modal-header-gradient .btn-close {
-        background: rgba(255, 255, 255, 0.9);
-        opacity: 1;
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
+        /* Absolute Positioning Approach */
+        position: absolute;
+        top: 50%;
+        right: 3rem !important; /* Force position */
+        transform: translateY(calc(-50% + 40px)); /* Move down even more */
+        
+        /* Styling */
+        background: transparent;
+        opacity: 0.7;
+        width: 36px; /* Smaller box */
+        height: 36px; /* Smaller box */
+        border-radius: 10px; /* Slightly smaller radius for smaller box */
+        border: 1px solid rgba(255, 255, 255, 0.3); /* Visible glassy border */
+        transition: none !important;
+        animation: none !important;
+        z-index: 10; /* High z-index */
+
+        /* Flex properties for centering the SVG inside */
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: background 0.2s ease, box-shadow 0.2s ease;
-        position: relative;
-        animation: none !important;
-        transform: none !important;
       }
 
       .modal-header-gradient .btn-close:hover {
-        background: rgba(255, 255, 255, 1);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        /* Simple border-only hover effect */
+        opacity: 1;
+        border-color: rgba(0, 0, 0, 0.2);
+        transform: translateY(calc(-50% + 40px)) !important; /* Prevent global CSS from resetting transform */
+      }
+      
+      /* This rule explicitly prevents any other CSS from adding an 'X' */
+      .modal-header-gradient .btn-close::before,
+      .modal-header-gradient .btn-close::after {
+          content: none !important;
       }
 
-      .modal-header-gradient .btn-close:active {
-        background: rgba(255, 255, 255, 0.8);
+      .modal-header-gradient .btn-close svg {
+          width: 1.25rem;
+          height: 1.25rem;
+          stroke: white; /* White 'X' icon */
+          stroke-width: 2.5;
       }
 
       .modal-body-modern {
-        padding: 2rem;
-        background: #f9fafb;
+        padding: 2.5rem !important;
+        background: linear-gradient(to bottom, #fafafa 0%, #ffffff 100%);
+        position: relative;
+      }
+
+      .modal-body-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.2), transparent);
       }
 
       .modal-footer-modern {
-        padding: 1.5rem 2rem;
-        border-top: 1px solid #e5e7eb;
-        background: white;
+        padding: 1.75rem 2.5rem !important;
+        background: linear-gradient(to top, #fafafa, #ffffff);
+        border: none;
+        gap: 1rem;
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .modal-footer-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.2), transparent);
       }
 
       /* Form Styles */
@@ -220,6 +267,18 @@ export function renderGuideManagementPage(path, userRole) {
         animation: inputFocus 0.3s ease;
       }
 
+      /* ========== FORM STAGGERED ANIMATION ========== */
+      .form-group-animate {
+          animation: fadeInUp 0.5s ease-out backwards;
+      }
+
+      .form-group-animate:nth-child(1) { animation-delay: 0.1s; }
+      .form-group-animate:nth-child(2) { animation-delay: 0.15s; }
+      .form-group-animate:nth-child(3) { animation-delay: 0.2s; }
+      .form-group-animate:nth-child(4) { animation-delay: 0.25s; }
+      .form-group-animate:nth-child(5) { animation-delay: 0.3s; }
+      .form-group-animate:nth-child(6) { animation-delay: 0.35s; }
+
       .file-upload-area {
         border: 2px dashed #d1d5db;
         border-radius: 12px;
@@ -250,19 +309,62 @@ export function renderGuideManagementPage(path, userRole) {
 
       /* Button Styles */
       .btn-modern-primary {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-        color: white !important;
+        background: linear-gradient(135deg, #2196F3, #64B5F6);
         border: none;
-        padding: 0.875rem 1.75rem;
-        border-radius: 12px;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.875rem 2rem;
+        border-radius: 14px;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 
+            0 4px 15px rgba(33, 150, 243, 0.4),
+            0 0 0 0 rgba(33, 150, 243, 0.5);
+        animation: buttonPulse 2s infinite;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @keyframes buttonPulse {
+        0%, 100% {
+            box-shadow: 
+                0 4px 15px rgba(33, 150, 243, 0.4),
+                0 0 0 0 rgba(33, 150, 243, 0.5);
+        }
+        50% {
+            box-shadow: 
+                0 4px 20px rgba(33, 150, 243, 0.5),
+                0 0 0 8px rgba(33, 150, 243, 0);
+        }
+      }
+
+      .btn-modern-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+      }
+
+      .btn-modern-primary:hover::before {
+        left: 100%;
       }
 
       .btn-modern-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0, 188, 212, 0.3);
-        color: white !important;
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 
+            0 8px 25px rgba(33, 150, 243, 0.5),
+            0 0 0 0 rgba(33, 150, 243, 0);
+      }
+
+      .btn-modern-primary:active {
+        transform: translateY(-1px) scale(0.98);
       }
 
       .btn-modern-primary:focus,
@@ -271,18 +373,44 @@ export function renderGuideManagementPage(path, userRole) {
       }
 
       .btn-modern-cancel {
-        background: #f3f4f6;
+        background: white;
+        border: 2px solid #E5E7EB;
         color: #6B7280;
-        border: none;
-        padding: 0.875rem 1.75rem;
-        border-radius: 12px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        padding: 0.875rem 1.75rem;
+        border-radius: 14px;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn-modern-cancel::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(107, 114, 128, 0.1);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      .btn-modern-cancel:hover::before {
+        width: 300px;
+        height: 300px;
       }
 
       .btn-modern-cancel:hover {
-        background: #e5e7eb;
+        border-color: #9CA3AF;
         color: #374151;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       }
 
       /* Table Styles */
@@ -357,29 +485,91 @@ export function renderGuideManagementPage(path, userRole) {
         min-height: 200px;
       }
 
-      /* Search Input */
-      .search-box {
-        position: relative;
+      /* ========== SEARCH INPUT DESIGN ========== */
+      .search-input-wrapper {
+          position: relative;
       }
 
-      .search-box input {
-        padding-left: 2.75rem !important;
-        padding-right: 1rem;
+      .search-input-wrapper input {
+          width: 100%;
+          padding: 0.875rem 3rem 0.875rem 3rem;
+          border: 2px solid #E5E7EB;
+          border-radius: 16px;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: #1F2937;
+          background: white;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          outline: none;
       }
 
-      .search-box::before {
-        content: '';
-        position: absolute;
-        left: 0.875rem;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 16px;
-        height: 16px;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
-        background-size: contain;
-        background-repeat: no-repeat;
-        pointer-events: none;
-        z-index: 1;
+      .search-input-wrapper input::placeholder {
+          color: #9CA3AF;
+          font-weight: 400;
+      }
+
+      .search-input-wrapper input:focus {
+          border-color: var(--primary-color);
+          background: #F0F8FF;
+          box-shadow: 
+              0 0 0 4px rgba(0, 188, 212, 0.1),
+              0 5px 15px rgba(0, 188, 212, 0.15);
+          transform: translateY(-2px);
+      }
+
+      .search-input-wrapper.has-value input {
+          padding-right: 3.5rem;
+      }
+
+      .search-icon {
+          position: absolute;
+          left: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #9CA3AF;
+          pointer-events: none;
+          transition: color 0.3s;
+      }
+
+      .search-input-wrapper input:focus ~ .search-icon,
+      .search-input-wrapper.has-value .search-icon {
+          color: var(--primary-color);
+      }
+
+      .clear-search {
+          position: absolute;
+          right: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          background: transparent;
+          border: none;
+          padding: 0.5rem;
+          cursor: pointer;
+          opacity: 0;
+          pointer-events: none;
+          transition: all 0.2s;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      .search-input-wrapper.has-value .clear-search {
+          opacity: 0.6;
+          pointer-events: auto;
+      }
+
+      .clear-search:hover {
+          opacity: 1 !important;
+          background: rgba(239, 68, 68, 0.1);
+      }
+
+      .clear-search svg {
+          color: #6B7280;
+      }
+
+      .clear-search:hover svg {
+          color: #EF4444;
       }
 
       /* Preview Modal Styles */
@@ -411,16 +601,26 @@ export function renderGuideManagementPage(path, userRole) {
 
       <!-- Action Bar -->
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="search-box" style="width: 300px;">
+        <!-- Search Section -->
+        <div class="search-input-wrapper" style="width: 300px;">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
           <input 
             type="text" 
             id="searchInput" 
-            class="form-control" 
             placeholder="Cari panduan..."
-            style="border-radius: 12px; border: 2px solid #e5e7eb;"
-          >
+            autocomplete="off"
+          />
+          <button class="clear-search" id="clearSearch" title="Clear search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
-        <button class="btn btn-modern-primary" data-bs-toggle="modal" data-bs-target="#addGuideModal">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGuideModal">
           <i class="ti me-2">&#xeb0b;</i>Tambah Panduan
         </button>
       </div>
@@ -459,20 +659,24 @@ export function renderGuideManagementPage(path, userRole) {
               <h5 class="modal-title">Tambah Panduan Baru</h5>
               <p class="modal-subtitle mb-0">Unggah PDF dan link video tutorial</p>
             </div>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
           <div class="modal-body modal-body-modern">
             <div id="addGuideError" class="alert alert-danger" style="display: none; margin-bottom: 1.5rem;"></div>
             <form id="addGuideForm">
               <div class="row g-3">
-                <div class="col-12">
+                <div class="col-12 form-group-animate">
                   <label class="form-label fw-semibold">Judul Panduan</label>
                   <div class="glass-input-wrapper">
                     <input type="text" id="addTitle" placeholder="Contoh: Panduan Pengajuan KAK" required>
                   </div>
                 </div>
 
-                <div class="col-12">
+                <div class="col-12 form-group-animate">
                   <label class="form-label fw-semibold">Peran Pengguna</label>
                   <div class="glass-input-wrapper">
                     <select id="addRole" required>
@@ -486,7 +690,7 @@ export function renderGuideManagementPage(path, userRole) {
                   </div>
                 </div>
 
-                <div class="col-12">
+                <div class="col-12 form-group-animate">
                   <label class="form-label fw-semibold">Tipe Media</label>
                   <div class="d-flex gap-3">
                     <div class="form-check">
@@ -504,7 +708,7 @@ export function renderGuideManagementPage(path, userRole) {
                   </div>
                 </div>
 
-                <div class="col-12" id="addDocSection">
+                <div class="col-12 form-group-animate" id="addDocSection">
                   <label class="form-label fw-semibold">File Dokumen</label>
                   <div class="file-upload-area" id="pdfUploadArea">
                     <input type="file" id="addPdfFile" accept=".pdf,.docx" style="display: none;">
@@ -515,7 +719,7 @@ export function renderGuideManagementPage(path, userRole) {
                   <div id="pdfFileName" class="mt-2 text-success small" style="display: none;"></div>
                 </div>
 
-                <div class="col-12" id="addVideoSection" style="display: none;">
+                <div class="col-12 form-group-animate" id="addVideoSection" style="display: none;">
                   <label class="form-label fw-semibold">Link Video (YouTube)</label>
                   <div class="glass-input-wrapper">
                     <input type="url" id="addVideoUrl" placeholder="https://www.youtube.com/watch?v=...">
@@ -542,21 +746,25 @@ export function renderGuideManagementPage(path, userRole) {
               <h5 class="modal-title">Edit Panduan</h5>
               <p class="modal-subtitle mb-0" style="font-size: 0.9rem; color: #ffffffff; margin-top: 0.25rem;">Perbarui informasi panduan</p>
             </div>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
           <div class="modal-body modal-body-modern">
             <div id="editGuideError" class="alert alert-danger" style="display: none; margin-bottom: 1.5rem;"></div>
             <form id="editGuideForm">
               <input type="hidden" id="editGuideId">
               <div class="row g-3">
-                <div class="col-12">
+                <div class="col-12 form-group-animate">
                   <label class="form-label fw-semibold">Judul Panduan</label>
                   <div class="glass-input-wrapper">
                     <input type="text" id="editTitle" required>
                   </div>
                 </div>
 
-                <div class="col-12">
+                <div class="col-12 form-group-animate">
                   <label class="form-label fw-semibold">Role Pengguna</label>
                   <div class="glass-input-wrapper">
                     <select id="editRole" required>
@@ -570,7 +778,7 @@ export function renderGuideManagementPage(path, userRole) {
                   </div>
                 </div>
 
-                <div class="col-12">
+                <div class="col-12 form-group-animate">
                   <label class="form-label fw-semibold">Tipe Media</label>
                   <div class="d-flex gap-3">
                     <div class="form-check">
@@ -588,7 +796,7 @@ export function renderGuideManagementPage(path, userRole) {
                   </div>
                 </div>
 
-                <div class="col-12" id="editDocSection">
+                <div class="col-12 form-group-animate" id="editDocSection">
                   <label class="form-label fw-semibold">File Dokumen (Kosongkan jika tidak diubah)</label>
                   <div class="file-upload-area" id="editPdfUploadArea">
                     <input type="file" id="editPdfFile" accept=".pdf,.docx" style="display: none;">
@@ -600,7 +808,7 @@ export function renderGuideManagementPage(path, userRole) {
                   <div id="currentPdfInfo" class="mt-2 text-info small"></div>
                 </div>
 
-                <div class="col-12" id="editVideoSection" style="display: none;">
+                <div class="col-12 form-group-animate" id="editVideoSection" style="display: none;">
                   <label class="form-label fw-semibold">Link Video (YouTube)</label>
                   <div class="glass-input-wrapper">
                     <input type="url" id="editVideoUrl" placeholder="https://www.youtube.com/watch?v=...">

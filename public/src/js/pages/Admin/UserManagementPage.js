@@ -112,8 +112,9 @@ const pageContent = `
             width: 36px; /* Smaller box */
             height: 36px; /* Smaller box */
             border-radius: 10px; /* Slightly smaller radius for smaller box */
-            transition: all 0.2s ease-in-out;
             border: 1px solid rgba(255, 255, 255, 0.3); /* Visible glassy border */
+            transition: none !important;
+            animation: none !important;
             z-index: 10; /* High z-index */
 
             /* Flex properties for centering the SVG inside */
@@ -126,6 +127,7 @@ const pageContent = `
             /* Simple border-only hover effect */
             opacity: 1;
             border-color: rgba(0, 0, 0, 0.2);
+            transform: translateY(calc(-50% + 40px)) !important; /* Prevent global CSS from resetting transform */
         }
         
         /* This rule explicitly prevents any other CSS from adding an 'X' */
