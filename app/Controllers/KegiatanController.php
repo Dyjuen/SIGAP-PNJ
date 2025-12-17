@@ -1090,118 +1090,176 @@ class KegiatanController
             Response::error('Gagal mengambil statistik: ' . $e->getMessage(), 500);
         }
     }
-
-    /**
-     * Stream Surat Pengantar
-     * 
-     * GET /api/kegiatan/{id}/surat-pengantar
-     */
-    public function streamSuratPengantar()
-    {
-        try {
-            // Get kegiatan_id from URL
-            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-            preg_match('/\/kegiatan\/(\d+)\/surat-pengantar$/', $uri, $matches);
-            $kegiatanId = $matches[1] ?? null;
-
-            if (!$kegiatanId) {
-                Response::error('Kegiatan ID tidak valid.', 400);
-            }
-
-            // Check if kegiatan exists
-            $kegiatan = $this->kegiatanModel->findById($kegiatanId);
-            if (!$kegiatan) {
-                Response::notFound('Kegiatan tidak ditemukan.');
-            }
-
-            // Authorization
-            // Admin, PPK, Wadir, Bendahara can view
-            // Pengusul can view if owner
-            $allowedRoles = ['Admin', 'PPK', 'Wadir', 'Bendahara', 'Verifikator'];
-            $hasAccess = false;
-            foreach ($allowedRoles as $role) {
-                if ($this->hasRole($role)) {
-                    $hasAccess = true;
-                    break;
+    
+        /**
+         * Get overdue activities for PPK.
+         * 
+         * GET /api/kegiatan/overdue-ppk
+         * Requires: AuthMiddleware, RoleMiddleware (PPK, Admin)
+         */
+            public function getOverdueActivities()
+            {
+                try {
+                    // Authorization: Only PPK or Admin can access this
+                    if (!$this->hasRole('PPK') && !$this->hasRole('Admin')) {
+                        Response::forbidden('Anda tidak memiliki akses untuk melihat kegiatan overdue PPK.');
+                    }
+        
+                    $overdueKegiatan = $this->kegiatanModel->getOverdueKegiatanForPpk();
+        
+                    $overdueCount = count($overdueKegiatan);
+                    $kegiatanNames = array_map(fn($k) => $k['nama_kegiatan'], $overdueKegiatan);
+        
+                    Response::success([
+                        'count' => $overdueCount,
+                        'names' => $kegiatanNames,
+                        'kegiatan' => $overdueKegiatan // Return full data with overdue_days
+                    ], 'Data kegiatan overdue PPK berhasil diambil.');
+        
+                } catch (\Exception $e) {
+                    Response::error('Gagal mengambil data kegiatan overdue PPK: ' . $e->getMessage(), 500);
                 }
             }
-
-            if (!$hasAccess) {
-                if ($this->hasRole('Pengusul') && $kegiatan['pengusul_user_id'] == $this->userData['user_id']) {
-                    $hasAccess = true;
+        
+            /**
+             * Get overdue activities for Wadir.
+             * 
+             * GET /api/kegiatan/overdue-wadir
+             * Requires: AuthMiddleware, RoleMiddleware (Wadir, Admin)
+             */
+            public function getOverdueActivitiesForWadir()
+            {
+                try {
+                    // Authorization: Only Wadir or Admin can access this
+                    if (!$this->hasRole('Wadir') && !$this->hasRole('Admin')) {
+                        Response::forbidden('Anda tidak memiliki akses untuk melihat kegiatan overdue Wadir.');
+                    }
+        
+                    $overdueKegiatan = $this->kegiatanModel->getOverdueKegiatanForWadir();
+        
+                    $overdueCount = count($overdueKegiatan);
+                    $kegiatanNames = array_map(fn($k) => $k['nama_kegiatan'], $overdueKegiatan);
+        
+                    Response::success([
+                        'count' => $overdueCount,
+                        'names' => $kegiatanNames,
+                        'kegiatan' => $overdueKegiatan // Return full data with overdue_days
+                    ], 'Data kegiatan overdue Wadir berhasil diambil.');
+        
+                } catch (\Exception $e) {
+                    Response::error('Gagal mengambil data kegiatan overdue Wadir: ' . $e->getMessage(), 500);
                 }
+            }    
+        /**
+         * Stream Surat Pengantar
+         * 
+         * GET /api/kegiatan/{id}/surat-pengantar
+         */
+        public function streamSuratPengantar()
+        {
+            try {
+                // Get kegiatan_id from URL
+                $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+                preg_match('/\/kegiatan\/(\d+)\/surat-pengantar$/', $uri, $matches);
+                $kegiatanId = $matches[1] ?? null;
+    
+                if (!$kegiatanId) {
+                    Response::error('Kegiatan ID tidak valid.', 400);
+                }
+    
+                // Check if kegiatan exists
+                $kegiatan = $this->kegiatanModel->findById($kegiatanId);
+                if (!$kegiatan) {
+                    Response::notFound('Kegiatan tidak ditemukan.');
+                }
+    
+                // Authorization
+                // Admin, PPK, Wadir, Bendahara can view
+                // Pengusul can view if owner
+                $allowedRoles = ['Admin', 'PPK', 'Wadir', 'Bendahara', 'Verifikator'];
+                $hasAccess = false;
+                foreach ($allowedRoles as $role) {
+                    if ($this->hasRole($role)) {
+                        $hasAccess = true;
+                        break;
+                    }
+                }
+    
+                if (!$hasAccess) {
+                    if ($this->hasRole('Pengusul') && $kegiatan['pengusul_user_id'] == $this->userData['user_id']) {
+                        $hasAccess = true;
+                    }
+                }
+    
+                if (!$hasAccess) {
+                    Response::forbidden('Anda tidak memiliki akses untuk melihat surat pengantar ini.');
+                }
+    
+                if (empty($kegiatan['surat_pengantar_path'])) {
+                    Response::notFound('Surat pengantar belum diupload.');
+                }
+    
+                // Check if file exists on server
+                // Strategy 1: Use DOCUMENT_ROOT + path (standard for public uploads)
+                $filePath = $_SERVER['DOCUMENT_ROOT'] . $kegiatan['surat_pengantar_path'];
+                
+                if (!file_exists($filePath)) {
+                     // Strategy 2: Use relative path from app/Controllers to project root (for storage outside public)
+                     // __DIR__ is app/Controllers. ../../ is project root.
+                     $filePath = __DIR__ . '/../../' . ltrim($kegiatan['surat_pengantar_path'], '/');
+                }
+    
+                if (!file_exists($filePath)) {
+                    Response::notFound('File tidak ditemukan di server.');
+                }
+    
+                // Stream file
+                $mimeType = mime_content_type($filePath) ?: 'application/pdf';
+    
+                header('Content-Type: ' . $mimeType);
+                header('Content-Disposition: inline; filename="Surat_Pengantar_' . basename($filePath) . '"');
+                header('Content-Length: ' . filesize($filePath));
+                header('Cache-Control: no-cache, must-revalidate');
+                header('Expires: 0');
+                
+                readfile($filePath);
+                exit;
+    
+            } catch (\Exception $e) {
+                Response::error('Gagal menampilkan file: ' . $e->getMessage(), 500);
             }
-
-            if (!$hasAccess) {
-                Response::forbidden('Anda tidak memiliki akses untuk melihat surat pengantar ini.');
-            }
-
-            if (empty($kegiatan['surat_pengantar_path'])) {
-                Response::notFound('Surat pengantar belum diupload.');
-            }
-
-            // Check if file exists on server
-            // Strategy 1: Use DOCUMENT_ROOT + path (standard for public uploads)
-            $filePath = $_SERVER['DOCUMENT_ROOT'] . $kegiatan['surat_pengantar_path'];
-            
-            if (!file_exists($filePath)) {
-                 // Strategy 2: Use relative path from app/Controllers to project root (for storage outside public)
-                 // __DIR__ is app/Controllers. ../../ is project root.
-                 $filePath = __DIR__ . '/../../' . ltrim($kegiatan['surat_pengantar_path'], '/');
-            }
-
-            if (!file_exists($filePath)) {
-                Response::notFound('File tidak ditemukan di server.');
-            }
-
-            // Stream file
-            $mimeType = mime_content_type($filePath) ?: 'application/pdf';
-
-            header('Content-Type: ' . $mimeType);
-            header('Content-Disposition: inline; filename="Surat_Pengantar_' . basename($filePath) . '"');
-            header('Content-Length: ' . filesize($filePath));
-            header('Cache-Control: no-cache, must-revalidate');
-            header('Expires: 0');
-            
-            readfile($filePath);
-            exit;
-
-        } catch (\Exception $e) {
-            Response::error('Gagal menampilkan file: ' . $e->getMessage(), 500);
         }
-    }
-
-    /**
-     * Export to Excel
-     * 
-     * GET /api/kegiatan/export/excel
-     */
-    public function exportExcel()
-    {
-        try {
-            // Get filters
-            $status = $_GET['status'] ?? null;
-
-            // Authorization: Pengusul hanya export kegiatan sendiri
-            $userId = null;
-            if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
-                $userId = $this->userData['user_id'];
+    
+        /**
+         * Export to Excel
+         * 
+         * GET /api/kegiatan/export/excel
+         */
+        public function exportExcel()
+        {
+            try {
+                // Get filters
+                $status = $_GET['status'] ?? null;
+    
+                // Authorization: Pengusul hanya export kegiatan sendiri
+                $userId = null;
+                if ($this->hasRole('Pengusul') && !$this->hasRole('Admin')) {
+                    $userId = $this->userData['user_id'];
+                }
+    
+                // Get kegiatan
+                $kegiatan = $this->kegiatanModel->getAllForExport([
+                    'status_id' => $status,
+                    'user_id' => $userId
+                ]);
+    
+                // Generate Excel
+                $this->generateExcel($kegiatan);
+    
+            } catch (\Exception $e) {
+                Response::error('Gagal export data: ' . $e->getMessage(), 500);
             }
-
-            // Get kegiatan
-            $kegiatan = $this->kegiatanModel->getAllForExport([
-                'status_id' => $status,
-                'user_id' => $userId
-            ]);
-
-            // Generate Excel
-            $this->generateExcel($kegiatan);
-
-        } catch (\Exception $e) {
-            Response::error('Gagal export data: ' . $e->getMessage(), 500);
         }
-    }
-
     /**
      * Helper: Check if user has role
      */

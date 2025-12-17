@@ -693,4 +693,56 @@ class Kegiatan extends Model
         $stmt = $this->db->prepare($sql);
         return $stmt->execute(['kegiatan_id' => $kegiatanId]);
     }
+
+    /**
+     * Get overdue activities for PPK approval.
+     * Overdue is defined as:
+     * - approval_level is 'PPK'
+     * - status is 'Aktif'
+     * - updated_at is older than 3 days ago
+     * 
+     * @return array A list of overdue kegiatan with their IDs and names.
+     */
+    public function getOverdueKegiatanForPpk(): array
+    {
+        $sql = "SELECT 
+                    ka.kegiatan_id,
+                    tkak.nama_kegiatan,
+                    ka.updated_at,
+                    DATEDIFF(NOW(), ka.updated_at) AS overdue_days
+                FROM t_kegiatan_approval ka
+                JOIN t_kegiatan tk ON ka.kegiatan_id = tk.kegiatan_id
+                JOIN t_kak tkak ON tk.kak_id = tkak.kak_id
+                WHERE ka.approval_level = 'PPK'
+                AND ka.status = 'Aktif'
+                AND ka.updated_at < NOW() - INTERVAL 3 DAY";
+        
+        return $this->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get overdue activities for Wadir approval.
+     * Overdue is defined as:
+     * - approval_level is 'Wadir2'
+     * - status is 'Aktif'
+     * - updated_at is older than 3 days ago
+     * 
+     * @return array A list of overdue kegiatan with their IDs, names, and overdue days.
+     */
+    public function getOverdueKegiatanForWadir(): array
+    {
+        $sql = "SELECT 
+                    ka.kegiatan_id,
+                    tkak.nama_kegiatan,
+                    ka.updated_at,
+                    DATEDIFF(NOW(), ka.updated_at) AS overdue_days
+                FROM t_kegiatan_approval ka
+                JOIN t_kegiatan tk ON ka.kegiatan_id = tk.kegiatan_id
+                JOIN t_kak tkak ON tk.kak_id = tkak.kak_id
+                WHERE ka.approval_level = 'Wadir2'
+                AND ka.status = 'Aktif'
+                AND ka.updated_at < NOW() - INTERVAL 3 DAY";
+        
+        return $this->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

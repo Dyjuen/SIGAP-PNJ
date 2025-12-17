@@ -255,6 +255,8 @@ $router->post('/kak/{id}/revise', 'KAKController@requestRevision');
 $router->get('/kegiatan', 'KegiatanController@index');
 $router->post('/kegiatan', 'KegiatanController@create');
 $router->get('/kegiatan/riwayat', 'KegiatanController@getRiwayat'); // Moved up
+$router->get('/kegiatan/overdue-ppk', 'KegiatanController@getOverdueActivities');
+$router->get('/kegiatan/overdue-wadir', 'KegiatanController@getOverdueActivitiesForWadir');
 $router->get('/kegiatan/{id}', 'KegiatanController@show');
 $router->get('/kegiatan/{id}/detail', 'KegiatanController@getDetail');
 

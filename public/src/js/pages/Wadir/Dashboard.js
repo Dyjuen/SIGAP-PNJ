@@ -1,5 +1,7 @@
 // frontend/src/pages/Wadir/Dashboard.js
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
+import { kegiatanService } from "../../api/kegiatanService.js";
+import flasher from "../../components/FlasherNotification.js";
 
 export function renderWadirDashboardPage(path, userRole) {
   const dashboardContent = `
@@ -926,4 +928,17 @@ export function renderWadirDashboardPage(path, userRole) {
       container.appendChild(col);
     });
   }
+
+  // === NEW LOGIC: Check for overdue activities for Wadir after dashboard renders ===
+  (async () => {
+    try {
+      const overdueData = await kegiatanService.getOverdueKegiatanForWadir(); // New API call for Wadir
+      if (overdueData && overdueData.count > 0) {
+        flasher.showOverdueKegiatanNotification(overdueData);
+      }
+    } catch (overdueError) {
+      console.error("Failed to fetch overdue activities for Wadir:", overdueError);
+    }
+  })();
+  // === END NEW LOGIC ===
 }

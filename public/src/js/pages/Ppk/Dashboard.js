@@ -1,5 +1,7 @@
 // frontend/src/pages/Ppk/Dashboard.js
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
+import { kegiatanService } from "../../api/kegiatanService.js";
+import { FlasherNotification } from "../../components/FlasherNotification.js";
 
 export function renderPpkDashboardPage(path, userRole) {
   const pageContent = `
@@ -955,4 +957,22 @@ export function renderPpkDashboardPage(path, userRole) {
       container.appendChild(col);
     });
   }
+
+  // === NEW LOGIC: Check for overdue activities for PPK after dashboard renders ===
+  (async () => {
+    try {
+      const overdueData = await kegiatanService.getOverdueKegiatanForPpk();
+      if (overdueData && overdueData.count > 0) {
+        // Ensure FlasherNotification is loaded and available
+        if (window.flasher && typeof window.flasher.showOverdueKegiatanNotification === 'function') {
+          window.flasher.showOverdueKegiatanNotification(overdueData);
+        } else {
+          console.warn("FlasherNotification or showOverdueKegiatanNotification method not found.");
+        }
+      }
+    } catch (overdueError) {
+      console.error("Failed to fetch overdue activities for PPK:", overdueError);
+    }
+  })();
+  // === END NEW LOGIC ===
 }
