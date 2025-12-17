@@ -3863,13 +3863,8 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
                   };
               };
 
-              // Existing items
-              container.querySelectorAll('.row-with-comment').forEach(row => {
-                  const inputs = row.querySelectorAll('input, select');
-                  rab.push(extractRabData(inputs));
-              });
-
-              // New items
+              // PERBAIKAN: Ambil SEMUA items dengan class .rab-item (termasuk yang readonly)
+              // Class .rab-item ada di semua row RAB (baik existing maupun new)
               container.querySelectorAll('.rab-item').forEach(row => {
                   const inputs = row.querySelectorAll('input, select');
                   rab.push(extractRabData(inputs));
