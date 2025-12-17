@@ -14,6 +14,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none;
 }
 
+/* Desktop right padding to prevent content from touching right edge */
+@media (min-width: 1024px) {
+  .riwayat-kak-page {
+    padding-right: 1rem;
+  }
+}
+
 /* Page container */
 .riwayat-kak-page {
   background-image: url('/assets/img/backgrounds/BG.png');

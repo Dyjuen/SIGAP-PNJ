@@ -15,6 +15,13 @@ export function renderPengusulDashboardPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .pengusul-dashboard-page {
+          padding-right: 1rem;
+        }
+      }
+
       /* Keyframe Animations */
       @keyframes fadeInUp {
         from {

@@ -22,6 +22,13 @@ export function renderRevisiKakPage(path, userRole) {
         display: none;
     }
 
+    /* Desktop right padding to prevent content from touching right edge */
+    @media (min-width: 1024px) {
+      .revisi-kak-page {
+        padding-right: 1rem;
+      }
+    }
+
     /* Daterangepicker theme overrides */
     .daterangepicker { border-color: #00BCD4 !important; }
     .daterangepicker .calendar-table { border-color: #E5F8FB !important; }

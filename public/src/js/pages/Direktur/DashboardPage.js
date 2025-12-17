@@ -34,6 +34,13 @@ export function DirekturDashboardPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .exec-dashboard {
+          padding-right: 1rem;
+        }
+      }
+
       :root {
         --text-main: #0f172a; --text-muted: #64748b;
         --cyan-primary: #06b6d4; --cyan-dark: #0891b2; --cyan-light: #ecfeff;

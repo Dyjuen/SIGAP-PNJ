@@ -63,6 +63,13 @@ export function renderDaftarLpjPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .daftar-lpj-page {
+          padding-right: 1rem;
+        }
+      }
+
       .countdown-normal { color: #D97706; }
       .countdown-danger { color: #be123c; }
 

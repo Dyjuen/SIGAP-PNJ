@@ -14,6 +14,13 @@ export function renderWadirDashboardPage(path, userRole) {
             display: none;
         }
 
+        /* Desktop right padding to prevent content from touching right edge */
+        @media (min-width: 1024px) {
+          .wadir-dashboard-page {
+            padding-right: 1rem;
+          }
+        }
+
         .video-placeholder {
           background: #000;
           border-radius: 12px;

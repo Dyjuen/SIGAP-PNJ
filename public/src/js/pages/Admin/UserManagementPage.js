@@ -18,6 +18,13 @@ const pageContent = `
             display: none;
         }
 
+        /* Desktop right padding to prevent content from touching right edge */
+        @media (min-width: 1024px) {
+          .user-management-page {
+            padding-right: 1rem;
+          }
+        }
+
         /* ========== DESIGN SYSTEM - TYPOGRAPHY ========== */
         :root {
             --font-xs: 0.75rem;
