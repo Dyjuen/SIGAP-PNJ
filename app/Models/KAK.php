@@ -94,5 +94,31 @@ class KAK extends Model {
                 
                 // Kembalikan data gabungan
                 return $kak;
-            }    }
-    
+            }
+
+    /**
+     * Get overdue KAKs for Verifikator approval.
+     * Overdue is defined as:
+     * - kak.status_id is 2 (Review Verifikator)
+     * - updated_at is older than 3 days ago
+     *
+     * @return array A list of overdue KAKs with their IDs, names, pengusul, status, and overdue days.
+     */
+    public function getOverdueKakForVerifikator(): array
+    {
+        $sql = "SELECT
+                    kak.kak_id,
+                    kak.nama_kegiatan AS nama_kak,
+                    kak.updated_at,
+                    DATEDIFF(NOW(), kak.updated_at) AS overdue_days,
+                    u.nama_lengkap AS pengusul_nama,
+                    ks.nama_status
+                FROM t_kak kak
+                JOIN m_users u ON kak.pengusul_user_id = u.user_id
+                JOIN m_kegiatan_status ks ON kak.status_id = ks.status_id
+                WHERE kak.status_id = 2 -- 2 = Review Verifikator
+                AND kak.updated_at < NOW() - INTERVAL 3 DAY";
+
+        return $this->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+    }
+}

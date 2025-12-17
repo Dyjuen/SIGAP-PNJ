@@ -1,6 +1,8 @@
 // frontend/src/pages/verifikator/DashboardVerifikator.js
 
 import { renderDashboardLayout } from "../../layout/AppLayout.js";
+import { kegiatanService } from "../../api/kegiatanService.js"; // Assuming this handles KAK too
+import flasher from "../../components/FlasherNotification.js";
 
 export function renderDashboardVerifikator(path, userRole) {
   const pageContent = `
@@ -1365,4 +1367,18 @@ export function renderDashboardVerifikator(path, userRole) {
   if (window.Helpers) {
     window.Helpers.init();
   }
+
+  // === NEW LOGIC: Check for overdue KAKs for Verifikator after dashboard renders ===
+  (async () => {
+    try {
+      const overdueKak = await kegiatanService.getOverdueKakForVerifikator(); // Call the KAK service method
+      if (overdueKak && overdueKak.count > 0) {
+        // Reuse the showOverdueKegiatanNotification which is generic enough
+        flasher.showOverdueKegiatanNotification(overdueKak);
+      }
+    } catch (overdueError) {
+      console.error("Failed to fetch overdue KAKs for Verifikator:", overdueError);
+    }
+  })();
+  // === END NEW LOGIC ===
 }

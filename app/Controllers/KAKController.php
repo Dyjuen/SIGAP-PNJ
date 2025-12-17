@@ -1466,6 +1466,36 @@ class KAKController
         }
     }
 
+    /**
+     * Get overdue KAKs for Verifikator.
+     * 
+     * GET /api/kak/overdue-verifikator
+     * Requires: AuthMiddleware, RoleMiddleware (Verifikator, Admin)
+     */
+    public function getOverdueKakActivities()
+    {
+        try {
+            // Authorization: Only Verifikator or Admin can access this
+            if (!$this->hasRole('Verifikator') && !$this->hasRole('Admin')) {
+                Response::forbidden('Anda tidak memiliki akses untuk melihat KAK overdue verifikator.');
+            }
+
+            $overdueKak = $this->kakModel->getOverdueKakForVerifikator();
+
+            $overdueCount = count($overdueKak);
+            $kakNames = array_map(fn($k) => $k['nama_kak'], $overdueKak);
+
+            Response::success([
+                'count' => $overdueCount,
+                'names' => $kakNames,
+                'kaks' => $overdueKak // Return full data with overdue_days
+            ], 'Data KAK overdue verifikator berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil data KAK overdue verifikator: ' . $e->getMessage(), 500);
+        }
+    }
+
     public function delete($id)
     {
         try {
