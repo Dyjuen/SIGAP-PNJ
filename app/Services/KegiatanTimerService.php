@@ -125,7 +125,7 @@ class KegiatanTimerService
     public function getUserRoles(int $userId): array
     {
         $roles = [];
-        $sql = "SELECT r.nama_role FROM m_roles r JOIN t_user_roles ur ON r.role_id = ur.role_id WHERE ur.user_id = :user_id";
+        $sql = "SELECT r.nama_role FROM m_roles r JOIN m_users u ON r.role_id = u.role_id WHERE u.user_id = :user_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':user_id' => $userId]);
         foreach ($stmt->fetchAll() as $row) {

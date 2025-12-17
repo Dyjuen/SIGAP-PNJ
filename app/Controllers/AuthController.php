@@ -286,6 +286,9 @@ class AuthController
                 // Get full user data
                 $userData = $this->userModel->getUserWithRoles($user['user_id']);
 
+                // Set one-time welcome flasher message
+                $_SESSION['login_welcome_message'] = "Selamat datang, " . $userData['nama_lengkap'] . "!";
+
                 Response::success([
                     'token' => $token,
                     'token_type' => 'Bearer',

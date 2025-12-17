@@ -63,7 +63,8 @@ class DashboardController
             $flasherMessages = [];
             // Only generate flasher notifications for PPK or Wadir roles
             if (isset($this->userData['roles']) && ($this->hasRole('PPK') || $this->hasRole('Wadir'))) {
-                $flasherMessages = $this->flasherNotificationService->getLoginFlasherNotifications($this->userData['user_id']);
+                $userName = $this->userData['nama_lengkap'] ?? 'Pengguna'; // Get user's full name, fallback to 'Pengguna'
+                $flasherMessages = $this->flasherNotificationService->getLoginFlasherNotifications($this->userData['user_id'], $userName);
             }
             
             Response::success($flasherMessages, 'Flasher notifications berhasil diambil.');

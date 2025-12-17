@@ -25,7 +25,7 @@ import { renderDaftarLpjPage } from "./pages/shared/MonitorLpj.js";
 import { renderRevisiLpjPage } from "./pages/Bendahara/RevisiLpj.js";
 import { renderGuideManagementPage } from "./pages/Admin/GuideManagementPage.js";
 import { renderLogHistoryPage } from "./pages/Admin/LogHistoryPage.js";
-import { showToast } from './alerts/alerts.js'; // Added import for showToast
+
 
 function getCurrentUserRole() {
   return localStorage.getItem("userRole") || "guest";
@@ -59,7 +59,7 @@ async function fetchAndDisplayFlasherNotifications(userRole) {
 
       if (data.success && data.data && data.data.length > 0) {
         data.data.forEach(message => {
-          showToast(message, 'warning', 'top-end'); // Use 'warning' icon for overdue notices
+          window.showToast(message, icon, 'top-end'); // Use 'warning' icon for overdue notices
         });
       }
     } catch (error) {
