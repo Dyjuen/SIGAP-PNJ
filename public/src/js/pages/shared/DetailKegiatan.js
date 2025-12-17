@@ -14,6 +14,13 @@ export function renderDetailKegiatanPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .kerangka-acuan-kerja-page {
+          padding-right: 1rem;
+        }
+      }
+
       /* Keyframe Animations */
       @keyframes fadeIn {
         from {

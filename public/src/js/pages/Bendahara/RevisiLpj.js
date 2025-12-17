@@ -77,6 +77,13 @@ export function renderRevisiLpjPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .revisi-lpj-page {
+          padding-right: 1rem;
+        }
+      }
+
       /* Border Drawing Animation - SUPER SMOOTH VERSION with POP-UP */
       .border-hover-draw {
         position: relative;

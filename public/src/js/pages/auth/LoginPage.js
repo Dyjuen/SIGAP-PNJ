@@ -14,6 +14,13 @@ export function renderLoginPage() {
                 display: none;
             }
 
+            /* Desktop right padding to prevent content from touching right edge */
+            @media (min-width: 1024px) {
+              .login-container {
+                padding-right: 1rem;
+              }
+            }
+
             /* ========== ANIMATIONS ========== */
             @keyframes fadeSlideIn {
                 from {

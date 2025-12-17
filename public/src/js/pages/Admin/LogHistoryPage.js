@@ -14,6 +14,13 @@ export function renderLogHistoryPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .log-history-page {
+          padding-right: 1rem;
+        }
+      }
+
       :root {
         --primary-color: #00bcd4;
         --grey-100: #f8f9fa;

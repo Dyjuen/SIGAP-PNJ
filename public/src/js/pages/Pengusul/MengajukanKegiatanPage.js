@@ -14,6 +14,13 @@ export function renderMengajukanKegiatanPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .mengajukan-kegiatan-page {
+          padding-right: 1rem;
+        }
+      }
+
       /* --- Custom CSS for Figma Design --- */
       
       /* 1. Main Background */

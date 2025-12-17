@@ -15,6 +15,13 @@ export function renderPencairanDanaPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .pencairan-dana-page {
+          padding-right: 1rem;
+        }
+      }
+
       /* --- Custom CSS for Pencairan Dana Page --- */
       
       /* 1. Main Background */

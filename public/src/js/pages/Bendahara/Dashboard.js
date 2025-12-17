@@ -13,6 +13,13 @@ export function renderBendaharaDashboardPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .bendahara-dashboard-page {
+          padding-right: 1rem;
+        }
+      }
+
       @keyframes fadeInUp {
         from {
           opacity: 0;

@@ -14,6 +14,13 @@ export function renderMonitoringUsulanPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .monitoring-usulan-page {
+          padding-right: 1rem;
+        }
+      }
+
       /* ========================================== */
       /* KEYFRAME ANIMATIONS */
       /* ========================================== */

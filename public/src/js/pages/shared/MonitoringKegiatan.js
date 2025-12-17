@@ -14,6 +14,13 @@ export function renderMonitoringKegiatanPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .monitoring-kegiatan-page {
+          padding-right: 1rem;
+        }
+      }
+
       /* Clean background with image */
       .monitoring-kegiatan-page {
         min-height: 100vh;
