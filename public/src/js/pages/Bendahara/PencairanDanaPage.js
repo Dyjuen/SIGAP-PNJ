@@ -105,11 +105,21 @@ export function renderPencairanDanaPage(path, userRole) {
         font-weight: 600 !important;
         background: transparent !important;
         border: none !important;
-        text-transform: uppercase !important;
+        /* text-transform: uppercase !important; */
         font-size: 11px !important;
         letter-spacing: 0.5px !important;
         padding-top: 0 !important;
         padding-bottom: 1rem !important;
+      }
+
+      /* Sticky Actions Column */
+      .table th:last-child,
+      .table td:last-child {
+        position: sticky;
+        right: 0;
+        background: #FFFFFF;
+        z-index: 10;
+        box-shadow: -4px 0 8px rgba(0,0,0,0.02);
       }
       
       /* Table Row Cards */
@@ -197,18 +207,19 @@ export function renderPencairanDanaPage(path, userRole) {
       }
       
       /* 9. Action Buttons */
-      .btn-action {
-        padding: 10px 20px;
+      .btn-icon {
+        width: 36px;
+        height: 36px;
         border-radius: 8px;
-        font-weight: 600;
-        font-size: 13px;
         border: none;
-        transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-right: 0.5rem;
       }
-      
+
       .btn-cairkan {
         background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
         color: white !important;
@@ -468,10 +479,10 @@ export function renderPencairanDanaPage(path, userRole) {
               <th>Pelaksana & PJ</th>
               <th>Tanggal Diajukan</th>
               <th>Catatan Wadir 2</th>
-              <th style="text-align: center;">Uang Dicairkan</th>
-              <th style="text-align: center;">Uang Diminta</th>
-              <th style="text-align: center;">Uang Belum Dicairkan</th>
-              <th style="text-align: center;">Aksi</th>
+              <th style="text-align: left;">Uang Dicairkan</th>
+              <th style="text-align: left;">Uang Diminta</th>
+              <th style="text-align: left;">Uang Belum Dicairkan</th>
+              <th style="text-align: center">Aksi</th>
             </tr>
           </thead>
           <tbody id="kegiatanTableBody">
@@ -771,25 +782,25 @@ export function renderPencairanDanaPage(path, userRole) {
             ${item.approvals?.find(a => a.approval_level === 'Wadir2')?.catatan || '-'}
           </div>
         </td>
-        <td style="text-align: center;">
-          ${formatRupiah(item.dana_dicairkan)}
+        <td style="text-align: left;">
+          <strong style="color: #059669;">${formatRupiah(item.dana_dicairkan)}</strong>
+        </td>
+        <td style="text-align: left;">
+          <strong style="color: #00BCD4;">${formatRupiah(item.total_anggaran_diusulkan)}</strong>
+        </td>
+        <td style="text-align: left;">
+          <strong style="color: #ef4444;">${formatRupiah(item.total_anggaran_diusulkan - (item.dana_dicairkan || 0))}</strong>
         </td>
         <td style="text-align: center;">
-          ${formatRupiah(item.total_anggaran_diusulkan)}
-        </td>
-        <td style="text-align: center;">
-          ${formatRupiah(item.total_anggaran_diusulkan - (item.dana_dicairkan || 0))}
-        </td>
-        <td style="text-align: center;">
-          <button class="btn btn-sm btn-action btn-cairkan me-2" data-id="${
+          <button class="btn btn-sm btn-icon btn-cairkan me-2" data-id="${
             item.kegiatan_id
-          }">
-            <i class="ti">&#xf4a5;</i> Cairkan
+          }" title="Cairkan">
+            <i class="ti ti-cash">&#xea55;</i>
           </button>
-          <button class="btn btn-sm btn-action btn-selesai" data-id="${
+          <button class="btn btn-sm btn-icon btn-selesai" data-id="${
             item.kegiatan_id
-          }">
-            <i class="ti">&#xec63;</i> Selesaikan Pencairan
+          }" title="Selesaikan Pencairan">
+            <i class="ti ti-check">&#xea5e;</i>
           </button>
         </td>
       `;
