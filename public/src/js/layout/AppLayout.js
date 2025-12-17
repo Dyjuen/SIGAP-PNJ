@@ -120,6 +120,7 @@ function initializeSidebar() {
 
 function initializeMobileMenuToggle() {
   const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+  const mobileMenuTogglerDiv = document.querySelector(".menu-mobile-toggler"); // Get the wrapper div
   const layoutMenu = document.getElementById("layout-menu");
   const overlay = document.getElementById("layout-overlay");
 
@@ -128,12 +129,14 @@ function initializeMobileMenuToggle() {
   const openMenu = () => {
     layoutMenu.classList.add("show");
     overlay?.classList.add("show");
+    mobileMenuTogglerDiv?.classList.add("moved"); // Add class to move button
     document.body.style.overflow = "hidden";
   };
 
   const closeMenu = () => {
     layoutMenu.classList.remove("show");
     overlay?.classList.remove("show");
+    mobileMenuTogglerDiv?.classList.remove("moved"); // Remove class
     document.body.style.overflow = "";
   };
 
