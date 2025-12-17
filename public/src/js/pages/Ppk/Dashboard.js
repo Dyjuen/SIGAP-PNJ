@@ -133,6 +133,29 @@ export function renderPpkDashboardPage(path, userRole) {
       .clear-search.visible {
         display: block;
       }
+      
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .monitoring-kegiatan-page {
+            padding: 1rem;
+        }
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .search-container {
+            max-width: 100%;
+        }
+        .col-sm-6 {
+            width: 100%;
+        }
+      }
       </style>
       <!-- Stats Cards -->
       <div class="row g-4 mb-4">

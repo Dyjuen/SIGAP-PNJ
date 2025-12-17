@@ -145,8 +145,16 @@ export function DirekturDashboardPage(path, userRole) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
       }
       @media (max-width: 768px) { 
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
         .dashboard-header { flex-direction: column; align-items: flex-start; gap: 1rem; } 
         .stats-grid { grid-template-columns: 1fr; }
+        .exec-dashboard { padding: 1rem; }
       }
     </style>
 

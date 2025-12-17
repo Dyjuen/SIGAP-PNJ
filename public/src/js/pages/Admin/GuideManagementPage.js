@@ -673,6 +673,36 @@ export function renderGuideManagementPage(path, userRole) {
         text-align: center;
         padding: 0.25rem 0.5rem;
       }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .d-flex.justify-content-between.align-items-center.mb-4 {
+          flex-direction: column;
+          align-items: stretch !important;
+          gap: 1rem;
+        }
+        .search-input-wrapper {
+          width: 100% !important;
+        }
+        .btn {
+          width: 100%;
+        }
+        .guide-management-page {
+          padding: 1rem;
+        }
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center !important;
+        }
+      }
     </style>
 
     <div class="guide-management-page">

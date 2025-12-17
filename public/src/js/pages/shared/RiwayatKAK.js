@@ -516,6 +516,38 @@ export function renderRiwayatKAKPage(path, userRole) {
         .table tbody tr td {
           padding: 1rem 0.5rem;
         }
+        
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .search-container {
+            max-width: 100%;
+        }
+      }
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .table-responsive {
+          overflow-x: auto !important;
+          -webkit-overflow-scrolling: touch;
+          padding-bottom: 10px;
+        }
+        .table-responsive::-webkit-scrollbar {
+          display: block;
+          height: 6px;
+          background: #f1f5f9;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
       }
     </style>
 

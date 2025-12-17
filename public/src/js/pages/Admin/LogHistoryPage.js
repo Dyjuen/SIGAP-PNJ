@@ -165,6 +165,40 @@ export function renderLogHistoryPage(path, userRole) {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
       }
+
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .log-history-page {
+            padding: 1rem;
+        }
+        .filter-section .row.g-2 {
+            flex-direction: column;
+        }
+        .filter-section .col-md-3, .filter-section .col-md-6 {
+            width: 100%;
+        }
+        .log-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .log-icon {
+            margin-bottom: 0.5rem;
+        }
+        .log-meta {
+            flex-wrap: wrap;
+        }
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+      }
     </style>
 
     <div class="log-history-page p-4">

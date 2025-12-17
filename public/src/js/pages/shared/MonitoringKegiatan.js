@@ -803,6 +803,11 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         
         .progress-connector {
           top: 15px;
+          left: calc(50% + 15px);
+          width: calc(100% - 30px);
+        }
+      }
+
       @media (max-width: 992px) {
         .monitoring-kegiatan-page {
           padding: 1rem;
@@ -846,8 +851,16 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         .table tbody tr:hover {
           transform: translateY(-2px) scale(1.002);
         }
-      }   padding: 1rem 0.5rem;
+        
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
         }
+        
+        .search-section .search-container {
+            max-width: 100%;
+        }
+      }
 
         .table tbody tr:hover {
           transform: translateY(-2px) scale(1.002);
@@ -1153,6 +1166,27 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
         .monitoring-kegiatan-page {
           padding: 1rem;
+        }
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .table-responsive {
+          overflow-x: auto !important;
+          -webkit-overflow-scrolling: touch;
+          padding-bottom: 10px;
+        }
+        .table-responsive::-webkit-scrollbar {
+          display: block;
+          height: 6px;
+          background: #f1f5f9;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
         }
       }
     </style>

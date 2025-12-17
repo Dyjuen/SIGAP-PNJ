@@ -1394,6 +1394,57 @@ export function renderInputLpjPage(path, userRole) {
       .lampiran-item.archived-lampiran .btn-delete-lampiran {
         display: none;
       }
+
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .input-lpj-page {
+            padding: 1rem;
+        }
+        /* Make header flex column */
+        .flex.justify-center.mb-8 {
+            margin-bottom: 1.5rem;
+        }
+        .flex.items-center.gap-3.px-6 {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        /* Scrollable RAB items */
+        .category-section {
+            overflow-x: auto;
+        }
+        .rab-item {
+            min-width: 800px;
+        }
+        
+        /* Action buttons */
+        .action-buttons {
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+        #actionButtonsContainer {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .btn-primary-action, .btn-back {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        /* Total Card */
+        .spectacular-total-card {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+      }
     </style>
 
     <div class="input-lpj-page">

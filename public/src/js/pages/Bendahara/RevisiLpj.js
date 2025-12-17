@@ -937,6 +937,46 @@ export function renderRevisiLpjPage(path, userRole) {
         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
         letter-spacing: -0.5px;
       }
+
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .lpj-review-page {
+            padding: 1rem;
+        }
+        
+        /* Enable horizontal scroll for complex grid rows */
+        .category-section {
+            overflow-x: auto;
+        }
+        .border-hover-draw {
+            min-width: 800px; /* Ensure rows don't break layout */
+        }
+        
+        /* Action buttons stack */
+        .action-buttons {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .action-buttons button, .action-buttons .flex {
+            width: 100%;
+        }
+        .action-buttons .flex {
+            flex-direction: column;
+        }
+        
+        /* Total card */
+        .spectacular-total-card {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+      }
     </style>
 
     <div class="lpj-review-page">

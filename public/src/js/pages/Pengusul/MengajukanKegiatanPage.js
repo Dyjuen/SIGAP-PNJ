@@ -461,6 +461,16 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       /* RESPONSIVE */
       /* ========================================== */
       @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .mengajukan-kegiatan-page {
+            padding: 1rem;
+        }
         .page-header-section {
           flex-direction: column;
           align-items: flex-start;

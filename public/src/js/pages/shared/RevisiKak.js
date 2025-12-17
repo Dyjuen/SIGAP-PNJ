@@ -1376,6 +1376,16 @@ export function renderRevisiKakPage(path, userRole) {
       .btn-close::after {
         display: none !important;
       }
+
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+      }
     </style>
 
     <div class="kerangka-acuan-kerja-page">

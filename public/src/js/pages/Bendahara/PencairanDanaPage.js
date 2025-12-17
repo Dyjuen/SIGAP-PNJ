@@ -434,6 +434,31 @@ export function renderPencairanDanaPage(path, userRole) {
       .clear-search.visible {
         display: block;
       }
+
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .pencairan-dana-page {
+            padding: 1rem;
+        }
+        .page-header-section {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .search-container {
+            max-width: 100%;
+        }
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+      }
     </style>
 
     <div class="pencairan-dana-page">

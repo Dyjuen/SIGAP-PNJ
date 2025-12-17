@@ -676,6 +676,36 @@ const pageContent = `
         .clear-search:hover svg {
             color: #EF4444;
         }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            html, body {
+              scrollbar-width: none;
+              -ms-overflow-style: none;
+            }
+            html::-webkit-scrollbar, body::-webkit-scrollbar {
+              display: none;
+            }
+            .d-flex.justify-content-between.align-items-center.mb-4 {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 1rem;
+            }
+            .search-input-wrapper {
+                width: 100% !important;
+            }
+            .btn-tambah-akun {
+                width: 100%;
+            }
+            .user-management-page {
+                padding: 1rem;
+            }
+            .pagination-container {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+        }
     </style>
 
     <div class="user-management-page">

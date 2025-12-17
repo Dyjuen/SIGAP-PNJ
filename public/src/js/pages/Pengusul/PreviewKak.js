@@ -569,6 +569,13 @@ export function renderPreviewKakPage(path, userRole, providedData = null) {
       /* RESPONSIVE */
       /* ============================================= */
       @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
         .preview-container {
           padding: 20px 10px;
         }

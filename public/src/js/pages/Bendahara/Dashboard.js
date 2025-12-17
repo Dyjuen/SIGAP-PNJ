@@ -390,11 +390,37 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
       /* Mobile breakpoint - switches to dropdown */
       @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
         .desktop-layout {
           display: none;
         }
         .mobile-layout {
           display: block;
+        }
+        
+        .bendahara-dashboard-page {
+            padding: 1rem;
+        }
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .card-datatable .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start !important;
+        }
+        .card-datatable .d-flex.gap-2 {
+            width: 100%;
+        }
+        #filterStatus {
+            width: 100% !important;
         }
       }
     </style>

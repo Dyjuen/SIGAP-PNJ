@@ -935,6 +935,45 @@ export function renderUsulanKakPage(path, userRole) {
       opacity: 1;
       transform: scale(1);
     }
+
+    @media (max-width: 1024px) {
+        .kerangka-acuan-kerja-page {
+            padding: 1rem;
+        }
+        .flex.justify-center.gap-24 {
+            justify-content: flex-start;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .progress-step-item {
+            min-width: max-content;
+        }
+        .flex.gap-8 {
+            flex-direction: column;
+        }
+        .w-96 {
+            width: 100%;
+        }
+        .flex.justify-between.mt-8 {
+            flex-direction: column-reverse;
+            gap: 1rem;
+        }
+        .flex.justify-between.mt-8 button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+    @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+    }
   `;
   document.head.appendChild(style);
 

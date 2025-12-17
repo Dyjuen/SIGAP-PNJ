@@ -460,6 +460,35 @@ export function renderPengusulDashboardPage(path, userRole) {
       .template-card:hover {
         animation: borderFlow 3s ease infinite;
       }
+
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .dashboard-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+        .dashboard-header .flex.gap-3 {
+          width: 100%;
+          flex-direction: column;
+        }
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+        .grid-cols-4 {
+          grid-template-columns: 1fr;
+        }
+        .pengusul-dashboard-page {
+            padding: 1rem;
+        }
+      }
     </style>
 
     <div class="pengusul-dashboard-page">

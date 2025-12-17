@@ -659,29 +659,46 @@ export function renderMonitoringUsulanPage(path, userRole) {
       /* RESPONSIVE */
       /* ========================================== */
       @media (max-width: 768px) {
-        .page-header-section {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .table-responsive {
+          overflow-x: auto !important;
+          -webkit-overflow-scrolling: touch;
+          padding-bottom: 10px;
+        }
+        .table-responsive::-webkit-scrollbar {
+          display: block;
+          height: 6px;
+          background: #f1f5f9;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
+
+        .dashboard-header {
           flex-direction: column;
           align-items: flex-start;
           gap: 1rem;
         }
-
-        .search-and-action-section {
-          flex-direction: column;
-          align-items: flex-start;
-          width: 100%; /* Ensure it takes full width */
-        }
-
-        .search-and-action-section .search-container {
+        .dashboard-header .flex.gap-3 {
           width: 100%;
-        }
-
-        .pagination-container {
           flex-direction: column;
-          gap: 1rem;
         }
-
-        .table {
-          font-size: 13px;
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+        .grid-cols-4 {
+          grid-template-columns: 1fr;
+        }
+        .pengusul-dashboard-page {
+            padding: 1rem;
         }
       }
 

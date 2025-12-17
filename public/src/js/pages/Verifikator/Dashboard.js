@@ -382,6 +382,22 @@ export function renderDashboardVerifikator(path, userRole) {
       .clear-search.visible {
         display: block;
       }
+
+      @media (max-width: 768px) {
+        .monitoring-usulan-page {
+            padding: 1rem;
+        }
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .search-container {
+            max-width: 100%;
+        }
+        .col-sm-6 {
+            width: 100%;
+        }
+      }
     </style>
 
     <div class="monitoring-usulan-page">

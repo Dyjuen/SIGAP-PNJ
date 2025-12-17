@@ -728,9 +728,63 @@ export function renderDetailKegiatanPage(path, userRole) {
         transition: all 0.3s ease;
         z-index: 1000;
       }
-      .download-fab:hover {
-        transform: translateY(-5px) scale(1.1);
-        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
+      .btn-close::after {
+        display: none !important;
+      }
+
+      @media (max-width: 1024px) {
+        .kerangka-acuan-kerja-page {
+            padding: 1rem;
+        }
+        
+        /* Progress Steps Scrollable */
+        .flex.justify-center.gap-24 {
+            justify-content: flex-start;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 1.5rem;
+        }
+        .progress-step-item {
+            min-width: max-content;
+        }
+
+        /* Stack Layout */
+        .flex.gap-8 {
+            flex-direction: column;
+        }
+        .w-96 {
+            width: 100%;
+        }
+
+        /* RAB Grid Scrollable */
+        .overflow-x-auto {
+            overflow-x: auto;
+        }
+        .min-w-full {
+            min-width: 800px; /* Ensure table doesn't squish too much */
+        }
+
+        /* Buttons */
+        .flex.justify-between.mt-8 {
+            flex-direction: column-reverse;
+            gap: 1rem;
+        }
+        .flex.justify-between.mt-8 button {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        /* Action buttons fixed bottom */
+        .action-buttons {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .action-buttons button, .action-buttons .flex {
+            width: 100%;
+        }
+        .action-buttons .flex {
+            flex-direction: column;
+        }
       }
     </style>
 

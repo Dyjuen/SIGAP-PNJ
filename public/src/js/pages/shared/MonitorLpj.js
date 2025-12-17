@@ -240,6 +240,29 @@ export function renderDaftarLpjPage(path, userRole) {
         width: 16px;
         height: 16px;
       }
+
+      @media (max-width: 768px) {
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
+        .daftar-lpj-page {
+            padding: 1rem;
+        }
+        .grid-cols-1.md\:grid-cols-5, .grid-cols-1.md\:grid-cols-4 {
+            grid-template-columns: 1fr; /* Stack cards */
+        }
+        .search-container {
+            max-width: 100%;
+        }
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+      }
     </style>
     <div class="daftar-lpj-page">
       <!-- Statistics Cards -->
