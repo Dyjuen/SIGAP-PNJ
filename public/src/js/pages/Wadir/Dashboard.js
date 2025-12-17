@@ -5,6 +5,15 @@ export function renderWadirDashboardPage(path, userRole) {
   const dashboardContent = `
     <div class="wadir-dashboard-page">
       <style>
+        /* Scrollbar Hiding */
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none;
+        }
+
         .video-placeholder {
           background: #000;
           border-radius: 12px;

@@ -5,6 +5,15 @@ export function renderForgotPasswordPage() {
 
   const forgotPasswordHTML = `
         <style>
+            /* Scrollbar Hiding */
+            html, body {
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            html::-webkit-scrollbar, body::-webkit-scrollbar {
+                display: none;
+            }
+
             /* ========== ANIMATIONS ========== */
             @keyframes fadeSlideIn {
                 from {

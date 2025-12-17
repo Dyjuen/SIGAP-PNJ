@@ -5,6 +5,15 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderDetailKegiatanPage(path, userRole) {
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       /* Keyframe Animations */
       @keyframes fadeIn {
         from {

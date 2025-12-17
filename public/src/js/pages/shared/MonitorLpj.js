@@ -54,6 +54,15 @@ export function renderDaftarLpjPage(path, userRole) {
 
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       .countdown-normal { color: #D97706; }
       .countdown-danger { color: #be123c; }
 

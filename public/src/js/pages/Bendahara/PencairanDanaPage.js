@@ -6,6 +6,15 @@ export function renderPencairanDanaPage(path, userRole) {
 
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       /* --- Custom CSS for Pencairan Dana Page --- */
       
       /* 1. Main Background */

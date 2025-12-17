@@ -9,6 +9,15 @@ export function renderUserManagementPage(path, userRole) {
 
 const pageContent = `
     <style>
+        /* Scrollbar Hiding */
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none;
+        }
+
         /* ========== DESIGN SYSTEM - TYPOGRAPHY ========== */
         :root {
             --font-xs: 0.75rem;
@@ -1265,6 +1274,8 @@ const pageContent = `
     // Initialize tooltips for action buttons
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+    attachEventListeners();
   }
 
   function attachEventListeners() {
@@ -1283,7 +1294,7 @@ const pageContent = `
 
   function handleEditProfile(e) {
     const userId = e.currentTarget.dataset.id;
-    const user = state.users.find(u => u.user_id == userId);
+    const user = state.allUsers.find(u => u.user_id == userId);
 
     if (!user) {
       showError("User tidak ditemukan.");

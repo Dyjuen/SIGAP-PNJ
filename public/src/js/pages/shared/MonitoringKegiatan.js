@@ -5,6 +5,15 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderMonitoringKegiatanPage(path, userRole) {
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       /* Clean background with image */
       .monitoring-kegiatan-page {
         min-height: 100vh;

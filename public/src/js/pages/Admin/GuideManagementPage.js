@@ -6,6 +6,15 @@ import { adminSidebar } from '../../layout/sidebars/adminSidebar.js';
 export function renderGuideManagementPage(path, userRole) {
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       /* Design System */
       :root {
         --primary-color: #00bcd4;

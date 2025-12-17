@@ -5,6 +5,15 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderMonitoringUsulanPage(path, userRole) {
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       /* ========================================== */
       /* KEYFRAME ANIMATIONS */
       /* ========================================== */
@@ -698,6 +707,9 @@ export function renderMonitoringUsulanPage(path, userRole) {
           grid-template-columns: 1fr;
         }
         .pengusul-dashboard-page {
+            padding: 1rem;
+        }
+        .monitoring-usulan-page {
             padding: 1rem;
         }
       }

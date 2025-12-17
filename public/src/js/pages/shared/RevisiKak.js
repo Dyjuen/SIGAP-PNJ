@@ -13,6 +13,15 @@ export function renderRevisiKakPage(path, userRole) {
   const pageContent = `
     <link rel="stylesheet" href="/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
     <style>
+    /* Scrollbar Hiding */
+    html, body {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+        display: none;
+    }
+
     /* Daterangepicker theme overrides */
     .daterangepicker { border-color: #00BCD4 !important; }
     .daterangepicker .calendar-table { border-color: #E5F8FB !important; }
@@ -1377,16 +1386,21 @@ export function renderRevisiKakPage(path, userRole) {
         display: none !important;
       }
 
-      @media (max-width: 768px) {
-        html, body {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-        html::-webkit-scrollbar, body::-webkit-scrollbar {
-          display: none;
-        }
-      }
-    </style>
+          @media (max-width: 768px) {
+              html, body {
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+              }
+              html::-webkit-scrollbar, body::-webkit-scrollbar {
+                display: none;
+              }
+              .rab-item {
+                  overflow-x: auto;
+              }
+              .rab-item > div.grid {
+                  min-width: 800px;
+              }
+          }    </style>
 
     <div class="kerangka-acuan-kerja-page">
       <!-- Progress Steps -->

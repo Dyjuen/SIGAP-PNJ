@@ -19,6 +19,15 @@ export function renderUsulanKakPage(path, userRole) {
     <link rel="stylesheet" href="/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
     
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       /* Border Drawing Animation - SUPER SMOOTH VERSION with POP-UP */
       .border-hover-draw {
         position: relative;

@@ -5,6 +5,15 @@ import { renderDashboardLayout } from '../../layout/AppLayout.js';
 export function renderLogHistoryPage(path, userRole) {
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       :root {
         --primary-color: #00bcd4;
         --grey-100: #f8f9fa;

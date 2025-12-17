@@ -25,6 +25,15 @@ export function DirekturDashboardPage(path, userRole) {
   // --- 2. STYLING & HTML STRUCTURE (GABUNGAN) ---
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       :root {
         --text-main: #0f172a; --text-muted: #64748b;
         --cyan-primary: #06b6d4; --cyan-dark: #0891b2; --cyan-light: #ecfeff;

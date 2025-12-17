@@ -68,6 +68,15 @@ export function renderRevisiLpjPage(path, userRole) {
 
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       /* Border Drawing Animation - SUPER SMOOTH VERSION with POP-UP */
       .border-hover-draw {
         position: relative;

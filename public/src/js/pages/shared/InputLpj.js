@@ -11,6 +11,15 @@ export function renderInputLpjPage(path, userRole) {
   const pageContent = `
     <link rel="stylesheet" href="/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
     <style>
+    /* Scrollbar Hiding */
+    html, body {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+        display: none;
+    }
+
     /* Daterangepicker theme overrides */
     .daterangepicker { border-color: #00BCD4 !important; }
     .daterangepicker .calendar-table { border-color: #E5F8FB !important; }

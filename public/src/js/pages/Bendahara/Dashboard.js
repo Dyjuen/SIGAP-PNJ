@@ -4,6 +4,15 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderBendaharaDashboardPage(path, userRole) {
   const dashboardContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       @keyframes fadeInUp {
         from {
           opacity: 0;

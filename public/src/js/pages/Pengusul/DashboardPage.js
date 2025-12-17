@@ -6,6 +6,15 @@ import { authService } from "../../api/authService.js";
 export function renderPengusulDashboardPage(path, userRole) {
   const dashboardContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       /* Keyframe Animations */
       @keyframes fadeInUp {
         from {

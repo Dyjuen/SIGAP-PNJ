@@ -5,6 +5,15 @@ import { renderDashboardLayout } from "../../layout/AppLayout.js";
 export function renderDashboardVerifikator(path, userRole) {
   const pageContent = `
     <style>
+      /* Scrollbar Hiding */
+      html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+      }
+
       /* --- Custom CSS for Figma Design --- */
       
       /* 1. Main Background */

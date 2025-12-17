@@ -5,6 +5,15 @@ export function renderPpkDashboardPage(path, userRole) {
   const pageContent = `
     <div class="monitoring-kegiatan-page">
       <style>
+        /* Scrollbar Hiding */
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none;
+        }
+
         .video-placeholder {
           background: #000;
           border-radius: 12px;
