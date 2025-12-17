@@ -31,14 +31,23 @@ class Notifikasi extends Model
 
     /**
      * Get notifikasi untuk user tertentu
+     * 
+     * @param int $userId The ID of the recipient user.
+     * @param bool $unreadOnly If true, only unread notifications are returned.
+     * @param bool $flasherOnly If true, only notifications with link_tujuan IS NULL are returned (flasher type).
+     * @return array An array of notification records.
      */
-    public function getByUser(int $userId, bool $unreadOnly = false): array
+    public function getByUser(int $userId, bool $unreadOnly = false, bool $flasherOnly = false): array
     {
         $sql = "SELECT * FROM {$this->table} 
                 WHERE penerima_user_id = :user_id";
         
         if ($unreadOnly) {
             $sql .= " AND is_read = 0";
+        }
+        
+        if ($flasherOnly) {
+            $sql .= " AND link_tujuan IS NULL";
         }
         
         $sql .= " ORDER BY created_at DESC LIMIT 50";

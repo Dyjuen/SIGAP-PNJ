@@ -32,6 +32,13 @@ export function renderPreviewKakPage(path, userRole, providedData = null) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .preview-container {
+          padding-right: 1rem;
+        }
+      }
+
       /* ============================================= */
       /* PRINT STYLES */
       /* ============================================= */

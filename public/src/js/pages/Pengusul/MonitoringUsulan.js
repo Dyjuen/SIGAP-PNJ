@@ -14,6 +14,22 @@ export function renderMonitoringUsulanPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding */
+      @media (min-width: 1024px) {
+        .monitoring-usulan-page {
+          padding-right: 1rem;
+        }
+      }
+
+      /* ========== GLOBAL Z-INDEX FIX ========== */
+      .modal-backdrop { z-index: 9999 !important; }
+      .modal { z-index: 10000 !important; }
+
+      /* ========== HEADER STYLES (From Dashboard Direktur) ========== */
+      .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; animation: fadeInUp 0.5s ease-out; }
+      .header-title h2 { font-size: 2.25rem; font-weight: 700; margin: 0; background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+      .header-title p { color: #64748b; margin-top: 0.25rem; font-size: 1rem; font-weight: 500; }
+
       /* ========================================== */
       /* KEYFRAME ANIMATIONS */
       /* ========================================== */
@@ -120,34 +136,6 @@ export function renderMonitoringUsulanPage(path, userRole) {
       /* ========================================== */
       .monitoring-usulan-page {
         animation: fadeIn 0.5s ease-out;
-      }
-
-      /* ========================================== */
-      /* HEADER SECTION */
-      /* ========================================== */
-      .page-header-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding: 0 0.5rem;
-        opacity: 0;
-        animation: slideInRight 0.6s ease-out forwards;
-        position: relative;
-        z-index: 1050;
-      }
-
-      .page-header-section h4 {
-        margin: 0;
-        color: #1e293b;
-        font-weight: 600;
-        font-size: 2rem;
-      }
-
-      .page-header-section p {
-        margin: 0.5rem 0 0 0;
-        color: #64748b;
-        font-size: 14px;
       }
 
       /* ========================================== */
@@ -742,10 +730,10 @@ export function renderMonitoringUsulanPage(path, userRole) {
 
     <div class="monitoring-usulan-page">
       <!-- Header Section -->
-      <div class="page-header-section">
-        <div>
-          <h2 class="text-4xl font-bold text-gray-800">Pemantauan Usulan</h2>
-          <p class="text-lg text-gray-600">Kelola dan pantau status usulan kegiatan Anda</p>
+      <div class="dashboard-header">
+        <div class="header-title">
+          <h2>Pemantauan Usulan</h2>
+          <p>Kelola dan pantau status usulan kegiatan Anda</p>
         </div>
       </div>
 

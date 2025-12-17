@@ -329,6 +329,7 @@ $router->get('/dashboard/kegiatan', 'DashboardController@getMonitoringKegiatan')
 $router->get('/dashboard/lpj', 'DashboardController@getLpj');
 $router->get('/dashboard/template', 'DashboardController@getTemplates');
 $router->get('/dashboard/video', 'DashboardController@getVideos');
+$router->get('/dashboard/flasher-notifications', 'DashboardController@getLoginFlasherNotifications');
 
 // ============================================
 // WADIR & REKTORAT ROUTES (Read-only)

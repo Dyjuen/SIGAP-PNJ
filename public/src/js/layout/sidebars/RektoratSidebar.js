@@ -3,7 +3,7 @@
 export const rektoratSidebar = `
 <!-- Styles moved to /assets/css/modern-sidebar-fixes.css -->
 
-<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme" style="z-index: 1000 !important;">
   <div class="app-brand demo">
     <a href="/rektorat/dashboard" class="app-brand-link">
       <span class="app-brand-logo demo">
@@ -23,6 +23,7 @@ export const rektoratSidebar = `
         <span class="menu-text">Dasbor</span>
       </a>
     </li>
+  </ul>
 
   <!-- User Profile Section -->
   <div class="user-profile-section">
@@ -36,7 +37,7 @@ export const rektoratSidebar = `
         </div>
         <div class="user-info">
           <p class="user-name" id="user-name"></p>
-          <p class="user-role">Direktur</p>
+          <p class="user-role" id="user-role"></p>
         </div>
       </div>
       <div class="user-profile-details">

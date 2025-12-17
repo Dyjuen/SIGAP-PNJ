@@ -26,8 +26,46 @@ import { renderRevisiLpjPage } from "./pages/Bendahara/RevisiLpj.js";
 import { renderGuideManagementPage } from "./pages/Admin/GuideManagementPage.js";
 import { renderLogHistoryPage } from "./pages/Admin/LogHistoryPage.js";
 
+
 function getCurrentUserRole() {
   return localStorage.getItem("userRole") || "guest";
+}
+
+// Function to fetch and display flasher notifications
+async function fetchAndDisplayFlasherNotifications(userRole) {
+  if (userRole === "PPK" || userRole === "Wadir") {
+    try {
+      const token = localStorage.getItem('token'); // Assuming JWT token is stored in localStorage
+      if (!token) {
+        console.warn('No authentication token found for flasher notifications.');
+        return;
+      }
+
+      const response = await fetch('/api/dashboard/flasher-notifications', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.error('Failed to fetch flasher notifications:', response.status, response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.data && data.data.length > 0) {
+        data.data.forEach(message => {
+          window.showToast(message, icon, 'top-end'); // Use 'warning' icon for overdue notices
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching flasher notifications:', error);
+    }
+  }
 }
 
 // Public routes - accessible without login
@@ -175,6 +213,10 @@ export function router() {
     // Check for exact match first
     if (roleRoutes[pagePath]) {
       roleRoutes[pagePath](path, userRole);
+      // After rendering the dashboard for PPK/Wadir, fetch and display flasher notifications
+      if (userRole === "PPK" || userRole === "Wadir" && pagePath === "/dashboard") {
+        fetchAndDisplayFlasherNotifications(userRole);
+      }
       return;
     }
 
@@ -187,6 +229,10 @@ export function router() {
       const handler = roleRoutes[matchedKey];
       // Pass the full path and userRole to the page handler
       handler(path, userRole);
+      // After rendering the dashboard for PPK/Wadir, fetch and display flasher notifications
+      if (userRole === "PPK" || userRole === "Wadir" && pagePath.startsWith("/dashboard")) { // check for dashboard prefix
+        fetchAndDisplayFlasherNotifications(userRole);
+      }
       return;
     }
   }

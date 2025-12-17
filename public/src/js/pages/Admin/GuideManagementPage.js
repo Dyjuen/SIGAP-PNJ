@@ -15,6 +15,13 @@ export function renderGuideManagementPage(path, userRole) {
           display: none;
       }
 
+      /* Desktop right padding to prevent content from touching right edge */
+      @media (min-width: 1024px) {
+        .guide-management-page {
+          padding-right: 1rem;
+        }
+      }
+
       /* Design System */
       :root {
         --primary-color: #00bcd4;

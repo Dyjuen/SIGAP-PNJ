@@ -14,6 +14,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none;
 }
 
+/* Desktop right padding */
+@media (min-width: 1024px) {
+  .riwayat-kak-page {
+    padding-right: 1rem;
+  }
+}
+
 /* Page container */
 .riwayat-kak-page {
   background-image: url('/assets/img/backgrounds/BG.png');
@@ -35,6 +42,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     transform: translateY(0);
   }
 }
+
+/* ========== GLOBAL Z-INDEX FIX ========== */
+.modal-backdrop { z-index: 9999 !important; }
+.modal { z-index: 10000 !important; }
+
+/* ========== HEADER STYLES (From Dashboard Direktur) ========== */
+.dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; animation: fadeInUp 0.5s ease-out; }
+.header-title h2 { font-size: 2.25rem; font-weight: 700; margin: 0; background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+.header-title p { color: #64748b; margin-top: 0.25rem; font-size: 1rem; font-weight: 500; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Info banner */
 .info-banner {
@@ -564,10 +582,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     </style>
 
 <!-- Header Section -->
-<div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
-  <div>
-    <h2 class="text-4xl font-bold text-gray-800">Riwayat Kegiatan</h2>
-    <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau progress dan status kegiatan yang sudah berjalan</p>
+<div class="dashboard-header">
+  <div class="header-title">
+    <h2>Riwayat Kegiatan</h2>
+    <p>Pantau progress dan status kegiatan yang sudah berjalan</p>
   </div>
 </div>
 
