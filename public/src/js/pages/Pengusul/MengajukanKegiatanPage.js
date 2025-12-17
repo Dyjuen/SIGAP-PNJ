@@ -82,7 +82,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
           position: absolute;
           top: 50%;
           right: 2rem !important;
-          margin-top: -18px;
+          margin-top: -18px; /* Replaces translateY */
           transform: none !important;
           transition: none !important;
           animation: none !important;
@@ -96,12 +96,16 @@ export function renderMengajukanKegiatanPage(path, userRole) {
           display: flex;
           align-items: center;
           justify-content: center;
+          box-shadow: none !important;
       }
 
       .modal-header-gradient .btn-close:hover {
           opacity: 1;
           border-color: rgba(255, 255, 255, 0.6);
           transform: none !important;
+          transition: none !important;
+          animation: none !important;
+          box-shadow: none !important;
       }
 
       .modal-header-gradient .btn-close svg {

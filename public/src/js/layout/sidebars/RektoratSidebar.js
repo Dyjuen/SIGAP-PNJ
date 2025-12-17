@@ -3,7 +3,7 @@
 export const rektoratSidebar = `
 <!-- Styles moved to /assets/css/modern-sidebar-fixes.css -->
 
-<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme" style="z-index: 1000 !important;">
   <div class="app-brand demo">
     <a href="/rektorat/dashboard" class="app-brand-link">
       <span class="app-brand-logo demo">
