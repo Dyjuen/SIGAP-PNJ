@@ -412,7 +412,7 @@
           }
 
           async callOllamaAPI(prompt) {
-              const response = await fetch(`${this.apiUrl}/api/generate`, {
+              const response = await fetch(`/api/ollama/api/generate`, {
                   method: 'POST',
                   headers: {
                       'Content-Type': 'application/json'
@@ -475,7 +475,7 @@
       document.addEventListener('DOMContentLoaded', function() {
           // IMPORTANT: Replace with your actual VPS IP address
           // Example: new ChatbotBubble('http://123.456.789.012:11434');
-          new ChatbotBubble('http://148.230.101.137:11434'); // Your VPS IP - Using corrected fast model
+          new ChatbotBubble(''); // Your VPS IP - Using corrected fast model
       });
     </script>
   </body>
