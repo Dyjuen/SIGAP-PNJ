@@ -13,12 +13,21 @@ export function renderBendaharaDashboardPage(path, userRole) {
           display: none;
       }
 
-      /* Desktop right padding to prevent content from touching right edge */
+      /* Desktop right padding */
       @media (min-width: 1024px) {
         .bendahara-dashboard-page {
           padding-right: 1rem;
         }
       }
+
+      /* ========== GLOBAL Z-INDEX FIX ========== */
+      .modal-backdrop { z-index: 9999 !important; }
+      .modal { z-index: 10000 !important; }
+
+      /* ========== HEADER STYLES (From Dashboard Direktur) ========== */
+      .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; animation: fadeInUp 0.5s ease-out; }
+      .header-title h2 { font-size: 2.25rem; font-weight: 700; margin: 0; background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+      .header-title p { color: #64748b; margin-top: 0.25rem; font-size: 1rem; font-weight: 500; }
 
       @keyframes fadeInUp {
         from {
@@ -49,11 +58,6 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
       .bendahara-dashboard-page {
         animation: fadeInUp 0.5s ease-out;
-      }
-
-      .dashboard-header {
-        animation: slideInRight 0.6s ease-out;
-        margin-bottom: 1.5rem;
       }
 
       .stat-card-active,
@@ -442,6 +446,14 @@ export function renderBendaharaDashboardPage(path, userRole) {
     </style>
 
     <div class="bendahara-dashboard-page">
+      <!-- Header Section -->
+      <div class="dashboard-header">
+        <div class="header-title">
+          <h2>Dashboard Bendahara</h2>
+          <p>Monitoring Pencairan & LPJ</p>
+        </div>
+      </div>
+
       <!-- Stats Cards -->
       <div class="row g-4 mb-3">
         <div class="col-sm-6 col-xl">

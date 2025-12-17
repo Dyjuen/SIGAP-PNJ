@@ -14,7 +14,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
           display: none;
       }
 
-      /* Desktop right padding to prevent content from touching right edge */
+      /* Desktop right padding */
       @media (min-width: 1024px) {
         .monitoring-kegiatan-page {
           padding-right: 1rem;
@@ -31,6 +31,15 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         background-attachment: fixed;
         background-repeat: no-repeat;
       }
+
+      /* ========== GLOBAL Z-INDEX FIX ========== */
+      .modal-backdrop { z-index: 9999 !important; }
+      .modal { z-index: 10000 !important; }
+
+      /* ========== HEADER STYLES (From Dashboard Direktur) ========== */
+      .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; animation: fadeInUp 0.5s ease-out; }
+      .header-title h2 { font-size: 2.25rem; font-weight: 700; margin: 0; background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+      .header-title p { color: #64748b; margin-top: 0.25rem; font-size: 1rem; font-weight: 500; }
 
       /* Info banner */
       .info-banner {
@@ -75,30 +84,6 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
       .info-banner:hover .info-icon {
         transform: scale(1.1);
-      }
-
-      /* ========================================== */
-      /* PAGE HEADER SECTION */
-      /* ========================================== */
-      .page-header-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding: 0 0.5rem;
-        opacity: 0;
-        animation: slideInRight 0.6s ease-out forwards;
-      }
-
-      .page-header-section h2 {
-        margin: 0;
-        color: #1e293b;
-      }
-
-      .page-header-section p {
-        margin: 0.5rem 0 0 0;
-        color: #64748b;
-        font-size: 14px;
       }
 
       /* ========================================== */
@@ -1209,10 +1194,10 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
     <div class="monitoring-kegiatan-page">
       <!-- Header Section -->
-      <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
-        <div>
-          <h2 class="text-4xl font-bold text-gray-800">Pemantauan Kegiatan</h2>
-          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Pantau progress dan status kegiatan yang sedang berjalan</p>
+      <div class="dashboard-header">
+        <div class="header-title">
+          <h2>Pemantauan Kegiatan</h2>
+          <p>Pantau progress dan status kegiatan yang sedang berjalan</p>
         </div>
       </div>
 

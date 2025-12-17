@@ -14,47 +14,216 @@ export function renderMengajukanKegiatanPage(path, userRole) {
           display: none;
       }
 
-      /* Desktop right padding to prevent content from touching right edge */
+      /* Desktop right padding */
       @media (min-width: 1024px) {
         .mengajukan-kegiatan-page {
           padding-right: 1rem;
         }
       }
 
-      /* --- Custom CSS for Figma Design --- */
-      
-      /* 1. Main Background */
-      .layout-wrapper {
-        background-image: url('/assets/img/backgrounds/BG.png') !important;
-        background-size: cover !important;
-        background-position: center !important;
+      /* ========== GLOBAL Z-INDEX FIX ========== */
+      .modal-backdrop { z-index: 9999 !important; }
+      .modal { z-index: 10000 !important; }
+
+      /* ========== HEADER STYLES (From Dashboard Direktur) ========== */
+      .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; animation: fadeInUp 0.5s ease-out; }
+      .header-title h2 { font-size: 2.25rem; font-weight: 700; margin: 0; background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+      .header-title p { color: #64748b; margin-top: 0.25rem; font-size: 1rem; font-weight: 500; }
+
+      /* ========== MODAL STYLES (From UserManagement) ========== */
+      @keyframes modalSlideIn {
+          from { opacity: 0; transform: translateY(-50px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
       }
-      .content-wrapper {
-        background: transparent !important;
-      }
-      .layout-navbar, .content-footer, .layout-menu {
-        background: #FFFFFF !important;
+      @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
       }
 
-      /* 2. Sidebar */
-      .app-brand-text {
-        color: #00BCD4 !important;
-        font-size: 20px !important;
-        font-weight: 700 !important;
-      }
-      .menu-inner .menu-item.active > .menu-link {
-        background: #00BCD4 !important;
-        color: #ffffff !important;
-        border-radius: 8px;
-        margin: 0 0.5rem;
-        backdrop-filter: blur(5px);
-      }
-      .menu-inner .menu-item.active > .menu-link i,
-      .menu-inner .menu-item.active > .menu-link div {
-        color: #ffffff !important;
+      .modal-backdrop.show {
+          opacity: 0.7 !important;
+          backdrop-filter: blur(8px);
+          background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(0, 151, 167, 0.1));
       }
 
-      /* 3. Table Styling */
+      .modal.show .modal-dialog {
+          animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .modal-content {
+          border: none !important;
+          border-radius: 24px !important;
+          box-shadow: 
+              0 0 0 1px rgba(0, 188, 212, 0.1),
+              0 25px 50px -12px rgba(0, 0, 0, 0.25),
+              0 0 80px rgba(0, 188, 212, 0.15) !important;
+          overflow: hidden;
+          background: #ffffff !important;
+      }
+
+      .modal-header-gradient {
+          background: linear-gradient(135deg, #4dd0e1 0%, #00bcd4 100%);
+          color: #1F2937;
+          border: none;
+          padding: 1.5rem 2rem;
+          position: relative;
+          display: flex;
+          align-items: center;
+      }
+
+      .modal-header-gradient .modal-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #ffffff;
+          line-height: 1.2;
+      }
+
+      .modal-header-gradient .btn-close {
+          position: absolute;
+          top: 50%;
+          right: 2rem !important;
+          margin-top: -18px;
+          transform: none !important;
+          transition: none !important;
+          animation: none !important;
+          background: transparent;
+          opacity: 0.7;
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      .modal-header-gradient .btn-close:hover {
+          opacity: 1;
+          border-color: rgba(255, 255, 255, 0.6);
+          transform: none !important;
+      }
+
+      .modal-header-gradient .btn-close svg {
+          width: 1.25rem;
+          height: 1.25rem;
+          stroke: white;
+          stroke-width: 2.5;
+      }
+
+      .modal-body-modern {
+          padding: 2.5rem !important;
+          background: linear-gradient(to bottom, #fafafa 0%, #ffffff 100%);
+      }
+
+      .glass-input-wrapper {
+          position: relative;
+          border-radius: 16px;
+          background: white;
+          border: 2px solid #E5E7EB;
+          transition: all 0.3s;
+          overflow: hidden;
+      }
+
+      .glass-input-wrapper:focus-within {
+          border-color: #00bcd4;
+          background: #F0F8FF;
+          box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+      }
+
+      .glass-input-wrapper input, .glass-input-wrapper select {
+          background: transparent;
+          width: 100%;
+          padding: 1rem 1.25rem;
+          border: none;
+          outline: none;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: #1F2937;
+      }
+
+      /* Fix for file input */
+      .glass-input-wrapper input[type="file"] {
+          padding: 0.7rem 1.25rem;
+      }
+
+      .form-label-modern {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #1F2937;
+          font-size: 0.9rem;
+          font-weight: 700;
+          margin-bottom: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+      }
+
+      .form-label-modern i {
+          font-size: 1.25rem;
+          color: #00bcd4;
+          background: rgba(33, 150, 243, 0.1);
+          padding: 0.4rem;
+          border-radius: 8px;
+      }
+
+      .modal-footer-modern {
+          padding: 1.75rem 2.5rem !important;
+          background: linear-gradient(to top, #fafafa, #ffffff);
+          border: none;
+          gap: 1rem;
+          display: flex;
+          justify-content: flex-end;
+      }
+
+      .btn-modern-cancel {
+          background: white;
+          border: 2px solid #E5E7EB;
+          color: #6B7280;
+          font-weight: 600;
+          padding: 0.875rem 1.75rem;
+          border-radius: 14px;
+          transition: all 0.3s;
+      }
+
+      .btn-modern-cancel:hover {
+          border-color: #9CA3AF;
+          color: #374151;
+          transform: translateY(-2px);
+      }
+
+      .btn-modern-primary {
+          background: linear-gradient(135deg, #2196F3, #64B5F6);
+          border: none;
+          color: white;
+          font-weight: 700;
+          padding: 0.875rem 2rem;
+          border-radius: 14px;
+          transition: all 0.3s;
+          box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+      }
+
+      .btn-modern-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(33, 150, 243, 0.5);
+      }
+
+      .modal-error-alert {
+          background: #FEF2F2;
+          border-left: 4px solid #EF4444;
+          color: #991B1B;
+          padding: 1rem 1.25rem;
+          border-radius: 12px;
+          margin-bottom: 1.5rem;
+          display: none;
+      }
+
+      .form-group-animate { animation: fadeInUp 0.5s ease-out backwards; }
+      .form-group-animate:nth-child(1) { animation-delay: 0.1s; }
+      .form-group-animate:nth-child(2) { animation-delay: 0.15s; }
+      .form-group-animate:nth-child(3) { animation-delay: 0.2s; }
+
+      /* ========== EXISTING STYLES (Merged/Preserved) ========== */
       .card-datatable {
         background: rgba(255, 255, 255, 0.6) !important;
         backdrop-filter: blur(10px);
@@ -62,21 +231,12 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
         overflow: hidden;
       }
-      .table {
-        border-collapse: separate !important;
-        border-spacing: 0 1rem !important;
-      }
-      .table thead {
-        background: transparent !important; 
-      }
+      .table { border-collapse: separate !important; border-spacing: 0 1rem !important; }
       .table thead th {
         color: #6B7280 !important;
         font-weight: 500 !important;
         background: transparent !important;
         border: none !important;
-        text-transform: none !important;
-        font-size: 14px !important;
-        padding-top: 0 !important;
         padding-bottom: 0.5rem !important;
       }
       .table tbody tr {
@@ -94,698 +254,71 @@ export function renderMengajukanKegiatanPage(path, userRole) {
         padding: 1.25rem 1rem !important;
         vertical-align: middle;
       }
-      .table tbody td:first-child {
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
-      }
-      .table tbody td:last-child {
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
-      }
+      .table tbody td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+      .table tbody td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
       
-      /* 4. Custom Checkbox */
-      .form-check-input {
-        border-radius: 6px !important;
-        border: 2px solid #D1D5DB !important;
-      }
-      .form-check-input:checked {
-        background-color: #33C8DA !important;
-        border-color: #33C8DA !important;
-      }
-
-      /* 5. Status Badge */
-      .badge.bg-label-success {
-        background: #d1f4dd !important;
-        color: #0f7c3a !important;
-        padding: 6px 16px;
-        border-radius: 6px;
-        font-weight: 500;
-      }
-      .badge.bg-label-warning {
-        background: #fef3c7 !important;
-        color: #92400e !important;
-        padding: 6px 16px;
-        border-radius: 6px;
-        font-weight: 500;
-      }
-      .badge.bg-label-danger {
-        background: #fecdd3 !important;
-        color: #be123c !important;
-        padding: 6px 16px;
-        border-radius: 6px;
-        font-weight: 500;
-      }
-      
-      /* 6. Buttons */
       .btn-ajukan {
         background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%) !important;
         color: white !important;
-        padding: 0.5rem 1.5rem; /* Keeping original padding for btn-sm */
+        padding: 0.5rem 1.5rem;
         border: none !important;
-        border-radius: 8px; /* Changed from 6px to 8px */
-        font-weight: 600; /* Changed from 500 to 600 */
-        font-size: 14px; /* Added font-size */
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(5, 156, 216, 0.3) !important; /* Updated box-shadow */
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        z-index: 1;
-        overflow: hidden;
-      }
-      .btn-ajukan::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
+        box-shadow: 0 4px 12px rgba(5, 156, 216, 0.3) !important;
+        transition: all 0.3s;
       }
       .btn-ajukan:hover {
-        background: #0097A7 !important; /* Kept original hover background */
-        color: white !important;
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(5, 156, 216, 0.4) !important; /* Updated box-shadow */
-      }
-      .btn-ajukan:hover::before {
-        width: 300px;
-        height: 300px;
-      }
-      .btn-ajukan:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 8px rgba(5, 156, 216, 0.3) !important;
-      }
-      .btn-ajukan svg {
-        transition: transform 0.3s ease;
-      }
-      .btn-ajukan:hover svg {
-        transform: translateX(3px);
-      }
-      .btn-ajukan:disabled {
-        background: #B0BEC5 !important;
-        cursor: not-allowed !important;
-        opacity: 0.6;
+        box-shadow: 0 6px 20px rgba(5, 156, 216, 0.4) !important;
       }
 
-      /* 7. Search Bar */
-      .navbar-search-wrapper .input-group {
-        background: #FFFFFF !important;
-        border-radius: 8px !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
-      }
-      .navbar-search-wrapper .input-group-text {
-        background: transparent !important;
-        border: none !important;
-      }
-      .navbar-search-wrapper .form-control {
-        background: transparent !important;
-        border: none !important;
-      }
-      .navbar-search-wrapper .form-control:focus {
-        box-shadow: none !important;
-      }
-
-      /* 8. Icon Styles */
-      i.ti {
-        background: none !important;
-        display: inline-block;
-        color: inherit !important;
-        font-style: normal !important;
-        font-size: 24px !important;
-      }
-
-      .menu-icon i,
-      .navbar-nav i.ti {
-        font-size: 35px !important;
-        vertical-align: middle !important;
-      }
-
-      .menu-link i {
-        margin-right: 10px !important;
-      }
+      /* Search & Filters */
+      .search-section { margin-bottom: 1.5rem; animation: slideInLeft 0.6s ease-out forwards; }
+      @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
       
-      .container-xxl {
-        max-width: 96% !important;
+      .search-input {
+        width: 100%; padding: 0.875rem 1rem 0.875rem 3rem;
+        border: 2px solid #E5E7EB; border-radius: 10px;
+        transition: all 0.3s; background: white;
       }
+      .search-input:focus { border-color: #00BCD4; box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1); outline: none; }
+      .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #9CA3AF; }
+      .clear-search { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #9CA3AF; cursor: pointer; display: none; }
+      .clear-search.visible { display: block; }
 
-      .nav-item i.ti {
-        font-size: 24px !important;
-      }
-
-      /* 9. Modal Styling */
-      .modal-content {
-        border-radius: 12px;
-        border: none;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      }
-      
-      .modal-header {
-        border-bottom: 1px solid #e5e7eb;
-        padding: 1.5rem;
-      }
-      
-      .modal-title {
-        font-weight: 600;
-        color: #1f2937;
-      }
-      
-      .btn-close {
-        transition: none !important;
-        transform: none !important;
-        animation: none !important;
-      }      
-      .modal-body {
-        padding: 1.5rem;
-      }
-      
-      .modal-footer {
-        border-top: 1px solid #e5e7eb;
-        padding: 1rem 1.5rem;
-      }
-
-      /* 10. Form Styling */
-      .form-label {
-        font-weight: 500;
-        color: #374151;
-        margin-bottom: 0.5rem;
-      }
-      
-      .form-control {
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        padding: 0.625rem 0.875rem;
-        transition: all 0.2s;
-      }
-      
-      .form-control:focus {
-        border-color: #00BCD4;
-        box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
-      }
-
-      /* 11. Button Styles */
-      .btn-primary {
-        background: #00bcd4 !important;
-        color: white !important;
-        border: none;
-        padding: 0.625rem 1.5rem;
-        border-radius: 6px;
-        font-weight: 500;
-      }
-
-      .btn-primary:hover {
-        background: #0097A7 !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
-      }
-      
-      .btn-primary:disabled {
-        background: #B0BEC5 !important;
-        cursor: not-allowed !important;
-        opacity: 0.6;
-      }
-
-      .btn-label-secondary {
-        background: #f3f4f6 !important;
-        color: #6b7280 !important;
-        border: none;
-        padding: 0.625rem 1.5rem;
-        border-radius: 6px;
-        font-weight: 500;
-      }
-
-      .btn-label-secondary:hover {
-        background: #e5e7eb !important;
-        color: #374151 !important;
-      }
-
-      /* Loading spinner */
-      .spinner-border-sm {
-        width: 1rem;
-        height: 1rem;
-        border-width: 0.15em;
-      }
-
-      /* Error message styling */
-      .alert {
-        border-radius: 8px;
-        margin-bottom: 1rem;
-      }
-
-      /* File upload styling */
-      .form-control[type="file"] {
-        padding: 0.5rem 0.875rem;
-      }
-
-      .form-control[type="file"]::file-selector-button {
-        background: #f3f4f6;
-        border: none;
-        padding: 0.375rem 0.875rem;
-        border-radius: 4px;
-        margin-right: 0.875rem;
-        cursor: pointer;
-        font-weight: 500;
-        color: #374151;
-      }
-
-      .form-control[type="file"]::file-selector-button:hover {
-        background: #e5e7eb;
-      }
-
-      /* ========================================== */
-      /* PAGINATION */
-      /* ========================================== */
       .pagination-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem;
-        opacity: 0;
-        animation: fadeInUp 0.6s ease-out forwards;
-        animation-delay: 1.3s;
+        display: flex; justify-content: space-between; align-items: center; padding: 1.5rem;
+        opacity: 0; animation: fadeInUp 0.6s ease-out forwards; animation-delay: 0.5s;
       }
-
-      .pagination-info {
-        color: #6B7280;
-        font-size: 14px;
-        font-weight: 500;
-      }
-
-      .pagination {
-        display: flex;
-        list-style: none;
-        gap: 0.5rem;
-        margin: 0;
-        padding: 0;
-      }
-
-      .pagination .page-item {
-        display: inline-block;
-      }
-
       .pagination .page-link {
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #E5E7EB;
-        border-radius: 6px;
-        color: #374151;
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        font-weight: 500;
-        min-width: 40px;
-        text-align: center;
-        display: inline-block;
-        position: relative;
-        overflow: hidden;
+        padding: 0.5rem 0.75rem; border: 1px solid #E5E7EB; border-radius: 6px;
+        color: #374151; font-weight: 500; min-width: 40px; text-align: center;
+        transition: all 0.3s;
       }
-
-      .pagination .page-link::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.2), transparent);
-        transition: left 0.5s;
-      }
-
-      .pagination .page-link:hover {
-        background: #F3F4F6;
-        border-color: #00BCD4;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
-      }
-
-      .pagination .page-link:hover::before {
-        left: 100%;
-      }
-
       .pagination .page-item.active .page-link {
         background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%);
-        color: white;
-        border-color: #00BCD4;
-        box-shadow: 0 4px 12px rgba(5, 156, 216, 0.4);
-        transform: scale(1.1);
+        color: white; border-color: #00BCD4;
       }
 
-      .pagination .page-item.disabled .page-link {
-        opacity: 0.5;
-        cursor: not-allowed;
-        pointer-events: none;
-      }
-
-      /* ========================================== */
-      /* LOADING STATE */
-      /* ========================================== */
-      @keyframes skeletonLoading {
-        0% { background-position: -200px 0; }
-        100% { background-position: calc(200px + 100%) 0; }
-      }
-
-      .skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200px 100%;
-        animation: skeletonLoading 1.5s ease-in-out infinite;
-        border-radius: 4px;
-      }
-
-      /* ========================================== */
-      /* ACTION BUTTONS IN TABLE */
-      /* ========================================== */
-      .table tbody td .btn {
-        margin-right: 0.5rem;
-      }
-
-      .table tbody td .btn:last-child {
-        margin-right: 0;
-      }
-
-      .table tbody td .btn svg {
-        transition: transform 0.3s ease;
-      }
-
-      .table tbody td .btn:hover svg {
-        transform: scale(1.2);
-      }
-
-      /* ========================================== */
-      /* RESPONSIVE */
-      /* ========================================== */
+      /* Responsive */
       @media (max-width: 768px) {
-        html, body {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-        html::-webkit-scrollbar, body::-webkit-scrollbar {
-          display: none;
-        }
-        .mengajukan-kegiatan-page {
-            padding: 1rem;
-        }
-        .page-header-section {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 1rem;
-        }
-
-        .search-and-action-section {
-          flex-direction: column;
-          align-items: flex-start;
-          width: 100%; /* Ensure it takes full width */
-        }
-
-        .search-and-action-section .search-container {
-          width: 100%;
-        }
-
-        .pagination-container {
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .table {
-          font-size: 13px;
-        }
-      }
-
-      /* ========================================== */
-      /* UTILITY ANIMATIONS */
-      /* ========================================== */
-      .text-muted {
-        color: #6B7280;
-      }
-
-      .text-center {
-        text-align: center;
-      }
-
-      .text-danger {
-        color: #EF4444;
-      }
-
-      strong {
-        font-weight: 600;
-        color: #1F2937;
-      }
-
-      .small {
-        font-size: 13px;
-        color: #9CA3AF;
-      }
-
-      /* ========================================== */
-      /* ADDITIONAL ANIMATIONS FROM MONITORING USULAN */
-      /* ========================================== */
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-
-      @keyframes slideInRight {
-        from {
-          opacity: 0;
-          transform: translateX(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-
-      @keyframes slideInLeft {
-        from {
-          opacity: 0;
-          transform: translateX(-30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-
-      @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-      }
-
-      @keyframes shimmer {
-        0% {
-          background-position: -1000px 0;
-        }
-        100% {
-          background-position: 1000px 0;
-        }
-      }
-
-      @keyframes statusPulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
-      }
-
-      @keyframes scaleIn {
-        from {
-          opacity: 0;
-          transform: scale(0.9);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes skeletonLoading {
-        0% { background-position: -200px 0; }
-        100% { background-position: calc(200px + 100%) 0; }
-      }
-
-      /* Enhanced page animation */
-      .mengajukan-kegiatan-page {
-        animation: fadeIn 0.5s ease-out;
-      }
-
-      /* Enhanced card animation with shimmer */
-      .card-datatable {
-        position: relative;
-        animation: fadeInUp 0.6s ease-out forwards;
-        animation-delay: 0.2s;
-        opacity: 0;
-      }
-
-      .card-datatable::after {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
-        animation: shimmer 3s infinite;
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      .card-datatable:hover {
-        box-shadow: 0 10px 30px rgba(0, 188, 212, 0.15);
-      }
-
-      /* Enhanced table row animations */
-      .table tbody tr {
-        opacity: 0;
-        animation: slideUp 0.5s ease-out forwards;
-      }
-
-      .table tbody tr:nth-child(1) { animation-delay: 0.3s; }
-      .table tbody tr:nth-child(2) { animation-delay: 0.4s; }
-      .table tbody tr:nth-child(3) { animation-delay: 0.5s; }
-      .table tbody tr:nth-child(4) { animation-delay: 0.6s; }
-      .table tbody tr:nth-child(5) { animation-delay: 0.7s; }
-      .table tbody tr:nth-child(6) { animation-delay: 0.8s; }
-      .table tbody tr:nth-child(7) { animation-delay: 0.9s; }
-      .table tbody tr:nth-child(8) { animation-delay: 1s; }
-      .table tbody tr:nth-child(9) { animation-delay: 1.1s; }
-      .table tbody tr:nth-child(10) { animation-delay: 1.2s; }
-
-      /* Enhanced badge pulse animation */
-      .badge {
-        animation: statusPulse 2s ease-in-out infinite;
-      }
-
-      .badge:hover {
-        animation: pulse 0.5s ease-in-out;
-      }
-
-      /* Button ripple effect */
-      .btn::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-      }
-
-      .btn:hover::before {
-        width: 50px;
-        height: 50px;
-      }
-
-      /* Skeleton loading */
-      .skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200px 100%;
-        animation: skeletonLoading 1.5s ease-in-out infinite;
-        border-radius: 4px;
-      }
-
-      /* Modal animation */
-      .modal-content {
-        animation: scaleIn 0.3s ease-out;
-      }
-
-      /* Search bar styles */
-      .search-section {
-        margin-bottom: 1.5rem;
-        opacity: 0;
-        animation: slideInLeft 0.6s ease-out forwards;
-        animation-delay: 0.1s;
-      }
-
-      .search-container {
-        position: relative;
-        max-width: 500px;
-      }
-
-      .search-input {
-        width: 100%;
-        padding: 0.875rem 1rem 0.875rem 3rem;
-        border: 2px solid #E5E7EB;
-        border-radius: 10px;
-        font-size: 14px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      }
-
-      .search-input:focus {
-        outline: none;
-        border-color: #00BCD4;
-        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
-      }
-
-      .search-icon {
-        position: absolute;
-        left: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9CA3AF;
-        pointer-events: none;
-        transition: color 0.3s ease;
-      }
-
-      .search-input:focus + .search-icon {
-        color: #00BCD4;
-      }
-
-      .clear-search {
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #9CA3AF;
-        cursor: pointer;
-        padding: 0.25rem;
-        display: none;
-        transition: color 0.3s ease;
-      }
-
-      .clear-search:hover {
-        color: #EF4444;
-      }
-
-      .clear-search.visible {
-        display: block;
+        .mengajukan-kegiatan-page { padding: 1rem; }
+        .dashboard-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        .pagination-container { flex-direction: column; gap: 1rem; }
       }
     </style>
 
     <div class="mengajukan-kegiatan-page">
       <!-- Header Section -->
-      <div class="page-header-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 0.5rem; opacity: 0; animation: slideInRight 0.6s ease-out forwards;">
-        <div>
-          <h2 class="text-4xl font-bold text-gray-800">Pengajuan Kegiatan</h2>
-          <p class="text-lg text-gray-600" style="margin: 0.5rem 0 0 0; color: #64748b; font-size: 14px;">Ajukan kegiatan yang telah disetujui</p>
+      <div class="dashboard-header">
+        <div class="header-title">
+          <h2>Pengajuan Kegiatan</h2>
+          <p>Ajukan kegiatan yang telah disetujui</p>
         </div>
       </div>
 
@@ -796,7 +329,7 @@ export function renderMengajukanKegiatanPage(path, userRole) {
 
       <!-- Search Section -->
       <div class="search-section">
-        <div class="search-container">
+        <div class="search-container" style="position: relative; max-width: 500px;">
           <input 
             type="text" 
             id="searchInput" 
@@ -849,37 +382,66 @@ export function renderMengajukanKegiatanPage(path, userRole) {
       </div>
     </div>
 
-    <!-- Modal Ajukan Kegiatan -->
+    <!-- Modal Ajukan Kegiatan (Premium Style) -->
     <div class="modal fade" id="ajukanKegiatanModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalAjukanTitle">Ajukan Kegiatan</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-header modal-header-gradient">
+            <div>
+              <h5 class="modal-title">Ajukan Kegiatan</h5>
+              <p class="mb-0 text-white opacity-75 small">Lengkapi data pelaksana untuk memulai kegiatan</p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
-          <div class="modal-body">
-            <div id="ajukanKegiatanError" class="alert alert-danger" style="display: none;"></div>
+          <div class="modal-body modal-body-modern">
+            <div id="ajukanKegiatanError" class="modal-error-alert">
+              <i class="ti ti-alert-circle"></i>
+              <span></span>
+            </div>
             <form id="ajukanKegiatanForm">
               <input type="hidden" id="kakId">
-              <div class="mb-3">
-                <label for="penanggungJawab" class="form-label">Penanggung Jawab</label>
-                <input type="text" id="penanggungJawab" class="form-control" placeholder="Masukkan nama penanggung jawab" required>
-              </div>
-              <div class="mb-3">
-                <label for="pelaksana" class="form-label">Pelaksana Kegiatan</label>
-                <input type="text" id="pelaksana" class="form-control" placeholder="Masukkan nama pelaksana kegiatan" required>
-              </div>
-              <div class="mb-3">
-                <label for="suratPengantar" class="form-label">Surat Pengantar</label>
-                <input type="file" id="suratPengantar" class="form-control" accept=".pdf,.doc,.docx" required>
-                <small class="text-muted">Format: PDF, DOC, DOCX (Max 5MB)</small>
+              
+              <div class="row g-4">
+                <div class="col-12 form-group-animate">
+                  <label for="penanggungJawab" class="form-label-modern">
+                    <i class="ti ti-user"></i>Penanggung Jawab
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="text" id="penanggungJawab" placeholder="Masukkan nama penanggung jawab" required>
+                  </div>
+                </div>
+
+                <div class="col-12 form-group-animate">
+                  <label for="pelaksana" class="form-label-modern">
+                    <i class="ti ti-users"></i>Pelaksana Kegiatan
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="text" id="pelaksana" placeholder="Masukkan nama pelaksana kegiatan" required>
+                  </div>
+                </div>
+
+                <div class="col-12 form-group-animate">
+                  <label for="suratPengantar" class="form-label-modern">
+                    <i class="ti ti-file-upload"></i>Surat Pengantar
+                  </label>
+                  <div class="glass-input-wrapper">
+                    <input type="file" id="suratPengantar" accept=".pdf,.doc,.docx" required>
+                  </div>
+                  <div class="helper-text">
+                    <i class="ti ti-info-circle"></i> Format: PDF, DOC, DOCX (Max 5MB)
+                  </div>
+                </div>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-label-secondary" tabindex="-1" data-bs-dismiss="modal">Batal</button>
-            <button type="button" class="btn btn-primary" id="btnSelesaiAjukan">
-              Selesai
+          <div class="modal-footer modal-footer-modern">
+            <button type="button" class="btn btn-modern-cancel" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-modern-primary" id="btnSelesaiAjukan">
+              Selesai & Ajukan
             </button>
           </div>
         </div>

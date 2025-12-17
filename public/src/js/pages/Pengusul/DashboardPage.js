@@ -15,12 +15,21 @@ export function renderPengusulDashboardPage(path, userRole) {
           display: none;
       }
 
-      /* Desktop right padding to prevent content from touching right edge */
+      /* Desktop right padding */
       @media (min-width: 1024px) {
         .pengusul-dashboard-page {
           padding-right: 1rem;
         }
       }
+
+      /* ========== GLOBAL Z-INDEX FIX ========== */
+      .modal-backdrop { z-index: 9999 !important; }
+      .modal { z-index: 10000 !important; }
+
+      /* ========== HEADER STYLES (From Dashboard Direktur) ========== */
+      .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; animation: fadeInUp 0.5s ease-out; }
+      .header-title h2 { font-size: 2.25rem; font-weight: 700; margin: 0; background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+      .header-title p { color: #64748b; margin-top: 0.25rem; font-size: 1rem; font-weight: 500; }
 
       /* Keyframe Animations */
       @keyframes fadeInUp {
@@ -407,16 +416,6 @@ export function renderPengusulDashboardPage(path, userRole) {
         transform: scale(1.2);
       }
 
-      /* Header Animation */
-      .dashboard-header {
-        opacity: 0;
-        animation: slideInRight 0.6s ease-out forwards;
-        margin-bottom: 1.5rem !important;
-        position: relative;
-        z-index: 1050;
-      }
-
-
       /* Template List Animation */
       #templateList > div {
         opacity: 0;
@@ -508,10 +507,13 @@ export function renderPengusulDashboardPage(path, userRole) {
     </style>
 
     <div class="pengusul-dashboard-page">
-      <!-- Header - FIX MARGIN -->
-      <div class="dashboard-header flex justify-between items-center">
-        <h2 class="text-4xl font-bold text-gray-800">Dasbor</h2>
-        <div class="flex gap-3">
+      <!-- Header -->
+      <div class="dashboard-header">
+        <div class="header-title">
+          <h2>Dasbor Pengusul</h2>
+          <p>Kelola usulan dan pantau kegiatan Anda</p>
+        </div>
+        <div style="display:flex; gap:1rem; align-items:center;">
           <button id="btn-tambah-usulan" class="btn btn-tambah-akun inline-flex items-center gap-2 px-4 py-2 rounded-lg">
             <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
