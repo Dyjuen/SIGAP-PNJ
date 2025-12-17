@@ -7,7 +7,6 @@ export function renderDaftarLpjPage(path, userRole) {
   const isPengusul = userRole.toLowerCase() === "pengusul";
 
   const bendaharaStatCards = `
-    <h3 class="text-2xl font-bold mb-4">Pemantauan LPJ</h3>
     <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
       <div class="stat-card stat-card-active rounded-xl shadow-lg p-6 cursor-pointer" data-status="all">
         <h4 class="text-lg font-bold mb-1">Semua LPJ</h4>
@@ -32,7 +31,6 @@ export function renderDaftarLpjPage(path, userRole) {
     </div>`;
 
   const pengusulStatCards = `
-    <h3 class="text-2xl font-bold mb-4">Pemantauan LPJ</h3>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="stat-card stat-card-active rounded-xl shadow-lg p-6 cursor-pointer" data-status="all">
           <h4 class="text-lg font-bold mb-1">Semua LPJ</h4>
@@ -63,12 +61,23 @@ export function renderDaftarLpjPage(path, userRole) {
           display: none;
       }
 
-      /* Desktop right padding to prevent content from touching right edge */
+      /* Desktop right padding */
       @media (min-width: 1024px) {
         .daftar-lpj-page {
           padding-right: 1rem;
         }
       }
+
+      /* ========== GLOBAL Z-INDEX FIX ========== */
+      .modal-backdrop { z-index: 9999 !important; }
+      .modal { z-index: 10000 !important; }
+
+      /* ========== HEADER STYLES (From Dashboard Direktur) ========== */
+      .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; animation: fadeInUp 0.5s ease-out; }
+      .header-title h2 { font-size: 2.25rem; font-weight: 700; margin: 0; background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
+      .header-title p { color: #64748b; margin-top: 0.25rem; font-size: 1rem; font-weight: 500; }
+
+      @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
       .countdown-normal { color: #D97706; }
       .countdown-danger { color: #be123c; }
@@ -281,6 +290,14 @@ export function renderDaftarLpjPage(path, userRole) {
       }
     </style>
     <div class="daftar-lpj-page">
+      <!-- Header Section -->
+      <div class="dashboard-header">
+        <div class="header-title">
+          <h2>Pemantauan LPJ</h2>
+          <p>Pantau status laporan pertanggungjawaban kegiatan</p>
+        </div>
+      </div>
+
       <!-- Statistics Cards -->
       ${isBendahara ? bendaharaStatCards : pengusulStatCards}
 

@@ -11,11 +11,18 @@ class CIVFESTSeeder extends AbstractSeed
         // 1. Get Reference IDs
         $user = $this->fetchRow("SELECT user_id FROM m_users WHERE username = 'jurusansipil'");
         if (!$user) {
-            // Fallback or die? Better to fallback to a known ID or skip.
-            // Assuming MasterDataSeeder ran, ID 7 should be jurusansipil, or we pick the first pengusul
+            // Fallback to a known ID or pick the first pengusul if 'jurusansipil' not found
             $user = $this->fetchRow("SELECT user_id FROM m_users WHERE role_id = 3 LIMIT 1");
+            if (!$user) {
+                // If even the fallback fails, log and use a default of 1, though this implies missing master data
+                $this->output->writeln('<error>Warning: Default user for CIVFESTSeeder not found. Using user_id 1.</error>');
+                $userId = 1; 
+            } else {
+                $userId = $user['user_id'];
+            }
+        } else {
+            $userId = $user['user_id'];
         }
-        $userId = $user['user_id'];
 
         $tipe = $this->fetchRow("SELECT tipe_kegiatan_id FROM m_tipe_kegiatan WHERE nama_tipe LIKE '%Kemahasiswaan%'");
         $tipeId = $tipe ? $tipe['tipe_kegiatan_id'] : 1; // Fallback
