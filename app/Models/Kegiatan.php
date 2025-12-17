@@ -13,72 +13,54 @@ class Kegiatan extends Model
     public function getDashboardMonitoringKegiatan(array $filters)
     {
         $params = [];
-        $baseSql = "FROM t_kegiatan k
-                    JOIN t_kak t ON k.kak_id = t.kak_id
-                    JOIN m_users u ON t.pengusul_user_id = u.user_id
-                    LEFT JOIN m_kegiatan_status ks ON t.status_id = ks.status_id
-                    LEFT JOIN t_kegiatan_approval ppk_approval ON k.kegiatan_id = ppk_approval.kegiatan_id AND ppk_approval.approval_level = 'PPK'
-                    LEFT JOIN t_kegiatan_approval active_approval ON k.kegiatan_id = active_approval.kegiatan_id AND active_approval.status IN ('Aktif', 'Revisi')
-                    LEFT JOIN (
-                        SELECT kegiatan_id, SUM(jumlah_dicairkan) as total_dicairkan
-                        FROM t_pencairan_dana
-                        GROUP BY kegiatan_id
-                    ) pencairan_sum ON k.kegiatan_id = pencairan_sum.kegiatan_id";
+        $baseSql = "FROM v_dashboard_monitoring_kegiatan";
 
         $whereSql = " WHERE 1=1";
 
         if (!empty($filters['status_id'])) {
-            $whereSql .= " AND t.status_id = ?";
+            $whereSql .= " AND status_id = ?";
             $params[] = $filters['status_id'];
         }
         if (!empty($filters['search'])) {
-            $whereSql .= " AND t.nama_kegiatan LIKE ?";
+            $whereSql .= " AND nama_kegiatan LIKE ?";
             $params[] = '%' . $filters['search'] . '%';
         }
         if (!empty($filters['user_id'])) {
-            $whereSql .= " AND t.pengusul_user_id = ?";
+            $whereSql .= " AND pengusul_user_id = ?";
             $params[] = $filters['user_id'];
         }
         if (!empty($filters['unit_pengusul'])) {
-            $whereSql .= " AND t.pengusul_user_id = ?";
+            $whereSql .= " AND pengusul_user_id = ?";
             $params[] = $filters['unit_pengusul'];
         }
         
         // New filters for Bendahara Dashboard
         if (!empty($filters['approval_level'])) {
-            $whereSql .= " AND active_approval.approval_level = ?";
+            $whereSql .= " AND approval_level = ?";
             $params[] = $filters['approval_level'];
         }
         
         if (!empty($filters['filter_type'])) {
             if ($filters['filter_type'] === 'pencairan_menunggu') {
-                $whereSql .= " AND active_approval.approval_level = 'Bendahara-Cair' AND active_approval.status = 'Aktif'";
+                $whereSql .= " AND approval_level = 'Bendahara-Cair' AND status_approval_aktif = 'Aktif'";
             } elseif ($filters['filter_type'] === 'pencairan_selesai') {
-                $whereSql .= " AND pencairan_sum.total_dicairkan > 0";
+                $whereSql .= " AND dana_dicairkan > 0";
             }
         }
 
         // Count total records
-        $countSql = "SELECT COUNT(DISTINCT k.kegiatan_id) " . $baseSql . $whereSql;
+        $countSql = "SELECT COUNT(DISTINCT kegiatan_id) " . $baseSql . $whereSql;
         $totalRecords = $this->query($countSql, $params)->fetchColumn();
 
         // Main query
-        $mainSelect = "SELECT 
-                        k.kegiatan_id,
-                        t.nama_kegiatan,
-                        u.nama_lengkap as pengusul_nama,
-                        ks.nama_status,
-                        ks.status_id,
-                        COALESCE(active_approval.approval_level, ks.nama_status) as status_saat_ini,
-                        active_approval.status as status_approval_aktif,
-                        COALESCE(pencairan_sum.total_dicairkan, 0) as dana_dicairkan";
+        $mainSelect = "SELECT kegiatan_id, nama_kegiatan, pengusul_nama, nama_status, status_id, status_saat_ini, status_approval_aktif, dana_dicairkan";
 
         $page = $filters['page'] ?? 1;
         $perPage = $filters['per_page'] ?? 10;
         $offset = ($page - 1) * $perPage;
 
         $finalParams = array_merge($params, [$perPage, $offset]);
-        $paginationSql = " ORDER BY k.created_at DESC LIMIT ? OFFSET ?";
+        $paginationSql = " ORDER BY kegiatan_created_at DESC LIMIT ? OFFSET ?";
 
         $sql = $mainSelect . " " . $baseSql . $whereSql . $paginationSql;
 
@@ -541,18 +523,8 @@ class Kegiatan extends Model
 
     public function getStatistics($userId)
     {
-        $sql = "SELECT 
-                    COUNT(CASE WHEN ks.nama_status = 'Draft' THEN 1 END) as total_draft,
-                    COUNT(CASE WHEN ks.nama_status = 'Review Verifikator' THEN 1 END) as total_review_verifikator,
-                    COUNT(CASE WHEN ks.nama_status = 'Revisi' THEN 1 END) as total_revisi
-                FROM t_kak t
-                JOIN m_kegiatan_status ks ON t.status_id = ks.status_id";
-
-        $params = [];
-        if ($userId) {
-            $sql .= " WHERE t.pengusul_user_id = ?";
-            $params[] = $userId;
-        }
+        $sql = "CALL sp_get_kak_statistics(?)";
+        $params = [$userId];
 
         return $this->query($sql, $params)->fetch(PDO::FETCH_ASSOC);
     }
