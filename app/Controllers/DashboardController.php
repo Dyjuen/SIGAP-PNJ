@@ -5,15 +5,18 @@ namespace App\Controllers;
 use App\Core\Response;
 use App\Middlewares\AuthMiddleware;
 use App\Models\Kegiatan;
+use App\Services\FlasherNotificationService; // Added
 
 class DashboardController
 {
     private $userData;
+    private $flasherNotificationService; // Added
 
     public function __construct()
     {
         // Get authenticated user data for role-based access
         $this->userData = AuthMiddleware::getAuthUser();
+        $this->flasherNotificationService = new FlasherNotificationService(); // Added
     }
 
     /**
@@ -47,6 +50,35 @@ class DashboardController
         } catch (\Exception $e) {
             Response::error('Gagal mengambil data summary: ' . $e->getMessage(), 500);
         }
+    }
+
+    /**
+     * GET /api/dashboard/flasher-notifications
+     * Mengambil notifikasi flasher untuk peran PPK atau Wadir yang terlambat disetujui.
+     * Tidak mengubah fungsi yang sudah ada.
+     */
+    public function getLoginFlasherNotifications()
+    {
+        try {
+            $flasherMessages = [];
+            // Only generate flasher notifications for PPK or Wadir roles
+            if (isset($this->userData['roles']) && ($this->hasRole('PPK') || $this->hasRole('Wadir'))) {
+                $flasherMessages = $this->flasherNotificationService->getLoginFlasherNotifications($this->userData['user_id']);
+            }
+            
+            Response::success($flasherMessages, 'Flasher notifications berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil flasher notifications: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Helper: Check if user has role
+     */
+    private function hasRole($roleName)
+    {
+        return in_array($roleName, $this->userData['roles'] ?? []);
     }
 
     /**
