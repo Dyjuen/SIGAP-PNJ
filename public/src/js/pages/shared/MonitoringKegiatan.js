@@ -246,6 +246,8 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         background: linear-gradient(90deg, rgba(3, 201, 215, 0.05) 0%, transparent 100%);
         transition: width 0.3s ease;
         z-index: 0;
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
       }
 
       .table tbody tr:hover::before {
@@ -389,13 +391,13 @@ export function renderMonitoringKegiatanPage(path, userRole) {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 38px;
-        height: 38px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
         background: #e2e8f0;
         margin-bottom: 0.5rem;
         font-weight: 700;
-        font-size: 0.75rem;
+        font-size: 1.1rem; /* Increased from 0.75rem */
         color: #94a3b8;
         transition: all 0.3s ease;
         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -476,7 +478,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
       .step-name {
         text-align: center;
-        font-size: 0.65rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: #94a3b8;
         margin-top: 0.25rem;
@@ -498,7 +500,7 @@ export function renderMonitoringKegiatanPage(path, userRole) {
 
       .step-date {
         text-align: center;
-        font-size: 0.6rem;
+        font-size: 0.8rem;
         color: #cbd5e0;
         margin-top: 0.15rem;
         animation: fadeIn 0.6s ease-out backwards;
@@ -546,9 +548,9 @@ export function renderMonitoringKegiatanPage(path, userRole) {
       /* Bootstrap Progress Bar as Connector */
       .progress-connector {
         position: absolute;
-        top: 19px;
-        left: calc(50% + 19px);
-        width: calc(100% - 38px);
+        top: 25px; /* (50px / 2) */
+        left: calc(50% + 25px); /* (50px / 2) */
+        width: calc(100% - 50px);
         height: 4px;
         z-index: 1;
       }

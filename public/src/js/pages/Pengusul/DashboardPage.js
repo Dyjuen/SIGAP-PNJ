@@ -552,7 +552,7 @@ export function renderPengusulDashboardPage(path, userRole) {
           <!-- Monitoring Kegiatan -->
           <div class="monitoring-table-simple">
             <div class="flex justify-between items-center mb-4">
-              <h3 class="text-lg font-bold text-gray-800">Monitoring Kegiatan</h3>
+              <h3 class="text-lg font-bold text-gray-800">Pemantauan Kegiatan</h3>
               <a href="/pengusul/kegiatan/monitoring" class="text-cyan-500 text-sm hover:underline">Lihat Semua</a>
             </div>
             <table>
@@ -574,7 +574,7 @@ export function renderPengusulDashboardPage(path, userRole) {
           <!-- Monitoring LPJ -->
           <div class="monitoring-table-simple">
             <div class="flex justify-between items-center mb-4">
-              <h3 class="text-lg font-bold text-gray-800">Monitoring LPJ</h3>
+              <h3 class="text-lg font-bold text-gray-800">Pemantauan LPJ</h3>
               <a href="/pengusul/kegiatan/lpj" class="text-cyan-500 text-sm hover:underline">Lihat Semua</a>
             </div>
             <table>

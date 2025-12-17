@@ -544,24 +544,94 @@ export function renderGuideManagementPage(path, userRole) {
       }
 
       /* Pagination */
-      .pagination-container { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0; border-top: 1px solid white; margin-top: 1.5rem; }
-      .pagination { list-style: none; display: flex; gap: 0.25rem; margin: 0; padding: 0; }
-      .pagination .page-link {
-        padding: 0.4rem 0.65rem; /* Slightly smaller padding */
-        border: 1px solid white; /* White border */
-        border-radius: 6px; /* Slightly less rounded */
-        color: #4b5563;
-        text-decoration: none;
+      .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        background: white;
+        animation: fadeIn 0.5s ease-out;
+        animation-delay: 0.7s;
+        animation-fill-mode: backwards;
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 18px;
+        margin-top: 1.5rem;
+      }
+
+      .pagination-info {
+        color: #6B7280;
+        font-size: 14px;
         font-weight: 500;
-        min-width: 34px; /* Slightly smaller min-width */
+      }
+
+      .pagination {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .pagination .page-item {
+        display: inline-block;
+      }
+
+      .pagination .page-link {
+        min-width: 36px;
+        height: 36px;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid #E5E7EB;
+        background: white;
+        color: #374151;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 500;
+        min-width: 40px;
         text-align: center;
         display: inline-block;
-        transition: all 0.2s ease;
-        font-size: 0.875rem; /* Smaller font size */
+        position: relative;
+        overflow: hidden;
       }
-      .pagination .page-link:hover { background: white; border-color: var(--primary-color); color: var(--primary-color); }
-      .pagination .page-item.active .page-link { background: var(--primary-color); color: white; border-color: var(--primary-color); }
-      .pagination .page-item.disabled .page-link { opacity: 0.5; cursor: not-allowed; }
+
+      .pagination .page-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(3, 201, 215, 0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .pagination .page-link:hover {
+        background: #F3F4F6;
+        border-color: #03C9D7;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(3, 201, 215, 0.2);
+      }
+
+      .pagination .page-link:hover::before {
+        left: 100%;
+      }
+
+      .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #03C9D7, #02b3c4);
+        color: white;
+        border-color: #03C9D7;
+        box-shadow: 0 4px 12px rgba(3, 201, 215, 0.4);
+        transform: scale(1.1);
+      }
+
+      .pagination .page-item.disabled .page-link {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
 
       /* Loading/Empty State */
       .state-placeholder { text-align: center; padding: 3rem 1rem; color: #9ca3af; background: white; border-radius: 12px; border: 1px solid #e5e7eb; }
@@ -663,15 +733,15 @@ export function renderGuideManagementPage(path, userRole) {
             </tr>
           </tbody>
         </table>
-      </div>
 
-      <!-- Pagination -->
-      <div class="pagination-container">
-          <div class="pagination-info text-sm text-gray-500">
-            Menampilkan <span id="showingStartGuide">1</span> dari <span id="showingEndGuide">10</span> dengan total <span id="totalRecordsGuide">0</span> entri
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <div class="pagination-info text-sm text-gray-500">
+              Menampilkan <span id="showingStartGuide">1</span> dari <span id="showingEndGuide">10</span> dengan total <span id="totalRecordsGuide">0</span> entri
+            </div>
+            <ul class="pagination" id="paginationListGuide"></ul>
           </div>
-          <ul class="pagination" id="paginationListGuide"></ul>
-        </div>
+      </div>
     </div>
 
     <!-- Add Guide Modal -->

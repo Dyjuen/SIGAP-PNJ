@@ -43,7 +43,7 @@ export const adminSidebar = `
     <li class="menu-item">
       <a href="/admin/log-history" class="menu-link" data-tooltip="Log History">
         <span class="menu-icon">
-          <i class="ti ti-history">&#xeb82;</i>
+          <i class="ti ti-history">&#xebea;</i>
         </span>
         <span class="menu-text">Riwayat Aktivitas</span>
       </a>

@@ -57,64 +57,69 @@ export function renderDaftarLpjPage(path, userRole) {
       .countdown-normal { color: #D97706; }
       .countdown-danger { color: #be123c; }
 
-      /* Search Section Styles */
+      /* Search Styles */
       .search-section {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         margin-bottom: 1.5rem;
-        animation: slideInLeft 0.4s ease-out;
+        opacity: 0;
+        animation: slideInLeft 0.6s ease-out forwards;
+        animation-delay: 0.1s;
       }
 
-      .search-input-wrapper {
+      .search-container {
         position: relative;
         max-width: 500px;
       }
 
-      .search-input-wrapper input {
+      .search-input {
         width: 100%;
-        padding: 0.75rem 3rem 0.75rem 2.75rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 0.5rem;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
+        padding: 0.875rem 1rem 0.875rem 3rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
 
-      .search-input-wrapper input:focus {
+      .search-input:focus {
         outline: none;
-        border-color: #00BCD4;
-        box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+        border-color: #0fb4caff;
+        box-shadow: 0 0 0 4px rgba(15, 180, 202, 0.1);
       }
 
-      .search-input-wrapper .search-icon {
+      .search-icon {
         position: absolute;
-        left: 0.875rem;
+        left: 1rem;
         top: 50%;
         transform: translateY(-50%);
-        color: #94a3b8;
+        color: #9CA3AF;
         pointer-events: none;
+        transition: color 0.3s ease;
       }
 
-      .search-input-wrapper .clear-search {
+      .search-input:focus + .search-icon {
+        color: #0fb4caff;
+      }
+
+      .clear-search {
         position: absolute;
-        right: 0.75rem;
+        right: 1rem;
         top: 50%;
         transform: translateY(-50%);
         background: none;
         border: none;
-        color: #94a3b8;
+        color: #9CA3AF;
         cursor: pointer;
         padding: 0.25rem;
         display: none;
-        transition: color 0.2s ease;
+        transition: color 0.3s ease;
       }
 
-      .search-input-wrapper .clear-search:hover {
-        color: #475569;
+      .clear-search:hover {
+        color: #EF4444;
       }
 
-      .search-input-wrapper.has-value .clear-search {
+      .clear-search.visible {
         display: block;
       }
 
@@ -207,6 +212,34 @@ export function renderDaftarLpjPage(path, userRole) {
         cursor: not-allowed;
         pointer-events: none;
       }
+
+      /* Button Styles */
+      .btn {
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn-icon {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .btn-icon svg {
+        width: 16px;
+        height: 16px;
+      }
     </style>
     <div class="daftar-lpj-page">
       <!-- Statistics Cards -->
@@ -214,21 +247,23 @@ export function renderDaftarLpjPage(path, userRole) {
 
       <!-- Search Section -->
       <div class="search-section">
-        <div class="search-input-wrapper">
-          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
+        <div class="search-container">
           <input 
             type="text" 
             id="searchInput" 
+            class="search-input" 
             placeholder="Cari nama kegiatan atau pengusul..."
             autocomplete="off"
           />
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
           <button class="clear-search" id="clearSearch" title="Clear search">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
             </svg>
           </button>
         </div>
@@ -357,41 +392,34 @@ function initializeDaftarLpj(userRole) {
     const { status_lpj: status, kegiatan_id: id, approval_status } = item;
 
     if (isBendahara) {
-      const detailButton = `<a href="/bendahara/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
+      const detailButton = `<button class="btn btn-sm btn-icon" onclick="window.location.href='/bendahara/kegiatan/lpj/detail/${id}'" title="Lihat Detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3); border: none;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>`;
+      
       switch (status) {
         case "Diajukan":
           return `
               <div class="d-flex justify-content-center gap-2">
-                <a href="/bendahara/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-info">Revisi</a>
-                <button class="btn btn-sm btn-primary" data-action="setujui" data-id="${id}">Setujui</button>
+                <button class="btn btn-sm btn-icon" onclick="window.location.href='/bendahara/kegiatan/lpj/revisi/${id}'" title="Revisi" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); border: none;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                <button class="btn btn-sm btn-icon" data-action="setujui" data-id="${id}" title="Setujui" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); border: none;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
               </div>`;
         case "Setor Fisik":
-          if (approval_status === "bendahara-setor") {
             return `
                 <div class="d-flex justify-content-center gap-2">
                   ${detailButton}
-                  <button class="btn btn-sm btn-success" data-action="selesaikan" data-id="${id}">Setujui & Selesaikan</button>
+                  <button class="btn btn-sm btn-icon" data-action="selesaikan" data-id="${id}" title="${approval_status === "bendahara-setor" ? 'Setujui & Selesaikan' : 'Selesaikan'}" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: white; box-shadow: 0 2px 8px rgba(13, 148, 136, 0.3); border: none;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></button>
                 </div>`;
-          } else {
-            return `
-                <div class="d-flex justify-content-center gap-2">
-                  ${detailButton}
-                  <button class="btn btn-sm btn-success" data-action="selesaikan" data-id="${id}">Selesaikan</button>
-                </div>`;
-          }
         default:
           return `<span class="text-muted">-</span>`;
       }
     } else if (isPengusul) {
       switch (status) {
         case "Menunggu Penyerahan":
-          return `<a href="/pengusul/kegiatan/lpj/new?kegiatan_id=${id}" data-link class="btn btn-sm btn-primary">Submit LPJ</a>`;
+          return `<button class="btn btn-sm btn-icon" onclick="window.location.href='/pengusul/kegiatan/lpj/new?kegiatan_id=${id}'" title="Submit LPJ" style="background: linear-gradient(135deg, #0fb4caff 0%, #059cd8ff 100%); color: white; box-shadow: 0 2px 8px rgba(5, 156, 216, 0.3); border: none;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>`;
         case "Direvisi":
-          return `<a href="/pengusul/kegiatan/lpj/revisi/${id}" data-link class="btn btn-sm btn-warning">Kerjakan Revisi</a>`;
+          return `<button class="btn btn-sm btn-icon" onclick="window.location.href='/pengusul/kegiatan/lpj/revisi/${id}'" title="Kerjakan Revisi" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); border: none;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
         case "Diajukan":
         case "Setor Fisik":
         case "Selesai":
-          return `<a href="/pengusul/kegiatan/lpj/detail/${id}" data-link class="btn btn-sm btn-outline-secondary">Lihat Detail</a>`;
+          return `<button class="btn btn-sm btn-icon" onclick="window.location.href='/pengusul/kegiatan/lpj/detail/${id}'" title="Lihat Detail" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3); border: none;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>`;
         default:
           return `<span class="text-muted">-</span>`;
       }
@@ -777,15 +805,16 @@ function initializeDaftarLpj(userRole) {
   // Search event listeners
   const searchInput = document.getElementById("searchInput");
   const clearSearchBtn = document.getElementById("clearSearch");
-  const searchWrapper = document.querySelector(".search-input-wrapper");
 
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
       state.searchQuery = e.target.value;
-      if (state.searchQuery) {
-        searchWrapper.classList.add("has-value");
-      } else {
-        searchWrapper.classList.remove("has-value");
+      if (clearSearchBtn) {
+        if (state.searchQuery.length > 0) {
+          clearSearchBtn.classList.add("visible");
+        } else {
+          clearSearchBtn.classList.remove("visible");
+        }
       }
       debounceSearch();
     });
@@ -794,7 +823,7 @@ function initializeDaftarLpj(userRole) {
       if (e.key === "Escape") {
         searchInput.value = "";
         state.searchQuery = "";
-        searchWrapper.classList.remove("has-value");
+        if (clearSearchBtn) clearSearchBtn.classList.remove("visible");
         performSearch();
       }
     });
@@ -804,7 +833,7 @@ function initializeDaftarLpj(userRole) {
     clearSearchBtn.addEventListener("click", () => {
       searchInput.value = "";
       state.searchQuery = "";
-      searchWrapper.classList.remove("has-value");
+      clearSearchBtn.classList.remove("visible");
       performSearch();
       searchInput.focus();
     });
