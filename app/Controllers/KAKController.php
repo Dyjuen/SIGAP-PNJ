@@ -1122,6 +1122,46 @@ class KAKController
                 foreach ($input['anak'] as $table => $rows) {
                     if (!isset($pkMap[$table])) continue;
 
+                    // FIX: Use delete-then-insert strategy for t_kak_anggaran to prevent duplicates
+                    if ($table === 't_kak_anggaran') {
+                        // 1. Delete all existing budget items for this KAK
+                        $db->query("DELETE FROM t_kak_anggaran WHERE kak_id = :kak_id");
+                        $db->bind(':kak_id', $id);
+                        $db->execute();
+
+                        // 2. Re-insert the submitted budget items
+                        foreach ($rows as $r) {
+                            $v1 = isset($r['volume1']) && $r['volume1'] !== '' ? (float)$r['volume1'] : null;
+                            $v2 = isset($r['volume2']) && $r['volume2'] !== '' ? (float)$r['volume2'] : null;
+                            $v3 = isset($r['volume3']) && $r['volume3'] !== '' ? (float)$r['volume3'] : null;
+                            
+                            $s1 = isset($r['satuan1_id']) && $r['satuan1_id'] !== '' && $r['satuan1_id'] != 0 ? $r['satuan1_id'] : null;
+                            $s2 = isset($r['satuan2_id']) && $r['satuan2_id'] !== '' && $r['satuan2_id'] != 0 ? $r['satuan2_id'] : null;
+                            $s3 = isset($r['satuan3_id']) && $r['satuan3_id'] !== '' && $r['satuan3_id'] != 0 ? $r['satuan3_id'] : null;
+
+                            $harga = (float)($r['harga_satuan'] ?? 0);
+                            $jumlah = ($v1 ?? 1) * ($v2 ?? 1) * ($v3 ?? 1) * $harga;
+
+                            $db->query("INSERT INTO t_kak_anggaran (kak_id, uraian, volume1, satuan1_id, volume2, satuan2_id, volume3, satuan3_id, harga_satuan, jumlah_diusulkan, kategori_belanja_id, catatan_verifikator) VALUES (:id, :u, :v1, :s1, :v2, :s2, :v3, :s3, :h, :j, :kat, NULL)");
+                            $db->bind(':id', $id);
+                            $db->bind(':u', $r['uraian']);
+                            $db->bind(':v1', $v1);
+                            $db->bind(':s1', $s1);
+                            $db->bind(':v2', $v2);
+                            $db->bind(':s2', $s2);
+                            $db->bind(':v3', $v3);
+                            $db->bind(':s3', $s3);
+                            $db->bind(':h', $harga);
+                            $db->bind(':j', $jumlah);
+                            $db->bind(':kat', $r['kategori_belanja_id']);
+                            $db->execute();
+                        }
+
+                        // After handling, skip to the next table in the loop
+                        continue;
+                    }
+
+                    // Original logic for other tables
                     $pk = $pkMap[$table];
 
                     foreach ($rows as $r) {
