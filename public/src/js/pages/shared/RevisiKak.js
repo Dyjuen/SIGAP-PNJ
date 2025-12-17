@@ -1639,9 +1639,8 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
         <!-- Action Buttons (Fixed at bottom) -->
         <div class="action-buttons">
-          ${
-            isVerifikator
-              ? `
+          ${isVerifikator
+      ? `
           <button class="btn-back" onclick="window.location.href = '/verifikator/usulan'">
             <i class="ti ti-arrow-left">&#xea19;</i> Kembali
           </button>
@@ -1652,8 +1651,8 @@ export function renderRevisiKakPage(path, userRole) {
             </button>
           </div>
         `
-              : isPengusul
-              ? `
+      : isPengusul
+        ? `
           <button class="btn-back" onclick="window.location.href = '/pengusul/usulan'">
             <i class="ti ti-arrow-left">&#xea19;</i> Kembali
           </button>
@@ -1664,8 +1663,8 @@ export function renderRevisiKakPage(path, userRole) {
             </button>
           </div>
         `
-              : ""
-          }
+        : ""
+    }
         </div>
       </div>
 
@@ -1708,15 +1707,13 @@ export function renderRevisiKakPage(path, userRole) {
               <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai Saat Ini</label>
               <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="currentFieldValue"></div>
             </div>
-            <div id="fieldCommentInputContainer" style="${
-              isPengusul ? "display: none;" : ""
-            }">
+            <div id="fieldCommentInputContainer" style="${isPengusul ? "display: none;" : ""
+    }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
               <textarea id="fieldCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi spesifik untuk field ini..."></textarea>
             </div>
-            <div id="fieldCommentDisplayContainer" style="${
-              isVerifikator ? "display: none;" : ""
-            }">
+            <div id="fieldCommentDisplayContainer" style="${isVerifikator ? "display: none;" : ""
+    }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Verifikator</label>
               <div class="p-3 rounded-lg" style="background: #E0F7FA; color: #374151;" id="fieldCommentDisplayText"></div>
             </div>
@@ -1725,15 +1722,14 @@ export function renderRevisiKakPage(path, userRole) {
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" tabindex="-1">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
-            ${
-              isVerifikator
-                ? `
+            ${isVerifikator
+      ? `
               <button type="button" class="btn btn-primary" onclick="saveFieldComment()">
                 <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
               </button>
             `
-                : ""
-            }
+      : ""
+    }
           </div>
         </div>
       </div>
@@ -1754,15 +1750,13 @@ export function renderRevisiKakPage(path, userRole) {
               <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Nilai Saat Ini</label>
               <div class="p-3 rounded-lg" style="background: #F3F4F6; color: #374151;" id="currentRowValue"></div>
             </div>
-            <div id="rowCommentInputContainer" style="${
-              isPengusul ? "display: none;" : ""
-            }">
+            <div id="rowCommentInputContainer" style="${isPengusul ? "display: none;" : ""
+    }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Revisi</label>
               <textarea id="rowCommentInput" class="form-control" rows="5" placeholder="Tuliskan catatan revisi untuk baris ini..."></textarea>
             </div>
-            <div id="rowCommentDisplayContainer" style="${
-              isVerifikator ? "display: none;" : ""
-            }">
+            <div id="rowCommentDisplayContainer" style="${isVerifikator ? "display: none;" : ""
+    }">
               <label class="block font-semibold mb-3 text-sm" style="color: #374151;">Catatan Verifikator</label>
               <div class="p-3 rounded-lg" style="background: #E0F7FA; color: #374151;" id="rowCommentDisplayText"></div>
             </div>
@@ -1771,15 +1765,14 @@ export function renderRevisiKakPage(path, userRole) {
             <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" tabindex="-1">
               <i class="ti ti-x">&#xeb55;</i> Batal
             </button>
-            ${
-              isVerifikator
-                ? `
+            ${isVerifikator
+      ? `
               <button type="button" class="btn btn-primary" onclick="saveRowComment()">
                 <i class="ti ti-check">&#xea5e;</i> Simpan Catatan
               </button>
             `
-                : ""
-            }
+      : ""
+    }
           </div>
         </div>
       </div>
@@ -1903,12 +1896,12 @@ export function renderRevisiKakPage(path, userRole) {
     if (!masterState.iku || masterState.iku.length === 0) return;
 
     // IDs from existing (saved) rows - assume these cannot be changed/removed in this view
-    const existingIkuIds = (kakDataState && kakDataState.iku) 
-      ? kakDataState.iku.map(item => String(item.iku_id)) 
+    const existingIkuIds = (kakDataState && kakDataState.iku)
+      ? kakDataState.iku.map(item => String(item.iku_id))
       : [];
 
     const ikuSelects = document.querySelectorAll("#ikuRenstraContainer select:not(.satuan-select)");
-    
+
     // Collect all selected values from other dropdowns
     const selectedValues = Array.from(ikuSelects)
       .map(s => s.value)
@@ -1919,7 +1912,7 @@ export function renderRevisiKakPage(path, userRole) {
 
     ikuSelects.forEach((select) => {
       const currentValue = select.value;
-      
+
       // Clear existing options except placeholder
       select.innerHTML = '<option value="">Pilih IKU</option>';
 
@@ -1933,7 +1926,7 @@ export function renderRevisiKakPage(path, userRole) {
           select.appendChild(option);
         }
       });
-      
+
       // Restore value
       select.value = currentValue;
     });
@@ -1954,7 +1947,7 @@ export function renderRevisiKakPage(path, userRole) {
     const container = document.getElementById("ikuRenstraContainer");
     const newItem = document.createElement("div");
     newItem.className = "iku-item dynamic-field-item new-item-animation row-item mb-4";
-    
+
     newItem.innerHTML = `
       <div class="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 items-end">
         <div>
@@ -1979,69 +1972,69 @@ export function renderRevisiKakPage(path, userRole) {
       </div>
     `;
     container.appendChild(newItem);
-    
+
     const selectElement = newItem.querySelector('select:not(.satuan-select)');
     selectElement.addEventListener('change', () => {
-        renderIkuOptions();
+      renderIkuOptions();
     });
 
     // Populate options
     renderIkuOptions();
-    
+
     // Populate Satuan dropdown
     if (masterState.satuan && masterState.satuan.length > 0) {
-        const satuanSelect = newItem.querySelector('.satuan-select');
-        masterState.satuan.forEach(satuan => {
-            const option = document.createElement("option");
-            option.value = satuan.satuan_id;
-            option.textContent = satuan.nama_satuan;
-            satuanSelect.appendChild(option);
-        });
+      const satuanSelect = newItem.querySelector('.satuan-select');
+      masterState.satuan.forEach(satuan => {
+        const option = document.createElement("option");
+        option.value = satuan.satuan_id;
+        option.textContent = satuan.nama_satuan;
+        satuanSelect.appendChild(option);
+      });
     }
   };
 
   function calculateTotals() {
     let grandTotal = 0;
-    
+
     document.querySelectorAll('[id^="rab-items-container-"]').forEach(container => {
-        const categoryId = container.id.replace('rab-items-container-', '');
-        let categorySubtotal = 0;
-        
-        container.querySelectorAll('.rab-item').forEach(item => {
-            const inputs = item.querySelectorAll('input');
-            // Layout in addRabItem:
-            // 0: Uraian
-            // 1: Qty 1
-            // 2: Qty 2
-            // 3: Qty 3
-            // 4: Harga Satuan (autonumeric)
-            
-            const v1 = parseFloat(inputs[1]?.value) || 0;
-            const v2 = (inputs[2]?.value === "" || inputs[2]?.value === "0") ? 1 : parseFloat(inputs[2].value);
-            const v3 = (inputs[3]?.value === "" || inputs[3]?.value === "0") ? 1 : parseFloat(inputs[3].value);
-            
-            let price = 0;
-            const priceInput = inputs[4];
-            if (priceInput && typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(priceInput)) {
-                price = AutoNumeric.getAutoNumericElement(priceInput).getNumber();
-            } else if (priceInput) {
-                price = parseFloat(priceInput.value.replace(/[^0-9]/g, '')) || 0;
-            }
+      const categoryId = container.id.replace('rab-items-container-', '');
+      let categorySubtotal = 0;
 
-            categorySubtotal += (v1 * v2 * v3 * price);
-        });
+      container.querySelectorAll('.rab-item').forEach(item => {
+        const inputs = item.querySelectorAll('input');
+        // Layout in addRabItem:
+        // 0: Uraian
+        // 1: Qty 1
+        // 2: Qty 2
+        // 3: Qty 3
+        // 4: Harga Satuan (autonumeric)
 
-        grandTotal += categorySubtotal;
-        
-        const subtotalEl = document.getElementById(`subtotal-${categoryId}`);
-        if (subtotalEl) {
-            subtotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(categorySubtotal);
+        const v1 = parseFloat(inputs[1]?.value) || 0;
+        const v2 = (inputs[2]?.value === "" || inputs[2]?.value === "0") ? 1 : parseFloat(inputs[2].value);
+        const v3 = (inputs[3]?.value === "" || inputs[3]?.value === "0") ? 1 : parseFloat(inputs[3].value);
+
+        let price = 0;
+        const priceInput = inputs[4];
+        if (priceInput && typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(priceInput)) {
+          price = AutoNumeric.getAutoNumericElement(priceInput).getNumber();
+        } else if (priceInput) {
+          price = parseFloat(priceInput.value.replace(/[^0-9]/g, '')) || 0;
         }
+
+        categorySubtotal += (v1 * v2 * v3 * price);
+      });
+
+      grandTotal += categorySubtotal;
+
+      const subtotalEl = document.getElementById(`subtotal-${categoryId}`);
+      if (subtotalEl) {
+        subtotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(categorySubtotal);
+      }
     });
 
     const grandTotalEl = document.getElementById('grand-total-rab');
     if (grandTotalEl) {
-        grandTotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(grandTotal);
+      grandTotalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(grandTotal);
     }
   }
 
@@ -2084,9 +2077,9 @@ export function renderRevisiKakPage(path, userRole) {
 
     let satuanOptions = '<option value="">Pilih Satuan</option>';
     if (masterState.satuan) {
-        masterState.satuan.forEach(satuan => {
-            satuanOptions += `<option value="${satuan.satuan_id}">${satuan.nama_satuan}</option>`;
-        });
+      masterState.satuan.forEach(satuan => {
+        satuanOptions += `<option value="${satuan.satuan_id}">${satuan.nama_satuan}</option>`;
+      });
     }
 
     // Determine if this is creating from existing data (itemData) or new row
@@ -2156,18 +2149,18 @@ export function renderRevisiKakPage(path, userRole) {
 
     // Init AutoNumeric
     if (typeof AutoNumeric !== 'undefined') {
-        const priceInput = newItem.querySelector('.autonumeric-currency');
-        new AutoNumeric(priceInput, {
-            currencySymbol: 'Rp ',
-            digitGroupSeparator: '.',
-            decimalCharacter: ',',
-            decimalPlaces: 0,
-            minimumValue: '0'
-        });
-        if (harga) {
-            AutoNumeric.getAutoNumericElement(priceInput).set(harga);
-        }
-        priceInput.addEventListener('autoNumeric:rawValueModified', calculateTotals);
+      const priceInput = newItem.querySelector('.autonumeric-currency');
+      new AutoNumeric(priceInput, {
+        currencySymbol: 'Rp ',
+        digitGroupSeparator: '.',
+        decimalCharacter: ',',
+        decimalPlaces: 0,
+        minimumValue: '0'
+      });
+      if (harga) {
+        AutoNumeric.getAutoNumericElement(priceInput).set(harga);
+      }
+      priceInput.addEventListener('autoNumeric:rawValueModified', calculateTotals);
     }
 
     updateRemoveButtonVisibility(container);
@@ -2231,8 +2224,7 @@ export function renderRevisiKakPage(path, userRole) {
       <div class="input-with-comment">
         <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${value}">
       </div>
-      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="${
-        (fieldName ? (fieldName.charAt(0).toUpperCase() + fieldName.slice(1)).replace('_', ' ') : type.charAt(0).toUpperCase() + type.slice(1))
+      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="${(fieldName ? (fieldName.charAt(0).toUpperCase() + fieldName.slice(1)).replace('_', ' ') : type.charAt(0).toUpperCase() + type.slice(1))
       } #${index + 1}">
         <i class="ti ti-message-circle-2">&#xeaed;</i>
       </button>
@@ -2241,124 +2233,134 @@ export function renderRevisiKakPage(path, userRole) {
 
 
 
-  const createIndikatorKinerjaRow = (item, index) => `
-    <div class="row-with-comment" data-row-type="t_kak_target" data-pk-name="target_id" data-pk-value="${
-      item.target_id
-    }">
+  const createIndikatorKinerjaRow = (item, index) => {
+    // Generate bulan options
+    const bulanList = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    const bulanOptions = bulanList.map(bulan =>
+      `<option value="${bulan}" ${item.bulan_indikator === bulan ? 'selected' : ''}>${bulan}</option>`
+    ).join('');
+
+    // Tentukan style untuk select bulan
+    const selectStyle = isPengusul
+      ? `style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`
+      : `style="${inputStyle}" ${inputAttr}`;
+
+    return `
+    <div class="row-with-comment" data-row-type="t_kak_target" data-pk-name="target_id" data-pk-value="${item.target_id}">
       <div class="grid grid-cols-3 gap-4">
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Bulan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.bulan_indikator || ""
-  }">
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${selectStyle}>
+            <option value="">Pilih Bulan</option>
+            ${bulanOptions}
+          </select>
         </div>
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Indikator Keberhasilan</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-    item.deskripsi_target || ""
-  }">
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.deskripsi_target || ""}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-xs" style="color: #374151;">Target</label>
-        <div class="flex gap-2 items-center">
-          <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input" min="0" max="100" step="1" style="${inputStyle}" ${inputAttr} value="${item.persentase_target || ""}">
-          <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
-        </div>
+          <div class="flex gap-2 items-center">
+            <input type="number" class="flex-1 px-4 py-3 border-2 rounded-lg text-sm" placeholder="Input" min="0" max="100" step="1" style="${inputStyle}" ${inputAttr} value="${item.persentase_target || ""}">
+            <div class="px-3 py-3 text-sm font-semibold" style="color: #374151;">%</div>
+          </div>
         </div>
       </div>
-      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Indikator Kinerja #${
-        index + 1
-      }">
+      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Indikator Kinerja #${index + 1}">
         <i class="ti ti-message-circle-2">&#xeaed;</i>
       </button>
     </div>
   `;
+  };
 
   const createIkuRow = (item, index) => {
-    // Safely handle potential null/undefined for satuan_id
-    const satuanValue = item.satuan_id 
-        ? getNameById(item.satuan_id, masterState.satuan, "satuan_id", "nama_satuan") 
-        : (item.nama_satuan || "-");
+    // Generate IKU options
+    const ikuOptions = masterState.iku && masterState.iku.length > 0
+      ? masterState.iku.map(iku =>
+        `<option value="${iku.iku_id}" ${iku.iku_id == item.iku_id ? 'selected' : ''}>${iku.nama_iku}</option>`
+      ).join('')
+      : '';
+
+    // Generate Satuan options
+    const satuanOptions = masterState.satuan && masterState.satuan.length > 0
+      ? masterState.satuan.map(satuan =>
+        `<option value="${satuan.satuan_id}" ${satuan.satuan_id == item.satuan_id ? 'selected' : ''}>${satuan.nama_satuan}</option>`
+      ).join('')
+      : '';
+
+    // Tentukan style untuk select
+    const selectStyle = isPengusul
+      ? `style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`
+      : `style="${inputStyle}" ${inputAttr}`;
 
     return `
-    <div class="row-with-comment" data-row-type="t_kak_iku" data-pk-name="kak_iku_id" data-pk-value="${
-      item.kak_iku_id || item.iku_id
-    }">
+    <div class="row-with-comment" data-row-type="t_kak_iku" data-pk-name="kak_iku_id" data-pk-value="${item.kak_iku_id || item.iku_id}">
       <div class="grid grid-cols-3 gap-4">
         <div class="col-span-1">
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Indikator Kinerja Utama</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${getNameById(
-            item.iku_id,
-            masterState.iku,
-            "iku_id",
-            "nama_iku"
-          )}">
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${selectStyle}>
+            <option value="">Pilih IKU</option>
+            ${ikuOptions}
+          </select>
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Target</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-            item.target || "0"
-          }">
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.target || "0"}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan</label>
-          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${satuanValue}">
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm" ${selectStyle}>
+            <option value="">Pilih Satuan</option>
+            ${satuanOptions}
+          </select>
         </div>
       </div>
-      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="IKU & Target #${
-        index + 1
-      }">
+      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="IKU & Target #${index + 1}">
         <i class="ti ti-message-circle-2">&#xeaed;</i>
       </button>
     </div>
-  `};
+  `;
+  };
 
   const createRabRow = (item, index) => {
     const vol1 = isVerifikator && !item.volume1 ? "" : item.volume1 || "";
     const vol2 = isVerifikator && !item.volume2 ? "" : item.volume2 || "";
     const vol3 = isVerifikator && !item.volume3 ? "" : item.volume3 || "";
 
+    // Function untuk render satuan options
     const satuanOptions = (satuanId) => {
-      if (isVerifikator) {
-        const selectedSatuan = masterState.satuan.find(s => s.satuan_id == satuanId);
-        if (selectedSatuan) {
-          return `<option value="${selectedSatuan.satuan_id}" selected>${selectedSatuan.nama_satuan}</option>`;
-        } else {
-          return `<option value="" selected></option>`;
-        }
+      if (!masterState.satuan || masterState.satuan.length === 0) {
+        return '<option value="">Pilih Satuan</option>';
       }
-      // Default for pengusul
-      return `
-        <option value="">Pilih Satuan</option>
-        ${masterState.satuan
-          .map(
-            (s) =>
-              `<option value="${s.satuan_id}" ${
-                s.satuan_id == satuanId ? "selected" : ""
-              }>${s.nama_satuan}</option>`
-          )
-          .join("")}
-      `;
+
+      let options = '<option value="">Pilih Satuan</option>';
+      masterState.satuan.forEach(s => {
+        const selected = s.satuan_id == satuanId ? 'selected' : '';
+        options += `<option value="${s.satuan_id}" ${selected}>${s.nama_satuan}</option>`;
+      });
+      return options;
     };
 
+    // Style untuk select - jangan disable untuk Pengusul
+    const selectStyle = isPengusul
+      ? `style="border-color: #E5E7EB; background: #FFFFFF;" onfocus="this.style.borderColor='#00BCD4'; this.style.boxShadow='0 0 0 4px rgba(0, 188, 212, 0.1)';" onblur="this.style.borderColor='#E5E7EB'; this.style.boxShadow='none';"`
+      : `style="${inputStyle}" ${inputAttr}`;
+
     return `
-    <div class="row-with-comment rab-item" data-row-type="t_kak_anggaran" data-pk-name="anggaran_id" data-pk-value="${
-      item.anggaran_id
-    }">
+    <div class="row-with-comment rab-item" data-row-type="t_kak_anggaran" data-pk-name="anggaran_id" data-pk-value="${item.anggaran_id}">
       <div class="grid-rab">
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Uraian</label>
-                    <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${
-      item.uraian || ""
-    }">
+          <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${item.uraian || ""}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Qty 1</label>
-                    <input type="number" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol1}">
+          <input type="number" class="w-full px-4 py-3 border-2 rounded-lg text-sm" style="${inputStyle}" ${inputAttr} value="${vol1}">
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 1</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" style="background: #FFFFFF; ${inputStyle}" ${inputAttr}>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" ${selectStyle}>
             ${satuanOptions(item.satuan1_id)}
           </select>
         </div>
@@ -2368,7 +2370,7 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 2</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" style="background: #FFFFFF; ${inputStyle}" ${inputAttr}>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" ${selectStyle}>
             ${satuanOptions(item.satuan2_id)}
           </select>
         </div>
@@ -2378,7 +2380,7 @@ export function renderRevisiKakPage(path, userRole) {
         </div>
         <div>
           <label class="block font-semibold mb-2 text-sm" style="color: #374151;">Satuan 3</label>
-          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" style="background: #FFFFFF; ${inputStyle}" ${inputAttr}>
+          <select class="w-full px-4 py-3 border-2 rounded-lg text-sm satuan-select" ${selectStyle}>
             ${satuanOptions(item.satuan3_id)}
           </select>
         </div>
@@ -2387,9 +2389,7 @@ export function renderRevisiKakPage(path, userRole) {
           <input type="text" class="w-full px-4 py-3 border-2 rounded-lg text-sm autonumeric-currency" style="${inputStyle}" ${inputAttr} data-raw-value="${item.harga_satuan || 0}">
         </div>
       </div>
-      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Anggaran #${
-        index + 1
-      }">
+      <button class="row-comment-icon" onclick="openRowCommentModal(this)" data-label="Anggaran #${index + 1}">
         <i class="ti ti-message-circle-2">&#xeaed;</i>
       </button>
     </div>
@@ -2469,10 +2469,10 @@ export function renderRevisiKakPage(path, userRole) {
         // to prevent the calendar from showing up at all.
         $("#kurunWaktu").data('daterangepicker').remove();
       }
-      
+
       fetchAndPopulateData(kakId);
     } else {
-        setTimeout(() => initializeDateRangePickers(kakId), 50);
+      setTimeout(() => initializeDateRangePickers(kakId), 50);
     }
   }
 
@@ -2538,8 +2538,8 @@ export function renderRevisiKakPage(path, userRole) {
           if (!rowComments[config.tableName]) rowComments[config.tableName] = {};
           config.array.forEach((item) => {
             // Use fallback ID for IKU to match UI generation
-            const pk = (config.tableName === 't_kak_iku') 
-              ? (item.kak_iku_id || item.iku_id) 
+            const pk = (config.tableName === 't_kak_iku')
+              ? (item.kak_iku_id || item.iku_id)
               : item[config.idField];
 
             if (!pk) return;
@@ -2574,11 +2574,11 @@ export function renderRevisiKakPage(path, userRole) {
         const startDate = moment(kakData.tanggal_mulai, "YYYY-MM-DD");
         const endDate = moment(kakData.tanggal_selesai, "YYYY-MM-DD");
         if (isPengusul && typeof $ !== "undefined" && $.fn.daterangepicker && $('#kurunWaktu').data('daterangepicker')) {
-            $('#kurunWaktu').data('daterangepicker').setStartDate(startDate);
-            $('#kurunWaktu').data('daterangepicker').setEndDate(endDate);
+          $('#kurunWaktu').data('daterangepicker').setStartDate(startDate);
+          $('#kurunWaktu').data('daterangepicker').setEndDate(endDate);
         } else {
-            const formatted = `${startDate.format("DD/MM/YYYY")} - ${endDate.format("DD/MM/YYYY")}`;
-            document.getElementById('kurunWaktu').value = formatted;
+          const formatted = `${startDate.format("DD/MM/YYYY")} - ${endDate.format("DD/MM/YYYY")}`;
+          document.getElementById('kurunWaktu').value = formatted;
         }
       }
 
@@ -2601,12 +2601,12 @@ export function renderRevisiKakPage(path, userRole) {
         `;
         if (kakData.catatan_sasaran_utama) {
           updateCommentButton(
-            `.row-with-comment[data-row-type="t_kak"][data-pk-value="${kakData.kak_id}"][data-field-name="sasaran_utama"] .row-comment-icon`, 
+            `.row-with-comment[data-row-type="t_kak"][data-pk-value="${kakData.kak_id}"][data-field-name="sasaran_utama"] .row-comment-icon`,
             kakData.catatan_sasaran_utama
           );
         }
       }
-      
+
       // Populate Manfaat (detail level from t_kak_manfaat)
       const manfaatContainer = document.getElementById("manfaatContainer");
       manfaatContainer.innerHTML = "";
@@ -2614,11 +2614,11 @@ export function renderRevisiKakPage(path, userRole) {
         kakData.manfaat.forEach((item, index) => {
           if (item.manfaat) {
             manfaatContainer.innerHTML += createReadOnlyRow(
-              item.manfaat, 
-              index, 
-              "t_kak_manfaat", 
-              item.manfaat_id, 
-              "manfaat_id", 
+              item.manfaat,
+              index,
+              "t_kak_manfaat",
+              item.manfaat_id,
+              "manfaat_id",
               "manfaat"
             );
           }
@@ -2626,7 +2626,7 @@ export function renderRevisiKakPage(path, userRole) {
         kakData.manfaat.forEach((item) => {
           if (item.catatan_manfaat) {
             updateCommentButton(
-              `.row-with-comment[data-row-type="t_kak_manfaat"][data-pk-value="${item.manfaat_id}"][data-field-name="manfaat"] .row-comment-icon`, 
+              `.row-with-comment[data-row-type="t_kak_manfaat"][data-pk-value="${item.manfaat_id}"][data-field-name="manfaat"] .row-comment-icon`,
               item.catatan_manfaat
             );
           }
@@ -2689,66 +2689,66 @@ export function renderRevisiKakPage(path, userRole) {
         // We need category names. Assuming they are in `kategoriBelanjaResponse` which was fetched but not stored in masterState?
         // In the `fetchAndPopulateData` I saw: `const [..., kategoriBelanjaResponse] = await Promise.all(...)`
         // I need to make sure `kategoriBelanjaResponse` is used.
-        
+
         const kategoriData = kategoriBelanjaResponse.data;
-        
+
         kategoriData.forEach((cat, index) => {
-            const catItems = grouped[cat.kategori_belanja_id] || [];
-            // Always show category if we are Pengusul (to allow adding) or if Verifikator has items
-            if (isPengusul || catItems.length > 0) {
-                const section = document.createElement("div");
-                const isLastCategory = index === kategoriData.length - 1;
-                section.className = `mb-8 ${!isLastCategory ? 'spectacular-divider' : ''}`;
-                section.dataset.kategoriId = cat.kategori_belanja_id;
-                
-                section.innerHTML = `
+          const catItems = grouped[cat.kategori_belanja_id] || [];
+          // Always show category if we are Pengusul (to allow adding) or if Verifikator has items
+          if (isPengusul || catItems.length > 0) {
+            const section = document.createElement("div");
+            const isLastCategory = index === kategoriData.length - 1;
+            section.className = `mb-8 ${!isLastCategory ? 'spectacular-divider' : ''}`;
+            section.dataset.kategoriId = cat.kategori_belanja_id;
+
+            section.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
                         <h5 class="font-bold text-lg" style="color: #374151;">${cat.nama}</h5>
                     </div>
                 `;
-                
-                const itemsContainer = document.createElement("div");
-                itemsContainer.id = `rab-items-container-${cat.kategori_belanja_id}`;
-                
-                catItems.forEach((item, idx) => {
-                    itemsContainer.innerHTML += createRabRow(item, idx);
-                });
-                
-                section.appendChild(itemsContainer);
 
-                const subtotalDiv = document.createElement("div");
-                subtotalDiv.className = "flex justify-end items-center mt-4";
-                subtotalDiv.innerHTML = `
+            const itemsContainer = document.createElement("div");
+            itemsContainer.id = `rab-items-container-${cat.kategori_belanja_id}`;
+
+            catItems.forEach((item, idx) => {
+              itemsContainer.innerHTML += createRabRow(item, idx);
+            });
+
+            section.appendChild(itemsContainer);
+
+            const subtotalDiv = document.createElement("div");
+            subtotalDiv.className = "flex justify-end items-center mt-4";
+            subtotalDiv.innerHTML = `
                     <div class="text-right">
                         <span class="text-sm text-gray-500">Subtotal:</span>
                         <span id="subtotal-${cat.kategori_belanja_id}" class="font-bold text-lg ml-2" style="color: #00BCD4;">Rp 0</span>
                     </div>
                 `;
-                section.appendChild(subtotalDiv);
+            section.appendChild(subtotalDiv);
 
-                if (isPengusul) {
-                    const addButton = document.createElement("button");
-                    addButton.type = "button";
-                    addButton.className = "ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5";
-                    addButton.style.background = "#00BCD4";
-                    addButton.style.color = "#FFFFFF";
-                    addButton.textContent = "Tambah Item";
-                    addButton.onclick = () => addRabItem(cat.kategori_belanja_id);
-                    section.appendChild(addButton);
-                }
-
-                rabContainer.appendChild(section);
-
-                // Restore missing logic: Update comment buttons for RAB items
-                catItems.forEach((item) => {
-                    if (item.catatan_verifikator) {
-                        updateCommentButton(
-                            `.row-with-comment[data-row-type="t_kak_anggaran"][data-pk-value="${item.anggaran_id}"] .row-comment-icon`, 
-                            item.catatan_verifikator
-                        );
-                    }
-                });
+            if (isPengusul) {
+              const addButton = document.createElement("button");
+              addButton.type = "button";
+              addButton.className = "ml-6 border-0 px-6 py-3 rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-block hover:-translate-y-0.5";
+              addButton.style.background = "#00BCD4";
+              addButton.style.color = "#FFFFFF";
+              addButton.textContent = "Tambah Item";
+              addButton.onclick = () => addRabItem(cat.kategori_belanja_id);
+              section.appendChild(addButton);
             }
+
+            rabContainer.appendChild(section);
+
+            // Restore missing logic: Update comment buttons for RAB items
+            catItems.forEach((item) => {
+              if (item.catatan_verifikator) {
+                updateCommentButton(
+                  `.row-with-comment[data-row-type="t_kak_anggaran"][data-pk-value="${item.anggaran_id}"] .row-comment-icon`,
+                  item.catatan_verifikator
+                );
+              }
+            });
+          }
         });
 
         // Grand Total
@@ -2762,12 +2762,12 @@ export function renderRevisiKakPage(path, userRole) {
             <div id="grand-total-rab" class="total-value">Rp 0</div>
         `;
         rabContainer.appendChild(totalSection);
-        
+
         // Initialize AutoNumeric after rendering RAB
         initAutoNumeric();
         setTimeout(calculateTotals, 500);
       }
-      
+
       Swal.close();
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -2782,7 +2782,7 @@ export function renderRevisiKakPage(path, userRole) {
     attachEventListeners();
     populateTipeKegiatanDropdown(); // Populate dropdown on init
     loadDateRangePicker();
-    
+
     // Update menu button revision status on page load
     setTimeout(() => {
       updateMenuButtonRevisionStatus();
@@ -2910,17 +2910,17 @@ export function renderRevisiKakPage(path, userRole) {
     // RAB Calculation Listener
     const rabContainer = document.getElementById('rab-container');
     if (rabContainer) {
-        rabContainer.addEventListener('input', (e) => {
-            if (e.target.matches('input[type="number"]')) {
-                calculateTotals();
-            }
-        });
+      rabContainer.addEventListener('input', (e) => {
+        if (e.target.matches('input[type="number"]')) {
+          calculateTotals();
+        }
+      });
     }
 
     // Enter key submission for comment modals
     const fieldCommentInput = document.getElementById("fieldCommentInput");
     if (fieldCommentInput) {
-      fieldCommentInput.addEventListener("keydown", function(e) {
+      fieldCommentInput.addEventListener("keydown", function (e) {
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
           saveFieldComment();
@@ -2930,7 +2930,7 @@ export function renderRevisiKakPage(path, userRole) {
 
     const rowCommentInput = document.getElementById("rowCommentInput");
     if (rowCommentInput) {
-      rowCommentInput.addEventListener("keydown", function(e) {
+      rowCommentInput.addEventListener("keydown", function (e) {
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
           saveRowComment();
@@ -2941,20 +2941,20 @@ export function renderRevisiKakPage(path, userRole) {
     // Focus input when modal opens
     const fieldCommentModal = document.getElementById('fieldCommentModal');
     if (fieldCommentModal) {
-        fieldCommentModal.addEventListener('shown.bs.modal', function () {
-            if (fieldCommentInput && !fieldCommentInput.disabled) {
-                fieldCommentInput.focus();
-            }
-        });
+      fieldCommentModal.addEventListener('shown.bs.modal', function () {
+        if (fieldCommentInput && !fieldCommentInput.disabled) {
+          fieldCommentInput.focus();
+        }
+      });
     }
 
     const rowCommentModal = document.getElementById('rowCommentModal');
     if (rowCommentModal) {
-        rowCommentModal.addEventListener('shown.bs.modal', function () {
-            if (rowCommentInput && !rowCommentInput.disabled) {
-                rowCommentInput.focus();
-            }
-        });
+      rowCommentModal.addEventListener('shown.bs.modal', function () {
+        if (rowCommentInput && !rowCommentInput.disabled) {
+          rowCommentInput.focus();
+        }
+      });
     }
   }
 
@@ -2981,17 +2981,17 @@ export function renderRevisiKakPage(path, userRole) {
     let container = btn.closest(".row-with-comment");
     if (!container) container = btn.closest(".input-with-comment");
     const input = container.querySelector("input, textarea, select");
-    
+
     let currentValue = "";
     if (input) {
-        if (input.tagName.toLowerCase() === 'select') {
-            const selectedOption = input.options[input.selectedIndex];
-            currentValue = selectedOption ? selectedOption.text : "";
-        } else {
-            currentValue = input.value;
-        }
+      if (input.tagName.toLowerCase() === 'select') {
+        const selectedOption = input.options[input.selectedIndex];
+        currentValue = selectedOption ? selectedOption.text : "";
+      } else {
+        currentValue = input.value;
+      }
     }
-    
+
     currentFieldValueEl.textContent = currentValue || "(Kosong)";
 
     if (isVerifikator) {
@@ -3028,10 +3028,10 @@ export function renderRevisiKakPage(path, userRole) {
     let commentText = "";
     // Handle tables with fieldName (t_kak, t_kak_manfaat)
     if (currentCommentTarget.field) {
-        const key = `${currentCommentTarget.pk}_${currentCommentTarget.field}`;
-        commentText = (rowComments[currentCommentTarget.table]?.[key]) || "";
+      const key = `${currentCommentTarget.pk}_${currentCommentTarget.field}`;
+      commentText = (rowComments[currentCommentTarget.table]?.[key]) || "";
     } else {
-        commentText = (rowComments[currentCommentTarget.table]?.[currentCommentTarget.pk]) || "";
+      commentText = (rowComments[currentCommentTarget.table]?.[currentCommentTarget.pk]) || "";
     }
 
     const rowCommentInputContainer = document.getElementById(
@@ -3087,10 +3087,10 @@ export function renderRevisiKakPage(path, userRole) {
     const camelCaseKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
     updateCommentButton(`.row-comment-icon[data-field="${camelCaseKey}"]`, comment);
     updateCommentCount();
-    
+
     // Update menu button revision status
     updateMenuButtonRevisionStatus();
-    
+
     fieldCommentModalInstance.hide();
     Swal.fire({
       icon: "success",
@@ -3100,87 +3100,87 @@ export function renderRevisiKakPage(path, userRole) {
     });
   };
 
-    window.saveRowComment = function () {
-      const saveBtn = document.querySelector('#rowCommentModal .btn-primary');
-      if (window.setButtonLoading && saveBtn) {
-        window.setButtonLoading(saveBtn, true, 'Menyimpan...');
-      }
-      
-      const comment = document.getElementById("rowCommentInput").value.trim();
-      const { table, pk, field } = currentCommentTarget;
+  window.saveRowComment = function () {
+    const saveBtn = document.querySelector('#rowCommentModal .btn-primary');
+    if (window.setButtonLoading && saveBtn) {
+      window.setButtonLoading(saveBtn, true, 'Menyimpan...');
+    }
 
-      // Handle tables with fieldName (t_kak, t_kak_manfaat)
-      if (field) {
-        if (!rowComments[table]) rowComments[table] = {};
-        const key = `${pk}_${field}`;
-        if (comment) {
-          rowComments[table][key] = comment;
-        } else {
-          delete rowComments[table][key];
-        }
+    const comment = document.getElementById("rowCommentInput").value.trim();
+    const { table, pk, field } = currentCommentTarget;
+
+    // Handle tables with fieldName (t_kak, t_kak_manfaat)
+    if (field) {
+      if (!rowComments[table]) rowComments[table] = {};
+      const key = `${pk}_${field}`;
+      if (comment) {
+        rowComments[table][key] = comment;
       } else {
-        // Standard tables without fieldName (tahapan, target, anggaran, iku)
-        if (!rowComments[table]) {
-          rowComments[table] = {};
-        }
-        if (comment) {
-          rowComments[table][pk] = comment;
+        delete rowComments[table][key];
+      }
+    } else {
+      // Standard tables without fieldName (tahapan, target, anggaran, iku)
+      if (!rowComments[table]) {
+        rowComments[table] = {};
+      }
+      if (comment) {
+        rowComments[table][pk] = comment;
 
-  
 
-              } else {
-
-  
-
-                delete rowComments[table][pk];
-
-  
-
-              }
-
-  
-
-          }
-
-      
-
-      let selector = `.row-with-comment[data-row-type="${table}"][data-pk-value="${pk}"]`;
-
-      if (field) {
-
-        selector += `[data-field-name="${field}"]`;
 
       } else {
 
-        selector += `:not([data-field-name])`;
+
+
+        delete rowComments[table][pk];
+
+
 
       }
 
-      selector += ` .row-comment-icon`;
 
-  
 
-      updateCommentButton(selector, comment);
+    }
 
-      updateCommentCount();
-      
-      // Update menu button revision status
-      updateMenuButtonRevisionStatus();
-      
-      if (window.setButtonLoading && saveBtn) {
-        window.setButtonLoading(saveBtn, false);
-      }
 
-      rowCommentModalInstance.hide();
 
-      Swal.fire({
-        icon: "success",
-        title: "Tersimpan!",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+    let selector = `.row-with-comment[data-row-type="${table}"][data-pk-value="${pk}"]`;
 
-    };
+    if (field) {
+
+      selector += `[data-field-name="${field}"]`;
+
+    } else {
+
+      selector += `:not([data-field-name])`;
+
+    }
+
+    selector += ` .row-comment-icon`;
+
+
+
+    updateCommentButton(selector, comment);
+
+    updateCommentCount();
+
+    // Update menu button revision status
+    updateMenuButtonRevisionStatus();
+
+    if (window.setButtonLoading && saveBtn) {
+      window.setButtonLoading(saveBtn, false);
+    }
+
+    rowCommentModalInstance.hide();
+
+    Swal.fire({
+      icon: "success",
+      title: "Tersimpan!",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+
+  };
 
   function updateCommentButton(selector, comment) {
     const btn = document.querySelector(selector);
@@ -3192,117 +3192,117 @@ export function renderRevisiKakPage(path, userRole) {
         btn.parentElement.classList.toggle("has-row-comment", !!comment);
       }
     }
-    
+
     // Update menu button status
     updateMenuButtonRevisionStatus();
   }
-// Fungsi untuk membuka modal detail catatan - SIMPLIFIED VERSION
-window.openCommentDetailModal = function() {
-  const modalContent = document.getElementById("commentDetailContent");
-  
-  // Simplified mapping - hanya 3 section utama
-  const fieldToMainStep = {
-    'nama_kegiatan': 1,
-    'gambaran_umum': 1,
-    'metode_pelaksanaan': 1,
-    'kurun_waktu': 1
-  };
+  // Fungsi untuk membuka modal detail catatan - SIMPLIFIED VERSION
+  window.openCommentDetailModal = function () {
+    const modalContent = document.getElementById("commentDetailContent");
 
-  const tableToMainStep = {
-    't_kak': 1, // For sasaran_utama and other t_kak fields
-    't_kak_manfaat': 1,
-    't_kak_tahapan': 1,
-    't_kak_target': 1,
-    't_kak_iku': 2,
-    't_kak_anggaran': 3
-  };
-
-  // Group comments by main step
-  const commentsByStep = {
-    1: [], // KAK
-    2: [], // IKU & Renstra
-    3: []  // RAB
-  };
-
-  // Collect field comments
-  for (const [fieldKey, comment] of Object.entries(fieldComments)) {
-    const step = fieldToMainStep[fieldKey] || 1;
-    const fieldLabels = {
-      'nama_kegiatan': 'Nama Kegiatan',
-      'gambaran_umum': 'Gambaran Umum Kegiatan',
-      'metode_pelaksanaan': 'Metode Pelaksanaan',
-      'kurun_waktu': 'Kurun Waktu Pelaksanaan'
+    // Simplified mapping - hanya 3 section utama
+    const fieldToMainStep = {
+      'nama_kegiatan': 1,
+      'gambaran_umum': 1,
+      'metode_pelaksanaan': 1,
+      'kurun_waktu': 1
     };
-    
-    commentsByStep[step].push({
-      type: 'field',
-      identifier: fieldKey,
-      label: fieldLabels[fieldKey] || fieldKey,
-      comment: comment,
-      section: getSectionFromField(fieldKey)
-    });
-  }
 
-  // Collect row comments
-  for (const [tableName, comments] of Object.entries(rowComments)) {
-    const step = tableToMainStep[tableName] || 1;
-    
-    for (const [rowId, comment] of Object.entries(comments)) {
-      let displayLabel = getTableDisplayName(tableName);
-      let rowIdForNav = rowId;
-      
-      // Handle tables with fieldName (t_kak, t_kak_manfaat)
-      if ((tableName === 't_kak' || tableName === 't_kak_manfaat') && rowId.includes('_')) {
-        const parts = rowId.split('_');
-        const fieldName = parts.slice(1).join('_');
-        rowIdForNav = parts[0];
-        
-        if (tableName === 't_kak') {
-          displayLabel = fieldName === 'sasaran_utama' ? 'Sasaran Utama' : fieldName;
-        } else {
-          displayLabel += ` - ${fieldName === 'sasaran_utama' ? 'Sasaran Utama' : 'Manfaat'}`;
-        }
-      }
+    const tableToMainStep = {
+      't_kak': 1, // For sasaran_utama and other t_kak fields
+      't_kak_manfaat': 1,
+      't_kak_tahapan': 1,
+      't_kak_target': 1,
+      't_kak_iku': 2,
+      't_kak_anggaran': 3
+    };
+
+    // Group comments by main step
+    const commentsByStep = {
+      1: [], // KAK
+      2: [], // IKU & Renstra
+      3: []  // RAB
+    };
+
+    // Collect field comments
+    for (const [fieldKey, comment] of Object.entries(fieldComments)) {
+      const step = fieldToMainStep[fieldKey] || 1;
+      const fieldLabels = {
+        'nama_kegiatan': 'Nama Kegiatan',
+        'gambaran_umum': 'Gambaran Umum Kegiatan',
+        'metode_pelaksanaan': 'Metode Pelaksanaan',
+        'kurun_waktu': 'Kurun Waktu Pelaksanaan'
+      };
 
       commentsByStep[step].push({
-        type: 'row',
-        identifier: tableName,
-        rowId: rowIdForNav,
-        label: displayLabel,
+        type: 'field',
+        identifier: fieldKey,
+        label: fieldLabels[fieldKey] || fieldKey,
         comment: comment,
-        section: getSectionFromTable(tableName)
+        section: getSectionFromField(fieldKey)
       });
     }
-  }
 
-  // Build HTML
-  let html = '';
-  let hasComments = false;
+    // Collect row comments
+    for (const [tableName, comments] of Object.entries(rowComments)) {
+      const step = tableToMainStep[tableName] || 1;
 
-  const stepTitles = {
-    1: { title: 'Kerangka Acuan Kerja', icon: '&#xef40;' },
-    2: { title: 'IKU & Renstra', icon: '&#xea59;' },
-    3: { title: 'Rencana Anggaran Biaya', icon: '&#xeb84;' }
-  };
+      for (const [rowId, comment] of Object.entries(comments)) {
+        let displayLabel = getTableDisplayName(tableName);
+        let rowIdForNav = rowId;
 
-  for (const step of [1, 2, 3]) {
-    const items = commentsByStep[step];
-    if (items.length > 0) {
-      hasComments = true;
-      
-      html += `
+        // Handle tables with fieldName (t_kak, t_kak_manfaat)
+        if ((tableName === 't_kak' || tableName === 't_kak_manfaat') && rowId.includes('_')) {
+          const parts = rowId.split('_');
+          const fieldName = parts.slice(1).join('_');
+          rowIdForNav = parts[0];
+
+          if (tableName === 't_kak') {
+            displayLabel = fieldName === 'sasaran_utama' ? 'Sasaran Utama' : fieldName;
+          } else {
+            displayLabel += ` - ${fieldName === 'sasaran_utama' ? 'Sasaran Utama' : 'Manfaat'}`;
+          }
+        }
+
+        commentsByStep[step].push({
+          type: 'row',
+          identifier: tableName,
+          rowId: rowIdForNav,
+          label: displayLabel,
+          comment: comment,
+          section: getSectionFromTable(tableName)
+        });
+      }
+    }
+
+    // Build HTML
+    let html = '';
+    let hasComments = false;
+
+    const stepTitles = {
+      1: { title: 'Kerangka Acuan Kerja', icon: '&#xef40;' },
+      2: { title: 'IKU & Renstra', icon: '&#xea59;' },
+      3: { title: 'Rencana Anggaran Biaya', icon: '&#xeb84;' }
+    };
+
+    for (const step of [1, 2, 3]) {
+      const items = commentsByStep[step];
+      if (items.length > 0) {
+        hasComments = true;
+
+        html += `
         <div class="comment-section-divider">
           <i class="ti ti-file-text">${stepTitles[step].icon}</i>
           ${stepTitles[step].title}
         </div>
       `;
 
-      items.forEach(item => {
-        const navigateParams = item.type === 'field' 
-          ? `'field', '${item.identifier}', ${step}, '${item.section}'`
-          : `'row', '${item.identifier}', ${step}, '${item.section}', '${item.rowId}'`;
+        items.forEach(item => {
+          const navigateParams = item.type === 'field'
+            ? `'field', '${item.identifier}', ${step}, '${item.section}'`
+            : `'row', '${item.identifier}', ${step}, '${item.section}', '${item.rowId}'`;
 
-        html += `
+          html += `
           <div class="comment-item" onclick="navigateToComment(${navigateParams})">
             <div class="comment-item-header">
               <div class="comment-item-title">
@@ -3313,140 +3313,140 @@ window.openCommentDetailModal = function() {
             <div class="comment-item-text">${item.comment}</div>
           </div>
         `;
-      });
+        });
+      }
     }
-  }
 
-  // Empty state
-  if (!hasComments) {
-    html = `
+    // Empty state
+    if (!hasComments) {
+      html = `
       <div class="comment-empty-state">
         <i class="ti ti-clipboard-off">&#xf0cf;</i>
         <div class="empty-title">Tidak Ada Catatan Revisi</div>
         <div class="empty-subtitle">Belum ada catatan yang ditambahkan untuk usulan ini.</div>
       </div>
     `;
-  }
-
-  modalContent.innerHTML = html;
-
-  // Show modal
-  const modal = new bootstrap.Modal(document.getElementById('commentDetailModal'));
-  modal.show();
-};
-
-// Helper functions
-function getSectionFromField(fieldKey) {
-  const sectionMap = {
-    'nama_kegiatan': 'gambaran-umum',
-    'gambaran_umum': 'gambaran-umum',
-    'metode_pelaksanaan': 'strategi-pencapaian',
-    'kurun_waktu': 'kurun-waktu'
-  };
-  return sectionMap[fieldKey] || 'gambaran-umum';
-}
-
-function getSectionFromTable(tableName) {
-  const sectionMap = {
-    't_kak': 'penerima-manfaat', // For sasaran_utama
-    't_kak_manfaat': 'penerima-manfaat',
-    't_kak_tahapan': 'strategi-pencapaian',
-    't_kak_target': 'indikator-kinerja',
-    't_kak_iku': null,
-    't_kak_anggaran': null
-  };
-  return sectionMap[tableName] || null;
-}
-
-function getTableDisplayName(tableName) {
-  const nameMap = {
-    't_kak': 'KAK', // Generic name for t_kak
-    't_kak_manfaat': 'Penerima Manfaat',
-    't_kak_tahapan': 'Tahapan Pelaksanaan',
-    't_kak_target': 'Indikator Kinerja',
-    't_kak_iku': 'IKU & Renstra',
-    't_kak_anggaran': 'Rencana Anggaran Biaya'
-  };
-  return nameMap[tableName] || tableName;
-}
-
-// Navigate to specific comment location - FIXED VERSION
-window.navigateToComment = function(type, identifier, targetMainStep, targetSection, rowId = null) {
-  // Close modal
-  const modal = bootstrap.Modal.getInstance(document.getElementById('commentDetailModal'));
-  if (modal) modal.hide();
-
-  // Navigate to main step
-  mainStep = targetMainStep;
-  updateMainStepDisplay();
-
-  // If it's KAK step with subsections
-  if (targetMainStep === 1 && targetSection) {
-    const menuIndex = menuItems.indexOf(targetSection);
-    if (menuIndex !== -1) {
-      currentStep = menuIndex + 1;
-      updateStepDisplay();
     }
+
+    modalContent.innerHTML = html;
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('commentDetailModal'));
+    modal.show();
+  };
+
+  // Helper functions
+  function getSectionFromField(fieldKey) {
+    const sectionMap = {
+      'nama_kegiatan': 'gambaran-umum',
+      'gambaran_umum': 'gambaran-umum',
+      'metode_pelaksanaan': 'strategi-pencapaian',
+      'kurun_waktu': 'kurun-waktu'
+    };
+    return sectionMap[fieldKey] || 'gambaran-umum';
   }
 
-  // Scroll to element after a short delay
-  setTimeout(() => {
-    let targetElement = null;
+  function getSectionFromTable(tableName) {
+    const sectionMap = {
+      't_kak': 'penerima-manfaat', // For sasaran_utama
+      't_kak_manfaat': 'penerima-manfaat',
+      't_kak_tahapan': 'strategi-pencapaian',
+      't_kak_target': 'indikator-kinerja',
+      't_kak_iku': null,
+      't_kak_anggaran': null
+    };
+    return sectionMap[tableName] || null;
+  }
 
-    if (type === 'field') {
-      // Convert snake_case back to camelCase for data-field attribute
-      const camelCaseKey = identifier.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
-      
-      // Try to find by data-field first
-      targetElement = document.querySelector(`[data-field="${camelCaseKey}"]`);
-      
-      // If not found, try to find the parent container
-      if (!targetElement) {
-        targetElement = document.querySelector(`.row-with-comment .input-with-comment [data-field="${camelCaseKey}"]`);
+  function getTableDisplayName(tableName) {
+    const nameMap = {
+      't_kak': 'KAK', // Generic name for t_kak
+      't_kak_manfaat': 'Penerima Manfaat',
+      't_kak_tahapan': 'Tahapan Pelaksanaan',
+      't_kak_target': 'Indikator Kinerja',
+      't_kak_iku': 'IKU & Renstra',
+      't_kak_anggaran': 'Rencana Anggaran Biaya'
+    };
+    return nameMap[tableName] || tableName;
+  }
+
+  // Navigate to specific comment location - FIXED VERSION
+  window.navigateToComment = function (type, identifier, targetMainStep, targetSection, rowId = null) {
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('commentDetailModal'));
+    if (modal) modal.hide();
+
+    // Navigate to main step
+    mainStep = targetMainStep;
+    updateMainStepDisplay();
+
+    // If it's KAK step with subsections
+    if (targetMainStep === 1 && targetSection) {
+      const menuIndex = menuItems.indexOf(targetSection);
+      if (menuIndex !== -1) {
+        currentStep = menuIndex + 1;
+        updateStepDisplay();
       }
-      
-      // Get the parent row-with-comment for better highlighting
-      if (targetElement) {
-        const parentRow = targetElement.closest('.row-with-comment');
-        if (parentRow) {
-          targetElement = parentRow;
+    }
+
+    // Scroll to element after a short delay
+    setTimeout(() => {
+      let targetElement = null;
+
+      if (type === 'field') {
+        // Convert snake_case back to camelCase for data-field attribute
+        const camelCaseKey = identifier.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+
+        // Try to find by data-field first
+        targetElement = document.querySelector(`[data-field="${camelCaseKey}"]`);
+
+        // If not found, try to find the parent container
+        if (!targetElement) {
+          targetElement = document.querySelector(`.row-with-comment .input-with-comment [data-field="${camelCaseKey}"]`);
+        }
+
+        // Get the parent row-with-comment for better highlighting
+        if (targetElement) {
+          const parentRow = targetElement.closest('.row-with-comment');
+          if (parentRow) {
+            targetElement = parentRow;
+          }
+        }
+      } else if (type === 'row' && rowId) {
+        // Find row by type and pk value
+        if (identifier === 't_kak_manfaat') {
+          // Try both with and without field-name for manfaat
+          targetElement = document.querySelector(`.row-with-comment[data-row-type="${identifier}"][data-pk-value="${rowId}"]`);
+        } else {
+          targetElement = document.querySelector(`.row-with-comment[data-row-type="${identifier}"][data-pk-value="${rowId}"]`);
         }
       }
-    } else if (type === 'row' && rowId) {
-      // Find row by type and pk value
-      if (identifier === 't_kak_manfaat') {
-        // Try both with and without field-name for manfaat
-        targetElement = document.querySelector(`.row-with-comment[data-row-type="${identifier}"][data-pk-value="${rowId}"]`);
+
+      if (targetElement) {
+        // Scroll with offset for fixed headers
+        const yOffset = -150;
+        const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+
+        // Enhanced highlight effect with animation
+        targetElement.style.transition = 'all 0.5s ease';
+        targetElement.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.6)';
+        targetElement.style.transform = 'scale(1.02)';
+
+        // Add background flash
+        const originalBg = targetElement.style.backgroundColor;
+        targetElement.style.backgroundColor = 'rgba(254, 226, 226, 0.5)';
+
+        setTimeout(() => {
+          targetElement.style.boxShadow = '';
+          targetElement.style.transform = '';
+          targetElement.style.backgroundColor = originalBg;
+        }, 2000);
       } else {
-        targetElement = document.querySelector(`.row-with-comment[data-row-type="${identifier}"][data-pk-value="${rowId}"]`);
+        console.warn('Target element not found:', type, identifier, rowId);
       }
-    }
-
-    if (targetElement) {
-      // Scroll with offset for fixed headers
-      const yOffset = -150;
-      const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-
-      // Enhanced highlight effect with animation
-      targetElement.style.transition = 'all 0.5s ease';
-      targetElement.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.6)';
-      targetElement.style.transform = 'scale(1.02)';
-      
-      // Add background flash
-      const originalBg = targetElement.style.backgroundColor;
-      targetElement.style.backgroundColor = 'rgba(254, 226, 226, 0.5)';
-      
-      setTimeout(() => {
-        targetElement.style.boxShadow = '';
-        targetElement.style.transform = '';
-        targetElement.style.backgroundColor = originalBg;
-      }, 2000);
-    } else {
-      console.warn('Target element not found:', type, identifier, rowId);
-    }
-  }, 400);
-};
+    }, 400);
+  };
 
   // Fungsi untuk mengecek dan update status menu button jika ada revisi di section-nya
   function updateMenuButtonRevisionStatus() {
@@ -3463,11 +3463,11 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
     Object.keys(sectionMenuMap).forEach(sectionId => {
       const section = document.getElementById(sectionId);
       const menuButton = document.querySelector(`.menu-button[data-menu="${sectionMenuMap[sectionId]}"]`);
-      
+
       if (section && menuButton) {
         // Cek apakah ada comment button dengan class 'has-comment' di dalam section
         const hasRevision = section.querySelector('.has-comment, .has-row-comment') !== null;
-        
+
         // Toggle class 'has-revision' pada menu button
         menuButton.classList.toggle('has-revision', hasRevision);
       }
@@ -3692,183 +3692,183 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
         try {
           // Helpers
           const getVal = (el) => el ? el.value : "";
-          
+
           // 1. General Info
           const nama_kegiatan = getVal(document.querySelector('[data-field="namaKegiatan"]'));
           const tipe_kegiatan_id = parseInt(getVal(document.querySelector('[data-field="tipeKegiatan"]'))) || null;
           const deskripsi_kegiatan = getVal(document.querySelector('[data-field="gambaranUmum"]'));
           const metode_pelaksanaan = getVal(document.querySelector('[data-field="metodePelaksanaan"]'));
           const kurunWaktuRaw = getVal(document.querySelector('[data-field="kurunWaktu"]'));
-          
-          
+
+
           let tanggal_mulai = kakDataState.tanggal_mulai;
           let tanggal_selesai = kakDataState.tanggal_selesai;
           let kurun_waktu_pelaksanaan = kakDataState.kurun_waktu_pelaksanaan;
 
           if (kurunWaktuRaw.includes(" - ")) {
-              const parts = kurunWaktuRaw.split(" - ");
-              if (parts.length === 2) {
-                  const start = moment(parts[0], "DD/MM/YYYY");
-                  const end = moment(parts[1], "DD/MM/YYYY");
-                  if (start.isValid() && end.isValid()) {
-                      tanggal_mulai = start.format("YYYY-MM-DD");
-                      tanggal_selesai = end.format("YYYY-MM-DD");
-                      
-                      // Calculate kurun waktu string
-                      const diffDays = end.diff(start, "days") + 1;
-                      if (diffDays > 0) {
-                          if (diffDays < 30) {
-                              kurun_waktu_pelaksanaan = `${diffDays} hari`;
-                          } else if (diffDays < 365) {
-                              const months = Math.floor(diffDays / 30);
-                              const remainingDays = diffDays % 30;
-                              kurun_waktu_pelaksanaan = `${months} bulan ${remainingDays > 0 ? `${remainingDays} hari` : ""}`.trim();
-                          } else {
-                              const years = Math.floor(diffDays / 365);
-                              const remainingMonths = Math.floor((diffDays % 365) / 30);
-                              kurun_waktu_pelaksanaan = `${years} tahun ${remainingMonths > 0 ? `${remainingMonths} bulan` : ""}`.trim();
-                          }
-                      }
+            const parts = kurunWaktuRaw.split(" - ");
+            if (parts.length === 2) {
+              const start = moment(parts[0], "DD/MM/YYYY");
+              const end = moment(parts[1], "DD/MM/YYYY");
+              if (start.isValid() && end.isValid()) {
+                tanggal_mulai = start.format("YYYY-MM-DD");
+                tanggal_selesai = end.format("YYYY-MM-DD");
+
+                // Calculate kurun waktu string
+                const diffDays = end.diff(start, "days") + 1;
+                if (diffDays > 0) {
+                  if (diffDays < 30) {
+                    kurun_waktu_pelaksanaan = `${diffDays} hari`;
+                  } else if (diffDays < 365) {
+                    const months = Math.floor(diffDays / 30);
+                    const remainingDays = diffDays % 30;
+                    kurun_waktu_pelaksanaan = `${months} bulan ${remainingDays > 0 ? `${remainingDays} hari` : ""}`.trim();
+                  } else {
+                    const years = Math.floor(diffDays / 365);
+                    const remainingMonths = Math.floor((diffDays % 365) / 30);
+                    kurun_waktu_pelaksanaan = `${years} tahun ${remainingMonths > 0 ? `${remainingMonths} bulan` : ""}`.trim();
                   }
+                }
               }
+            }
           }
 
           // 2. Penerima Manfaat
           // Sasaran Utama (ONE value from header textarea)
           const sasaranUtamaTextarea = document.querySelector('#sasaranUtamaContainer textarea');
           const sasaran_utama = sasaranUtamaTextarea ? sasaranUtamaTextarea.value : "";
-          
+
           // Manfaat (ARRAY from detail rows)
           const manfaat = [];
           // Existing manfaat (readonly)
           document.querySelectorAll('#manfaatContainer .row-with-comment input').forEach(el => {
-              if (el.value.trim()) {
-                  manfaat.push(el.value.trim());
-              }
+            if (el.value.trim()) {
+              manfaat.push(el.value.trim());
+            }
           });
           // New manfaat (editable)
           document.querySelectorAll('#manfaatContainer .manfaat-item .manfaat-input').forEach(el => {
-              if (el.value.trim()) {
-                  manfaat.push(el.value.trim());
-              }
+            if (el.value.trim()) {
+              manfaat.push(el.value.trim());
+            }
           });
 
           // 3. Tahapan
           const tahapan_pelaksanaan = [];
           // Existing
           document.querySelectorAll('#tahapanPelaksanaanContainer .row-with-comment input').forEach((el, idx) => {
-              tahapan_pelaksanaan.push({
-                  nama_tahapan: el.value,
-                  urutan: idx + 1
-              });
+            tahapan_pelaksanaan.push({
+              nama_tahapan: el.value,
+              urutan: idx + 1
+            });
           });
           // New
           document.querySelectorAll('#tahapanPelaksanaanContainer .tahapan-item input').forEach(el => {
-              tahapan_pelaksanaan.push({
-                  nama_tahapan: el.value,
-                  urutan: tahapan_pelaksanaan.length + 1
-              });
+            tahapan_pelaksanaan.push({
+              nama_tahapan: el.value,
+              urutan: tahapan_pelaksanaan.length + 1
+            });
           });
 
           // 4. Indikator Kinerja
           const indikator_kinerja = [];
           // Existing
           document.querySelectorAll('#indikatorKinerjaContainer .row-with-comment').forEach(row => {
-              const inputs = row.querySelectorAll('input');
-              if (inputs.length >= 3) {
-                  indikator_kinerja.push({
-                      bulan_indikator: inputs[0].value,
-                      deskripsi_target: inputs[1].value,
-                      persentase_target: inputs[2].value
-                  });
-              }
+            const inputs = row.querySelectorAll('input');
+            if (inputs.length >= 3) {
+              indikator_kinerja.push({
+                bulan_indikator: inputs[0].value,
+                deskripsi_target: inputs[1].value,
+                persentase_target: inputs[2].value
+              });
+            }
           });
           // New
           document.querySelectorAll('#indikatorKinerjaContainer .indikator-kinerja-item').forEach(row => {
-              const bulan = row.querySelector('select').value;
-              const inputs = row.querySelectorAll('input');
-              indikator_kinerja.push({
-                  bulan_indikator: bulan,
-                  deskripsi_target: inputs[0].value,
-                  persentase_target: inputs[1].value
-              });
+            const bulan = row.querySelector('select').value;
+            const inputs = row.querySelectorAll('input');
+            indikator_kinerja.push({
+              bulan_indikator: bulan,
+              deskripsi_target: inputs[0].value,
+              persentase_target: inputs[1].value
+            });
           });
 
           // 5. IKU
           const target_iku = [];
           // Existing (rely on order match with kakDataState.iku)
           if (kakDataState.iku) {
-              document.querySelectorAll('#ikuRenstraContainer .row-with-comment').forEach((row, idx) => {
-                  const original = kakDataState.iku[idx];
-                  // Structure: Indikator (input), Target (input), Satuan (input)
-                  // We can't easily change values of existing rows in Revisi view if they are read-only inputs.
-                  // However, if the logic allows updating existing ones, we need to parse them.
-                  // BUT, `createIkuRow` renders inputs with `value` from `original`.
-                  // The user (Pengusul) can only ADD new rows or potentially DELETE existing ones (if logic supported, but `removeField` is general).
-                  // If Pengusul CANNOT edit existing rows inline (they are readonly), then we just push the original data or data from DOM.
-                  
-                  // Since `createIkuRow` makes them readonly, we assume we just keep them as is.
-                  // We push `original` ID and values.
-                  
-                  if (original) {
-                      target_iku.push({
-                          iku_id: original.iku_id || original.kak_iku_id,
-                          target: parseFloat(original.target) || 0,
-                          satuan_id: parseInt(original.satuan_id) || 0
-                      });
-                  }
-              });
+            document.querySelectorAll('#ikuRenstraContainer .row-with-comment').forEach((row, idx) => {
+              const original = kakDataState.iku[idx];
+              // Structure: Indikator (input), Target (input), Satuan (input)
+              // We can't easily change values of existing rows in Revisi view if they are read-only inputs.
+              // However, if the logic allows updating existing ones, we need to parse them.
+              // BUT, `createIkuRow` renders inputs with `value` from `original`.
+              // The user (Pengusul) can only ADD new rows or potentially DELETE existing ones (if logic supported, but `removeField` is general).
+              // If Pengusul CANNOT edit existing rows inline (they are readonly), then we just push the original data or data from DOM.
+
+              // Since `createIkuRow` makes them readonly, we assume we just keep them as is.
+              // We push `original` ID and values.
+
+              if (original) {
+                target_iku.push({
+                  iku_id: original.iku_id || original.kak_iku_id,
+                  target: parseFloat(original.target) || 0,
+                  satuan_id: parseInt(original.satuan_id) || 0
+                });
+              }
+            });
           }
           // New
           document.querySelectorAll('#ikuRenstraContainer .iku-item').forEach(row => {
-              const selects = row.querySelectorAll('select');
-              const ikuSelect = selects[0];
-              const satuanSelect = selects[1];
-              const input = row.querySelector('input[type="number"]');
-              
-              if (ikuSelect && ikuSelect.value) {
-                  target_iku.push({
-                      iku_id: parseInt(ikuSelect.value),
-                      target: parseFloat(input.value) || 0,
-                      satuan_id: parseInt(satuanSelect.value) || 0
-                  });
-              }
+            const selects = row.querySelectorAll('select');
+            const ikuSelect = selects[0];
+            const satuanSelect = selects[1];
+            const input = row.querySelector('input[type="number"]');
+
+            if (ikuSelect && ikuSelect.value) {
+              target_iku.push({
+                iku_id: parseInt(ikuSelect.value),
+                target: parseFloat(input.value) || 0,
+                satuan_id: parseInt(satuanSelect.value) || 0
+              });
+            }
           });
 
           // 6. RAB
           const rab = [];
           const rabContainers = document.querySelectorAll('[id^="rab-items-container-"]');
           rabContainers.forEach(container => {
-              const catId = parseInt(container.id.replace('rab-items-container-', ''));
-              
-              // Helper for RAB Row
-              const extractRabData = (inputs) => {
-                  const hargaInput = inputs[7];
-                  let harga = 0;
-                  if (typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(hargaInput)) {
-                      harga = AutoNumeric.getAutoNumericElement(hargaInput).getNumber();
-                  } else {
-                      harga = parseFloat(hargaInput.getAttribute('data-raw-value')) || parseFloat(hargaInput.value.replace(/[^0-9]/g, '')) || 0;
-                  }
-                  return {
-                      kategori_belanja_id: catId,
-                      uraian: inputs[0].value,
-                      volume1: inputs[1].value !== "" ? parseFloat(inputs[1].value) : null,
-                      satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
-                      volume2: inputs[3].value !== "" ? parseFloat(inputs[3].value) : null,
-                      satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
-                      volume3: inputs[5].value !== "" ? parseFloat(inputs[5].value) : null,
-                      satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
-                      harga_satuan: harga
-                  };
-              };
+            const catId = parseInt(container.id.replace('rab-items-container-', ''));
 
-              // PERBAIKAN: Ambil SEMUA items dengan class .rab-item (termasuk yang readonly)
-              // Class .rab-item ada di semua row RAB (baik existing maupun new)
-              container.querySelectorAll('.rab-item').forEach(row => {
-                  const inputs = row.querySelectorAll('input, select');
-                  rab.push(extractRabData(inputs));
-              });
+            // Helper for RAB Row
+            const extractRabData = (inputs) => {
+              const hargaInput = inputs[7];
+              let harga = 0;
+              if (typeof AutoNumeric !== 'undefined' && AutoNumeric.getAutoNumericElement(hargaInput)) {
+                harga = AutoNumeric.getAutoNumericElement(hargaInput).getNumber();
+              } else {
+                harga = parseFloat(hargaInput.getAttribute('data-raw-value')) || parseFloat(hargaInput.value.replace(/[^0-9]/g, '')) || 0;
+              }
+              return {
+                kategori_belanja_id: catId,
+                uraian: inputs[0].value,
+                volume1: inputs[1].value !== "" ? parseFloat(inputs[1].value) : null,
+                satuan1_id: inputs[2].value ? parseInt(inputs[2].value) : null,
+                volume2: inputs[3].value !== "" ? parseFloat(inputs[3].value) : null,
+                satuan2_id: inputs[4].value ? parseInt(inputs[4].value) : null,
+                volume3: inputs[5].value !== "" ? parseFloat(inputs[5].value) : null,
+                satuan3_id: inputs[6].value ? parseInt(inputs[6].value) : null,
+                harga_satuan: harga
+              };
+            };
+
+            // PERBAIKAN: Ambil SEMUA items dengan class .rab-item (termasuk yang readonly)
+            // Class .rab-item ada di semua row RAB (baik existing maupun new)
+            container.querySelectorAll('.rab-item').forEach(row => {
+              const inputs = row.querySelectorAll('input, select');
+              rab.push(extractRabData(inputs));
+            });
           });
 
           // Prepare payload
@@ -3917,6 +3917,34 @@ window.navigateToComment = function(type, identifier, targetMainStep, targetSect
       }
     });
   };
+
+  // Populate Tipe Kegiatan Dropdown
+  async function populateTipeKegiatanDropdown() {
+    try {
+      const response = await apiRequest("/master/tipe-kegiatan");
+      const tipeKegiatanData = response.data;
+
+      const selectElement = document.getElementById("tipeKegiatan");
+      if (!selectElement) return;
+
+      // Clear existing options except placeholder
+      selectElement.innerHTML = '<option value="">Pilih Tipe Kegiatan</option>';
+
+      tipeKegiatanData.forEach(tipe => {
+        const option = document.createElement("option");
+        option.value = tipe.tipe_kegiatan_id;
+        option.textContent = tipe.nama_tipe;
+        selectElement.appendChild(option);
+      });
+
+      // Restore value if exists
+      if (kakDataState && kakDataState.tipe_kegiatan_id) {
+        selectElement.value = kakDataState.tipe_kegiatan_id;
+      }
+    } catch (error) {
+      console.error("Error populating Tipe Kegiatan dropdown:", error);
+    }
+  }
 
   init();
 
