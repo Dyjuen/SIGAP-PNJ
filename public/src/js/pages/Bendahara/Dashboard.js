@@ -114,7 +114,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
         opacity: 0;
         animation: fadeInUp 0.4s ease-out forwards;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        position: relative;
+        /* position: relative; */
         background: white;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
       }
@@ -125,6 +125,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
         vertical-align: middle !important;
         border: none !important;
       }
+/*
       .table tbody tr::before {
         content: '';
         position: absolute;
@@ -141,6 +142,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
       .table tbody tr:hover::before {
         transform: scaleY(1);
       }
+*/
 
       .table tbody tr:nth-child(1) { animation-delay: 0.6s; }
       .table tbody tr:nth-child(2) { animation-delay: 0.7s; }
@@ -149,7 +151,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
       .table tbody tr:nth-child(5) { animation-delay: 1s; }
 
       .table tbody tr:hover {
-        transform: translateX(4px);
+        /* transform: translateX(4px); */
         box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
         background: #fafbfc;
       }
@@ -364,18 +366,6 @@ export function renderBendaharaDashboardPage(path, userRole) {
         vertical-align: middle !important;
       }
       
-      .table tbody tr {
-        margin-bottom: 8px;
-        display: table;
-        width: 100%;
-        table-layout: fixed;
-      }
-      
-      .table thead, .table tbody {
-        display: table;
-        width: 100%;
-        table-layout: fixed;
-      }
       
       .stat-card-filter {
         cursor: pointer;
@@ -434,7 +424,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
               <div class="d-flex align-items-start justify-content-between">
                 <div class="content-left">
                   <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Pencairan</span>
-                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Sudah Dicairkan</h4>
+                  <h4 class="mb-3 mt-1 whitespace-nowrap" style="font-size: 20px; font-weight: 600;">Sudah Dicairkan</h4>
                   <div class="d-flex align-items-end mt-2">
                     <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="disbursedCount" data-target="0">0</h1>
                     <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">Kegiatan</small>
@@ -465,7 +455,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
               <div class="d-flex align-items-start justify-content-between">
                 <div class="content-left">
                   <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Total Anggaran</span>
-                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Belum Dicairkan</h4>
+                  <h4 class="mb-3 mt-1 whitespace-nowrap" style="font-size: 20px; font-weight: 600;">Belum Dicairkan</h4>
                   <div class="d-flex align-items-end mt-2">
                     <h1 class="mb-0 me-2" style="font-size: 32px; font-weight: 700; letter-spacing: -1px;" id="totalUndisbursed">0</h1>
                   </div>
@@ -480,7 +470,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
               <div class="d-flex align-items-start justify-content-between">
                 <div class="content-left">
                   <span style="font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">LPJ</span>
-                  <h4 class="mb-3 mt-1" style="font-size: 20px; font-weight: 600;">Perlu Verifikasi</h4>
+                  <h4 class="mb-3 mt-1 whitespace-nowrap" style="font-size: 20px; font-weight: 600;">Perlu Verifikasi</h4>
                   <div class="d-flex align-items-end mt-2">
                     <h1 class="mb-0 me-2 counter" style="font-size: 44px; font-weight: 700; letter-spacing: -1px;" id="lpjCount" data-target="0">0</h1>
                     <small style="font-size: 15px; font-weight: 500; opacity: 0.8;">LPJ</small>
@@ -509,14 +499,13 @@ export function renderBendaharaDashboardPage(path, userRole) {
         <table class="table">
           <thead>
             <tr>
-              <th style="width: 4%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">No</th>
-              <th style="width: 20%; text-align: left; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Nama Kegiatan</th>
-              <th style="width: 15%; text-align: left; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>
-              <th style="width: 11%; text-align: right; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Diminta</th>
-              <th style="width: 11%; text-align: right; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Dicairkan</th>
-              <th style="width: 11%; text-align: right; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Belum Dicairkan</th>
-              <th style="width: 10%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Status</th>
-              <th style="width: 18%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Aksi</th>
+              <th class="whitespace-nowrap" style="width: 4%; text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">No</th>
+              <th style=" text-align: left; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Nama Kegiatan</th>
+              <th style="text-align: left; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Pengusul</th>
+              <th style="text-align: left; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Diminta</th>
+              <th style="text-align: left; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Uang Dicairkan</th>
+              <th style="text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Status</th>
+              <th style="text-align: center; background: #f8fafb; font-weight: 600; color: #475569; font-size: 0.875rem; border-bottom: 2px solid #e2e8f0;">Aksi</th>
             </tr>
           </thead>
           <tbody id="disbursementTableBody">
@@ -593,7 +582,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
   async function fetchKegiatan() {
     const tbody = document.getElementById("disbursementTableBody");
-    tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(8, 'Memuat data pencairan...') : '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
+    tbody.innerHTML = window.createTableLoadingRow
+      ? window.createTableLoadingRow(7, "Memuat data pencairan...")
+      : '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
     try {
       const response = await apiRequest("/kegiatan");
       const kegiatanData = response.data.data
@@ -603,10 +594,10 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
       // Calculate stats from fetched data
       calculateAndUpdateStats();
-      
+
       applyFilter();
     } catch (error) {
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="y" class="text-center text-danger">Error: ${error.message}</td></tr>`;
     }
   }
 
@@ -622,39 +613,52 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
     state.allKegiatan.forEach((k) => {
       const totalAnggaran = parseFloat(k.total_anggaran_diusulkan || 0); // FIXED: Use correct field name
-      
-      console.log(`[BENDAHARA] Kegiatan: ${k.nama_kegiatan}, Anggaran: ${totalAnggaran}, Current Approval:`, k.current_approval, "Approvals:", k.approvals); // Debug
-      
+
+      console.log(
+        `[BENDAHARA] Kegiatan: ${k.nama_kegiatan}, Anggaran: ${totalAnggaran}, Current Approval:`,
+        k.current_approval,
+        "Approvals:",
+        k.approvals
+      ); // Debug
+
       // Menunggu Pencairan: Bendahara-Cair step is Active
-      const isWaitingDisbursement = k.current_approval?.approval_level === "Bendahara-Cair" && k.current_approval?.status === "Aktif";
-      
+      const isWaitingDisbursement =
+        k.current_approval?.approval_level === "Bendahara-Cair" &&
+        k.current_approval?.status === "Aktif";
+
       // Sudah Dicairkan: Bendahara-Cair step is Disetujui
-      const isDisbursed = k.approvals?.some(a => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui");
-      
+      const isDisbursed = k.approvals?.some(
+        (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
+      );
+
       if (isWaitingDisbursement) {
         waitingCount++;
         totalUndisbursedAmount += totalAnggaran;
         console.log(`  → MENUNGGU: +${totalAnggaran}`); // Debug
       }
-      
+
       if (isDisbursed) {
         disbursedCount++;
         totalDisbursedAmount += totalAnggaran;
         console.log(`  → DICAIRKAN: +${totalAnggaran}`); // Debug
       }
-      
+
       // LPJ Perlu Verifikasi: Bendahara-LPJ step is Active AND LPJ has been submitted
-      if (k.current_approval?.approval_level === "Bendahara-LPJ" && k.current_approval?.status === "Aktif" && k.lpj_submitted_at) {
+      if (
+        k.current_approval?.approval_level === "Bendahara-LPJ" &&
+        k.current_approval?.status === "Aktif" &&
+        k.lpj_submitted_at
+      ) {
         lpjCount++;
       }
     });
 
-    console.log("[BENDAHARA STATS] Final:", { 
-      waitingCount, 
-      disbursedCount, 
+    console.log("[BENDAHARA STATS] Final:", {
+      waitingCount,
+      disbursedCount,
       lpjCount,
       totalDisbursedAmount,
-      totalUndisbursedAmount
+      totalUndisbursedAmount,
     }); // Debug
 
     const stats = {
@@ -662,7 +666,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
       total_pencairan_dicairkan: disbursedCount,
       total_lpj_verifikasi: lpjCount,
       total_anggaran_dicairkan: totalDisbursedAmount,
-      total_anggaran_belum_dicairkan: totalUndisbursedAmount
+      total_anggaran_belum_dicairkan: totalUndisbursedAmount,
     };
 
     updateStatsUI(stats);
@@ -674,8 +678,12 @@ export function renderBendaharaDashboardPage(path, userRole) {
     if (filter === "all") {
       // Show all activities where PPK and Wadir have approved (ready for Bendahara or already processed)
       state.displayKegiatan = state.allKegiatan.filter((k) => {
-        const ppkApproval = k.approvals?.find((a) => a.approval_level === "PPK");
-        const wadirApproval = k.approvals?.find((a) => a.approval_level === "Wadir2");
+        const ppkApproval = k.approvals?.find(
+          (a) => a.approval_level === "PPK"
+        );
+        const wadirApproval = k.approvals?.find(
+          (a) => a.approval_level === "Wadir2"
+        );
         return (
           ppkApproval?.status === "Disetujui" &&
           wadirApproval?.status === "Disetujui"
@@ -693,7 +701,8 @@ export function renderBendaharaDashboardPage(path, userRole) {
       // Already Disbursed: Bendahara-Cair step is Disetujui
       state.displayKegiatan = state.allKegiatan.filter((k) => {
         return k.approvals?.some(
-          (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
+          (a) =>
+            a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
         );
       });
     } else if (filter === "lpj_submitted") {
@@ -724,7 +733,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
             year: "numeric",
           })
         : "-";
-        
+
       // Check if disbursed based on approval status
       const isDisbursed = kegiatan.approvals?.some(
         (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
@@ -774,63 +783,72 @@ export function renderBendaharaDashboardPage(path, userRole) {
   }
 
   async function handlePdfAction(kakId, action) {
-    const actionTitle = action === 'preview' ? 'Membuka Pratinjau PDF...' : 'Mengunduh PDF...';
-    const errorMessage = action === 'preview' ? 'Gagal membuka pratinjau PDF' : 'Gagal mengunduh PDF';
-  
+    const actionTitle =
+      action === "preview" ? "Membuka Pratinjau PDF..." : "Mengunduh PDF...";
+    const errorMessage =
+      action === "preview"
+        ? "Gagal membuka pratinjau PDF"
+        : "Gagal mengunduh PDF";
+
     Swal.fire({
       title: actionTitle,
       text: "Sedang memproses...",
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading(),
     });
-  
+
     try {
       // Step 1: Generate token (Required for both preview and download)
-      const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
-        method: 'POST',
-      });
-  
-      if (!tokenResponse.success) {
-        throw new Error(tokenResponse.message || 'Gagal membuat token akses file');
-      }
-  
-      const tempToken = tokenResponse.data.download_token;
-      const url = `/api/kak/${kakId}${action === 'preview' ? '/preview' : ''}?t=${tempToken}`;
+      const tokenResponse = await apiRequest(
+        `/kak/${kakId}/generate-download-token`,
+        {
+          method: "POST",
+        }
+      );
 
-      if (action === 'preview') {
+      if (!tokenResponse.success) {
+        throw new Error(
+          tokenResponse.message || "Gagal membuat token akses file"
+        );
+      }
+
+      const tempToken = tokenResponse.data.download_token;
+      const url = `/api/kak/${kakId}${
+        action === "preview" ? "/preview" : ""
+      }?t=${tempToken}`;
+
+      if (action === "preview") {
         // Use fetch + blob for preview to avoid showing HTML error code
         const response = await fetch(url);
 
         if (!response.ok) {
-           const contentType = response.headers.get("content-type");
-           if (contentType && contentType.indexOf("application/json") !== -1) {
-               const errorData = await response.json();
-               throw new Error(errorData.message || 'Gagal mengambil file.');
-           } else {
-               throw new Error(`HTTP Error: ${response.status}`);
-           }
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.indexOf("application/json") !== -1) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Gagal mengambil file.");
+          } else {
+            throw new Error(`HTTP Error: ${response.status}`);
+          }
         }
 
         const blob = await response.blob();
         const fileUrl = URL.createObjectURL(blob);
-        
+
         Swal.close();
-        window.open(fileUrl, '_blank');
-        
+        window.open(fileUrl, "_blank");
+
         // Revoke URL after a delay
         setTimeout(() => URL.revokeObjectURL(fileUrl), 10000);
-
       } else {
         // Download
         Swal.close();
         setTimeout(() => {
-            window.open(url, '_blank');
+          window.open(url, "_blank");
         }, 300);
       }
-  
     } catch (error) {
       Swal.fire({
-        icon: 'error',
+        icon: "error",
         title: errorMessage,
         text: error.message,
       });
@@ -864,7 +882,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
     tbody.innerHTML = "";
     if (!data || data.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="8" class="text-center">Tidak ada data kegiatan.</td></tr>';
+        '<tr><td colspan="7" class="text-center">Tidak ada data kegiatan.</td></tr>';
       updatePaginationInfo(0, 0, 0);
       return;
     }
@@ -872,8 +890,11 @@ export function renderBendaharaDashboardPage(path, userRole) {
     // Pagination Logic
     state.totalPages = Math.ceil(data.length / state.itemsPerPage);
     const startEntry = (state.currentPage - 1) * state.itemsPerPage + 1;
-    const endEntry = Math.min(state.currentPage * state.itemsPerPage, data.length);
-    
+    const endEntry = Math.min(
+      state.currentPage * state.itemsPerPage,
+      data.length
+    );
+
     updatePaginationInfo(startEntry, endEntry, data.length);
     setupPagination();
 
@@ -885,7 +906,8 @@ export function renderBendaharaDashboardPage(path, userRole) {
     paginatedData.forEach((kegiatan, index) => {
       const row = document.createElement("tr");
       // Calculate global index
-      const globalIndex = (state.currentPage - 1) * state.itemsPerPage + index + 1;
+      const globalIndex =
+        (state.currentPage - 1) * state.itemsPerPage + index + 1;
 
       let statusBadge = "";
       let actionButtons = "";
@@ -894,8 +916,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
       const isDisbursed = kegiatan.approvals?.some(
         (a) => a.approval_level === "Bendahara-Cair" && a.status === "Disetujui"
       );
-      const isLpjVerification = kegiatan.current_approval?.approval_level === "Bendahara-LPJ" &&
-          kegiatan.current_approval?.status === "Aktif";
+      const isLpjVerification =
+        kegiatan.current_approval?.approval_level === "Bendahara-LPJ" &&
+        kegiatan.current_approval?.status === "Aktif";
 
       if (isLpjVerification) {
         if (!kegiatan.lpj_submitted_at) {
@@ -916,7 +939,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
       } else if (isDisbursed) {
         statusBadge =
           '<span class="badge bg-label-success" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">Dicairkan</span>';
-          actionButtons = `
+        actionButtons = `
             <div class="d-flex justify-content-center gap-2">
               <button class="btn btn-sm btn-icon btn-view-detail" data-id="${kegiatan.kak_id}" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);" title="Detail">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -951,13 +974,13 @@ export function renderBendaharaDashboardPage(path, userRole) {
       }
 
       row.innerHTML = `
-        <td style="width: 4%; text-align: center;">
+        <td style=" text-align: center;">
           <span style="font-weight: 600; color: #64748b; font-size: 0.875rem;">${globalIndex}</span>
         </td>
-        <td style="width: 20%; text-align: left;">
+        <td style=" text-align: left;">
           <strong style="color: #1e293b;">${kegiatan.nama_kegiatan}</strong>
         </td>
-        <td style="width: 15%; text-align: left;">
+        <td style=" text-align: left;">
           <div style="color: #1e293b; font-weight: 600;">${
             kegiatan.pelaksana_manual || "-"
           }</div>
@@ -965,25 +988,21 @@ export function renderBendaharaDashboardPage(path, userRole) {
             kegiatan.pengusul_nama || ""
           }</div>
         </td>
-        <td style="width: 11%; text-align: right;">
+        <td style=" text-align: left;">
           <strong style="color: #00BCD4;">${formatCurrency(
             kegiatan.total_anggaran_diusulkan || 0
           )}</strong>
         </td>
-        <td style="width: 11%; text-align: right;">
+        <td style=" text-align: left;">
           <strong style="color: #059669;">${formatCurrency(
             kegiatan.dana_dicairkan || 0
           )}</strong>
         </td>
-        <td style="width: 11%; text-align: right;">
-          <strong style="color: #ef4444;">${formatCurrency(
-            (kegiatan.total_anggaran_diusulkan || 0) - (kegiatan.dana_dicairkan || 0)
-          )}</strong>
-        </td>
-        <td style="width: 10%; text-align: center;">
+        
+        <td style=" text-align: center;">
           ${statusBadge}
         </td>
-        <td style="width: 18%; text-align: center;">
+        <td style=" text-align: center;">
           ${actionButtons}
         </td>
       `;
@@ -1007,15 +1026,15 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
     // --- PDF BUTTONS ---
     document.querySelectorAll(".btn-preview-pdf").forEach((btn) => {
-        btn.addEventListener("click", () =>
-        handlePdfAction(btn.dataset.kakId, 'preview')
-        );
+      btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, "preview")
+      );
     });
 
     document.querySelectorAll(".btn-download-pdf").forEach((btn) => {
-        btn.addEventListener("click", () =>
-        handlePdfAction(btn.dataset.kakId, 'download')
-        );
+      btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, "download")
+      );
     });
   }
 
@@ -1024,9 +1043,9 @@ export function renderBendaharaDashboardPage(path, userRole) {
     document.querySelectorAll(".stat-card-filter").forEach((card) => {
       card.addEventListener("click", () => {
         const filterValue = card.dataset.filter;
-        
+
         console.log("[BENDAHARA] Card clicked, filter:", filterValue); // Debug
-        
+
         // Simply set the filter to the clicked card's value
         // Don't toggle - always apply the clicked filter
         // New logic to toggle filter off if active card is clicked again
@@ -1035,7 +1054,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
         } else {
           state.currentFilter = filterValue; // Activate new filter
         }
-        
+
         applyFilter();
         updateActiveFilterVisuals();
       });
@@ -1071,60 +1090,66 @@ export function renderBendaharaDashboardPage(path, userRole) {
   }
 
   async function fetchSummaryStats() {
-      try {
-          const response = await apiRequest("/dashboard/summary");
-          const stats = response.data;
-          updateStatsUI(stats);
-      } catch (error) {
-          console.error("Failed to fetch summary stats:", error);
-      }
+    try {
+      const response = await apiRequest("/dashboard/summary");
+      const stats = response.data;
+      updateStatsUI(stats);
+    } catch (error) {
+      console.error("Failed to fetch summary stats:", error);
+    }
   }
 
   function updateStatsUI(stats) {
-      const waitingEl = document.getElementById("waitingCount");
-      const disbursedEl = document.getElementById("disbursedCount");
-      const lpjEl = document.getElementById("lpjCount");
-      const totalDisbursedEl = document.getElementById("totalDisbursed");
-      const totalUndisbursedEl = document.getElementById("totalUndisbursed");
-      
-      if (waitingEl) {
-        waitingEl.setAttribute("data-target", stats.total_pencairan_menunggu || 0);
-        waitingEl.textContent = "0";
-      }
-      if (disbursedEl) {
-        disbursedEl.setAttribute("data-target", stats.total_pencairan_dicairkan || 0);
-        disbursedEl.textContent = "0";
-      }
-      if (lpjEl) {
-        lpjEl.setAttribute("data-target", stats.total_lpj_verifikasi || 0);
-        lpjEl.textContent = "0";
-      }
-      
-      // Format currency for total anggaran
-      if (totalDisbursedEl) {
-        const formatted = new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'IDR',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
-        }).format(stats.total_anggaran_dicairkan || 0);
-        totalDisbursedEl.textContent = formatted;
-      }
-      
-      if (totalUndisbursedEl) {
-        const formatted = new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'IDR',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
-        }).format(stats.total_anggaran_belum_dicairkan || 0);
-        totalUndisbursedEl.textContent = formatted;
-      }
-      
-      // Trigger counter animations
-      setTimeout(() => {
-        initCounters();
-      }, 100);
+    const waitingEl = document.getElementById("waitingCount");
+    const disbursedEl = document.getElementById("disbursedCount");
+    const lpjEl = document.getElementById("lpjCount");
+    const totalDisbursedEl = document.getElementById("totalDisbursed");
+    const totalUndisbursedEl = document.getElementById("totalUndisbursed");
+
+    if (waitingEl) {
+      waitingEl.setAttribute(
+        "data-target",
+        stats.total_pencairan_menunggu || 0
+      );
+      waitingEl.textContent = "0";
+    }
+    if (disbursedEl) {
+      disbursedEl.setAttribute(
+        "data-target",
+        stats.total_pencairan_dicairkan || 0
+      );
+      disbursedEl.textContent = "0";
+    }
+    if (lpjEl) {
+      lpjEl.setAttribute("data-target", stats.total_lpj_verifikasi || 0);
+      lpjEl.textContent = "0";
+    }
+
+    // Format currency for total anggaran
+    if (totalDisbursedEl) {
+      const formatted = new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(stats.total_anggaran_dicairkan || 0);
+      totalDisbursedEl.textContent = formatted;
+    }
+
+    if (totalUndisbursedEl) {
+      const formatted = new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(stats.total_anggaran_belum_dicairkan || 0);
+      totalUndisbursedEl.textContent = formatted;
+    }
+
+    // Trigger counter animations
+    setTimeout(() => {
+      initCounters();
+    }, 100);
   }
 
   function showError(message) {
@@ -1194,12 +1219,12 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
     // Next buttons
     paginationContainer.innerHTML += `
-      <li class="page-item ${ 
+      <li class="page-item ${
         state.currentPage === state.totalPages ? "disabled" : ""
       }">
         <a class="page-link" href="#" id="btnNextPage">›</a>
       </li>
-      <li class="page-item ${ 
+      <li class="page-item ${
         state.currentPage === state.totalPages ? "disabled" : ""
       }">
         <a class="page-link" href="#" id="btnLastPage">»</a>
@@ -1290,7 +1315,7 @@ export function renderBendaharaDashboardPage(path, userRole) {
   // ==============================================
   fetchKegiatan(); // This will also calculate stats from data
   fetchVideos();
-  
+
   // Initialize stat card filter event listeners ONCE
   initializeStatCardFilters();
 
@@ -1299,18 +1324,18 @@ export function renderBendaharaDashboardPage(path, userRole) {
   }, 100);
 
   async function fetchVideos() {
-      try {
-        // Use common dashboard endpoint like Pengusul
-        const response = await apiRequest("/dashboard/video");
-        if (response.success && response.data) {
-            renderVideos(response.data);
-        } else {
-            renderVideos([]);
-        }
-      } catch (error) {
-        console.error("Error fetching videos:", error);
+    try {
+      // Use common dashboard endpoint like Pengusul
+      const response = await apiRequest("/dashboard/video");
+      if (response.success && response.data) {
+        renderVideos(response.data);
+      } else {
         renderVideos([]);
       }
+    } catch (error) {
+      console.error("Error fetching videos:", error);
+      renderVideos([]);
+    }
   }
 
   function renderVideos(videos) {
@@ -1319,40 +1344,42 @@ export function renderBendaharaDashboardPage(path, userRole) {
 
     container.innerHTML = "";
     if (!videos || videos.length === 0) {
-        container.innerHTML = `<div class="col-12 text-center text-muted py-4">Belum ada video panduan.</div>`;
-        return;
+      container.innerHTML = `<div class="col-12 text-center text-muted py-4">Belum ada video panduan.</div>`;
+      return;
     }
 
     videos.forEach((video) => {
-        // Use path_media from database
-        let videoUrl = video.path_media || video.url || '';
-        let embedUrl = videoUrl;
-        
-        // Simple YouTube URL to Embed URL converter
-        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-            let videoId = '';
-            if (videoUrl.includes('youtube.com/watch?v=')) {
-                videoId = videoUrl.split('watch?v=')[1].split('&')[0];
-            } else if (videoUrl.includes('youtu.be/')) {
-                videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
-            } else if (videoUrl.includes('youtube.com/embed/')) {
-                videoId = videoUrl.split('embed/')[1].split('?')[0];
-            }
-            if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      // Use path_media from database
+      let videoUrl = video.path_media || video.url || "";
+      let embedUrl = videoUrl;
+
+      // Simple YouTube URL to Embed URL converter
+      if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+        let videoId = "";
+        if (videoUrl.includes("youtube.com/watch?v=")) {
+          videoId = videoUrl.split("watch?v=")[1].split("&")[0];
+        } else if (videoUrl.includes("youtu.be/")) {
+          videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
+        } else if (videoUrl.includes("youtube.com/embed/")) {
+          videoId = videoUrl.split("embed/")[1].split("?")[0];
         }
+        if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
 
       const col = document.createElement("div");
       col.className = "col-md-4";
-      
+
       const videoCard = document.createElement("div");
       videoCard.className = "video-placeholder";
       videoCard.style.background = "black";
       videoCard.style.position = "relative";
-      
+
       videoCard.innerHTML = `
-        <iframe src="${embedUrl}" title="${video.judul_panduan || 'Video Panduan'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius: 12px;"></iframe>
+        <iframe src="${embedUrl}" title="${
+        video.judul_panduan || "Video Panduan"
+      }" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius: 12px;"></iframe>
       `;
-      
+
       col.appendChild(videoCard);
       container.appendChild(col);
     });
