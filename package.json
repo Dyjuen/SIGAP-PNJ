@@ -12,6 +12,7 @@
     "tailwindcss": "^4.1.17"
   },
   "dependencies": {
-    "@tabler/icons-webfont": "^3.35.0"
+    "@tabler/icons-webfont": "^3.35.0",
+    "motion": "^10.18.0"
   }
 }
