@@ -84,8 +84,8 @@ export function renderLoginPage() {
 
             .eye-slash-line {
                 stroke-dasharray: 30;
-                stroke-dashoffset: 0;
-                opacity: 0;
+                stroke-dashoffset: -30;
+                opacity: 1;
             }
 
             .eye-slash-line.show {
@@ -338,10 +338,11 @@ export function renderLoginPage() {
                 display: inline-block;
                 transition: transform 0.4s ease, color 0.3s ease !important;
             }
-            .captcha-container .reload-captcha-btn:hover svg {
-                transform: rotate(180deg) !important;
-                color: #2BA9B8 !important;
+
+            .captcha-container .reload-captcha-btn svg.rotated-on-click {
+                transform: rotate(-180deg) !important;
             }
+
 
             .link-text {
                 color: #33C8DA;
@@ -630,6 +631,66 @@ export function renderLoginPage() {
   const rememberMeCheckbox = document.getElementById("remember-me");
   const loginButton = document.getElementById("login-button");
   const errorAlert = document.getElementById("error-alert");
+  const reloadCaptchaBtn = document.getElementById("reload-captcha");
+  const captchaImage = document.getElementById("captcha-image");
+
+  // Track reload captcha behavior
+  if (reloadCaptchaBtn) {
+    const svgElement = reloadCaptchaBtn.querySelector('svg');
+
+    // Reload captcha on button click with rotation
+    reloadCaptchaBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      // Remove any existing click rotation class and force reflow
+      svgElement.classList.remove('rotated-on-click');
+      void svgElement.offsetWidth; // Trigger reflow to ensure removal is processed
+
+      // Add the rotation class to trigger the -180deg rotation
+      svgElement.classList.add('rotated-on-click');
+
+      // Refresh the captcha image
+      const timestamp = new Date().getTime();
+      captchaImage.src = `/api/captcha?t=${timestamp}`;
+
+      // After the click animation finishes, handle the hover state appropriately
+      setTimeout(() => {
+        // Remove the click rotation class and apply appropriate state based on hover
+        svgElement.classList.remove('rotated-on-click');
+
+        // If still hovered after the animation, apply hover state
+        if (this.matches(':hover')) {
+          svgElement.style.transform = 'rotate(180deg)';
+          svgElement.style.color = '#2BA9B8';
+        } else {
+          svgElement.style.transform = 'rotate(0deg)';
+          svgElement.style.color = '';
+        }
+      }, 400);
+    });
+
+    // Handle mouse enter (hover) to apply rotation
+    reloadCaptchaBtn.addEventListener('mouseenter', function() {
+      const svgElement = this.querySelector('svg');
+      // Only apply hover rotation if not currently in click animation
+      svgElement.style.transition = 'transform 0.4s ease, color 0.3s ease';
+      // Check if click rotation class is active, if so, don't override it immediately
+      if (!svgElement.classList.contains('rotated-on-click')) {
+        svgElement.style.transform = 'rotate(180deg)';
+      }
+      svgElement.style.color = '#2BA9B8';
+    });
+
+    // Handle mouse leave to reset rotation
+    reloadCaptchaBtn.addEventListener('mouseleave', function() {
+      const svgElement = this.querySelector('svg');
+      // If the click rotation class is active, don't reset it
+      if (!svgElement.classList.contains('rotated-on-click')) {
+        svgElement.style.transform = 'rotate(0deg)';
+      }
+      svgElement.style.color = '';
+    });
+  }
 
   // Show error message
   function showError(message) {
@@ -757,38 +818,24 @@ export function renderLoginPage() {
   if (passwordInput && togglePasswordButton) {
     const slashLine = togglePasswordButton.querySelector('.eye-slash-line');
 
-    // Set initial state based on password field type
-    if (passwordInput.getAttribute("type") === "password") {
-      slashLine.style.opacity = '1';
-    }
-
     togglePasswordButton.addEventListener("click", () => {
       const type =
         passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
 
       // Toggle slash animation
-      if (type === "password") {
-        // Show slash with animation (kanan bawah ke kiri atas)
-        slashLine.classList.remove('hide');
-        slashLine.classList.add('show');
-      } else {
-        // Hide slash with reverse animation (kiri atas ke kanan bawah)
+      if (type === "text") {
+        // Show password -> Show slash
         slashLine.classList.remove('show');
         slashLine.classList.add('hide');
+      } else {
+        // Hide password -> Hide slash
+        slashLine.classList.remove('hide');
+        slashLine.classList.add('show');
       }
     });
   }
 
-  // Add event listener for the captcha reload button
-  const reloadCaptchaButton = document.getElementById("reload-captcha");
-  if (reloadCaptchaButton) {
-    reloadCaptchaButton.addEventListener("click", () => {
-      // Append a timestamp to the src to prevent caching
-      document.getElementById("captcha-image").src =
-        "/api/captcha?t=" + new Date().getTime();
-    });
-  }
 
   // Add a pageshow event listener to reset the loading state
   window.addEventListener("pageshow", function (event) {

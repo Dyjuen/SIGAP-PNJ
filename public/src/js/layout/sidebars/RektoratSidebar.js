@@ -11,11 +11,6 @@ export const rektoratSidebar = `
         <img src="/assets/img/logo/logo2.svg" alt="Logo Extended" class="logo-expanded">
       </span>
     </a>
-    <button id="sidebar-toggle" class="menu-link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
   </div>
 
   <ul class="menu-inner">

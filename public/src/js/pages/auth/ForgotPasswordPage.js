@@ -63,57 +63,7 @@ export function renderForgotPasswordPage() {
             .animate-delay-800 { animation-delay: 0.8s; }
             .animate-delay-900 { animation-delay: 0.9s; }
 
-            /* ========== GLASS MORPHISM INPUT ========== */
-            .glass-input-wrapper {
-                border-radius: 1rem;
-                border: 1px solid rgba(209, 213, 219, 0.5);
-                background: rgba(255, 255, 255, 0.05);
-                backdrop-filter: blur(8px);
-                transition: all 0.3s ease;
-            }
-
-            .glass-input-wrapper:focus-within {
-                border-color: rgba(51, 200, 218, 0.7);
-                background: rgba(51, 200, 218, 0.1);
-                box-shadow: 0 0 0 3px rgba(51, 200, 218, 0.1);
-            }
-
-            .glass-input {
-                background-color: transparent;
-                width: 100%;
-                padding: 1rem;
-                border-radius: 1rem;
-                outline: none;
-                font-size: 0.875rem;
-            }
-
-            .glass-input::placeholder {
-                color: rgba(107, 114, 128, 0.7);
-            }
-
-            /* ========== ALERT STYLES ========== */
-            .alert {
-                padding: 12px 16px;
-                border-radius: 1rem;
-                margin-bottom: 16px;
-                display: none;
-                backdrop-filter: blur(8px);
-                animation: fadeSlideIn 0.3s ease-out;
-            }
-
-            .alert-error {
-                background: linear-gradient(135deg, rgba(254, 226, 226, 0.95) 0%, rgba(252, 165, 165, 0.85) 100%);
-                border: 1px solid rgba(252, 165, 165, 0.6);
-                color: #991B1B;
-            }
-
-            .alert-success {
-                background: linear-gradient(135deg, rgba(209, 250, 229, 0.95) 0%, rgba(134, 239, 172, 0.85) 100%);
-                border: 1px solid rgba(134, 239, 172, 0.6);
-                color: #065F46;
-            }
-
-            /* ========== LOADING SPINNER ========== */
+            /* ========== LOADING SPINNER (no longer needed, but keeping spin animation for future) ========== */
             .spinner {
                 border: 2px solid rgba(255, 255, 255, 0.3);
                 border-top: 2px solid white;
@@ -261,59 +211,20 @@ export function renderForgotPasswordPage() {
                         Lupa Password?
                     </h2>
                     <p class="text-center text-gray-600 text-sm mb-6 animate-element animate-delay-500">
-                        Masukkan username dan email aktif Anda. Admin akan mengirimkan password baru ke email Anda.
+                        Untuk mereset password, silakan hubungi Admin SIGAP langsung via WhatsApp.
                     </p>
-
-                    <!-- Alert Messages -->
-                    <div id="error-alert" class="alert alert-error"></div>
-                    <div id="success-alert" class="alert alert-success"></div>
                     
-                    <!-- Form -->
-                    <form id="forgot-password-form">
-                        <!-- Username Field -->
-                        <div class="mb-4 animate-element animate-delay-600">
-                            <label class="block text-gray-700 text-sm font-semibold mb-2" for="username">
-                                Username
-                            </label>
-                            <div class="glass-input-wrapper">
-                                <input 
-                                    class="glass-input" 
-                                    id="username" 
-                                    type="text" 
-                                    placeholder="Masukkan username Anda"
-                                    required
-                                >
-                            </div>
-                        </div>
-                        
-                        <!-- Email Field -->
-                        <div class="mb-6 animate-element animate-delay-700">
-                            <label class="block text-gray-700 text-sm font-semibold mb-2" for="email">
-                                Email Aktif
-                            </label>
-                            <div class="glass-input-wrapper">
-                                <input 
-                                    class="glass-input" 
-                                    id="email" 
-                                    type="email" 
-                                    placeholder="Masukkan email aktif Anda"
-                                    required
-                                >
-                            </div>
-                            <p class="text-xs text-gray-500 mt-2">
-                                Password baru akan dikirim ke email ini
-                            </p>
-                        </div>
-                        
-                        <!-- Submit Button -->
-                        <button 
-                            type="submit" 
-                            id="submit-button"
-                            class="modern-button animate-element animate-delay-800"
-                        >
-                            Reset Password
-                        </button>
-                    </form>
+                    <!-- WhatsApp Button -->
+                    <a href="https://wa.me/+6285156863267" target="_blank" class="modern-button flex items-center justify-center gap-2 animate-element animate-delay-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                            <path d="M21 15V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"></path>
+                            <path d="M7 10v4"></path>
+                            <path d="M10 10v4"></path>
+                            <path d="M13 10v4"></path>
+                            <path fill="currentColor" d="M17.2 11.2c-.3-.3-.7-.5-1.2-.5s-.9.2-1.2.5c-.3.3-.5.7-.5 1.2s.2.9.5 1.2c.3.3.7.5 1.2.5s.9-.2 1.2-.5c.3-.3.5-.7.5-1.2s-.2-.9-.5-1.2z"></path>
+                        </svg>
+                        Hubungi Admin via WhatsApp
+                    </a>
                 </div>
             </div>
         </div>
@@ -322,113 +233,10 @@ export function renderForgotPasswordPage() {
   rootElement.innerHTML = forgotPasswordHTML;
 
   // Get form elements
-  const form = document.getElementById("forgot-password-form");
-  const usernameInput = document.getElementById("username");
-  const emailInput = document.getElementById("email");
-  const submitButton = document.getElementById("submit-button");
   const backButton = document.getElementById("back-button");
-  const errorAlert = document.getElementById("error-alert");
-  const successAlert = document.getElementById("success-alert");
-
-  // Show error message
-  function showError(message) {
-    errorAlert.textContent = message;
-    errorAlert.style.display = "block";
-    successAlert.style.display = "none";
-    setTimeout(() => {
-      errorAlert.style.display = "none";
-    }, 5000);
-  }
-
-  // Show success message
-  function showSuccess(message) {
-    successAlert.textContent = message;
-    successAlert.style.display = "block";
-    errorAlert.style.display = "none";
-  }
-
-  // Set loading state
-  function setLoading(isLoading) {
-    if (isLoading) {
-      submitButton.disabled = true;
-      submitButton.innerHTML = '<span class="spinner"></span>Mengirim...';
-      usernameInput.disabled = true;
-      emailInput.disabled = true;
-    } else {
-      submitButton.disabled = false;
-      submitButton.innerHTML = "Reset Password";
-      usernameInput.disabled = false;
-      emailInput.disabled = false;
-    }
-  }
 
   // Handle back button
   backButton.addEventListener("click", () => {
     window.location.href = "/login";
   });
-
-  // Handle form submission
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const username = usernameInput.value.trim();
-    const email = emailInput.value.trim();
-
-    // Validate input
-    if (!username || !email) {
-      showError("Username dan email harus diisi!");
-      return;
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      showError("Format email tidak valid!");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // Call forgot password API
-      const response = await authService.forgotPassword({
-        username,
-        email,
-      });
-
-      // Request successful
-      if (response.success) {
-        showSuccess(
-          response.message || 
-          "Permintaan reset password berhasil! Password baru telah dikirim ke email Anda. Silakan cek inbox atau folder spam."
-        );
-        
-        // Clear form
-        usernameInput.value = "";
-        emailInput.value = "";
-        
-        // Redirect to login after 5 seconds
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 5000);
-      } else {
-        showError(
-          response.message || 
-          "Permintaan gagal! Username atau email tidak ditemukan."
-        );
-      }
-      
-      setLoading(false);
-    } catch (error) {
-      // Handle error
-      const errorMessage =
-        error.message || 
-        "Terjadi kesalahan! Silakan coba lagi atau hubungi admin.";
-      showError(errorMessage);
-      setLoading(false);
-    }
-  });
-
-  // Ensure the loading state is reset when the page is rendered
-  setLoading(false);
 }
