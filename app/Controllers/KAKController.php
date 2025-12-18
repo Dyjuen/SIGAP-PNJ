@@ -1550,4 +1550,12 @@ class KAKController
             Response::error('Gagal menghapus KAK: ' . $e->getMessage(), 500);
         }
     }
+
+    /**
+     * Helper: Check if user has role
+     */
+    private function hasRole($roleName)
+    {
+        return in_array($roleName, $this->userData['roles'] ?? []);
+    }
 }

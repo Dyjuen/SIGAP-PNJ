@@ -549,9 +549,9 @@ export function renderDashboardVerifikator(path, userRole) {
     itemsPerPage: 10,
     totalEntries: 0,
     totalPages: 1,
-    searchQuery: '',
+    searchQuery: "",
     searchTimeout: null,
-    currentStatusId: 2 // Default to 'Menunggu Verifikasi'
+    currentStatusId: 2, // Default to 'Menunggu Verifikasi'
   };
 
   let revisiModalInstance = null;
@@ -595,13 +595,15 @@ export function renderDashboardVerifikator(path, userRole) {
   async function initializeDashboard() {
     const tbody = document.getElementById("usulanTableBody");
     if (tbody) {
-      tbody.innerHTML = window.createTableLoadingRow ? window.createTableLoadingRow(6, 'Memuat data verifikasi...') : '<tr><td colspan="6" style="text-align: center;">Loading...</td></tr>';
+      tbody.innerHTML = window.createTableLoadingRow
+        ? window.createTableLoadingRow(6, "Memuat data verifikasi...")
+        : '<tr><td colspan="6" style="text-align: center;">Loading...</td></tr>';
     }
 
     try {
       // 1. Get User Profile first
-      const profileResponse = await apiRequest('/auth/profile');
-      const user = profileResponse.data; 
+      const profileResponse = await apiRequest("/auth/profile");
+      const user = profileResponse.data;
       const username = user.username;
 
       // 2. Fetch all relevant data at once
@@ -618,7 +620,7 @@ export function renderDashboardVerifikator(path, userRole) {
       }
 
       state.allUsulan = allUsulan;
-      
+
       updateStats();
 
       // Set default view
@@ -633,24 +635,23 @@ export function renderDashboardVerifikator(path, userRole) {
 
   function filterAndDisplayUsulan(statusId) {
     state.currentStatusId = statusId;
-    
+
     // Filter by status
-    let filtered = state.allUsulan.filter(
-      (u) => u.status_id == statusId
-    );
+    let filtered = state.allUsulan.filter((u) => u.status_id == statusId);
 
     // Filter by search query
     if (state.searchQuery) {
-        const query = state.searchQuery.toLowerCase();
-        filtered = filtered.filter(u => 
-            (u.nama_kegiatan && u.nama_kegiatan.toLowerCase().includes(query)) ||
-            (u.pengusul_nama && u.pengusul_nama.toLowerCase().includes(query))
-        );
+      const query = state.searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (u) =>
+          (u.nama_kegiatan && u.nama_kegiatan.toLowerCase().includes(query)) ||
+          (u.pengusul_nama && u.pengusul_nama.toLowerCase().includes(query))
+      );
     }
 
     state.displayUsulan = filtered;
     state.displayUsulan.sort((a, b) => a.kak_id - b.kak_id);
-    
+
     // Init pagination
     state.totalEntries = state.displayUsulan.length;
     state.totalPages = Math.ceil(state.totalEntries / state.itemsPerPage);
@@ -678,36 +679,36 @@ export function renderDashboardVerifikator(path, userRole) {
   }
 
   function setupSearch() {
-    const searchInput = document.getElementById('searchInput');
-    const clearSearch = document.getElementById('clearSearch');
-    
+    const searchInput = document.getElementById("searchInput");
+    const clearSearch = document.getElementById("clearSearch");
+
     if (searchInput) {
-      searchInput.addEventListener('input', function(e) {
+      searchInput.addEventListener("input", function (e) {
         const query = e.target.value;
         if (clearSearch) {
-          if (query.length > 0) clearSearch.classList.add('visible');
-          else clearSearch.classList.remove('visible');
+          if (query.length > 0) clearSearch.classList.add("visible");
+          else clearSearch.classList.remove("visible");
         }
         debounceSearch(query);
       });
-      
-      searchInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-          this.value = '';
-          if (clearSearch) clearSearch.classList.remove('visible');
-          performSearch('');
+
+      searchInput.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          this.value = "";
+          if (clearSearch) clearSearch.classList.remove("visible");
+          performSearch("");
         }
       });
     }
-    
+
     if (clearSearch) {
-      clearSearch.addEventListener('click', function() {
+      clearSearch.addEventListener("click", function () {
         if (searchInput) {
-          searchInput.value = '';
+          searchInput.value = "";
           searchInput.focus();
         }
-        this.classList.remove('visible');
-        performSearch('');
+        this.classList.remove("visible");
+        performSearch("");
       });
     }
   }
@@ -756,63 +757,72 @@ export function renderDashboardVerifikator(path, userRole) {
   }
 
   async function handlePdfAction(kakId, action) {
-    const actionTitle = action === 'preview' ? 'Membuka Pratinjau PDF...' : 'Mengunduh PDF...';
-    const errorMessage = action === 'preview' ? 'Gagal membuka pratinjau PDF' : 'Gagal mengunduh PDF';
-  
+    const actionTitle =
+      action === "preview" ? "Membuka Pratinjau PDF..." : "Mengunduh PDF...";
+    const errorMessage =
+      action === "preview"
+        ? "Gagal membuka pratinjau PDF"
+        : "Gagal mengunduh PDF";
+
     Swal.fire({
       title: actionTitle,
       text: "Sedang memproses...",
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading(),
     });
-  
+
     try {
       // Step 1: Generate token (Required for both preview and download)
-      const tokenResponse = await apiRequest(`/kak/${kakId}/generate-download-token`, {
-        method: 'POST',
-      });
-  
-      if (!tokenResponse.success) {
-        throw new Error(tokenResponse.message || 'Gagal membuat token akses file');
-      }
-  
-      const tempToken = tokenResponse.data.download_token;
-      const url = `/api/kak/${kakId}${action === 'preview' ? '/preview' : ''}?t=${tempToken}`;
+      const tokenResponse = await apiRequest(
+        `/kak/${kakId}/generate-download-token`,
+        {
+          method: "POST",
+        }
+      );
 
-      if (action === 'preview') {
+      if (!tokenResponse.success) {
+        throw new Error(
+          tokenResponse.message || "Gagal membuat token akses file"
+        );
+      }
+
+      const tempToken = tokenResponse.data.download_token;
+      const url = `/api/kak/${kakId}${
+        action === "preview" ? "/preview" : ""
+      }?t=${tempToken}`;
+
+      if (action === "preview") {
         // Use fetch + blob for preview to avoid showing HTML error code
         const response = await fetch(url);
 
         if (!response.ok) {
-           const contentType = response.headers.get("content-type");
-           if (contentType && contentType.indexOf("application/json") !== -1) {
-               const errorData = await response.json();
-               throw new Error(errorData.message || 'Gagal mengambil file.');
-           } else {
-               throw new Error(`HTTP Error: ${response.status}`);
-           }
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.indexOf("application/json") !== -1) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Gagal mengambil file.");
+          } else {
+            throw new Error(`HTTP Error: ${response.status}`);
+          }
         }
 
         const blob = await response.blob();
         const fileUrl = URL.createObjectURL(blob);
-        
+
         Swal.close();
-        window.open(fileUrl, '_blank');
-        
+        window.open(fileUrl, "_blank");
+
         // Revoke URL after a delay
         setTimeout(() => URL.revokeObjectURL(fileUrl), 10000);
-
       } else {
         // Download
         Swal.close();
         setTimeout(() => {
-            window.open(url, '_blank');
+          window.open(url, "_blank");
         }, 300);
       }
-  
     } catch (error) {
       Swal.fire({
-        icon: 'error',
+        icon: "error",
         title: errorMessage,
         text: error.message,
       });
@@ -842,8 +852,8 @@ export function renderDashboardVerifikator(path, userRole) {
   }
 
   function getActionButtons(statusId, kakId) {
-    let buttons = '';
-    
+    let buttons = "";
+
     switch (statusId) {
       case 2: // Menunggu Verifikasi
         buttons = `
@@ -935,35 +945,43 @@ export function renderDashboardVerifikator(path, userRole) {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>
-          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${ 
-            globalIndex
-          }</span>
+          <span style="font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 0.5rem 0.75rem; border-radius: 8px; background: #FFFFFF; color: #374151;">${globalIndex}</span>
         </td>
         <td><strong>${usulan.nama_kegiatan || "Tanpa Judul"}</strong></td>
         <td><strong>${usulan.pengusul_nama || "Tanpa Pengusul"}</strong></td>
         <td>${formatDate(usulan.created_at)}</td>
         <td style="text-align: center;">
-          <span class="badge ${ 
-            statusBadge.class 
-          }" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${ 
-            statusBadge.text 
-          }</span>
+          <span class="badge ${
+            statusBadge.class
+          }" style="min-width: 85px; padding: 6px 16px; border-radius: 6px;">${
+        statusBadge.text
+      }</span>
         </td>
         <td style="text-align: center;">
           <div class="d-flex justify-content-center gap-2">
-            <button class="btn btn-sm btn-icon btn-approve" data-id="${usulan.kak_id}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);" title="Setujui">
+            <button class="btn btn-sm btn-icon btn-approve" data-id="${
+              usulan.kak_id
+            }" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);" title="Setujui">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </button>
-            <button class="btn btn-sm btn-icon btn-revise" data-id="${usulan.kak_id}" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);" title="Revisi">
+            <button class="btn btn-sm btn-icon btn-revise" data-id="${
+              usulan.kak_id
+            }" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);" title="Revisi">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
             </button>
-            <button class="btn btn-sm btn-icon btn-reject" data-id="${usulan.kak_id}" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);" title="Tolak">
+            <button class="btn btn-sm btn-icon btn-reject" data-id="${
+              usulan.kak_id
+            }" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);" title="Tolak">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
-            <button class="btn btn-sm btn-icon btn-preview-pdf" data-kak-id="${usulan.kak_id}" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);" title="Lihat PDF">
+            <button class="btn btn-sm btn-icon btn-preview-pdf" data-kak-id="${
+              usulan.kak_id
+            }" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);" title="Lihat PDF">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             </button>
-            <button class="btn btn-sm btn-icon btn-download-pdf" data-kak-id="${usulan.kak_id}" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);" title="Download">
+            <button class="btn btn-sm btn-icon btn-download-pdf" data-kak-id="${
+              usulan.kak_id
+            }" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);" title="Download">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
           </div>
@@ -1085,14 +1103,15 @@ export function renderDashboardVerifikator(path, userRole) {
     const totalEntries = state.displayUsulan.length;
     state.totalEntries = totalEntries;
     state.totalPages = Math.ceil(totalEntries / state.itemsPerPage);
-    
+
     // Recalculate if filtered data changed
     if (state.currentPage > state.totalPages && state.totalPages > 0) {
-        state.currentPage = state.totalPages;
+      state.currentPage = state.totalPages;
     }
     if (state.totalPages === 0) state.currentPage = 1;
 
-    const startEntry = totalEntries > 0 ? (state.currentPage - 1) * state.itemsPerPage + 1 : 0;
+    const startEntry =
+      totalEntries > 0 ? (state.currentPage - 1) * state.itemsPerPage + 1 : 0;
     const endEntry = Math.min(
       state.currentPage * state.itemsPerPage,
       totalEntries
@@ -1116,10 +1135,10 @@ export function renderDashboardVerifikator(path, userRole) {
     document.querySelectorAll(".btn-approve").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const kakId = btn.dataset.id;
-        
+
         // Prompt for Mata Anggaran details
         const { value: formValues } = await Swal.fire({
-          title: 'Input Data Mata Anggaran',
+          title: "Input Data Mata Anggaran",
           html:
             '<div style="text-align: left;">' +
             '<label for="swal-input1" class="form-label">Kode MAK <span class="text-danger">*</span></label>' +
@@ -1130,31 +1149,31 @@ export function renderDashboardVerifikator(path, userRole) {
             '<input id="swal-input3" class="form-control mb-3" type="number" placeholder="Contoh: 2025">' +
             '<label for="swal-input4" class="form-label">Total Pagu</label>' +
             '<input id="swal-input4" class="form-control" type="number" step="0.01" placeholder="Contoh: 10000000">' +
-            '</div>',
+            "</div>",
           focusConfirm: false,
           showCancelButton: true,
-          confirmButtonText: 'Setujui',
-          cancelButtonText: 'Batal',
-          confirmButtonColor: '#00BCD4',
+          confirmButtonText: "Setujui",
+          cancelButtonText: "Batal",
+          confirmButtonColor: "#00BCD4",
           preConfirm: () => {
-            const kodeAnggaran = document.getElementById('swal-input1').value;
+            const kodeAnggaran = document.getElementById("swal-input1").value;
             if (!kodeAnggaran) {
               Swal.showValidationMessage(`Kode MAK wajib diisi.`);
               return false;
             }
             return {
               kode_anggaran: kodeAnggaran,
-              nama_sumber_dana: document.getElementById('swal-input2').value,
-              tahun_anggaran: document.getElementById('swal-input3').value,
-              total_pagu: document.getElementById('swal-input4').value
-            }
-          }
+              nama_sumber_dana: document.getElementById("swal-input2").value,
+              tahun_anggaran: document.getElementById("swal-input3").value,
+              total_pagu: document.getElementById("swal-input4").value,
+            };
+          },
         });
 
         if (formValues) {
           Swal.fire({
-            title: 'Menyetujui KAK...',
-            text: 'Harap tunggu, sistem sedang memproses persetujuan.',
+            title: "Menyetujui KAK...",
+            text: "Harap tunggu, sistem sedang memproses persetujuan.",
             allowOutsideClick: false,
             didOpen: () => {
               Swal.showLoading();
@@ -1232,15 +1251,15 @@ export function renderDashboardVerifikator(path, userRole) {
 
     // --- PDF BUTTONS ---
     document.querySelectorAll(".btn-preview-pdf").forEach((btn) => {
-        btn.addEventListener("click", () =>
-        handlePdfAction(btn.dataset.kakId, 'preview')
-        );
+      btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, "preview")
+      );
     });
 
     document.querySelectorAll(".btn-download-pdf").forEach((btn) => {
-        btn.addEventListener("click", () =>
-        handlePdfAction(btn.dataset.kakId, 'download')
-        );
+      btn.addEventListener("click", () =>
+        handlePdfAction(btn.dataset.kakId, "download")
+      );
     });
   }
 
@@ -1250,7 +1269,9 @@ export function renderDashboardVerifikator(path, userRole) {
   function setupModal() {
     const modalElement = document.getElementById("revisiModal");
     if (!modalElement) {
-      console.warn("[VERIFIKATOR] revisiModal element not found in DOM - skipping modal setup");
+      console.warn(
+        "[VERIFIKATOR] revisiModal element not found in DOM - skipping modal setup"
+      );
       return;
     }
 
@@ -1294,71 +1315,77 @@ export function renderDashboardVerifikator(path, userRole) {
   fetchVideos();
 
   function fetchVideos() {
-      console.log("[VERIFIKATOR] Fetching videos..."); // Debug
-      // Use local apiRequest helper
-      apiRequest("/dashboard/video")
-        .then(response => {
-            console.log("[VERIFIKATOR] Video API Response:", response); // Debug
-            if (response.success && response.data) {
-                renderVideos(response.data);
-            } else {
-                renderVideos([]);
-            }
-        })
-        .catch(error => {
-            console.error("[VERIFIKATOR] Error fetching videos:", error);
-            renderVideos([]);
-        });
+    console.log("[VERIFIKATOR] Fetching videos..."); // Debug
+    // Use local apiRequest helper
+    apiRequest("/dashboard/video")
+      .then((response) => {
+        console.log("[VERIFIKATOR] Video API Response:", response); // Debug
+        if (response.success && response.data) {
+          renderVideos(response.data);
+        } else {
+          renderVideos([]);
+        }
+      })
+      .catch((error) => {
+        console.error("[VERIFIKATOR] Error fetching videos:", error);
+        renderVideos([]);
+      });
   }
 
   function renderVideos(videos) {
     const container = document.getElementById("videoList");
     if (!container) {
-        console.error("[VERIFIKATOR] videoList container not found!"); // Debug
-        return;
+      console.error("[VERIFIKATOR] videoList container not found!"); // Debug
+      return;
     }
 
     console.log("[VERIFIKATOR] Rendering videos:", videos); // Debug
 
     container.innerHTML = "";
     if (!videos || videos.length === 0) {
-        container.innerHTML = `<div class="col-12 text-center text-muted py-4">Belum ada video panduan.</div>`;
-        return;
+      container.innerHTML = `<div class="col-12 text-center text-muted py-4">Belum ada video panduan.</div>`;
+      return;
     }
 
     videos.forEach((video) => {
-        // Use path_media from database
-        let videoUrl = video.path_media || video.url || '';
-        let embedUrl = videoUrl;
-        
-        console.log("[VERIFIKATOR] Processing video:", video.judul_panduan, videoUrl); // Debug
-        
-        // Simple YouTube URL to Embed URL converter
-        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-            let videoId = '';
-            if (videoUrl.includes('youtube.com/watch?v=')) {
-                videoId = videoUrl.split('watch?v=')[1].split('&')[0];
-            } else if (videoUrl.includes('youtu.be/')) {
-                videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
-            } else if (videoUrl.includes('youtube.com/embed/')) {
-                videoId = videoUrl.split('embed/')[1].split('?')[0];
-            }
-            if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      // Use path_media from database
+      let videoUrl = video.path_media || video.url || "";
+      let embedUrl = videoUrl;
+
+      console.log(
+        "[VERIFIKATOR] Processing video:",
+        video.judul_panduan,
+        videoUrl
+      ); // Debug
+
+      // Simple YouTube URL to Embed URL converter
+      if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+        let videoId = "";
+        if (videoUrl.includes("youtube.com/watch?v=")) {
+          videoId = videoUrl.split("watch?v=")[1].split("&")[0];
+        } else if (videoUrl.includes("youtu.be/")) {
+          videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
+        } else if (videoUrl.includes("youtube.com/embed/")) {
+          videoId = videoUrl.split("embed/")[1].split("?")[0];
         }
+        if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
 
       const col = document.createElement("div");
       col.className = "col-md-4";
-      
+
       // Create inner card
       const videoCard = document.createElement("div");
       videoCard.className = "video-placeholder";
       videoCard.style.background = "black";
       videoCard.style.position = "relative";
-      
+
       videoCard.innerHTML = `
-        <iframe src="${embedUrl}" title="${video.judul_panduan || 'Video Panduan'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius: 12px;"></iframe>
+        <iframe src="${embedUrl}" title="${
+        video.judul_panduan || "Video Panduan"
+      }" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius: 12px;"></iframe>
       `;
-      
+
       col.appendChild(videoCard);
       container.appendChild(col);
     });
@@ -1377,7 +1404,10 @@ export function renderDashboardVerifikator(path, userRole) {
         flasher.showOverdueKegiatanNotification(overdueKak);
       }
     } catch (overdueError) {
-      console.error("Failed to fetch overdue KAKs for Verifikator:", overdueError);
+      console.error(
+        "Failed to fetch overdue KAKs for Verifikator:",
+        overdueError
+      );
     }
   })();
   // === END NEW LOGIC ===
