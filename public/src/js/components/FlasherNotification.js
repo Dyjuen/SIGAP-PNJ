@@ -121,14 +121,14 @@ export class FlasherNotification {
     // Icon container
     const iconDiv = document.createElement("div");
     iconDiv.style.cssText = `
-      width: 32px;
-      height: 32px;
+      width: 38px;
+      height: 38px;
       background: rgba(255, 255, 255, 0.2);
       border-radius: 50%;
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      font-size: 18px;
+      font-size: 24px;
       flex-shrink: 0;
       font-weight: 600;
       margin-top: 4px;
