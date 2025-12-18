@@ -969,8 +969,8 @@ export function renderDetailKegiatanPage(path, userRole) {
               <thead class="bg-gray-50">
                 <tr>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Indikator Kinerja Utama</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Target</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Target</th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
                 </tr>
               </thead>
               <tbody id="ikuRenstraContainer" class="bg-white divide-y divide-gray-200">
@@ -1255,10 +1255,10 @@ export function renderDetailKegiatanPage(path, userRole) {
         "iku_id",
         "nama_iku"
       )}</td>
-      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-left font-semibold">${
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center font-semibold">${
         item.target || "0"
       }</td>
-      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">${
         item.nama_satuan ||
         (item.satuan_id
           ? getNameById(
