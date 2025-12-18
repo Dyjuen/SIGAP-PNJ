@@ -1255,7 +1255,7 @@ export function renderDetailKegiatanPage(path, userRole) {
         "iku_id",
         "nama_iku"
       )}</td>
-      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center font-semibold">${
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-left font-semibold">${
         item.target || "0"
       }</td>
       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${
@@ -1541,7 +1541,7 @@ export function renderDetailKegiatanPage(path, userRole) {
       const step3Card = document.querySelector("#main-step-3 > .bg-white");
       // Insert before the navigation buttons (which is the last element usually)
       const navButtons = step3Card.querySelector(".flex.justify-between.mt-8");
-      
+
       if (navButtons) {
         step3Card.insertBefore(totalContainer, navButtons);
       } else {
