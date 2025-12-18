@@ -131,7 +131,6 @@ export class FlasherNotification {
       font-size: 24px;
       flex-shrink: 0;
       font-weight: 600;
-      margin-top: 4px;
     `;
     iconDiv.textContent = color.icon;
     notification.appendChild(iconDiv);
