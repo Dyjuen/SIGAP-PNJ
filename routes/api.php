@@ -233,8 +233,8 @@ $router->delete('/panduan/{id}', 'PanduanController@destroy');
 
 $router->get('/kak', 'KAKController@index');
 $router->post('/kak', 'KAKController@store');
-$router->get('/kak/{id}', 'KAKController@show');
 $router->get('/kak/overdue-verifikator', 'KAKController@getOverdueKakActivities');
+$router->get('/kak/{id}', 'KAKController@show');
 $router->delete('/kak/{id}', 'KAKController@delete');
 
 // PUT /api/kak/{id}/update - Update KAK

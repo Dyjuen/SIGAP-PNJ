@@ -11,6 +11,7 @@ use App\Models\KegiatanLampiran;
 use App\Models\KegiatanLogStatus;
 use App\Models\KAK;
 use App\Middlewares\AuthMiddleware;
+use App\Services\KegiatanTimerService; // Add this line
 
 class LpjController extends Controller
 {
@@ -593,6 +594,33 @@ class LpjController extends Controller
                 $db->rollBack();
             }
             return Response::error('Gagal menyelesaikan LPJ: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Get overdue LPJ approvals for Bendahara.
+     * GET /api/lpj/overdue-bendahara
+     */
+    public function getOverdueLpjForBendahara()
+    {
+        try {
+            // Authorization: Only Bendahara can access this
+            if (!in_array('Bendahara', $this->user['roles'])) {
+                Response::forbidden('Anda tidak memiliki akses untuk melihat LPJ overdue Bendahara.');
+            }
+
+            $kegiatanTimerService = new KegiatanTimerService();
+            $overdueLpj = $kegiatanTimerService->getOverdueLpjApprovals();
+            
+            $overdueCount = count($overdueLpj);
+            
+            Response::success([
+                'count' => $overdueCount,
+                'lpjs' => $overdueLpj
+            ], 'Data LPJ overdue Bendahara berhasil diambil.');
+
+        } catch (\Exception $e) {
+            Response::error('Gagal mengambil data LPJ overdue Bendahara: ' . $e->getMessage(), 500);
         }
     }
 }
