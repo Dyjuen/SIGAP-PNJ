@@ -126,7 +126,7 @@ export class FlasherNotification {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 50%;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
       font-size: 24px;
       flex-shrink: 0;
